@@ -1,0 +1,22 @@
+{
+  "name": "remotion-video-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Remotion video editing studio for vertical documentary-style videos.",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render src/index.ts MainComposition out/video.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.523",
+    "@remotion/media-utils": "4.0.523",
+    "remotion": "4.0.523",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
+    "typescript": "5.9.2"
+  }
+}
