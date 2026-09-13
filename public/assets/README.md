@@ -4,7 +4,8 @@ The composition expects locally prepared source media in this folder. Large sour
 
 | Asset | Role | Audio policy |
 | --- | --- | --- |
-| `ira-keyed.webm` | Green-screen presenter, keyed over the generated studio | Original presenter audio retained |
+| `ira-keyed.webm` | Green-screen presenter, keyed over the generated studio | Muted in the composition |
+| `ira-narration.m4a` | Original presenter narration | Retained and retimed to 90 seconds |
 | `jio-agm-free-voice.mp4` | 2016 archival launch excerpt | Audio removed and Remotion `muted` prop set |
 | `studio-bg.png` | Consistent studio background | N/A |
 | `ai-2014-data.png` | 2014 mobile-data visual | N/A |

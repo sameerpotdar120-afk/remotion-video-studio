@@ -13,7 +13,8 @@ A 90-second, 1080×1920 Remotion documentary edit built from a green-screen pres
 
 Place these files in `public/assets/`:
 
-- `ira-keyed.webm` — transparent VP9 presenter video with the original audio
+- `ira-keyed.webm` — transparent VP9 presenter video, muted in the composition
+- `ira-narration.m4a` — original presenter narration, retimed to 90 seconds
 - `studio-bg.png`
 - `ai-2014-data.png`
 - `ai-daily-habit.png`

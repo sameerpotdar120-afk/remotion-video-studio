@@ -1,5 +1,5 @@
 import React, {CSSProperties, ReactNode} from 'react';
-import {Video} from '@remotion/media';
+import {Audio, Video} from '@remotion/media';
 import {
   AbsoluteFill,
   Img,
@@ -85,8 +85,9 @@ const Presenter: React.FC = () => {
     <Video
       src={staticFile('assets/ira-keyed.webm')}
       playbackRate={1.111574}
-      volume={0.82}
-      style={{position: 'absolute', height: 1770, width: 996, objectFit: 'contain', left: '50%', bottom: -8, opacity, transform: `translateX(calc(-50% + ${shiftLeft}px))`, filter: 'drop-shadow(0 28px 36px rgba(0,0,0,0.45))'}}
+      muted
+      objectFit="contain"
+      style={{position: 'absolute', height: 1770, width: 996, left: '50%', bottom: -8, opacity, transform: `translateX(calc(-50% + ${shiftLeft}px))`, filter: 'drop-shadow(0 28px 36px rgba(0,0,0,0.45))'}}
     />
   );
 };
@@ -185,7 +186,7 @@ const ArchivalOffer: React.FC = () => {
     <AbsoluteFill style={{background: '#03080d', padding: '98px 48px'}}>
       <div style={{...enter(frame), textAlign: 'center'}}><Kicker>Archival • 2016 launch</Kicker><div style={{fontSize: 58, color: C.white, fontWeight: 950, marginTop: 15}}>WELCOME OFFER</div></div>
       <div style={{...panel, position: 'absolute', left: 48, right: 48, top: 360, height: 690, overflow: 'hidden', borderRadius: 28}}>
-        <Video src={staticFile('assets/jio-agm-free-voice.mp4')} muted style={{width: '100%', height: '100%', objectFit: 'cover'}} />
+        <Video src={staticFile('assets/jio-agm-free-voice.mp4')} muted objectFit="cover" style={{width: '100%', height: '100%'}} />
         <div style={{position: 'absolute', left: 24, bottom: 22, ...panel, borderRadius: 14, padding: '10px 16px'}}><span style={{fontFamily: mono, color: C.white, fontSize: 17}}>SOURCE AUDIO MUTED</span></div>
       </div>
       <div style={{position: 'absolute', left: 78, right: 78, bottom: 170, color: C.white, fontSize: 33, lineHeight: 1.25, fontWeight: 820, textAlign: 'center'}}>Voice, data, video &amp; Jio apps — free through December 2016</div>
@@ -329,6 +330,7 @@ const Finale: React.FC = () => {
 export const JioVideo: React.FC = () => (
   <AbsoluteFill style={{backgroundColor: C.navy, fontFamily: font, overflow: 'hidden'}}>
     <StudioBackdrop />
+    <Audio src={staticFile('assets/ira-narration.m4a')} playbackRate={1.111574} volume={0.82} />
     <Presenter />
     <Sequence from={f(0)} durationInFrames={f(1.2)}><OpeningData /></Sequence>
     <Sequence from={f(1.2)} durationInFrames={f(2.4)}><DataDrain /></Sequence>
