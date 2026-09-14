@@ -74,29 +74,42 @@ const StudioBackdrop: React.FC = () => (
   </AbsoluteFill>
 );
 
+const NarrationPicture = React.createContext(true);
+
 const NarrationSlice: React.FC<{trimBefore: number; outputStart: number}> = ({trimBefore, outputStart}) => {
-  const localFrame = useCurrentFrame();
-  const globalFrame = localFrame + outputStart;
-  const shiftLeft = globalFrame >= f(1.2) && globalFrame < f(3.9) ? -90 : 0;
+  const frame = useCurrentFrame() + outputStart;
+  // Skip decoding picture only while an opaque full-screen scene covers it.
+  // Narration continues independently at the same source time.
+  const presenterVisible = React.useContext(NarrationPicture) && (frame < 186 ||
+    (frame >= 267 && frame < 333) ||
+    (frame >= 520 && frame < 606) ||
+    (frame >= 1094 && frame < 1161) ||
+    (frame >= 1879 && frame < 1968) ||
+    (frame >= 2422 && frame < 2520) || frame >= 2613);
   return (
     <>
-      <Video
-        src={staticFile('assets/ira-keyed-silent.webm')}
-        trimBefore={trimBefore}
-        muted
-        objectFit="contain"
+      {presenterVisible ? <div
         style={{
           position: 'absolute',
           height: 1770,
           width: 996,
           left: '50%',
           bottom: 0,
-          transform: `translateX(calc(-50% + ${shiftLeft}px))`,
-          clipPath: 'polygon(0 0, 100% 0, 100% 8.5%, 85.5% 8.5%, 85.5% 12.8%, 100% 12.8%, 100% 100%, 0 100%)',
+          translate: '-50% 0',
           filter:
             'contrast(1.055) brightness(0.988) saturate(0.94) sepia(0.04) hue-rotate(-3deg) drop-shadow(12px 0 28px rgba(255,72,22,0.28)) drop-shadow(-12px 0 28px rgba(30,85,180,0.22)) drop-shadow(0 28px 36px rgba(0,0,0,0.48))',
         }}
-      />
+      >
+        <Video
+          src={staticFile('assets/ira-keyed-full-outline.webm')}
+          trimBefore={trimBefore}
+          muted
+          objectFit="contain"
+          // Clip the empty source headroom before applying the outer rim light.
+          // This removes the camera's top strip without shadowing that strip.
+          style={{width: '100%', height: '100%', clipPath: 'inset(2% 0 0 0)'}}
+        />
+      </div> : null}
       <Audio src={staticFile('assets/ira-narration.m4a')} trimBefore={trimBefore} volume={0.82} />
     </>
   );
@@ -156,7 +169,7 @@ const DataDrain: React.FC = () => {
   const used = interpolate(frame, [0, f(2.2)], [7, 96], {extrapolateRight: 'clamp'});
   return (
     <AbsoluteFill>
-      <div style={{...panel, ...enter(frame), position: 'absolute', right: 42, top: 232, width: 390, padding: 28}}>
+      <div style={{...panel, ...enter(frame), position: 'absolute', right: 42, top: 54, width: 390, padding: 24}}>
         <Kicker>Today</Kicker>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 18}}>
           <span style={{fontSize: 38, color: C.white, fontWeight: 900}}>Daily data</span>
@@ -211,12 +224,13 @@ const JioDate: React.FC = () => {
   const p = pop(frame);
   return (
     <AbsoluteFill style={{padding: '86px 58px'}}>
-      <div style={{...panel, position: 'absolute', right: 56, top: 236, width: 410, padding: '32px 34px', transform: `scale(${p}) rotate(-1.5deg)`, transformOrigin: 'center'}}>
+      <div style={{...panel, position: 'absolute', right: 56, top: 54, width: 470, padding: 24, transform: `scale(${p}) rotate(-1.5deg)`, transformOrigin: 'center'}}>
         <Kicker>Entry date</Kicker>
-        <div style={{color: C.white, fontSize: 96, lineHeight: 0.92, fontWeight: 950, marginTop: 24}}>05</div>
-        <div style={{color: C.cyan, fontSize: 48, fontWeight: 900}}>SEP 2016</div>
-        <div style={{height: 5, width: 110, background: C.amber, marginTop: 24}} />
-        <div style={{color: C.muted, fontSize: 23, marginTop: 18}}>Jio services begin</div>
+        <div style={{display: 'flex', gap: 18, alignItems: 'baseline', marginTop: 10}}>
+          <div style={{color: C.white, fontSize: 64, lineHeight: 1, fontWeight: 950}}>05</div>
+          <div style={{color: C.cyan, fontSize: 38, fontWeight: 900}}>SEP 2016</div>
+        </div>
+        <div style={{color: C.muted, fontSize: 20, marginTop: 12}}>Jio services begin</div>
       </div>
     </AbsoluteFill>
   );
@@ -386,6 +400,11 @@ const Finale: React.FC = () => {
   const frame = useCurrentFrame();
   return <AbsoluteFill><div style={{position: 'absolute', left: 56, right: 56, top: 105, ...enter(frame), textAlign: 'center'}}><Kicker>India’s new default</Kicker><div style={{fontSize: 72, color: C.white, fontWeight: 950, lineHeight: 1, marginTop: 20}}>DATA = DEFAULT UTILITY</div></div><div style={{position: 'absolute', left: 130, right: 130, bottom: 90, height: 7, background: `linear-gradient(90deg, transparent, ${C.cyan}, transparent)`}} /></AbsoluteFill>;
 };
+
+// Shares the exact authored cut map, without decoding pictures for audio export.
+export const JioNarration: React.FC = () => (
+  <NarrationPicture.Provider value={false}><NarrationTimeline /></NarrationPicture.Provider>
+);
 
 export const JioVideo: React.FC = () => (
   <AbsoluteFill style={{backgroundColor: C.navy, fontFamily: font, overflow: 'hidden'}}>
