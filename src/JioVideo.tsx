@@ -77,7 +77,7 @@ const StudioBackdrop: React.FC = () => (
 const NarrationSlice: React.FC<{trimBefore: number; outputStart: number}> = ({trimBefore, outputStart}) => {
   const localFrame = useCurrentFrame();
   const globalFrame = localFrame + outputStart;
-  const shiftLeft = globalFrame >= f(1.2) && globalFrame < f(3.9) ? -155 : 0;
+  const shiftLeft = globalFrame >= f(1.2) && globalFrame < f(3.9) ? -90 : 0;
   return (
     <>
       <Video
@@ -90,8 +90,9 @@ const NarrationSlice: React.FC<{trimBefore: number; outputStart: number}> = ({tr
           height: 1770,
           width: 996,
           left: '50%',
-          bottom: -8,
+          bottom: 0,
           transform: `translateX(calc(-50% + ${shiftLeft}px))`,
+          clipPath: 'polygon(0 0, 100% 0, 100% 8.5%, 85.5% 8.5%, 85.5% 12.8%, 100% 12.8%, 100% 100%, 0 100%)',
           filter:
             'contrast(1.055) brightness(0.988) saturate(0.94) sepia(0.04) hue-rotate(-3deg) drop-shadow(12px 0 28px rgba(255,72,22,0.28)) drop-shadow(-12px 0 28px rgba(30,85,180,0.22)) drop-shadow(0 28px 36px rgba(0,0,0,0.48))',
         }}
@@ -155,7 +156,7 @@ const DataDrain: React.FC = () => {
   const used = interpolate(frame, [0, f(2.2)], [7, 96], {extrapolateRight: 'clamp'});
   return (
     <AbsoluteFill>
-      <div style={{...panel, ...enter(frame), position: 'absolute', right: 58, top: 232, width: 430, padding: 28}}>
+      <div style={{...panel, ...enter(frame), position: 'absolute', right: 42, top: 232, width: 390, padding: 28}}>
         <Kicker>Today</Kicker>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 18}}>
           <span style={{fontSize: 38, color: C.white, fontWeight: 900}}>Daily data</span>
