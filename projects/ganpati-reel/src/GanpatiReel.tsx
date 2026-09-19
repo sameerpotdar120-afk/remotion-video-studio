@@ -23,7 +23,6 @@ import {Scene17} from './scenes/Scene17';
 import {Scene18} from './scenes/Scene18';
 
 loadFont({family: 'Mukta', url: staticFile('fonts/Mukta-Bold.ttf'), weight: '700'});
-loadFont({family: 'Montserrat', url: staticFile('fonts/Montserrat.ttf'), weight: '900'});
 
 export const GanpatiReel: React.FC = () => (
   <AbsoluteFill style={{backgroundColor: '#120100'}}>
@@ -44,22 +43,13 @@ export const GanpatiReel: React.FC = () => (
     <Sequence name="15 Flower details slow-mo" from={1016} durationInFrames={80}><Scene15 /></Sequence>
     <Sequence name="16 Ganpati hero still" from={1096} durationInFrames={88}><Scene16 /></Sequence>
     <Sequence name="17 Character hero slow-mo" from={1184} durationInFrames={73}><Scene17 /></Sequence>
-    <Sequence name="18 Namaste finish" from={1257} durationInFrames={63}><Scene18 /></Sequence>
+    <Sequence name="18 Namaste finish" from={1257} durationInFrames={66}><Scene18 /></Sequence>
 
     <Sequence name="Title 1" from={0} durationInFrames={113}>
-      <DevotionalText line="गणपती बाप्पा मोरया" accent="GANPATI BAPPA MORYA" durationInFrames={113} />
+      <DevotionalText line="गणपती बाप्पा मोरया" durationInFrames={113} />
     </Sequence>
-    <Sequence name="Title 2" from={305} durationInFrames={102}>
-      <DevotionalText line="मंगलमूर्ती मोरया" accent="MANGALMURTI MORYA" durationInFrames={102} />
-    </Sequence>
-    <Sequence name="Title 3" from={635} durationInFrames={100}>
-      <DevotionalText line="सुखकर्ता • दुःखहर्ता" accent="SUKHKARTA • DUKHHARTA" durationInFrames={100} />
-    </Sequence>
-    <Sequence name="Title 4" from={938} durationInFrames={109}>
-      <DevotionalText line="पुढच्या वर्षी लवकर या" accent="COME BACK SOON, BAPPA" durationInFrames={109} />
-    </Sequence>
-    <Sequence name="Final title" from={1242} durationInFrames={78}>
-      <DevotionalText line="मोरया!" accent="MORYA!" durationInFrames={78} />
+    <Sequence name="Final title" from={1239} durationInFrames={84}>
+      <DevotionalText line="गणपती बाप्पा मोरया" durationInFrames={84} />
     </Sequence>
 
     <Audio
@@ -67,7 +57,7 @@ export const GanpatiReel: React.FC = () => (
       loop
       loopVolumeCurveBehavior="repeat"
       volume={(frame) =>
-        interpolate(frame, [0, 10, 1288, 1319], [0, 1, 1, 0], {
+        interpolate(frame, [0, 10, 1317, 1322], [0, 1, 1, 0], {
           extrapolateLeft: 'clamp',
           extrapolateRight: 'clamp',
         })

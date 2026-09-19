@@ -6,7 +6,9 @@ Beat-synced 44-second vertical Ganpati reel made in Remotion.
 - hard cuts placed on detected music accents
 - selected 60 fps character footage plays at 0.5× speed
 - the 31.27-second music track loops once at frame 938
-- Marathi and Roman-script devotional titles stay inside Reels safe margins
+- only the requested Marathi title, `गणपती बाप्पा मोरया`, appears on screen
+- camera moves begin only once the idol is visible and centered
+- the final musical phrase completes before the short closing fade
 
 Place the supplied media in `public/assets/`, then run:
 

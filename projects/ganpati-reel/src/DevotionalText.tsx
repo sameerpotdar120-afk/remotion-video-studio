@@ -3,9 +3,8 @@ import {Easing, interpolate, useCurrentFrame} from 'remotion';
 
 export const DevotionalText: React.FC<{
   line: string;
-  accent?: string;
   durationInFrames: number;
-}> = ({line, accent, durationInFrames}) => {
+}> = ({line, durationInFrames}) => {
   const frame = useCurrentFrame();
   return (
     <div
@@ -60,21 +59,6 @@ export const DevotionalText: React.FC<{
       >
         {line}
       </div>
-      {accent ? (
-        <div
-          style={{
-            marginTop: 14,
-            color: '#ffd989',
-            fontFamily: 'Montserrat',
-            fontSize: 35,
-            fontWeight: 900,
-            letterSpacing: 8,
-            textShadow: '0 3px 12px rgba(0,0,0,0.8)',
-          }}
-        >
-          {accent}
-        </div>
-      ) : null}
     </div>
   );
 };
