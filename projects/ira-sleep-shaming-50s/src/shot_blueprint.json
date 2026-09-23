@@ -1,0 +1,904 @@
+{
+  "shots": [
+    {
+      "shot_id": "SHOT001",
+      "segment_id": "S01",
+      "start_frame": 0,
+      "end_frame_exclusive": 36,
+      "start_seconds": 0.0,
+      "end_seconds": 1.5,
+      "duration_frames": 36,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S01_on_user_background.mp4",
+      "asset_id": "IRA_S01",
+      "visual_intent": "First direct-to-camera hook: confident inquisitive expression",
+      "narrative_function": "hook",
+      "editorial_on_screen_text": "SLEEP SHAMING?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "India में एक अजीब culture है: sleep shaming! कोई सो रहा हो, तो पर्दे खोलो, लाइट जलाओ, ज़ोर-ज़ोर से आवाज़ें करो, फिर ताना मारो, “कितना सोएगा तू?”",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 0,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT002",
+      "segment_id": "S01",
+      "start_frame": 36,
+      "end_frame_exclusive": 96,
+      "start_seconds": 1.5,
+      "end_seconds": 4.0,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V01_sleeping.svg",
+      "asset_id": "V01_sleeping",
+      "visual_intent": "A young adult peacefully sleeping in an Indian home; no shame",
+      "narrative_function": "setup",
+      "editorial_on_screen_text": "कोई सो रहा है?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "India में एक अजीब culture है: sleep shaming! कोई सो रहा हो, तो पर्दे खोलो, लाइट जलाओ, ज़ोर-ज़ोर से आवाज़ें करो, फिर ताना मारो, “कितना सोएगा तू?”",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF002"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT003",
+      "segment_id": "S01",
+      "start_frame": 96,
+      "end_frame_exclusive": 150,
+      "start_seconds": 4.0,
+      "end_seconds": 6.25,
+      "duration_frames": 54,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V02_curtains_light.svg",
+      "asset_id": "V02_curtains_light",
+      "visual_intent": "Curtains open, daylight enters and household noise interrupts sleep",
+      "narrative_function": "tension",
+      "editorial_on_screen_text": "CURTAINS. LIGHT. NOISE.",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "India में एक अजीब culture है: sleep shaming! कोई सो रहा हो, तो पर्दे खोलो, लाइट जलाओ, ज़ोर-ज़ोर से आवाज़ें करो, फिर ताना मारो, “कितना सोएगा तू?”",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF003"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT004",
+      "segment_id": "S01",
+      "start_frame": 150,
+      "end_frame_exclusive": 204,
+      "start_seconds": 6.25,
+      "end_seconds": 8.5,
+      "duration_frames": 54,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V03_taunt.svg",
+      "asset_id": "V03_taunt",
+      "visual_intent": "Familial taunt illustration, playful rather than aggressive",
+      "narrative_function": "example",
+      "editorial_on_screen_text": "कितना सोएगा तू?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "India में एक अजीब culture है: sleep shaming! कोई सो रहा हो, तो पर्दे खोलो, लाइट जलाओ, ज़ोर-ज़ोर से आवाज़ें करो, फिर ताना मारो, “कितना सोएगा तू?”",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF004"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT005",
+      "segment_id": "S01",
+      "start_frame": 204,
+      "end_frame_exclusive": 240,
+      "start_seconds": 8.5,
+      "end_seconds": 10.0,
+      "duration_frames": 36,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S01_on_user_background.mp4",
+      "asset_id": "IRA_S01",
+      "visual_intent": "Close the opening hook with Ira’s expression",
+      "narrative_function": "hook",
+      "editorial_on_screen_text": "",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "India में एक अजीब culture है: sleep shaming! कोई सो रहा हो, तो पर्दे खोलो, लाइट जलाओ, ज़ोर-ज़ोर से आवाज़ें करो, फिर ताना मारो, “कितना सोएगा तू?”",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 204,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT006",
+      "segment_id": "S02",
+      "start_frame": 240,
+      "end_frame_exclusive": 300,
+      "start_seconds": 10.0,
+      "end_seconds": 12.5,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V04_alarm6.svg",
+      "asset_id": "V04_alarm6",
+      "visual_intent": "Large early-alarm clock motif, rhetorical not medical",
+      "narrative_function": "tension",
+      "editorial_on_screen_text": "6 AM = ACHIEVEMENT?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "जैसे सुबह छह बजे उठना life का सबसे बड़ा achievement हो! पर हर किसी की body clock अलग है। देर से उठना हमेशा आलस नहीं होता।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF006"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT007",
+      "segment_id": "S02",
+      "start_frame": 300,
+      "end_frame_exclusive": 348,
+      "start_seconds": 12.5,
+      "end_seconds": 14.5,
+      "duration_frames": 48,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S02_on_user_background.mp4",
+      "asset_id": "IRA_S02",
+      "visual_intent": "Ira delivers contrast about body clocks",
+      "narrative_function": "reframe",
+      "editorial_on_screen_text": "",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "जैसे सुबह छह बजे उठना life का सबसे बड़ा achievement हो! पर हर किसी की body clock अलग है। देर से उठना हमेशा आलस नहीं होता।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 60,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT008",
+      "segment_id": "S02",
+      "start_frame": 348,
+      "end_frame_exclusive": 420,
+      "start_seconds": 14.5,
+      "end_seconds": 17.5,
+      "duration_frames": 72,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V05_chronotypes.svg",
+      "asset_id": "V05_chronotypes",
+      "visual_intent": "Two everyday wake schedules shown without judging either",
+      "narrative_function": "explanation",
+      "editorial_on_screen_text": "BODY CLOCKS DIFFER",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "जैसे सुबह छह बजे उठना life का सबसे बड़ा achievement हो! पर हर किसी की body clock अलग है। देर से उठना हमेशा आलस नहीं होता।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF008"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "CLM02"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT009",
+      "segment_id": "S02",
+      "start_frame": 420,
+      "end_frame_exclusive": 480,
+      "start_seconds": 17.5,
+      "end_seconds": 20.0,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V06_late_not_lazy.svg",
+      "asset_id": "V06_late_not_lazy",
+      "visual_intent": "A person resting later than conventional early-riser time",
+      "narrative_function": "reframe",
+      "editorial_on_screen_text": "LATE ≠ LAZY",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "जैसे सुबह छह बजे उठना life का सबसे बड़ा achievement हो! पर हर किसी की body clock अलग है। देर से उठना हमेशा आलस नहीं होता।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF009"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT010",
+      "segment_id": "S03",
+      "start_frame": 480,
+      "end_frame_exclusive": 540,
+      "start_seconds": 20.0,
+      "end_seconds": 22.5,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V07_sleep_debt.svg",
+      "asset_id": "V07_sleep_debt",
+      "visual_intent": "A restless night and incomplete sleep as possibility only",
+      "narrative_function": "cause",
+      "editorial_on_screen_text": "नींद पूरी नहीं हुई",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "हो सकता है, रात में उसकी नींद ही पूरी नहीं हुई। Sleep science के मुताबिक, ज़्यादातर adults को हर रात कम-से-कम सात घंटे की नींद चाहिए।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF010"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT011",
+      "segment_id": "S03",
+      "start_frame": 540,
+      "end_frame_exclusive": 576,
+      "start_seconds": 22.5,
+      "end_seconds": 24.0,
+      "duration_frames": 36,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S03_on_user_background.mp4",
+      "asset_id": "IRA_S03",
+      "visual_intent": "Ira introduces research information without extra factual visuals",
+      "narrative_function": "evidence",
+      "editorial_on_screen_text": "",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "हो सकता है, रात में उसकी नींद ही पूरी नहीं हुई। Sleep science के मुताबिक, ज़्यादातर adults को हर रात कम-से-कम सात घंटे की नींद चाहिए।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 60,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT012",
+      "segment_id": "S03",
+      "start_frame": 576,
+      "end_frame_exclusive": 660,
+      "start_seconds": 24.0,
+      "end_seconds": 27.5,
+      "duration_frames": 84,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V08_seven_hours.svg",
+      "asset_id": "V08_seven_hours",
+      "visual_intent": "Simple clock; general adult sleep duration guidance not a personal diagnosis",
+      "narrative_function": "evidence",
+      "editorial_on_screen_text": "MOST ADULTS: 7+ HOURS",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "हो सकता है, रात में उसकी नींद ही पूरी नहीं हुई। Sleep science के मुताबिक, ज़्यादातर adults को हर रात कम-से-कम सात घंटे की नींद चाहिए।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF012"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "CLM01"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT013",
+      "segment_id": "S03",
+      "start_frame": 660,
+      "end_frame_exclusive": 720,
+      "start_seconds": 27.5,
+      "end_seconds": 30.0,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V09_recovery.svg",
+      "asset_id": "V09_recovery",
+      "visual_intent": "Quiet night scene transitions to restorative rest",
+      "narrative_function": "explanation",
+      "editorial_on_screen_text": "RECOVERY MATTERS",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "हो सकता है, रात में उसकी नींद ही पूरी नहीं हुई। Sleep science के मुताबिक, ज़्यादातर adults को हर रात कम-से-कम सात घंटे की नींद चाहिए।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF013"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT014",
+      "segment_id": "S04",
+      "start_frame": 720,
+      "end_frame_exclusive": 780,
+      "start_seconds": 30.0,
+      "end_seconds": 32.5,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V10_seminar.svg",
+      "asset_id": "V10_seminar",
+      "visual_intent": "An illustrative seminar attendee has heavy eyelids",
+      "narrative_function": "example",
+      "editorial_on_screen_text": "SEMINAR में नींद?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "और seminar में किसी की आँख लग जाए, तो सीधा tag, “lazy, uninterested!” अरे, कभी पूछा वो सोया कितने घंटे था? या presentation ही boring थी?",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF014"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT015",
+      "segment_id": "S04",
+      "start_frame": 780,
+      "end_frame_exclusive": 828,
+      "start_seconds": 32.5,
+      "end_seconds": 34.5,
+      "duration_frames": 48,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S04_on_user_background.mp4",
+      "asset_id": "IRA_S04",
+      "visual_intent": "Ira delivers the labelled lazy/uninterested joke",
+      "narrative_function": "humor",
+      "editorial_on_screen_text": "",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "और seminar में किसी की आँख लग जाए, तो सीधा tag, “lazy, uninterested!” अरे, कभी पूछा वो सोया कितने घंटे था? या presentation ही boring थी?",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 60,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT016",
+      "segment_id": "S04",
+      "start_frame": 828,
+      "end_frame_exclusive": 888,
+      "start_seconds": 34.5,
+      "end_seconds": 37.0,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V11_judgement_tag.svg",
+      "asset_id": "V11_judgement_tag",
+      "visual_intent": "Visual label placed on an attendee; question mark avoids endorsement",
+      "narrative_function": "tension",
+      "editorial_on_screen_text": "LAZY? UNINTERESTED?",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "और seminar में किसी की आँख लग जाए, तो सीधा tag, “lazy, uninterested!” अरे, कभी पूछा वो सोया कितने घंटे था? या presentation ही boring थी?",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF016"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT017",
+      "segment_id": "S04",
+      "start_frame": 888,
+      "end_frame_exclusive": 960,
+      "start_seconds": 37.0,
+      "end_seconds": 40.0,
+      "duration_frames": 72,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V12_why_sleepy.svg",
+      "asset_id": "V12_why_sleepy",
+      "visual_intent": "Two possible explanations illustrated as questions, not diagnoses",
+      "narrative_function": "reframe",
+      "editorial_on_screen_text": "पहले कारण पूछो",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "और seminar में किसी की आँख लग जाए, तो सीधा tag, “lazy, uninterested!” अरे, कभी पूछा वो सोया कितने घंटे था? या presentation ही boring थी?",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF017"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT018",
+      "segment_id": "S05",
+      "start_frame": 960,
+      "end_frame_exclusive": 1020,
+      "start_seconds": 40.0,
+      "end_seconds": 42.5,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V13_morning_habit.svg",
+      "asset_id": "V13_morning_habit",
+      "visual_intent": "Early alarm and sunrise; early waking can fit some schedules",
+      "narrative_function": "nuance",
+      "editorial_on_screen_text": "EARLY RISING? FINE.",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "सुबह जल्दी उठना अच्छी habit हो सकती है, लेकिन कम सोना कोई achievement नहीं। हम productivity को respect करते-करते recovery को disrespect करना सीख गए हैं।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF018"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT019",
+      "segment_id": "S05",
+      "start_frame": 1020,
+      "end_frame_exclusive": 1068,
+      "start_seconds": 42.5,
+      "end_seconds": 44.5,
+      "duration_frames": 48,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S05_on_user_background.mp4",
+      "asset_id": "IRA_S05",
+      "visual_intent": "Ira says less sleep is not an achievement",
+      "narrative_function": "reframe",
+      "editorial_on_screen_text": "",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "सुबह जल्दी उठना अच्छी habit हो सकती है, लेकिन कम सोना कोई achievement नहीं। हम productivity को respect करते-करते recovery को disrespect करना सीख गए हैं।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 60,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT020",
+      "segment_id": "S05",
+      "start_frame": 1068,
+      "end_frame_exclusive": 1128,
+      "start_seconds": 44.5,
+      "end_seconds": 47.0,
+      "duration_frames": 60,
+      "mode": "FULLSCREEN_VISUAL",
+      "visual_subtype": "GENERATED_ILLUSTRATION",
+      "source_asset": "illustrations/V14_balance.svg",
+      "asset_id": "V14_balance",
+      "visual_intent": "Balance scale conveys both work and rest belong in a life",
+      "narrative_function": "payoff",
+      "editorial_on_screen_text": "PRODUCTIVITY + RECOVERY",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "सुबह जल्दी उठना अच्छी habit हो सकती है, लेकिन कम सोना कोई achievement नहीं। हम productivity को respect करते-करते recovery को disrespect करना सीख गए हैं।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": null,
+      "keyframe_ids": [
+        "KF020"
+      ],
+      "no_pip": true,
+      "safe_text_box_px": [
+        125,
+        290,
+        940,
+        515
+      ],
+      "face_collision_status": "no Ira visible",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    },
+    {
+      "shot_id": "SHOT021",
+      "segment_id": "S05",
+      "start_frame": 1128,
+      "end_frame_exclusive": 1200,
+      "start_seconds": 47.0,
+      "end_seconds": 50.0,
+      "duration_frames": 72,
+      "mode": "IRA_ONLY",
+      "visual_subtype": "IRA_PRESENTER",
+      "source_asset": "keyed/S05_on_user_background.mp4",
+      "asset_id": "IRA_S05",
+      "visual_intent": "Ira closes on respect for recovery, no forced engagement CTA",
+      "narrative_function": "payoff",
+      "editorial_on_screen_text": "RESPECT RECOVERY",
+      "editorial_label_is_subtitle": false,
+      "exact_segment_dialogue": "सुबह जल्दी उठना अच्छी habit हो सकती है, लेकिन कम सोना कोई achievement नहीं। हम productivity को respect करते-करते recovery को disrespect करना सीख गए हैं।",
+      "word_alignment_status": "NOT VERIFIED; shot cues provisional until audio listening and phrase/word markers",
+      "clip_local_source_trim_before_frames": 168,
+      "keyframe_ids": [],
+      "no_pip": true,
+      "safe_text_box_px": [
+        120,
+        1190,
+        950,
+        1390
+      ],
+      "face_collision_status": "do not overlay face; lower label only and verify physical face coordinates",
+      "source_claim_ids": [
+        "METAPHOR"
+      ],
+      "transition_in": "hard cut",
+      "post_production_qa": [
+        "Listen for full sentence at clip seam",
+        "Verify actual spoken phrase falls in shot window",
+        "Confirm text fully readable at phone size"
+      ]
+    }
+  ],
+  "audioSegments": [
+    {
+      "segment_id": "S01",
+      "audio": "audio/S01.wav",
+      "start_frame": 0,
+      "end_frame_exclusive": 240,
+      "duration_frames": 240,
+      "clip_local_s": 0
+    },
+    {
+      "segment_id": "S02",
+      "audio": "audio/S02.wav",
+      "start_frame": 240,
+      "end_frame_exclusive": 480,
+      "duration_frames": 240,
+      "clip_local_s": 0
+    },
+    {
+      "segment_id": "S03",
+      "audio": "audio/S03.wav",
+      "start_frame": 480,
+      "end_frame_exclusive": 720,
+      "duration_frames": 240,
+      "clip_local_s": 0
+    },
+    {
+      "segment_id": "S04",
+      "audio": "audio/S04.wav",
+      "start_frame": 720,
+      "end_frame_exclusive": 960,
+      "duration_frames": 240,
+      "clip_local_s": 0
+    },
+    {
+      "segment_id": "S05",
+      "audio": "audio/S05.wav",
+      "start_frame": 960,
+      "end_frame_exclusive": 1200,
+      "duration_frames": 240,
+      "clip_local_s": 0
+    }
+  ],
+  "sfx": [
+    {
+      "start_frame": 96,
+      "asset": "sfx/soft_switch.wav",
+      "gain": 0.085,
+      "meaning": "curtains/light"
+    },
+    {
+      "start_frame": 240,
+      "asset": "sfx/soft_tick.wav",
+      "gain": 0.1,
+      "meaning": "early alarm graphic"
+    },
+    {
+      "start_frame": 576,
+      "asset": "sfx/soft_tick.wav",
+      "gain": 0.085,
+      "meaning": "seven hour reference"
+    },
+    {
+      "start_frame": 828,
+      "asset": "sfx/soft_pop.wav",
+      "gain": 0.085,
+      "meaning": "lazy label graphic"
+    },
+    {
+      "start_frame": 1068,
+      "asset": "sfx/soft_chime.wav",
+      "gain": 0.07,
+      "meaning": "work/rest balanced payoff"
+    }
+  ]
+}
