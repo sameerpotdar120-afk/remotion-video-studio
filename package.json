@@ -5,7 +5,9 @@
   "description": "A Remotion video editing studio for vertical documentary-style videos.",
   "scripts": {
     "dev": "remotion studio",
-    "render": "remotion render src/index.ts MainComposition out/video.mp4"
+    "render": "remotion render src/index.ts MainComposition out/video.mp4",
+    "render:flight": "remotion render src/index.ts FlightAttackReel out/flight-attack-reel.mp4",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "@remotion/cli": "4.0.523",
