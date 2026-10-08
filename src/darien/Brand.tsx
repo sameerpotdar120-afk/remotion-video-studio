@@ -4,21 +4,21 @@ import { useDevanagariFont } from './DarienGap';
 
 const FONT = "'NotoDeva', 'Noto Sans Devanagari', sans-serif";
 
-/** 800 x 800 channel logo: the planet with the ND monogram (cropped to a circle by YouTube/Instagram). */
-export const ProfilePic: React.FC = () => {
+/** 800 x 800 channel logo: GPT-made Earth centred on India + the ND monogram (cropped to a circle by YouTube/Instagram). */
+export const ProfilePic: React.FC<{ variant?: 'center' | 'low' }> = ({ variant = 'center' }) => {
   useDevanagariFont();
+  const low = variant === 'low';
   return (
-    <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 45%, #0b2340 0%, #050d1a 70%)', overflow: 'hidden' }}>
-      <div style={{
-        position: 'absolute', left: 70, top: 70, width: 660, height: 660, borderRadius: '50%',
-        boxShadow: '0 0 40px 10px rgba(70,200,255,0.45), 0 0 120px 30px rgba(40,140,255,0.25)',
-      }} />
-      <Img src={staticFile('brand/globe.png')} style={{ position: 'absolute', left: 70, top: 70, width: 660, height: 660, filter: 'brightness(0.78) saturate(1.05)' }} />
-      <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 45%)' }} />
-      <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
+    <AbsoluteFill style={{ background: '#03060d', overflow: 'hidden' }}>
+      <Img src={staticFile('brand/logo_globe_gpt.png')} style={{ position: 'absolute', left: -12, top: -12, width: 824, height: 824 }} />
+      <AbsoluteFill style={{ background: low
+        ? 'linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)'
+        : 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 50%)' }} />
+      <AbsoluteFill style={{ alignItems: 'center', justifyContent: low ? 'flex-end' : 'center' }}>
         <div style={{
-          fontFamily: FONT, fontWeight: 900, fontSize: 320, letterSpacing: -14, color: '#fff', lineHeight: 1, marginTop: 24,
-          WebkitTextStroke: '12px #000', paintOrder: 'stroke fill', textShadow: '0 0 40px rgba(0,0,0,0.6)',
+          fontFamily: FONT, fontWeight: 900, fontSize: low ? 250 : 320, letterSpacing: low ? -10 : -14, color: '#fff', lineHeight: 1,
+          marginTop: low ? 0 : 24, marginBottom: low ? 105 : 0,
+          WebkitTextStroke: low ? '10px #000' : '12px #000', paintOrder: 'stroke fill', textShadow: '0 0 40px rgba(0,0,0,0.6)',
         }}>
           N<span style={{ color: '#FFD21F' }}>D</span>
         </div>
