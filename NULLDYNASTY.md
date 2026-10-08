@@ -18,8 +18,14 @@ Read this first in any new session. It holds the decisions made so far, so work 
 
 ## October 2026 schedule
 
-One video every other day: posted Oct 8 (Darién Gap); next Oct 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30.
-Check-ins on Oct 18 and Oct 31: review "viewed vs swiped away", average percentage viewed, subscribers gained per video. Consider daily in November only if quality and numbers hold. If a week gets heavy, skip one slot; never post a rushed video.
+Daily from Oct 9 (changed on Oct 8 from every other day).
+- Video 1: Darién Gap, posted Oct 8.
+- Video 2: North Sentinel Island (`src/sentinel/`, `exports/sentinel_*`), Oct 9.
+- Video 3 onward: one per day, built from a competitor reference.
+- Diomede Islands (`src/diomede/`, `exports/diomede_*`) is a **draft**, not in the schedule. The creator isn't sure it will work; keep it parked.
+
+Keep 1-2 finished videos in the buffer. Never post a rushed video; skip a day instead.
+Check-ins on Oct 18 and Oct 31: "viewed vs swiped away", average percentage viewed, subscribers gained per video. If daily posting drags the numbers down, go back to every other day.
 
 ## Workflow per video (from Oct 8: reference-first, like the Darién video)
 

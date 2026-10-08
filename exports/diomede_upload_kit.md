@@ -1,6 +1,6 @@
 # Diomede Islands Short: upload kit
 
-Slot: **Oct 10** (from the October plan). File: `diomede_hindi_full.mp4`. Cover: `diomede_cover_1080x1920.png`.
+Status: **draft, not scheduled.**
 
 ## YouTube
 

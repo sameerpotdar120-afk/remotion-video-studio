@@ -1,6 +1,6 @@
 # North Sentinel Island Short: upload kit
 
-Slot: **Oct 12** (October plan). File: `sentinel_hindi_full.mp4`. Cover: `sentinel_cover_1080x1920.png`.
+Slot: **Oct 9** (video 2; daily schedule). File: `sentinel_hindi_full.mp4`. Cover: `sentinel_cover_1080x1920.png`.
 
 ## YouTube
 
