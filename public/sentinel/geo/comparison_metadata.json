@@ -1,0 +1,16 @@
+{
+  "North Sentinel": {
+    "area_km2": 50.359741142899146,
+    "width_m": 7987.2645568289445,
+    "height_m": 9251.440319386078,
+    "projection": "EPSG:32646",
+    "coordinate_units": "meters centered at projected polygon centroid"
+  },
+  "Manhattan Island": {
+    "area_km2": 54.505193561012184,
+    "width_m": 8971.38561804907,
+    "height_m": 19828.753200863488,
+    "projection": "EPSG:32618",
+    "coordinate_units": "meters centered at projected polygon centroid"
+  }
+}

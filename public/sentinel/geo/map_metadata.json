@@ -1,0 +1,72 @@
+{
+  "map_andaman": {
+    "width": 3072,
+    "height": 4096,
+    "crs": "EPSG:3857",
+    "bounds_meters": [
+      10154007.373557853,
+      1141504.3357174317,
+      10495758.168594396,
+      1597172.0624328242
+    ],
+    "pixel_projection": "x=(mercatorX-x0)/(x1-x0)*width; y=(y1-mercatorY)/(y1-y0)*height",
+    "source_requests": [
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10154007.373557853%2C1369338.199075128%2C10324882.771076124%2C1597172.0624328242&width=1536&height=2048&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10324882.771076124%2C1369338.199075128%2C10495758.168594398%2C1597172.0624328242&width=1536&height=2048&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10154007.373557853%2C1141504.3357174317%2C10324882.771076124%2C1369338.199075128&width=1536&height=2048&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10324882.771076124%2C1141504.3357174317%2C10495758.168594398%2C1369338.199075128&width=1536&height=2048&format=image%2Fpng"
+    ]
+  },
+  "map_region": {
+    "width": 3072,
+    "height": 2048,
+    "crs": "EPSG:3857",
+    "bounds_meters": [
+      10252525.102060497,
+      1277342.7257270878,
+      10363844.59285377,
+      1351555.7195892711
+    ],
+    "pixel_projection": "x=(mercatorX-x0)/(x1-x0)*width; y=(y1-mercatorY)/(y1-y0)*height",
+    "source_requests": [
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10252525.102060497%2C1314449.2226581795%2C10308184.847457133%2C1351555.7195892711&width=1536&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10308184.847457133%2C1314449.2226581795%2C10363844.592853772%2C1351555.7195892711&width=1536&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10252525.102060497%2C1277342.725727088%2C10308184.847457133%2C1314449.2226581795&width=1536&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10308184.847457133%2C1277342.725727088%2C10363844.592853772%2C1314449.2226581795&width=1536&height=1024&format=image%2Fpng"
+    ]
+  },
+  "map_sentinel": {
+    "width": 2048,
+    "height": 2048,
+    "crs": "EPSG:3857",
+    "bounds_meters": [
+      10262428.81692537,
+      1288857.180495907,
+      10273790.84461774,
+      1300219.2081882772
+    ],
+    "pixel_projection": "x=(mercatorX-x0)/(x1-x0)*width; y=(y1-mercatorY)/(y1-y0)*height",
+    "source_requests": [
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10262428.81692537%2C1294538.1943420921%2C10268109.830771554%2C1300219.2081882772&width=1024&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10268109.830771554%2C1294538.1943420921%2C10273790.84461774%2C1300219.2081882772&width=1024&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10262428.81692537%2C1288857.1804959069%2C10268109.830771554%2C1294538.1943420921&width=1024&height=1024&format=image%2Fpng",
+      "https://tiles.maps.eox.at/wms?service=WMS&request=GetMap&version=1.1.1&layers=s2cloudless_3857&styles=&srs=EPSG%3A3857&bbox=10268109.830771554%2C1288857.1804959069%2C10273790.84461774%2C1294538.1943420921&width=1024&height=1024&format=image%2Fpng"
+    ]
+  },
+  "map_world": {
+    "width": 21600,
+    "height": 10800,
+    "crs": "EPSG:4326",
+    "bounds_degrees": [
+      -180,
+      -90,
+      180,
+      90
+    ],
+    "pixel_projection": "x=(lon+180)/360*width; y=(90-lat)/180*height",
+    "source": "https://assets.science.nasa.gov/content/dam/science/esd/eo/images/bmng/bmng-topography-bathymetry/july/world.topo.bathy.200407.3x21600x10800.jpg",
+    "original_bytes": 27201049,
+    "sha256": "d225f1f35a6448a4d1d8f6de6e48f3433e470085b70a35800e64f384f269a7b0",
+    "restore": "python restore_map_world.py"
+  }
+}

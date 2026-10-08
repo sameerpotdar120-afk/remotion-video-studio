@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Port Blair",
+        "source": "OpenStreetMap node 293673885",
+        "license": "ODbL-1.0",
+        "role": "city label anchor"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          92.7390448,
+          11.6645348
+        ]
+      }
+    }
+  ]
+}

@@ -7,6 +7,8 @@ import { DarienCoverWide } from './darien/CoverWide';
 import { Banner, ProfilePic } from './darien/Brand';
 import { Diomede, DIOMEDE_DURATION } from './diomede/Diomede';
 import { DiomedeCover } from './diomede/Cover';
+import { Sentinel, SENTINEL_DURATION } from './sentinel/Sentinel';
+import { SentinelCover } from './sentinel/Cover';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -20,6 +22,8 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
       />
       <Composition id="Diomede" component={Diomede} durationInFrames={DIOMEDE_DURATION} fps={30} width={1080} height={1920} />
+      <Composition id="Sentinel" component={Sentinel} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="SentinelCover" component={SentinelCover} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="DiomedeCover" component={DiomedeCover} durationInFrames={DIOMEDE_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="DarienCover" component={DarienCover} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="ProfilePic" component={ProfilePic} durationInFrames={1} fps={30} width={800} height={800} />
