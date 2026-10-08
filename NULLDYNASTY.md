@@ -21,14 +21,17 @@ Read this first in any new session. It holds the decisions made so far, so work 
 One video every other day: posted Oct 8 (Darién Gap); next Oct 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30.
 Check-ins on Oct 18 and Oct 31: review "viewed vs swiped away", average percentage viewed, subscribers gained per video. Consider daily in November only if quality and numbers hold. If a week gets heavy, skip one slot; never post a rushed video.
 
-## Workflow per video
+## Workflow per video (from Oct 8: reference-first, like the Darién video)
 
-1. Claude drafts the Hindi script (hook scored with `/yt-script`), the creator approves.
-2. Creator records the voiceover; Claude transcribes it for word timings.
-3. Claude writes GPT image prompts only for new assets; reuse `public/darien/img/` and the maps where possible. GPT never draws maps or Hindi text.
-4. Claude builds in Remotion, renders, mixes audio (`tools/mix_audio.py`, Mixkit SFX, −14 LUFS).
-5. Claude writes title/thumbnail (`/yt-package`) and description/tags (`/yt-seo`).
-6. Creator uploads natively to YouTube first, Instagram 1–2 h later; AI-content label on both; pinned comment.
+1. The creator picks a competitor Short (e.g. GeoGlobeTales) and sends the file.
+2. Claude analyses it frame by frame: shot list, camera moves, how often the visual changes, text/label style, where each SFX lands and how loud it sits under the voice, music level.
+3. Claude writes our own Hindi script on the topic (never a line-by-line translation of theirs) and the GPT asset prompts for anything new.
+4. Claude rebuilds the edit in that proven style with real maps, our own assets, our own SFX/music, plus ONE extra element their video doesn't have. Don't change much else: the style is already proven.
+5. Creator records the voiceover; Claude transcribes, edits, mixes (`tools/mix_diomede.py` is the current mixer: voice on top, SFX/music ducked, −14 LUFS), renders.
+6. Claude writes title/thumbnail (`/yt-package`) and description/tags (`/yt-seo`).
+7. Creator uploads natively to YouTube first, Instagram 1–2 h later; AI-content label on both; pinned comment.
+
+Adopting a style (pacing, camera language, SFX placement) is fine. Copying their narration, footage, graphics or music is not.
 
 ## Rules learned so far
 
