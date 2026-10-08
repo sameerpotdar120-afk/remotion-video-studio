@@ -2,6 +2,7 @@
 
     python3 tools/diomede2_timing.py                 # estimate from the script (no voiceover yet)
     python3 tools/diomede2_timing.py words.json      # real word timings (faster-whisper output)
+    python3 tools/diomede2_timing.py words.json voiceover.srt   # + captions in the SRT's own spelling
 
 Writes src/diomede2/timing.json: named cue times, caption chunks, duration.
 Cues are anchored to words of the script, so the animation follows the voice.
@@ -36,6 +37,60 @@ PUNCT = "…।!?,:"
 def norm(w: str) -> str:
     w = re.sub(r"[़ँं.…।!?,:\-]", "", w.lower())  # drop nukta/bindu/punctuation for matching
     return w
+
+
+def srt_caps(path: Path, rec: list) -> list:
+    """Caption chunks (<= 4 words, split at punctuation and SRT cues) in the SRT's spelling, timed by the word alignment."""
+    entries = []
+    for block in path.read_text(encoding="utf-8").strip().split("\n\n"):
+        ls = block.strip().splitlines()
+        if len(ls) >= 3:
+            entries.append(" ".join(ls[2:]).split())
+    flat = [(ei, w) for ei, ws in enumerate(entries) for w in ws]
+    a = [norm(w) for _, w in flat]
+    b = [norm(x["w"]) for x in rec]
+    sm = difflib.SequenceMatcher(a=a, b=b, autojunk=False)
+    st = [None] * len(flat)
+    for blk in sm.get_matching_blocks():
+        for k in range(blk.size):
+            st[blk.a + k] = rec[blk.b + k]["s"]
+    ends = [None] * len(flat)
+    for blk in sm.get_matching_blocks():
+        for k in range(blk.size):
+            ends[blk.a + k] = rec[blk.b + k]["e"]
+    i = 0
+    while i < len(st):  # unmatched runs: spread them between the previous word's end and the next word's start
+        if st[i] is None:
+            j = i
+            while j < len(st) and st[j] is None:
+                j += 1
+            t0 = ends[i - 1] if i and ends[i - 1] is not None else (st[i - 1] if i else 0.0)
+            t1 = st[j] if j < len(st) else rec[-1]["e"]
+            for q in range(i, j):
+                st[q] = t0 + (t1 - t0) * (q - i) / (j - i)
+            i = j
+        else:
+            i += 1
+    caps = []
+    i = 0
+    for ei, ws in enumerate(entries):
+        # split each SRT entry at punctuation, then into even chunks of at most 4 words
+        groups, g = [], []
+        for w in ws:
+            g.append(w)
+            if w[-1] in PUNCT:
+                groups.append(g)
+                g = []
+        if g:
+            groups.append(g)
+        for g in groups:
+            n = -(-len(g) // 4)
+            size = -(-len(g) // n)
+            for c0 in range(0, len(g), size):
+                caps.append([round(st[i + c0], 3), " ".join(g[c0:c0 + size])])
+            i += len(g)
+    caps[0][0] = 0.0
+    return caps
 
 
 def main() -> None:
@@ -94,8 +149,10 @@ def main() -> None:
             raise SystemExit(f"cue {name} not found")
 
     caps = []
+    if len(sys.argv) > 2:
+        caps = srt_caps(Path(sys.argv[2]), rec)
     chunk, start = [], None
-    for i, (li, w) in enumerate(words):
+    for i, (li, w) in enumerate(words if not caps else []):
         if not chunk:
             start = times[i][0]
         chunk.append(w)
