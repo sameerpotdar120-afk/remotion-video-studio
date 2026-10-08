@@ -1,60 +1,24 @@
 import React from 'react';
 import { AbsoluteFill, Img, staticFile } from 'remotion';
 import { useDevanagariFont } from './DarienGap';
-import { GEO, LINES, LonLat, RINGS } from './geo';
 
 const FONT = "'NotoDeva', 'Noto Sans Devanagari', sans-serif";
 
-type View = { west: number; north: number; ppd: number };
-
-const AMERICAS = { src: 'darien/maps/map_americas.jpg', west: -180, north: 84, ppd: 60, w: 9000, h: 8640 };
-const DARIEN = { src: 'darien/maps/map_darien.jpg', west: -84.5, north: 11, ppd: 512, w: 4608, h: 4096 };
-
-const xy = (v: View, [lon, lat]: LonLat) => [(lon - v.west) * v.ppd, (v.north - lat) * v.ppd];
-const ringD = (v: View, r: LonLat[]) => 'M' + r.map((p) => xy(v, p).map((n) => n.toFixed(1)).join(',')).join('L') + 'Z';
-const lineD = (v: View, r: LonLat[]) => 'M' + r.map((p) => xy(v, p).map((n) => n.toFixed(1)).join(',')).join('L');
-
-const Plate: React.FC<{ v: View; plate: typeof AMERICAS }> = ({ v, plate }) => {
-  const k = v.ppd / plate.ppd;
-  return (
-    <Img
-      src={staticFile(plate.src)}
-      style={{
-        position: 'absolute',
-        left: (plate.west - v.west) * v.ppd,
-        top: (v.north - plate.north) * v.ppd,
-        width: plate.w * k,
-        height: plate.h * k,
-        maxWidth: 'none',
-      }}
-    />
-  );
-};
-
-const Region: React.FC<{ v: View; w: number; h: number; stroke: number }> = ({ v, w, h, stroke }) => (
-  <svg width={w} height={h} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
-    <path d={ringD(v, RINGS.region[0])} fill="rgba(52,222,82,0.5)" stroke="#C8FFD4" strokeWidth={stroke} strokeLinejoin="round"
-      style={{ filter: `drop-shadow(0 0 ${stroke * 4}px rgba(60,255,110,0.9)) drop-shadow(0 0 ${stroke * 10}px rgba(40,220,90,0.6))` }} />
-  </svg>
-);
-
-/** 800 x 800 profile picture (YouTube and Instagram crop it to a circle). */
+/** 800 x 800 channel logo: the planet with the ND monogram (cropped to a circle by YouTube/Instagram). */
 export const ProfilePic: React.FC = () => {
   useDevanagariFont();
-  const [cx, cy] = GEO.regionCenter;
-  const v: View = { west: cx - 800 / 2 / 300, north: cy + 0.15 + 800 / 2 / 300, ppd: 300 };
   return (
-    <AbsoluteFill style={{ background: '#04101f', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, filter: 'brightness(0.55) saturate(0.85)' }}>
-        <Plate v={v} plate={DARIEN} />
-      </div>
-      <Region v={v} w={800} h={800} stroke={4} />
-      <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 38%, rgba(0,0,0,0.75) 72%)' }} />
+    <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 45%, #0b2340 0%, #050d1a 70%)', overflow: 'hidden' }}>
+      <div style={{
+        position: 'absolute', left: 70, top: 70, width: 660, height: 660, borderRadius: '50%',
+        boxShadow: '0 0 40px 10px rgba(70,200,255,0.45), 0 0 120px 30px rgba(40,140,255,0.25)',
+      }} />
+      <Img src={staticFile('brand/globe.png')} style={{ position: 'absolute', left: 70, top: 70, width: 660, height: 660, filter: 'brightness(0.78) saturate(1.05)' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 50%, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 45%)' }} />
       <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center' }}>
         <div style={{
-          fontFamily: FONT, fontWeight: 900, fontSize: 330, letterSpacing: -14, color: '#fff', lineHeight: 1,
-          WebkitTextStroke: '12px #000', paintOrder: 'stroke fill', marginTop: 20,
-          textShadow: '0 0 40px rgba(0,0,0,0.7)',
+          fontFamily: FONT, fontWeight: 900, fontSize: 320, letterSpacing: -14, color: '#fff', lineHeight: 1, marginTop: 24,
+          WebkitTextStroke: '12px #000', paintOrder: 'stroke fill', textShadow: '0 0 40px rgba(0,0,0,0.6)',
         }}>
           N<span style={{ color: '#FFD21F' }}>D</span>
         </div>
@@ -63,37 +27,66 @@ export const ProfilePic: React.FC = () => {
   );
 };
 
-/** 2560 x 1440 YouTube banner; text and region stay inside the 1546 x 423 mobile-safe strip. */
+// Banner: the world, lon -100..140, lat 72..-63, at 2560 x 1440
+const bx = (lon: number) => ((lon + 100) / 240) * 2560;
+const by = (lat: number) => ((72 - lat) / 135) * 1440;
+
+// strange and dangerous places the channel covers (markers only, no labels)
+const PLACES: { lon: number; lat: number; c: string }[] = [
+  { lon: -77.5, lat: 8.0, c: '#3CFF6E' }, // Darién Gap
+  { lon: -70, lat: 26, c: '#FF2B3D' }, // Bermuda Triangle
+  { lon: -46.7, lat: -24.5, c: '#FFD21F' }, // Snake Island
+  { lon: 30.1, lat: 51.4, c: '#FF2B3D' }, // Chernobyl
+  { lon: 59.2, lat: 30.6, c: '#FFD21F' }, // Lut Desert
+  { lon: 86.9, lat: 28.0, c: '#FFD21F' }, // Everest
+  { lon: 92.2, lat: 11.6, c: '#FF2B3D' }, // North Sentinel Island
+  { lon: 13.0, lat: -19.0, c: '#3CFF6E' }, // Skeleton Coast
+];
+const ROUTES: [number, number, number][] = [
+  [0, 1, -80],
+  [1, 3, -260],
+  [3, 4, -90],
+  [4, 5, -70],
+  [5, 6, -50],
+  [2, 7, 120],
+];
+
 export const Banner: React.FC = () => {
   useDevanagariFont();
-  const [rlon, rlat] = GEO.regionCenter;
-  const ppd = 60;
-  // put the Darién at x≈1820, y≈720
-  const v: View = { west: rlon - 1820 / ppd, north: rlat + 720 / ppd, ppd };
   return (
     <AbsoluteFill style={{ background: '#04101f', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, filter: 'brightness(0.8) saturate(0.95)' }}>
-        <Plate v={v} plate={AMERICAS} />
-      </div>
-      <svg width={2560} height={1440} style={{ position: 'absolute', left: 0, top: 0, filter: 'drop-shadow(0 0 8px rgba(255,190,0,0.9))' }}>
-        <path d={lineD(v, LINES.hwNorth)} fill="none" stroke="#FFD21F" strokeWidth={7} strokeDasharray="20 13" strokeLinecap="round" />
-        <path d={lineD(v, LINES.hwSouth)} fill="none" stroke="#FFD21F" strokeWidth={7} strokeDasharray="20 13" strokeLinecap="round" />
+      <Img src={staticFile('brand/banner_world.jpg')} style={{ position: 'absolute', inset: 0, width: 2560, height: 1440, filter: 'brightness(0.72) saturate(0.95)' }} />
+      <svg width={2560} height={1440} style={{ position: 'absolute', inset: 0, filter: 'drop-shadow(0 0 6px rgba(255,190,0,0.85))' }}>
+        {ROUTES.map(([a, b, bend], i) => {
+          const A = PLACES[a];
+          const B = PLACES[b];
+          const x1 = bx(A.lon), y1 = by(A.lat), x2 = bx(B.lon), y2 = by(B.lat);
+          const mx = (x1 + x2) / 2, my = (y1 + y2) / 2 + bend;
+          return <path key={i} d={`M${x1},${y1} Q${mx},${my} ${x2},${y2}`} fill="none" stroke="#FFD21F" strokeWidth={4} strokeDasharray="14 11" strokeLinecap="round" opacity={0.9} />;
+        })}
       </svg>
-      <Region v={v} w={2560} h={1440} stroke={3} />
-      {/* darken the left of the safe strip for the text */}
-      <AbsoluteFill style={{ background: 'linear-gradient(90deg, rgba(2,8,18,0.85) 0%, rgba(2,8,18,0.7) 45%, rgba(2,8,18,0) 68%)' }} />
-      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)' }} />
-      <div style={{ position: 'absolute', left: 560, top: 545, width: 1100 }}>
-        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 150, lineHeight: 1, color: '#fff', letterSpacing: -2,
-          textShadow: '0 6px 24px rgba(0,0,0,0.8)' }}>
-          Null<span style={{ color: '#FFD21F', textShadow: '0 0 24px rgba(255,190,0,0.6), 0 6px 24px rgba(0,0,0,0.8)' }}>Dynasty</span>
+      {PLACES.map((p, i) => (
+        <div key={i} style={{ position: 'absolute', left: bx(p.lon), top: by(p.lat) }}>
+          {[34, 56].map((R, j) => (
+            <div key={j} style={{ position: 'absolute', left: -R, top: -R, width: 2 * R, height: 2 * R, borderRadius: '50%',
+              border: `4px solid ${p.c}`, opacity: j ? 0.35 : 0.7, boxShadow: `0 0 14px ${p.c}` }} />
+          ))}
+          <div style={{ position: 'absolute', left: -12, top: -12, width: 24, height: 24, borderRadius: '50%', background: '#fff',
+            boxShadow: `0 0 16px 7px ${p.c}` }} />
         </div>
-        <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 56, color: '#E8F4FF', marginTop: 26,
-          textShadow: '0 3px 12px rgba(0,0,0,0.9)' }}>
+      ))}
+      {/* calm area behind the text, inside the 1546 x 423 mobile-safe strip */}
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse 820px 300px at 1280px 720px, rgba(2,8,18,0.88) 0%, rgba(2,8,18,0.55) 60%, rgba(2,8,18,0) 100%)' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.55) 100%)' }} />
+      <div style={{ position: 'absolute', left: 0, width: 2560, top: 560, textAlign: 'center' }}>
+        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 158, lineHeight: 1, color: '#fff', letterSpacing: -2,
+          textShadow: '0 6px 24px rgba(0,0,0,0.85)' }}>
+          Null<span style={{ color: '#FFD21F', textShadow: '0 0 24px rgba(255,190,0,0.55), 0 6px 24px rgba(0,0,0,0.85)' }}>Dynasty</span>
+        </div>
+        <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 58, color: '#E8F4FF', marginTop: 24, textShadow: '0 3px 12px rgba(0,0,0,0.95)' }}>
           दुनिया की अनोखी और ख़तरनाक जगहें
         </div>
-        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 44, color: '#8FF5A6', marginTop: 10,
-          textShadow: '0 3px 12px rgba(0,0,0,0.9)' }}>
+        <div style={{ fontFamily: FONT, fontWeight: 600, fontSize: 44, color: '#8FF5A6', marginTop: 10, textShadow: '0 3px 12px rgba(0,0,0,0.95)' }}>
           सैटेलाइट maps पर · हिंदी में
         </div>
       </div>
