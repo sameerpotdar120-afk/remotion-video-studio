@@ -34,14 +34,21 @@ const IMPACTS: [number, number][] = [
   [70.38, 7],
 ];
 
-export const DarienGap: React.FC = () => {
-  const frame = useCurrentFrame();
-  const t = frame / FPS;
+export const useDevanagariFont = () => {
   const [handle] = useState(() => delayRender('font'));
   useEffect(() => {
     loadFont().then(() => continueRender(handle)).catch(() => continueRender(handle));
   }, [handle]);
+};
 
+export const DarienGap: React.FC = () => {
+  const frame = useCurrentFrame();
+  useDevanagariFont();
+  return <DarienFrame t={frame / FPS} />;
+};
+
+/** One moment of the video. `still` drops captions, credit and audio for covers. */
+export const DarienFrame: React.FC<{ t: number; still?: boolean }> = ({ t, still = false }) => {
   const cam = camAt(t);
   const showMap = t < 30.95 || (t >= 34.05 && t < 40.95) || t >= 48.95;
   const showBroll = t >= 30.85 && t < 34.3;
@@ -90,8 +97,8 @@ export const DarienGap: React.FC = () => {
         {showPaper && <PaperScene t={t} />}
         <ScreenFX t={t} />
       </AbsoluteFill>
-      <Subtitles t={t} />
-      {showMap && (
+      {!still && <Subtitles t={t} />}
+      {!still && showMap && (
         <div style={{
           position: 'absolute', right: 26, bottom: 22, fontFamily: 'sans-serif', fontSize: 17, color: 'rgba(255,255,255,0.55)',
           textShadow: '0 1px 2px rgba(0,0,0,0.8)', textAlign: 'right',
@@ -99,7 +106,7 @@ export const DarienGap: React.FC = () => {
           Imagery: NASA Blue Marble · Sentinel-2 cloudless by EOX (Copernicus data 2016–2017)
         </div>
       )}
-      <Audio src={staticFile('darien/audio/mix.wav')} />
+      {!still && <Audio src={staticFile('darien/audio/mix.wav')} />}
     </AbsoluteFill>
   );
 };
