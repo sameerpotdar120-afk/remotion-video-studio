@@ -32,6 +32,11 @@ def merc(lon: float, lat: float) -> list[float]:
     return [round(R * math.radians(unwrap(lon)), 1), round(R * math.log(math.tan(math.pi / 4 + math.radians(lat) / 2)), 1)]
 
 
+def merc_raw(lon: float, lat: float) -> list[float]:
+    lat = max(-85, min(85, lat))
+    return [round(R * math.radians(lon), 1), round(R * math.log(math.tan(math.pi / 4 + math.radians(lat) / 2)), 1)]
+
+
 def simplify(pts, tol):
     if len(pts) < 3:
         return pts
@@ -63,8 +68,10 @@ def country(sf, name, tol, keep=lambda lon, lat: True, min_area=0.0):
             cy = sum(p[1] for p in ring) / len(ring)
             if not keep(cx, cy):
                 continue
-            # rings crossing the antimeridian are split by Natural Earth already; unwrap per point
-            pts = [merc(lo, la) for lo, la in ring]
+            # unwrap per ring, not per point: a ring west of -125 (Alaska, Aleutians) moves wholly to +360,
+            # so coastlines that straddle -130 (the Alaska panhandle) stay in one piece
+            west = cx < -125
+            pts = [merc_raw(lo + 360 if (west and lo < 0) else lo, la) for lo, la in ring]
             area = abs(sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(pts, pts[1:] + pts[:1]))) / 2
             if area < min_area:
                 continue
