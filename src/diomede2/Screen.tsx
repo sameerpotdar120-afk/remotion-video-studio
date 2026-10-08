@@ -5,6 +5,7 @@ import { BIG, C, CAPS, Cam, DURATION_S, GEO1, LIT, MID, MS, P, toScreen } from '
 import { ArcArrow, BLUE, FONT, RED, glow } from './fx';
 
 const img = (f: string) => staticFile(f);
+const v2 = (f: string) => staticFile(`diomede/v2/img/${f}`);
 
 // ---------------------------------------------------------------- captions
 export const Subtitles: React.FC<{ t: number }> = ({ t }) => {
@@ -95,7 +96,7 @@ const Village: React.FC<{ t: number }> = ({ t }) => {
           <svg width={40} height={150}><path d="M20 0 L20 120" stroke="#fff" strokeWidth={6} /><path d="M6 110 L20 140 L34 110 Z" fill="#fff" /></svg>
           {chipS > 0.01 && (
             <div style={{ transform: `scale(${chipS})`, display: 'flex', alignItems: 'center', gap: 12, background: '#111', border: '4px solid #FFD21F', borderRadius: 16, padding: '6px 22px 10px' }}>
-              <svg width={44} height={44} viewBox="0 0 24 24"><circle cx="12" cy="8" r="4.5" fill="#FFD21F" /><path d="M3 22 Q12 11 21 22 Z" fill="#FFD21F" /></svg>
+              <Img src={v2('pin_people.png')} style={{ width: 70, marginTop: -6 }} />
               <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 64, color: '#FFD21F', fontVariantNumeric: 'tabular-nums' }}>{n}</div>
             </div>
           )}
@@ -115,9 +116,18 @@ const Stamp: React.FC<{ t: number }> = ({ t }) => {
   return (
     <div style={{ position: 'absolute', left: 540, top: 330, width: 0, height: 0, opacity: a }}>
       <div style={{ position: 'absolute', transform: `translate(-50%,-50%) rotate(-8deg) scale(${s})`, width: 560, height: 260, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Img src={img('darien/img/stamp_ink_frame.png')} style={{ position: 'absolute', inset: 0, width: 560, height: 260, objectFit: 'fill', filter: 'hue-rotate(0deg) saturate(1.4)' }} />
-        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 170, color: '#E8283C', letterSpacing: 6, opacity: 0.92, mixBlendMode: 'screen' }}>1867</div>
+        <Img src={v2('stamp_frame_red.png')} style={{ position: 'absolute', left: -40, top: -40, width: 640, height: 340, objectFit: 'fill' }} />
+        <div style={{ fontFamily: FONT, fontWeight: 900, fontSize: 170, color: '#E8283C', letterSpacing: 6, opacity: 0.95, textShadow: '0 0 1px #E8283C' }}>1867</div>
       </div>
+      <div style={{ position: 'absolute', left: -470, top: 640, transformOrigin: '50% 0%',
+        transform: `scaleY(${ramp(t, C.bantwara + 0.2, C.bantwara + 0.75, easeOut)}) rotate(-6deg)` }}>
+        <Img src={v2('treaty_scroll.png')} style={{ width: 330, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.6))' }} />
+      </div>
+      {t > C.kharida - 0.4 && (
+        <div style={{ position: 'absolute', left: 120, top: lerp(-300, 760, ramp(t, C.kharida - 0.4, C.kharida, easeIn)) + kick(t, C.kharida, 30, 26, 8) }}>
+          <Img src={v2('money_bag.png')} style={{ width: 300, transform: `rotate(${-8 + 6 * Math.sin(t * 3)}deg)`, filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.6))' }} />
+        </div>
+      )}
       {t > C.kharida && (
         <div style={{ position: 'absolute', left: 0, top: 190, transform: `translate(-50%,0) scale(${pop(t, C.kharida + 0.1, 10, 210)})`, fontFamily: FONT, fontWeight: 900, fontSize: 64,
           color: '#fff', background: BLUE, padding: '4px 26px 10px', borderRadius: 14, whiteSpace: 'nowrap', boxShadow: '0 8px 18px rgba(0,0,0,0.45)' }}>अलास्का → अमेरिका</div>
@@ -141,9 +151,25 @@ const Snow: React.FC<{ t: number }> = ({ t }) => {
 };
 
 // ---------------------------------------------------------------- time travel: day labels, the jump, the sticker
-const DayTag: React.FC<{ day: string; time: string; s: number; pulse?: number; color: string }> = ({ day, time, s, pulse = 0, color }) => (
+const Clock: React.FC<{ h: number; m: number; size: number; spin?: number }> = ({ h, m, size, spin = 0 }) => {
+  const ha = ((h % 12) + m / 60) * 30 + spin * 360;
+  const ma = m * 6 + spin * 360 * 12;
+  return (
+    <div style={{ position: 'relative', width: size, height: size }}>
+      <Img src={v2('clock_glossy.png')} style={{ position: 'absolute', inset: 0, width: size, height: size, filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.5))' }} />
+      <svg width={size} height={size} viewBox="-50 -50 100 100" style={{ position: 'absolute', inset: 0 }}>
+        <line x1={0} y1={0} x2={0} y2={-21} stroke="#1b1f2a" strokeWidth={4.5} strokeLinecap="round" transform={`rotate(${ha})`} />
+        <line x1={0} y1={0} x2={0} y2={-31} stroke="#1b1f2a" strokeWidth={3} strokeLinecap="round" transform={`rotate(${ma})`} />
+        <circle r={3.2} fill="#E8283C" />
+      </svg>
+    </div>
+  );
+};
+
+const DayTag: React.FC<{ day: string; time: string; s: number; pulse?: number; color: string; h: number; m: number; spin?: number }> = ({ day, time, s, pulse = 0, color, h, m, spin }) => (
   <div style={{ transform: `scale(${s * (1 + 0.15 * pulse)})`, display: 'flex', flexDirection: 'column', alignItems: 'center', fontFamily: FONT, color: '#fff',
     textShadow: '0 3px 10px rgba(0,0,0,0.85)' }}>
+    <Clock h={h} m={m} size={150} spin={spin} />
     <div style={{ fontWeight: 900, fontSize: 70, lineHeight: 1.05 }}>{day}</div>
     <div style={{ fontWeight: 700, fontSize: 46, padding: '2px 18px 6px', background: color, borderRadius: 12, marginTop: 6, textShadow: 'none' }}>{time}</div>
   </div>
@@ -152,8 +178,8 @@ const DayTag: React.FC<{ day: string; time: string; s: number; pulse?: number; c
 const TimeTravel: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const a = window4(t, C.yaani + 0.3, C.yaani + 0.5, 99, 100);
   if (a <= 0) return null;
-  const lit = toScreen(c, [LIT[0], LIT[1] + 2600 * MS]);
-  const big = toScreen(c, [BIG[0], BIG[1] + 3600 * MS]);
+  const lit = toScreen(c, [LIT[0], LIT[1] + 900 * MS]);
+  const big = toScreen(c, [BIG[0], BIG[1] + 1600 * MS]);
   const sUS = pop(t, Math.max(C.usa4, C.yaani + 0.35), 10, 200);
   const sRU = pop(t, C.rus4, 10, 200);
   const jump = ramp(t, C.gaye - 0.1, C.gaye + 0.6, inOut);
@@ -164,19 +190,20 @@ const TimeTravel: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <AbsoluteFill style={{ opacity: a }}>
       <div style={{ position: 'absolute', left: lit[0], top: lit[1] - 170, transform: 'translate(-50%,-100%)' }}>
-        <DayTag day="रविवार" time="दोपहर 3:00" s={sUS} color={BLUE} />
+        <DayTag day="रविवार" time="दोपहर 3:00" s={sUS} color={BLUE} h={3} m={0} spin={1 - ramp(t, Math.max(C.usa4, C.yaani + 0.35), Math.max(C.usa4, C.yaani + 0.35) + 0.6, easeOut)} />
       </div>
       <div style={{ position: 'absolute', left: big[0], top: big[1] - 170, transform: 'translate(-50%,-100%)' }}>
-        <DayTag day="सोमवार" time="दोपहर 12:00" s={sRU} pulse={kalP} color={RED} />
+        <DayTag day="सोमवार" time="दोपहर 12:00" s={sRU} pulse={kalP} color={RED} h={12} m={0} spin={1 - ramp(t, C.rus4, C.rus4 + 0.6, easeOut)} />
         {t > C.kal && (
-          <div style={{ position: 'absolute', left: '50%', top: -90, transform: `translateX(-50%) scale(${pop(t, C.kal, 9, 230)}) rotate(-8deg)`, fontFamily: FONT, fontWeight: 900,
+          <div style={{ position: 'absolute', left: '50%', top: '100%', marginTop: 14, transform: `translateX(-50%) scale(${pop(t, C.kal, 9, 230)}) rotate(-8deg)`, fontFamily: FONT, fontWeight: 900,
             fontSize: 58, color: '#111', background: '#FFD21F', padding: '0 20px 6px', borderRadius: 10, whiteSpace: 'nowrap' }}>कल!</div>
         )}
       </div>
       <ArcArrow a={from} b={to} p={jump} bulge={260} />
       {stk > 0.01 && (
         <div style={{ position: 'absolute', left: (from[0] + to[0]) / 2, top: Math.max(from[1], to[1]) + 230, transform: `translate(-50%,-50%) scale(${stk}) rotate(${-6 + 4 * Math.sin(t * 3)}deg)` }}>
-          <Img src={img('sentinel/img/emoji_wave_smile.png')} style={{ width: 330, filter: 'drop-shadow(0 0 0 #fff) drop-shadow(0 14px 18px rgba(0,0,0,0.5))' }} />
+          <Img src={v2('portal_swirl.png')} style={{ position: 'absolute', width: 520, left: -95, top: -95, opacity: clamp01(stk), transform: `rotate(${-t * 140}deg)` }} />
+          <Img src={v2('sticker_time_traveler.png')} style={{ position: 'relative', width: 330, filter: 'drop-shadow(0 14px 18px rgba(0,0,0,0.5))' }} />
         </div>
       )}
     </AbsoluteFill>
@@ -207,6 +234,36 @@ export const shake = (t: number): [number, number] => {
   return [x, y];
 };
 
+const Clouds: React.FC<{ t: number }> = ({ t }) => {
+  const p = ramp(t, C.zoom - 0.2, C.dikhte + 0.35, linear);
+  if (p <= 0 || p >= 1) return null;
+  const a = Math.sin(p * Math.PI);
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <Img src={v2('cloud_arctic_01.png')} style={{ position: 'absolute', width: 1500, left: lerp(-200, -1100, p), top: lerp(500, 150, p), opacity: a * 0.9, transform: `scale(${lerp(0.7, 2.6, p)})` }} />
+      <Img src={v2('cloud_arctic_02.png')} style={{ position: 'absolute', width: 1500, left: lerp(-100, 600, p), top: lerp(1100, 1500, p), opacity: a * 0.85, transform: `scale(${lerp(0.6, 2.3, p)})` }} />
+    </AbsoluteFill>
+  );
+};
+
+const IceCrack: React.FC<{ t: number }> = ({ t }) => {
+  const a = window4(t, C.jamkar - 0.05, C.jamkar + 0.03, C.jamkar + 0.35, C.jamkar + 0.8);
+  if (a <= 0) return null;
+  const grow = ramp(t, C.jamkar - 0.05, C.jamkar + 0.2, easeOut);
+  return (
+    <div style={{ position: 'absolute', left: 0, top: 640, width: 1080 * grow, height: 720, overflow: 'hidden', opacity: a }}>
+      <Img src={v2('ice_crack.png')} style={{ width: 1500, marginLeft: -210, transform: 'rotate(-14deg)', filter: 'drop-shadow(0 0 12px rgba(160,230,255,0.9))' }} />
+    </div>
+  );
+};
+
+const Leak: React.FC<{ t: number }> = ({ t }) => {
+  const cuts = [C.four + 0.3, C.dono, C.gaon - 0.15, C.bada - 0.1, C.jamkar];
+  const a = Math.max(...cuts.map((c) => window4(t, c - 0.12, c, c + 0.15, c + 0.55)));
+  if (a <= 0) return null;
+  return <Img src={v2('light_leak_arctic.png')} style={{ position: 'absolute', inset: 0, width: 1080, height: 1920, objectFit: 'cover', mixBlendMode: 'screen', opacity: a * 0.85 }} />;
+};
+
 export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => (
   <>
     <Tilt text="4 किमी" t={t} t0={C.four + 0.55} t1={C.kaise + 0.3} x={560} y={470} size={190} rx={30} rz={-8} />
@@ -220,8 +277,11 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => (
         background: '#fff', padding: '4px 34px 12px', borderRadius: 18, boxShadow: '0 10px 24px rgba(0,0,0,0.45)', whiteSpace: 'nowrap' }}>21 घंटे का फ़र्क</div>
     )}
     <TimeTravel t={t} c={c} />
+    <Clouds t={t} />
+    <IceCrack t={t} />
     <Village t={t} />
     <Iris t={t} />
+    <Leak t={t} />
   </>
 );
 

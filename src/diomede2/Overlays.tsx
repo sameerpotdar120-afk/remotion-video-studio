@@ -4,8 +4,7 @@ import { clamp01, easeIn, easeOut, inOut, lerp, linear, pop, ramp, window4 } fro
 import { BIG, C, Cam, GEO1, GEO2, LIT, MID, MS, P, PLANE, merc, project, pxPerM } from './cam';
 import { BLUE, CYAN, FONT, Laser, Neon, RED, Svg, WavingFlag, glow } from './fx';
 
-const v1img = (f: string) => staticFile(`diomede/img/${f}`);
-const nsimg = (f: string) => staticFile(`sentinel/img/${f}`);
+const img = (f: string) => staticFile(`diomede/v2/img/${f}`);
 
 // ---------------------------------------------------------------- geometry helpers
 const ringsD = (c: Cam, rs: P[][]) => {
@@ -45,17 +44,6 @@ export const Label: React.FC<{ text: string; size: number; s?: number; color?: s
     textShadow: '0 3px 6px rgba(0,0,0,0.85), 0 0 18px rgba(0,0,0,0.55)' }}>{text}</div>
 );
 
-/** Teal soldier avatar pin, like the reference's "military personnel" markers. */
-const Soldier: React.FC<{ size: number }> = ({ size }) => (
-  <svg width={size} height={size * 1.25} viewBox="0 0 100 125" style={{ display: 'block', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.55))' }}>
-    <path d="M50 124 L36 96 A46 46 0 1 1 64 96 Z" fill="#fff" />
-    <circle cx="50" cy="50" r="40" fill="#14868C" />
-    <circle cx="50" cy="43" r="14" fill="#fff" />
-    <path d="M24 78 Q50 52 76 78 Z" fill="#fff" />
-    <path d="M34 36 Q50 20 66 36 L66 40 L34 40 Z" fill="#0E5F63" />
-  </svg>
-);
-
 // the walk across the ice: from Little Diomede's west shore to Big Diomede's east shore
 const WALK_A = GEO1.gapA;
 const WALK_B = GEO1.gapB;
@@ -77,7 +65,14 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     if (ruA > 0) {
       const hit = window4(t, C.rus + 0.7, C.rus + 0.75, C.rus + 0.8, C.rus + 1.3);
       items.push(<WavingFlag key="ru" id="ru" clipD={ringsD(c, GEO2.russia)} box={boxOf(c, GEO2.russia)} kind="ru" t={t} opacity={ruA} />);
-      if (hit > 0) items.push(<Svg key="hit" opacity={hit}><circle cx={b[0]} cy={b[1]} r={60 + 260 * (1 - hit)} fill="none" stroke="#fff" strokeWidth={10 * hit} style={{ filter: glow('#FF4BD8', 10, 2) }} /></Svg>);
+      if (hit > 0)
+        items.push(
+          <Svg key="hit" opacity={hit}>
+            <circle cx={b[0]} cy={b[1]} r={60 + 260 * (1 - hit)} fill="none" stroke="#fff" strokeWidth={10 * hit} style={{ filter: glow('#FF4BD8', 10, 2) }} />
+          </Svg>,
+          <Img key="hitb" src={img('light_burst.png')} style={{ position: 'absolute', width: 620, left: b[0] - 310, top: b[1] - 310, opacity: hit, mixBlendMode: 'screen',
+            transform: `rotate(${-c.rot}deg) scale(${0.7 + 0.5 * hit})` }} />,
+        );
     }
     const akA = ramp(t, C.ekdusre, C.ekdusre + 0.4, linear) * worldA;
     if (akA > 0) items.push(<WavingFlag key="akw" id="akw" clipD={ringsD(c, GEO2.alaska)} box={boxOf(c, GEO2.alaska)} kind="us" t={t} opacity={akA} />);
@@ -129,6 +124,8 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
             return <path key={i} d={`M${strait[0] + Math.cos(ang) * r * 0.5},${strait[1] + Math.sin(ang) * r * 0.5}L${strait[0] + Math.cos(ang) * r * 1.6},${strait[1] + Math.sin(ang) * r * 1.6}`} stroke="#fff" strokeWidth={4} opacity={0.8} />;
           })}
         </Svg>,
+        <Img key="burstb" src={img('light_burst.png')} style={{ position: 'absolute', width: 760, left: strait[0] - 380, top: strait[1] - 380, opacity: burst, mixBlendMode: 'screen',
+          transform: `rotate(${-c.rot + t * 8}deg) scale(${0.8 + 0.15 * Math.sin(t * 9)})` }} />,
       );
     }
   }
@@ -213,6 +210,14 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     );
   }
 
+  const vpS = pop(t, C.basa - 0.05, 10, 200) * (1 - ramp(t, C.gaon - 0.25, C.gaon, easeIn));
+  if (vpS > 0.01)
+    items.push(
+      <Pin key="vpin" c={c} at={add(LIT, -1350, -150)} anchor="bottom">
+        <Img src={img('pin_village.png')} style={{ width: 230, transform: `scale(${vpS})`, transformOrigin: '50% 100%', filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.55))' }} />
+      </Pin>,
+    );
+
   // ================================================================ 6. Big Diomede = Russia, soldiers
   const bigA = window4(t, C.big - 0.1, C.big + 0.25, C.bantwara - 0.1, C.bantwara + 0.2);
   if (bigA > 0) {
@@ -227,16 +232,27 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         </div>
       </Pin>,
     );
-    const spots: [number, number][] = [[-900, 2400], [700, 500], [-300, -1700]];
+    const outS = pop(t, C.rus2 - 0.1, 11, 170) * (1 - ramp(t, C.fauj - 0.3, C.fauj, easeIn));
+    if (outS > 0.01)
+      items.push(
+        <Pin key="outpost" c={c} at={add(BIG, 300, 2400)}>
+          <Img src={img('outpost_bigdiomede.png')} style={{ width: 380, opacity: bigA, transform: `scale(${outS})`, filter: 'drop-shadow(0 16px 16px rgba(0,0,0,0.55))' }} />
+        </Pin>,
+        <Pin key="milpin" c={c} at={add(BIG, -1300, 500)} anchor="bottom">
+          <Img src={img('pin_military.png')} style={{ width: 220, opacity: bigA, transform: `scale(${pop(t, C.rus2 + 0.15, 10, 210) * (1 - ramp(t, C.fauj - 0.3, C.fauj, easeIn))})`,
+            transformOrigin: '50% 100%', filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.55))' }} />
+        </Pin>,
+      );
+    const spots: [number, number][] = [[-1000, 1500], [700, -300], [-400, -2300]];
     spots.forEach(([dx, dy], i) => {
       const ss = pop(t, C.fauj - 0.15 + i * 0.16, 10, 220);
       if (ss <= 0.01) return;
       items.push(
         <Pin key={`sol${i}`} c={c} at={add(BIG, dx, dy)} anchor="bottom">
           <div style={{ position: 'relative', opacity: bigA, transform: `scale(${ss})`, transformOrigin: '50% 100%' }}>
-            <Soldier size={130} />
+            <Img src={img(i === 1 ? 'soldier_avatar_b.png' : 'soldier_avatar_a.png')} style={{ width: 170, display: 'block', filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.55))' }} />
             {i === 1 && t > C.fauj + 0.35 && (
-              <div style={{ position: 'absolute', left: 80, top: -40, transform: `scale(${pop(t, C.fauj + 0.4, 9, 230)}) rotate(-6deg)`, transformOrigin: '0% 100%',
+              <div style={{ position: 'absolute', left: 130, top: -30, transform: `scale(${pop(t, C.fauj + 0.4, 9, 230)}) rotate(-6deg)`, transformOrigin: '0% 100%',
                 fontFamily: FONT, fontWeight: 900, fontSize: 52, color: '#111', background: '#fff', border: '5px solid #111', padding: '2px 20px 8px', whiteSpace: 'nowrap',
                 boxShadow: '0 8px 0 rgba(0,0,0,0.35)' }}>कॉमरेड!</div>
             )}
@@ -284,7 +300,7 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Svg key="ice" opacity={iceA}>
         <defs>
           <pattern id="iceP" patternUnits="userSpaceOnUse" width={tile} height={tile} patternTransform={`translate(${project(c, MID[0], MID[1]).join(' ')}) rotate(12)`}>
-            <image href={v1img('sea_ice_topdown.png')} width={tile} height={tile} preserveAspectRatio="xMidYMid slice" />
+            <image href={img('sea_ice_seamless.png')} width={tile} height={tile} preserveAspectRatio="xMidYMid slice" />
           </pattern>
           <clipPath id="iceClip"><path d={`M${-4000},${-4000}L${edge + PLANE.h * 0.6},${-4000}L${edge - PLANE.h * 0.6},${PLANE.h + 4000}L${-4000},${PLANE.h + 4000}Z`} /></clipPath>
           <mask id="iceHoles"><rect x={-4000} y={-4000} width={PLANE.w + 8000} height={PLANE.h + 8000} fill="#fff" /><path d={ringsD(c, [...GEO1.big, ...GEO1.little])} fill="#000" /></mask>
@@ -296,6 +312,21 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         <path d={`M${edge + PLANE.h * 0.6},${-4000}L${edge - PLANE.h * 0.6},${PLANE.h + 4000}`} stroke="#fff" strokeWidth={30} opacity={0.75 * (1 - sweep)} style={{ filter: 'blur(14px)' }} />
       </Svg>,
     );
+    // frost crystals riding the freezing edge
+    if (sweep > 0 && sweep < 1) {
+      const x1 = edge + PLANE.h * 0.6;
+      const y1 = -4000;
+      const x2 = edge - PLANE.h * 0.6;
+      const y2 = PLANE.h + 4000;
+      const ang = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+      for (let i = 0; i < 9; i++) {
+        const f = 0.28 + i * 0.06;
+        items.push(
+          <Img key={`fr${i}`} src={img('frost_edge.png')} style={{ position: 'absolute', width: 900, left: lerp(x1, x2, f) - 450, top: lerp(y1, y2, f) - 300,
+            transform: `rotate(${ang - 90}deg)`, opacity: iceA * Math.sin(sweep * Math.PI) }} />,
+        );
+      }
+    }
     // flags waving on the frozen islands
     const fA = ramp(t, C.jamkar + 0.4, C.jamkar + 0.8, linear) * iceA;
     items.push(<WavingFlag key="ilit" id="ilit" clipD={ringsD(c, GEO1.little)} box={boxOf(c, GEO1.little)} kind="us" t={t} opacity={fA} wave={0.7} />);
@@ -319,15 +350,15 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         if (f > wp) break;
         items.push(
           <Pin key={`fp${i}`} c={c} at={[lerp(WALK_A[0], WALK_B[0], f), lerp(WALK_A[1], WALK_B[1], f)]}>
-            <Img src={v1img('footprints_snow.png')} style={{ width: 70, opacity: 0.85, transform: `rotate(${dirDeg + c.rot}deg)` }} />
+            <Img src={img('footprints_ice.png')} style={{ width: 92, opacity: 0.9, transform: `rotate(${dirDeg + c.rot}deg)` }} />
           </Pin>,
         );
       }
       const pose = Math.floor(t / 0.2) % 2 ? 'a' : 'b';
       items.push(
         <Pin key="walker" c={c} at={pos} anchor="bottom">
-          <Img src={v1img(`person_parka_${pose}.png`)} style={{ width: 230, filter: 'drop-shadow(0 10px 8px rgba(0,0,0,0.45))', opacity: ramp(t, C.paidal - 0.15, C.paidal + 0.1, linear),
-            transform: `translateY(${Math.abs(Math.sin(t * 15.7)) * -5}px)` }} />
+          <Img src={img(`hiker_${pose}.png`)} style={{ width: 250, filter: 'drop-shadow(0 8px 6px rgba(0,0,0,0.35))', opacity: ramp(t, C.paidal - 0.15, C.paidal + 0.1, linear),
+            transform: `translateY(${Math.abs(Math.sin(t * 15.7)) * -5}px) scaleX(${sb[0] < sa[0] ? -1 : 1})` }} />
         </Pin>,
       );
     }

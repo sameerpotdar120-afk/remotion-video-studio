@@ -1,4 +1,5 @@
 import React from 'react';
+import { staticFile } from 'remotion';
 import { clamp01, lerp } from '../darien/anim';
 import { PLANE } from './cam';
 
@@ -116,6 +117,9 @@ export const WavingFlag: React.FC<{
         <g transform={`translate(${cx} 0) scale(${flip} 1) translate(${-cx} 0)`}>
           {els}
           <rect x={fx} y={fy - 4 * A} width={fw} height={fh + 8 * A} fill={`url(#${id}sh)`} />
+          {/* real satin folds drifting over the flag */}
+          <image href={staticFile('diomede/v2/img/fabric_folds.png')} x={fx - fw * 0.12 + Math.sin(t * 0.9) * fw * 0.08} y={fy - fh * 0.1}
+            width={fw * 1.3} height={fh * 1.2} preserveAspectRatio="none" opacity={0.55 * wave} style={{ mixBlendMode: 'overlay' }} />
         </g>
       </g>
       {outline && <path d={clipD} fill="none" stroke={outline} strokeWidth={2.5} strokeLinejoin="round" />}

@@ -8,9 +8,9 @@ import { useMontserrat } from '../darien/Brand';
  * Spots avoid the captions (y ≈ 1500), the Shorts buttons (right side, lower half) and the title area.
  */
 const SPOTS: { x: number; y: number; align: 'left' | 'right' }[] = [
-  { x: 44, y: 150, align: 'left' },
-  { x: 44, y: 980, align: 'left' },
-  { x: 1036, y: 210, align: 'right' },
+  { x: 44, y: 1300, align: 'left' },
+  { x: 1036, y: 860, align: 'right' },
+  { x: 44, y: 560, align: 'left' },
 ];
 const PERIOD = 10;
 const MOVE = 0.8;
