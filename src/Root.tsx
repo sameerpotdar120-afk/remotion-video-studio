@@ -4,6 +4,7 @@ import { MainComposition } from './Video';
 import { DarienGap, DARIEN_DURATION } from './darien/DarienGap';
 import { DarienCover } from './darien/Cover';
 import { DarienCoverWide } from './darien/CoverWide';
+import { Banner, ProfilePic } from './darien/Brand';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -17,6 +18,8 @@ export const RemotionRoot: React.FC = () => {
         height={1920}
       />
       <Composition id="DarienCover" component={DarienCover} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
+      <Composition id="ProfilePic" component={ProfilePic} durationInFrames={1} fps={30} width={800} height={800} />
+      <Composition id="Banner" component={Banner} durationInFrames={1} fps={30} width={2560} height={1440} />
       <Composition id="DarienCoverWide" component={DarienCoverWide} durationInFrames={1} fps={30} width={1280} height={720} />
       <Composition
         id="MainComposition"
