@@ -8,7 +8,7 @@ Paste the attribution block from `exports/diomede_upload_kit.md` into the video 
 | `maps/bering_merc.jpg`, `maps/islands_merc.jpg` | Land from EOX Sentinel-2 cloudless 2016; ocean from NASA BMNG; land mask from Natural Earth 10m + OpenStreetMap island coastlines | CC BY 4.0 (EOX), ODbL (OSM); credit on screen and in the description |
 | `src/diomede/geo.json` | Island outlines: OpenStreetMap. Border and date line: Natural Earth | ODbL / public domain |
 | `img/*.png` | AI-generated asset pack (see `CREDITS_assets.md`) | Project-owned |
-| `audio/sfx/*.mp3` | Mixkit sound effects (mixkit.co); `ice_crack_*` from BigSoundBank (bigsoundbank.com) | Mixkit Sound Effects Free License; CC0 |
+| `audio/sfx/*.mp3` | Sonniss GDC Game Audio Bundles 2015–2026 (sonniss.com/gameaudiogdc): packs by Cinematic Sound Design, CB Sounddesign, Airborne Sound, Alexander Kopeikin, Pole Position Production, SmartSoundFX and others | Sonniss GDC license: royalty free, commercial use, no attribution required |
 | `audio/music_silent_descent_mixkit.mp3` | "Silent Descent" by Eugenio Mininni, Mixkit | Mixkit Stock Music Free License |
 | `audio/voiceover.mp3` | Supplied by the creator | — |
 

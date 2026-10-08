@@ -34,7 +34,7 @@ Diomede Islands kya hain, 1867 में अलास्का की खरी�
 Imagery: NASA Earth Observatory, Blue Marble Next Generation (July 2004, topography & bathymetry).
 Sentinel-2 cloudless - https://s2maps.eu by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016 & 2017), CC BY 4.0.
 Coastlines © OpenStreetMap contributors (ODbL). Borders and land: Natural Earth.
-Music: "Silent Descent" by Eugenio Mininni (Mixkit). Sound effects: Mixkit, BigSoundBank (CC0).
+Music: "Silent Descent" by Eugenio Mininni (Mixkit). Sound effects: Sonniss GDC Game Audio Bundle.
 Clock and calendar graphics are illustrations. Some illustrations are AI-generated.
 ```
 
@@ -63,7 +63,7 @@ diomede islands, diomede islands hindi, big diomede, little diomede, internation
 
 #DiomedeIslands #DateLine #InternationalDateLine #BeringStrait #Alaska #Russia #GeographyFacts #MapFacts #HindiFacts #FactsInHindi #ReelsIndia #Explore
 
-Imagery: NASA Blue Marble; Sentinel-2 cloudless by EOX (Copernicus data 2016–2017), CC BY 4.0; © OpenStreetMap contributors. Audio: Mixkit.
+Imagery: NASA Blue Marble; Sentinel-2 cloudless by EOX (Copernicus data 2016–2017), CC BY 4.0; © OpenStreetMap contributors. Music: Mixkit. SFX: Sonniss.
 ```
 Turn on Instagram's "AI info" label in Advanced settings.
 
