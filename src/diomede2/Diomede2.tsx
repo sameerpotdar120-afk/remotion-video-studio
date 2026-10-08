@@ -2,6 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from 'remotion';
 import { FPS, window4 } from '../darien/anim';
 import { useDevanagariFont } from '../darien/DarienGap';
+import { Watermark } from '../brand/Watermark';
 import { C, DURATION_S, PLANE, camAt, camSpeed } from './cam';
 import { MapCanvas } from './Map';
 import { Overlays } from './Overlays';
@@ -37,6 +38,7 @@ export const Diomede2: React.FC<{ captions?: boolean }> = ({ captions = true }) 
       </AbsoluteFill>
       <ScreenFX t={t} />
       {captions && <Subtitles t={t} />}
+      {captions && <Watermark t={t} />}
       {captions && (
         <div style={{ position: 'absolute', right: 24, bottom: 20, fontFamily: 'sans-serif', fontSize: 15, color: 'rgba(255,255,255,0.55)', textShadow: '0 1px 2px rgba(0,0,0,0.8)', opacity: credit }}>
           Imagery: NASA Blue Marble · Sentinel-2 cloudless by EOX (Copernicus data 2016–2017) · © OpenStreetMap contributors · Natural Earth

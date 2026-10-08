@@ -7,7 +7,7 @@ const LATIN = "'Montserrat', sans-serif";
 const GOLD = 'linear-gradient(180deg, #FFF1A8 0%, #FFD21F 45%, #D99A16 100%)';
 
 let monoPromise: Promise<void> | null = null;
-const useMontserrat = () => {
+export const useMontserrat = () => {
   const [handle] = useState(() => delayRender('montserrat'));
   useEffect(() => {
     if (!monoPromise) {
