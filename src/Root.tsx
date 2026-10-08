@@ -5,6 +5,8 @@ import { DarienGap, DARIEN_DURATION } from './darien/DarienGap';
 import { DarienCover } from './darien/Cover';
 import { DarienCoverWide } from './darien/CoverWide';
 import { Banner, ProfilePic } from './darien/Brand';
+import { Diomede, DIOMEDE_DURATION } from './diomede/Diomede';
+import { DiomedeCover } from './diomede/Cover';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -17,6 +19,8 @@ export const RemotionRoot: React.FC = () => {
         width={1080}
         height={1920}
       />
+      <Composition id="Diomede" component={Diomede} durationInFrames={DIOMEDE_DURATION} fps={30} width={1080} height={1920} />
+      <Composition id="DiomedeCover" component={DiomedeCover} durationInFrames={DIOMEDE_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="DarienCover" component={DarienCover} durationInFrames={1} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="ProfilePic" component={ProfilePic} durationInFrames={1} fps={30} width={800} height={800} />
       <Composition id="Banner" component={Banner} durationInFrames={1} fps={30} width={2560} height={1440} />
