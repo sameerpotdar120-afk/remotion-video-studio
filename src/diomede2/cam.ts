@@ -51,7 +51,7 @@ type Key = { t: number; at?: P; dx?: number; dy?: number; span?: number; rot?: n
 export const PLANE = { w: 2600, h: 2900, ox: 1300, oy: 1450 };
 
 const USA = merc(-96, 43);
-const ATL = merc(-22, 47);
+const ATL = merc(-12, 49);
 const BERING = merc(-169.6, 65.6);
 const ALASKA = merc(-160, 63.5);
 const BERING_WIDE = merc(-172, 64.5);
@@ -62,8 +62,8 @@ const keys = (): Key[] => [
   { t: 0, at: USA, span: 1.3e7, rot: 0 },
   { t: C.rus - 0.25, at: USA, dx: 9e5, span: 1.22e7, rot: -6, e: linear },
   // …और रशिया: across the Atlantic, the laser
-  { t: C.rus + 0.75, at: ATL, span: 1.55e7, rot: -30, e: inOut },
-  { t: C.ekdusre + 0.15, at: ATL, dx: 6e5, span: 1.5e7, rot: -32, e: linear },
+  { t: C.rus + 0.75, at: ATL, span: 2.0e7, rot: -26, e: inOut },
+  { t: C.ekdusre + 0.15, at: ATL, dx: 6e5, span: 1.9e7, rot: -28, e: linear },
   // the globe swings round to the Pacific side: Russia and Alaska face each other
   { t: C.four - 0.05, at: BERING, span: 5.2e6, rot: 0, e: inOut },
   // (iris wipe) the flat infographic map

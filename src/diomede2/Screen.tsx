@@ -152,8 +152,8 @@ const DayTag: React.FC<{ day: string; time: string; s: number; pulse?: number; c
 const TimeTravel: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const a = window4(t, C.yaani + 0.3, C.yaani + 0.5, 99, 100);
   if (a <= 0) return null;
-  const lit = toScreen(c, [LIT[0], LIT[1] + 3500 * MS]);
-  const big = toScreen(c, [BIG[0], BIG[1] + 6500 * MS]);
+  const lit = toScreen(c, [LIT[0], LIT[1] + 2600 * MS]);
+  const big = toScreen(c, [BIG[0], BIG[1] + 3600 * MS]);
   const sUS = pop(t, Math.max(C.usa4, C.yaani + 0.35), 10, 200);
   const sRU = pop(t, C.rus4, 10, 200);
   const jump = ramp(t, C.gaye - 0.1, C.gaye + 0.6, inOut);

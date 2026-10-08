@@ -64,7 +64,7 @@ const FlagArt: React.FC<{ kind: 'us' | 'ru'; x: number; y: number; w: number; h:
 export const WavingFlag: React.FC<{
   id: string; clipD: string; box: [number, number, number, number]; kind: 'us' | 'ru'; t: number;
   opacity?: number; amp?: number; strips?: number; outline?: string; flip?: number; wave?: number;
-}> = ({ id, clipD, box, kind, t, opacity = 1, amp, strips = 34, outline = 'rgba(255,255,255,0.85)', flip = 1, wave = 1 }) => {
+}> = ({ id, clipD, box, kind, t, opacity = 1, amp, strips = 56, outline = 'rgba(255,255,255,0.85)', flip = 1, wave = 1 }) => {
   if (opacity <= 0.001) return null;
   const [x0, y0, x1, y1] = box;
   const bw = x1 - x0;
@@ -88,14 +88,11 @@ export const WavingFlag: React.FC<{
     const sx = fx + i * sw;
     const ph = k * (sx - fx) - t * 5.2;
     const dy = A * Math.sin(ph);
-    const slope = Math.cos(ph);
     els.push(
       <g key={i} clipPath={`url(#${id}s${i})`}>
         <g transform={`translate(0 ${dy.toFixed(2)})`}>
           <use href={`#${id}art`} />
         </g>
-        <rect x={sx} y={fy - A * 2} width={sw + 1} height={fh + A * 4}
-          fill={slope > 0 ? '#ffffff' : '#000000'} opacity={(slope > 0 ? 0.16 : 0.3) * Math.abs(slope) * wave} />
       </g>,
     );
   }
@@ -106,10 +103,20 @@ export const WavingFlag: React.FC<{
         {Array.from({ length: strips }, (_, i) => (
           <clipPath key={i} id={`${id}s${i}`}><rect x={fx + i * sw - 0.5} y={fy - 4 * A} width={sw + 1.2} height={fh + 8 * A} /></clipPath>
         ))}
+        <linearGradient id={`${id}sh`} gradientUnits="userSpaceOnUse" x1={fx} x2={fx + fw} y1={0} y2={0}>
+          {Array.from({ length: 41 }, (_, j) => {
+            const xs = fx + (j / 40) * fw;
+            const sl = Math.cos(k * (xs - fx) - t * 5.2);
+            return <stop key={j} offset={j / 40} stopColor={sl > 0 ? '#ffffff' : '#000000'} stopOpacity={(sl > 0 ? 0.2 : 0.32) * Math.abs(sl) * wave} />;
+          })}
+        </linearGradient>
         <g id={`${id}art`}><FlagArt kind={kind} x={fx} y={fy} w={fw} h={fh} /></g>
       </defs>
       <g clipPath={`url(#${id}c)`}>
-        <g transform={`translate(${cx} 0) scale(${flip} 1) translate(${-cx} 0)`}>{els}</g>
+        <g transform={`translate(${cx} 0) scale(${flip} 1) translate(${-cx} 0)`}>
+          {els}
+          <rect x={fx} y={fy - 4 * A} width={fw} height={fh + 8 * A} fill={`url(#${id}sh)`} />
+        </g>
       </g>
       {outline && <path d={clipD} fill="none" stroke={outline} strokeWidth={2.5} strokeLinejoin="round" />}
     </svg>

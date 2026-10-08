@@ -150,7 +150,7 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     );
     const sL = pop(t, C.diomede, 11, 200);
     if (sL > 0.01) {
-      const lab = add(MID, -800, 9000);
+      const lab = add(MID, -800, 6400);
       const [lx, ly] = project(c, lab[0], lab[1]);
       const [bx, by] = project(c, BIG[0], GEO1.bigBounds[3] - 600);
       const [sx, sy] = project(c, LIT[0], GEO1.littleBounds[3] - 300);
@@ -219,7 +219,7 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     const s = pop(t, C.big, 11, 190);
     items.push(<WavingFlag key="big" id="big" clipD={ringsD(c, GEO1.big)} box={boxOf(c, GEO1.big)} kind="ru" t={t} opacity={bigA * clamp01(s)} />);
     items.push(
-      <Pin key="bigl" c={c} at={add(BIG, 0, 5600)} anchor="bottom">
+      <Pin key="bigl" c={c} at={add(BIG, 0, 3900)} anchor="bottom">
         <div style={{ opacity: bigA, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
           <Label text="बिग डायोमीडी" size={64} s={pop(t, C.big + 0.1, 11, 200)} />
           <div style={{ transform: `scale(${pop(t, C.rus2, 10, 210)})`, fontFamily: FONT, fontWeight: 800, fontSize: 46, color: '#fff', background: RED,
@@ -250,9 +250,18 @@ export const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const akA = window4(t, C.bantwara + 0.1, C.bantwara + 0.45, C.sardi + 0.1, C.sardi + 0.5);
   if (akA > 0) {
     const flipP = ramp(t, C.kharida - 0.05, C.kharida + 0.45, inOut);
-    const flip = Math.cos(flipP * Math.PI);
-    const kind = flipP < 0.5 ? 'ru' : 'us';
-    items.push(<WavingFlag key="ak1867" id="ak1867" clipD={ringsD(c, GEO2.alaska)} box={boxOf(c, GEO2.alaska)} kind={kind} t={t} opacity={akA * 0.95} flip={Math.max(0.04, Math.abs(flip))} />);
+    const flip = Math.max(0.04, Math.abs(Math.cos(flipP * Math.PI)));
+    const akD = ringsD(c, GEO2.alaska);
+    const [ax0, , ax1] = boxOf(c, GEO2.alaska);
+    const acx = (ax0 + ax1) / 2;
+    // Russian Alaska (red) flips like a card into American Alaska (the US flag)
+    if (flipP < 0.5)
+      items.push(
+        <div key="akru" style={{ position: 'absolute', left: 0, top: 0, transformOrigin: `${acx}px 0px`, transform: `scaleX(${flip})` }}>
+          <Neon d={akD} color={RED} a={akA} fill={0.55} />
+        </div>,
+      );
+    else items.push(<WavingFlag key="ak1867" id="ak1867" clipD={akD} box={boxOf(c, GEO2.alaska)} kind="us" t={t} opacity={akA * 0.95} flip={flip} />);
     items.push(<Svg key="ru1867" opacity={akA * 0.5}><path d={ringsD(c, GEO2.chukotka)} fill={RED} fillOpacity={0.35} stroke={RED} strokeWidth={4} /></Svg>);
     const bd = ramp(t, C.kharida + 0.35, C.kharida + 1.2, inOut);
     if (bd > 0)
