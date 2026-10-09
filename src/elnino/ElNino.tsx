@@ -1,24 +1,15 @@
 import React from 'react';
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from 'remotion';
-import { FPS, inOut, ramp, window4 } from '../darien/anim';
+import { FPS, window4 } from '../darien/anim';
 import { useDevanagariFont } from '../darien/DarienGap';
 import { Watermark } from '../brand/Watermark';
-import { C, DURATION_S, PERSP, PLANE, camAt, camMotion } from './cam';
-import { MapCanvas, SST_DAYS } from './Map';
+import { DURATION_S, PERSP, PLANE, camAt, camMotion } from './cam';
+import { MapCanvas } from './Map';
 import { PlaneLayers } from './Plane';
-import { Grade, ScreenLayer, Subtitles, mapGrade, mapHidden, shake } from './Screen';
+import { Grade, ScreenLayer, Subtitles, mapGrade, mapHidden, shake, sstAt } from './Screen';
 
 export const ELNINO_DURATION = Math.ceil(DURATION_S * FPS);
-export const HAS_AUDIO = false;
-
-/** NOAA layer: today's anomaly at "अभी", then the June → October time-lapse at "अब". */
-const sstAt = (t: number) => {
-  const last = SST_DAYS.length - 1;
-  const a1 = window4(t, C.abhi - 0.1, C.abhi + 0.5, C.hawayen - 0.4, C.hawayen + 0.2);
-  const a2 = window4(t, C.ab - 0.15, C.ab + 0.35, C.yahan + 0.1, C.yahan + 0.6);
-  if (a2 > 0) return { a: a2 * 0.92, day: last * ramp(t, C.ab + 0.25, C.taqatwar + 0.9, inOut) };
-  return { a: a1 * 0.92, day: last };
-};
+export const HAS_AUDIO = true;
 
 export const ElNino: React.FC<{ captions?: boolean }> = ({ captions = true }) => {
   const t = useCurrentFrame() / FPS;

@@ -45,49 +45,45 @@ export const PL = {
 };
 
 const keys = (): Key[] => [
-  // सोचो… : close on the Peru coast, pulling back as the fan arrives
-  { t: 0, at: PL.ecuadorCoast, dx: -6e5, span: 6.5e6, rot: -4, tilt: 18 },
-  { t: C.pankha + 0.4, at: PL.americas, dx: -1.6e6, span: 1.75e7, rot: 0, tilt: 10, e: inOut },
-  { t: C.band + 0.3, at: PL.americas, dx: -2.0e6, span: 1.65e7, rot: 1, tilt: 8, e: linear },
-  // अभी: the real sea-temperature map, whole tropical Pacific
-  { t: C.abhi + 0.6, at: PL.eastPac, dx: -1.2e6, span: 2.3e7, rot: 0, tilt: 4, e: inOut },
-  { t: C.hawayen - 0.2, at: PL.eastPac, dx: -1.8e6, span: 2.15e7, rot: -1, tilt: 4, e: linear },
-  // Trade winds: drift west with the wind
+  // सोचो… AC: close on the Peru coast, pulling back as the AC blows cold air west
+  { t: 0, at: PL.ecuadorCoast, dx: -5e5, span: 6.0e6, rot: -4, tilt: 18 },
+  { t: C.ac + 0.3, at: PL.americas, dx: -1.4e6, dy: -6e5, span: 1.45e7, rot: 0, tilt: 12, e: inOut },
+  { t: C.isi, at: PL.americas, dx: -1.8e6, dy: -6e5, span: 1.38e7, rot: 1, tilt: 11, e: linear },
+  // (hook flash-forward: burning Earth insert) → नाम है सुपर एल नीनो: the real NOAA map, whole tropical Pacific
+  { t: C.naam - 0.2, at: PL.eastPac, dx: -1.6e6, span: 2.35e7, rot: 0, tilt: 4, e: linear },
+  { t: C.itihas, at: PL.eastPac, dx: -1.9e6, span: 2.25e7, rot: -1, tilt: 4, e: linear },
+  // time-lapse: slow push in on the hot tongue
+  { t: C.ac2 - 0.2, at: PL.eastPac, dx: -1.0e6, span: 1.75e7, rot: 0, tilt: 8, e: inOut },
+  // ये AC हैं हवाएँ, ट्रेड विंड्स… पूरब से पश्चिम: drift west with the wind
   { t: C.paschim + 0.4, at: PL.midPac, span: 2.4e7, rot: -3, tilt: 10, e: inOut },
-  // ships: follow them west
-  { t: C.paar + 0.3, at: PL.westPac, span: 2.2e7, rot: -2, tilt: 12, e: inOut },
+  { t: C.garm, at: PL.midPac, dx: -1.5e6, span: 2.3e7, rot: -3, tilt: 10, e: linear },
   // warm water pushed west → Indonesia/Australia
-  { t: C.indo, at: PL.westPac, dx: -2.0e6, dy: -1.0e6, span: 1.7e7, rot: 0, tilt: 10, e: inOut },
+  { t: C.indo + 0.2, at: PL.westPac, dx: -2.0e6, dy: -1.0e6, span: 1.7e7, rot: 0, tilt: 10, e: inOut },
   { t: C.barish + 0.5, at: PL.indo, dx: 6e5, dy: -1.2e6, span: 1.15e7, rot: 3, tilt: 14, e: inOut },
   // whip east to Peru: cold water, dry coast
   { t: C.peru + 0.25, at: PL.peru, dx: -1.2e6, span: 1.05e7, rot: -3, tilt: 14, e: inOut },
-  { t: C.sukha + 0.6, at: PL.peru, dx: -1.5e6, span: 9.8e6, rot: -4, tilt: 14, e: linear },
+  { t: C.sukha + 0.5, at: PL.peru, dx: -1.5e6, span: 9.8e6, rot: -4, tilt: 14, e: linear },
   // लेकिन: wide again, winds weaken, warm water flows back east
   { t: C.kamzor + 0.2, at: PL.midPac, dx: 1.5e6, span: 2.45e7, rot: 0, tilt: 6, e: inOut },
   { t: C.degree + 0.3, at: PL.eastPac, dx: -1.6e6, span: 2.1e7, rot: 1, tilt: 6, e: inOut },
   { t: C.bas, at: PL.eastPac, dx: -1.6e6, span: 1.95e7, rot: 1, tilt: 6, e: linear },
-  // (space insert) then the effects tour
+  // (space insert) then Peru floods → Australia drought
   { t: C.peru7 - 0.05, at: PL.peru, dx: -6e5, dy: 6e5, span: 9.5e6, rot: -2, tilt: 14, e: linear },
-  { t: C.baadh + 0.5, at: PL.peru, dx: -5e5, dy: 8e5, span: 8.8e6, rot: -3, tilt: 14, e: linear },
-  { t: C.america + 0.3, at: PL.sUS, span: 1.05e7, rot: 0, tilt: 12, e: inOut },
-  { t: C.aus7 - 0.15, at: PL.sUS, dx: -4e5, span: 1.0e7, rot: 1, tilt: 12, e: linear },
+  { t: C.aus7 - 0.15, at: PL.peru, dx: -5e5, dy: 8e5, span: 9.0e6, rot: -3, tilt: 14, e: linear },
   { t: C.aus7 + 0.35, at: PL.aus, span: 1.15e7, rot: 2, tilt: 12, e: inOut },
-  { t: C.bharat - 0.1, at: PL.aus, dx: -3e5, span: 1.08e7, rot: 3, tilt: 12, e: linear },
-  // और भारत? : fly to India
+  { t: C.bharat - 0.15, at: PL.aus, dx: -3e5, span: 1.1e7, rot: 3, tilt: 12, e: linear },
+  // भारत में हमारा मानसून: fly to India
   { t: C.monsoon + 0.2, at: PL.india, dy: -3e5, span: 6.2e6, rot: 0, tilt: 16, e: inOut },
   { t: C.y1876 - 0.1, at: PL.india, dy: -4e5, span: 5.6e6, rot: -2, tilt: 16, e: linear },
-  // (film insert) then India in 1876
-  { t: C.akele - 0.1, at: PL.india, dy: -1.4e6, span: 5.0e6, rot: 2, tilt: 18, e: linear },
-  { t: C.mare + 0.6, at: PL.india, dy: -1.2e6, span: 4.6e6, rot: 3, tilt: 18, e: linear },
-  // अब: the NOAA time-lapse, whole Pacific
-  { t: C.ab + 0.5, at: PL.midPac, dx: 1.0e6, span: 2.6e7, rot: 0, tilt: 0, e: inOut },
-  { t: C.yahan - 0.1, at: PL.midPac, dx: 1.4e6, span: 2.45e7, rot: 0, tilt: 0, e: linear },
-  // यहाँ: into the hottest water
-  { t: C.d3 + 0.3, at: PL.eastPac, dx: -4e5, span: 1.25e7, rot: -2, tilt: 14, e: inOut },
-  { t: C.garmi + 0.1, at: PL.eastPac, dx: -6e5, span: 1.18e7, rot: -3, tilt: 14, e: linear },
-  // heat rises, the whole planet
+  // (dry field, film insert) then India in 1876
+  { t: C.akele - 0.1, at: merc(77.5, 17), span: 5.0e6, rot: 1, tilt: 16, e: linear },
+  { t: C.mare + 0.5, at: merc(77.5, 17), dy: 2e5, span: 4.6e6, rot: 2, tilt: 16, e: linear },
+  // और अब समंदर 3 डिग्री: whip back to the hottest water
+  { t: C.ab + 0.45, at: PL.eastPac, dx: -4e5, span: 1.3e7, rot: -2, tilt: 14, e: inOut },
+  { t: C.garmi, at: PL.eastPac, dx: -6e5, span: 1.2e7, rot: -3, tilt: 14, e: linear },
+  // heat rises, the whole planet burns
   { t: C.tapayegi + 0.2, at: PL.americas, dx: -3.0e6, dy: 2.5e6, span: 3.0e7, rot: 0, tilt: 8, e: inOut },
-  { t: DURATION_S, at: PL.americas, dx: -3.2e6, dy: 2.7e6, span: 2.75e7, rot: 0, tilt: 8, e: linear },
+  { t: DURATION_S, at: PL.americas, dx: -3.2e6, dy: 2.7e6, span: 2.8e7, rot: 0, tilt: 8, e: linear },
 ];
 
 type Full = Cam & { t: number; e: Ease };

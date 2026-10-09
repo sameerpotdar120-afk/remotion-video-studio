@@ -162,12 +162,32 @@ export const MapCanvas: React.FC<{ cam: Cam; sst?: { a: number; day: number }; s
     draw(ctx, india, INDIA, cam, nA);
     draw(ctx, peru, PERU, cam, pA);
 
+    if (!tmp.current) {
+      tmp.current = document.createElement('canvas');
+      tmp.current.width = PLANE.w;
+      tmp.current.height = PLANE.h;
+    }
+    // reference look: oceans pulled from Blue Marble navy toward a lighter teal, land untouched (ocean mask)
+    {
+      const t = tmp.current.getContext('2d')!;
+      t.globalCompositeOperation = 'source-over';
+      t.clearRect(0, 0, PLANE.w, PLANE.h);
+      draw(t, mask, MASK, cam, 1);
+      t.globalCompositeOperation = 'source-in';
+      t.fillStyle = '#2E8C96';
+      t.fillRect(0, 0, PLANE.w, PLANE.h);
+      t.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = 0.62;
+      ctx.globalCompositeOperation = 'color';
+      ctx.drawImage(tmp.current, 0, 0);
+      ctx.globalAlpha = 0.16;
+      ctx.globalCompositeOperation = 'screen';
+      ctx.drawImage(tmp.current, 0, 0);
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    }
+
     if (sst && sst.a > 0.001 && ssts && ssts.key === key) {
-      if (!tmp.current) {
-        tmp.current = document.createElement('canvas');
-        tmp.current.width = PLANE.w;
-        tmp.current.height = PLANE.h;
-      }
       const t = tmp.current.getContext('2d')!;
       t.globalCompositeOperation = 'source-over';
       t.clearRect(0, 0, PLANE.w, PLANE.h);

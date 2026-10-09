@@ -18,17 +18,19 @@ SCRIPT = ROOT / "public" / "elnino" / "script_hindi.txt"
 
 # (cue, line number from 1, a substring of the word it lands on, occurrence in that line)
 CUES = [
-    ("socho", 1, "सोचो", 1), ("pacific", 1, "Pacific", 1), ("thanda", 1, "ठंडा", 1), ("pankha", 1, "पंखा", 1), ("achanak", 1, "अचानक", 1), ("band", 1, "बंद", 1),
-    ("abhi", 2, "अभी", 1), ("naam", 2, "नाम", 1), ("elnino", 2, "El", 1), ("isbaar", 2, "इस", 1), ("super", 2, "Super", 1),
-    ("hawayen", 3, "हवाएँ", 1), ("trade", 3, "Trade", 1), ("purab", 3, "पूरब", 1), ("paschim", 3, "पश्चिम", 1), ("sadiyon", 3, "सदियों", 1), ("jahaz", 3, "जहाज़", 1), ("paar", 3, "पार", 1),
-    ("garm", 4, "गर्म", 1), ("indo", 4, "Indonesia", 1), ("dhakel", 4, "धकेलती", 1), ("barish", 4, "बारिश", 1), ("peru", 4, "Peru", 1), ("thanda4", 4, "ठंडा", 1), ("sukha", 4, "सूखा", 1),
-    ("lekin", 5, "लेकिन", 1), ("y27", 5, "2", 1), ("kamzor", 5, "कमज़ोर", 1), ("garm5", 5, "गर्म", 1), ("laut", 5, "लौट", 1), ("samandar", 5, "समंदर", 1), ("ekdo", 5, "एक-दो", 1), ("degree", 5, "डिग्री", 1),
+    ("socho", 1, "सोचो", 1), ("pacific", 1, "पैसिफिक", 1), ("thanda", 1, "ठंडा", 1), ("ac", 1, "AC", 1), ("achanak", 1, "अचानक", 1), ("band", 1, "बंद", 1),
+    ("isi", 1, "इसी", 1), ("agla", 1, "अगला", 1), ("duniya1", 1, "दुनिया", 1), ("garmsaal", 1, "गर्म", 1),
+    ("naam", 2, "नाम", 1), ("super", 2, "सुपर", 1), ("elnino", 2, "एल", 1), ("isbaar", 2, "इस", 1), ("itihas", 2, "इतिहास", 1), ("khatarnak", 2, "खतरनाक", 1),
+    ("ac2", 3, "AC", 1), ("hawayen", 3, "हवाएँ", 1), ("trade", 3, "ट्रेड", 1), ("roz", 3, "रोज", 1), ("purab", 3, "पूरब", 1), ("paschim", 3, "पश्चिम", 1), ("chalti", 3, "चलती", 1),
+    ("garm", 4, "गर्म", 1), ("indo", 4, "इंडोनेशिया", 1), ("dhakel", 4, "धकेलती", 1), ("barish", 4, "बारिश", 1), ("peru", 4, "पेरू", 1), ("thanda4", 4, "ठंडा", 1), ("sukha", 4, "सूखा", 1),
+    ("lekin", 5, "लेकिन", 1), ("y27", 5, "दो", 1), ("kamzor", 5, "कमजोर", 1), ("garm5", 5, "गर्म", 1), ("laut", 5, "लौट", 1), ("samandar", 5, "समंदर", 1), ("ekdo", 5, "एक-दो", 1), ("degree", 5, "डिग्री", 1),
     ("bas", 6, "बस", 1), ("duniya", 6, "दुनिया", 1), ("bigad", 6, "बिगड़", 1),
-    ("peru7", 7, "Peru", 1), ("baadh", 7, "बाढ़", 1), ("america", 7, "अमेरिका", 1), ("bhari", 7, "भारी", 1), ("aus7", 7, "Australia", 1), ("sukha7", 7, "सूखा", 1),
-    ("bharat", 8, "भारत", 1), ("monsoon", 8, "मानसून", 1), ("kamzor8", 8, "कमज़ोर", 1), ("issaal", 8, "साल", 1), ("p13", 8, "13", 1), ("y2015", 8, "2015", 1), ("sabse", 8, "सबसे", 1),
-    ("y1876", 9, "1876", 1), ("akaal", 9, "अकाल", 1), ("akele", 9, "अकेले", 1), ("lakh50", 9, "50", 1), ("mare", 9, "मारे", 1),
-    ("ab", 10, "अब", 1), ("itihas", 10, "इतिहास", 1), ("taqatwar", 10, "ताक़तवर", 1), ("yahan", 10, "यहाँ", 1), ("d3", 10, "3", 1), ("garm10", 10, "गर्म", 1),
-    ("garmi", 11, "गर्मी", 1), ("dharti", 11, "धरती", 1), ("tapayegi", 11, "तपाएगी", 1), ("y2027", 11, "2027", 1), ("sabsegarm", 11, "गर्म", 2),
+    ("peru7", 7, "पेरू", 1), ("baadh", 7, "बाढ़", 1), ("aus7", 7, "ऑस्ट्रेलिया", 1), ("sukha7", 7, "सूखा", 1), ("bharat", 7, "भारत", 1), ("monsoon", 7, "मानसून", 1),
+    ("kamzor8", 7, "कमजोर", 1), ("issaal", 7, "साल", 1), ("p13", 7, "13", 1), ("kam", 7, "कम", 2),
+    ("y1876", 8, "1876", 1), ("akaal", 8, "अकाल", 1), ("akele", 8, "अकेले", 1), ("lakh50", 8, "50", 1), ("mare", 8, "मारे", 1),
+    ("ab", 9, "अब", 1), ("samandar9", 9, "समंदर", 1), ("d3", 9, "3", 1), ("garm10", 9, "गर्म", 1),
+    ("garmi", 10, "गर्मी", 1), ("dharti", 10, "धरती", 1), ("tapayegi", 10, "तपाएगी", 1), ("y2027", 10, "2027", 1), ("sabsegarm", 10, "गर्म", 2),
+    ("kya", 11, "क्या", 1), ("ready", 11, "रेडी", 1),
 ]
 
 PUNCT = "…।!?,:"
@@ -163,7 +165,7 @@ def main() -> None:
     out = {"source": "voiceover" if len(sys.argv) > 1 else "estimate", "duration": round(end + 0.7, 2), "cues": cues, "caps": caps}
     (ROOT / "src" / "elnino" / "timing.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(out["source"], "duration", out["duration"], "cues", len(cues), "caps", len(caps))
-    print({k: cues[k] for k in ["pankha", "elnino", "trade", "jahaz", "peru", "kamzor", "bas", "bharat", "y1876", "ab", "y2027"]})
+    print({k: cues[k] for k in ["ac", "band", "agla", "super", "itihas", "trade", "indo", "peru", "lekin", "bas", "peru7", "bharat", "p13", "y1876", "ab", "garmi", "y2027", "kya"]})
 
 
 if __name__ == "__main__":

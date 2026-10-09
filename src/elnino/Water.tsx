@@ -119,7 +119,7 @@ export const WaterCanvas: React.FC<{ cam: Cam; masses: Mass[] }> = ({ cam, masse
   useLayoutEffect(() => {
     const cv = ref.current;
     if (!cv || !ok || !noiseA || !noiseB) return;
-    nA ??= alphaNoise(noiseA, 0.18, 0.75);
+    nA ??= alphaNoise(noiseA, 0.05, 0.7);
     nB ??= alphaNoise(noiseB, 0.3, 0.9);
     const ctx = cv.getContext('2d')!;
     ctx.clearRect(0, 0, cv.width, cv.height);
@@ -140,6 +140,10 @@ export const WaterCanvas: React.FC<{ cam: Cam; masses: Mass[] }> = ({ cam, masse
       w.fillStyle = m.color;
       tube(w, pts, 0.85);
       w.filter = 'none';
+      // smooth body first (the reference's soft glow), then a textured copy on top
+      ctx.globalAlpha = m.a * 0.55;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.drawImage(work.current, 0, 0);
       // 2) break it up with drifting fractal noise (scale follows the zoom so the texture sticks to the ocean)
       const sc = Math.max(0.6, Math.min(3, meanW / 90));
       const drift = m.t * 22 * m.flow;
@@ -148,7 +152,7 @@ export const WaterCanvas: React.FC<{ cam: Cam; masses: Mass[] }> = ({ cam, masse
       pa.setTransform(new DOMMatrix().translateSelf(drift, m.t * 4).scaleSelf(sc, sc * 0.7));
       w.fillStyle = pa;
       w.fillRect(0, 0, cv.width, cv.height);
-      ctx.globalAlpha = m.a * 0.95;
+      ctx.globalAlpha = m.a * 0.45;
       ctx.globalCompositeOperation = 'source-over';
       ctx.drawImage(work.current, 0, 0);
       // 3) wide outer bloom
@@ -172,7 +176,7 @@ export const WaterCanvas: React.FC<{ cam: Cam; masses: Mass[] }> = ({ cam, masse
       pb.setTransform(new DOMMatrix().translateSelf(drift * 1.8, -m.t * 6).scaleSelf(sc * 0.8, sc * 0.55));
       w.fillStyle = pb;
       w.fillRect(0, 0, cv.width, cv.height);
-      ctx.globalAlpha = m.a * 0.7;
+      ctx.globalAlpha = m.a * 0.5;
       ctx.globalCompositeOperation = 'screen';
       ctx.drawImage(work.current, 0, 0);
       ctx.globalAlpha = 1;

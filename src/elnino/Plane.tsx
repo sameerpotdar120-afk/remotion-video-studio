@@ -78,31 +78,30 @@ const MapArrow: React.FC<{ c: Cam; pts: [number, number][]; p: number; a: number
   );
 };
 
-/** Everything that lies flat on the map plane, by beat. */
+/** Everything that lies flat on the map plane, by beat (cues = words of the creator's voiceover). */
 export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
-  // ---- water masses
   const masses: Mass[] = [];
-  // opening: the fan's cool breath spreading west from the coast, then draining when it stops
+  // opening: the AC's cold air spreading west across the eastern Pacific, draining when it switches off
   masses.push({
-    id: 'fanCool', t, flow: -1, color: COLD, core: COLD_CORE,
+    id: 'acCool', t, flow: -1, color: COLD, core: COLD_CORE,
     spine: [[-81, -3, 380], [-95, -1, 650], [-115, 0, 820], [-140, 1, 900]],
-    grow: ramp(t, C.pankha - 0.3, C.achanak, easeOut),
-    tail: ramp(t, C.band, C.band + 1.1, easeIn),
-    a: window4(t, C.pankha - 0.3, C.pankha + 0.2, C.abhi, C.abhi + 0.5),
+    grow: ramp(t, 0.35, C.ac + 0.2, easeOut),
+    tail: ramp(t, C.band, C.band + 1.2, easeIn),
+    a: window4(t, 0.3, 0.8, C.isi, C.agla + 0.2),
   });
-  // the warm water that takes over when the fan stops
+  // warm water creeping in once it stops
   masses.push({
     id: 'openWarm', t, flow: 1, color: WARM, core: WARM_CORE,
     spine: [[-150, 2, 950], [-125, 0, 950], [-100, -1, 750], [-84, -3, 420]],
-    grow: ramp(t, C.band - 0.1, C.abhi + 0.4, easeOut),
-    a: window4(t, C.band - 0.1, C.band + 0.4, C.abhi + 0.2, C.abhi + 0.8),
+    grow: ramp(t, C.band, C.agla + 0.3, easeOut),
+    a: window4(t, C.band, C.band + 0.5, C.naam + 0.3, C.naam + 0.9),
   });
   // trade winds push warm surface water west to Indonesia/Australia
   masses.push({
     id: 'pushWest', t, flow: -1, color: WARM, core: WARM_CORE,
     spine: [[-84, -3, 520], [-120, -1, 900], [-170, 0, 1100], [160, -2, 1250], [135, -4, 1150], [118, -5, 800]],
-    grow: ramp(t, C.garm - 0.2, C.indo + 0.7, inOut),
-    tail: lerp(0, 0.5, ramp(t, C.indo, C.barish + 0.8, inOut)) * (1 - ramp(t, C.garm5, C.laut + 0.6, inOut)),
+    grow: ramp(t, C.garm - 0.2, C.indo + 0.9, inOut),
+    tail: lerp(0, 0.5, ramp(t, C.indo + 0.3, C.barish + 0.8, inOut)) * (1 - ramp(t, C.garm5, C.laut + 0.6, inOut)),
     a: window4(t, C.garm - 0.2, C.garm + 0.3, C.bas - 0.4, C.bas),
   });
   // cold upwelling off Peru
@@ -119,18 +118,12 @@ export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     grow: ramp(t, C.garm5 - 0.2, C.samandar + 0.3, inOut),
     a: window4(t, C.garm5 - 0.2, C.garm5 + 0.3, C.bas - 0.3, C.bas + 0.05),
   });
-  // effects tour: flooding Peru/Ecuador coast, southern US rain belt, drought over Australia
+  // flooding Peru/Ecuador coast, drought over Australia
   masses.push({
     id: 'flood', t, flow: 1, color: '#2E6BFF', core: '#9EC2FF',
     spine: [[-81, -9, 200], [-80.5, -5, 230], [-80, -1, 220], [-79.5, 2, 180]],
-    grow: ramp(t, C.peru7, C.baadh + 0.4, easeOut),
-    a: window4(t, C.peru7, C.peru7 + 0.3, C.aus7 - 0.2, C.aus7 + 0.2),
-  });
-  masses.push({
-    id: 'usRain', t, flow: 1, color: '#3FA8FF', core: '#BFE6FF',
-    spine: [[-118, 33.5, 260], [-105, 32, 330], [-92, 31.5, 330], [-82, 31, 280]],
-    grow: ramp(t, C.america - 0.1, C.bhari + 0.4, easeOut),
-    a: window4(t, C.america - 0.1, C.america + 0.3, C.aus7, C.bharat),
+    grow: ramp(t, C.peru7 - 0.1, C.baadh + 0.4, easeOut),
+    a: window4(t, C.peru7 - 0.1, C.peru7 + 0.3, C.aus7 - 0.2, C.aus7 + 0.2),
   });
   masses.push({
     id: 'ausDry', t, flow: -1, color: GOLD, core: '#FFF0B0',
@@ -142,23 +135,23 @@ export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   masses.push({
     id: 'nowWarm', t, flow: 1, color: WARM, core: '#FFD1A0',
     spine: [[-175, 0, 900], [-140, 0, 1150], [-110, -1, 1150], [-85, -4, 650]],
-    grow: ramp(t, C.yahan - 0.3, C.d3 + 0.2, easeOut),
-    a: window4(t, C.yahan - 0.3, C.yahan + 0.2, C.dharti, C.tapayegi + 0.3) * (1 + 0.25 * ramp(t, C.garmi, C.garmi + 0.5)),
+    grow: ramp(t, C.ab - 0.1, C.d3 + 0.2, easeOut),
+    a: window4(t, C.ab - 0.1, C.ab + 0.3, C.dharti, C.tapayegi + 0.3) * (1 + 0.25 * ramp(t, C.garmi, C.garmi + 0.5)),
   });
 
-  // ---- wind: steady, then weakening
+  // wind: steady, then weakening
   const windA = window4(t, C.hawayen - 0.3, C.hawayen + 0.4, C.garm5 + 0.2, C.laut + 0.4);
   const weak = ramp(t, C.lekin + 0.2, C.kamzor + 0.6, inOut);
 
-  // ---- countries
+  // countries
   const hiIndoAus = window4(t, C.indo - 0.1, C.indo + 0.3, C.peru - 0.1, C.peru + 0.2);
   const hiPeru = window4(t, C.peru, C.peru + 0.3, C.lekin, C.lekin + 0.4);
-  const hiIndia = window4(t, C.bharat + 0.1, C.bharat + 0.5, C.y1876 - 0.2, C.y1876 + 0.1);
-  const hiIndia76 = window4(t, C.akele - 0.2, C.akele + 0.3, C.ab - 0.2, C.ab + 0.2);
+  const hiIndia = window4(t, C.bharat + 0.05, C.bharat + 0.45, C.p13 - 0.3, C.p13);
+  const hiIndia76 = window4(t, C.akele - 0.2, C.akele + 0.3, C.ab - 0.2, C.ab + 0.1);
 
-  // ---- big curved arrows (east → west)
+  // big curved arrows (east → west)
   const arrP = ramp(t, C.purab - 0.1, C.paschim + 0.5, easeOut);
-  const arrA = window4(t, C.purab - 0.1, C.purab + 0.2, C.jahaz - 0.2, C.jahaz + 0.3);
+  const arrA = window4(t, C.purab - 0.1, C.purab + 0.2, C.garm - 0.2, C.garm + 0.3);
 
   return (
     <>

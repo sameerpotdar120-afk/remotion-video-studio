@@ -1,0 +1,82 @@
+{
+"ac_body.png": [
+1203,
+440
+],
+"ac_louver.png": [
+1203,
+440
+],
+"cloud_monsoon_dark.png": [
+1000,
+462
+],
+"earth_calm.png": [
+964,
+1000
+],
+"earth_overheat.png": [
+964,
+1000
+],
+"earth_worried.png": [
+964,
+1000
+],
+"icon_dry_crop.png": [
+960,
+912
+],
+"icon_flood_house.png": [
+1000,
+733
+],
+"icon_raincloud.png": [
+1000,
+555
+],
+"icon_sun.png": [
+1000,
+973
+],
+"icon_warning.png": [
+1000,
+861
+],
+"overlay_embers.png": [
+1024,
+1536
+],
+"overlay_frost_air.png": [
+1536,
+1024
+],
+"overlay_sun_flare.png": [
+1536,
+1024
+],
+"scene_1876_drought.png": [
+941,
+1672
+],
+"scene_dry_field.png": [
+1024,
+1536
+],
+"scene_earth_burning.png": [
+941,
+1672
+],
+"smoke_puff.png": [
+1254,
+1254
+],
+"thermometer.png": [
+342,
+1000
+],
+"tile_cracked_earth.png": [
+1000,
+818
+]
+}

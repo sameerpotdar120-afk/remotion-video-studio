@@ -9,7 +9,11 @@ export const FONT = "'NotoDeva', 'Noto Sans Devanagari', sans-serif";
 export const LATIN = "'Montserrat', sans-serif";
 
 /** GPT assets that have arrived (file names in public/elnino/img). Anything missing renders as a labelled placeholder. */
-export const HAVE = new Set<string>([]);
+export const HAVE = new Set<string>([
+  'ac_body.png', 'ac_louver.png', 'smoke_puff.png', 'overlay_frost_air.png', 'icon_raincloud.png', 'icon_sun.png', 'tile_cracked_earth.png',
+  'icon_flood_house.png', 'icon_dry_crop.png', 'thermometer.png', 'earth_calm.png', 'earth_overheat.png', 'earth_worried.png', 'scene_dry_field.png',
+  'cloud_monsoon_dark.png', 'scene_1876_drought.png', 'overlay_embers.png', 'overlay_sun_flare.png', 'scene_earth_burning.png', 'icon_warning.png',
+]);
 
 const glow = (color: string, r: number, n = 2) => Array.from({ length: n }, (_, i) => `drop-shadow(0 0 ${r * (i + 1)}px ${color})`).join(' ');
 const at = (c: Cam, lon: number, lat: number): P => toScreen(c, merc(lon, lat));
@@ -205,112 +209,80 @@ const Thermo: React.FC<{ t: number; t0: number; t1: number; x: number; y: number
   );
 };
 
-// ---------------------------------------------------------------- the fan rig (body / spinning blades / grill)
-const fanSpin = (t: number) => {
-  // angle = integral of speed; speed ramps up after the pop and decays to zero when the fan "stops"
-  const on = C.pankha + 0.1;
-  const off = C.achanak + 0.15;
-  const dt = 1 / 120;
-  let ang = 0;
-  for (let u = on; u < Math.min(t, DURATION_S); u += dt) {
-    const sp = u < off ? 1500 * ramp(u, on, on + 0.5, easeOut) : 1500 * Math.exp(-(u - off) * 2.6);
-    ang += sp * dt;
-  }
-  return ang;
-};
-
-const Fan: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
-  const t0 = C.pankha - 0.15;
-  const t1 = C.elnino + 0.2;
-  if (t < t0 - 0.05 || t > t1 + 1.2) return null;
-  const [x, y] = at(c, -79.5, -2.5);
-  const s = pop(t, t0, 10, 180);
-  const shrink = lerp(1, 0.55, ramp(t, C.elnino - 0.1, C.elnino + 0.4, inOut));
-  const out = ramp(t, C.naam + 0.2, C.isbaar, easeIn);
-  const w = 300 * persp(c, -79.5, -2.5) * shrink;
-  const sc = clamp01(s) * (1 - out);
-  if (sc <= 0.01) return null;
-  const ang = fanSpin(t);
-  const stopped = ramp(t, C.band, C.band + 0.5, easeOut);
-  const droop = stopped * 8 + kick(t, C.band, 3, 18, 6);
-  const puff = window4(t, C.band - 0.05, C.band + 0.05, C.band + 0.6, C.band + 1.4);
-  const spark = window4(t, C.band - 0.05, C.band, C.band + 0.1, C.band + 0.25);
-  const blurB = Math.min(1, 1 - stopped) * 2.5;
-  const layer = (name: string, extra?: React.CSSProperties) => (
-    <div style={{ position: 'absolute', inset: 0, ...extra }}><Asset name={name} w={w} /></div>
-  );
+// ---------------------------------------------------------------- the Pacific's AC (body + louver from GPT; LED, glow, spark in code)
+const AC_AR = 1203 / 440;
+/**
+ * One appearance of the AC standing on the map. While on: louver swung open, green LED, cold glow at the outlet and a
+ * tiny motor vibration. At tOff: the louver snaps shut with a bounce, the LED blinks red, a spark flash and a smoke puff.
+ */
+const AcUnit: React.FC<{ t: number; c: Cam; lon: number; lat: number; t0: number; t1: number; tOff?: number; w0: number; dissolve?: boolean }> = ({
+  t, c, lon, lat, t0, t1, tOff, w0, dissolve,
+}) => {
+  if (t < t0 - 0.05 || t > t1 + 0.7) return null;
+  const [x, y] = at(c, lon, lat);
+  const w = w0 * persp(c, lon, lat);
+  const h = w / AC_AR;
+  const s = pop(t, t0, 10, 170);
+  const out = ramp(t, t1, t1 + (dissolve ? 0.6 : 0.3), easeIn);
+  const sc = Math.max(0, s) * (1 - out * (dissolve ? 0.5 : 1));
+  const op = 1 - out;
+  if (op <= 0.01 || sc <= 0.01) return null;
+  const off = tOff !== undefined ? ramp(t, tOff, tOff + 0.12, easeIn) : 0;
+  const open = ramp(t, t0 + 0.25, t0 + 0.75, easeOut) * (1 - off);
+  const flap = 62 * open + (tOff !== undefined ? kick(t, tOff + 0.12, 10, 30, 9) : 0);
+  const ledOn = ramp(t, t0 + 0.3, t0 + 0.45);
+  const blink = tOff !== undefined && t > tOff ? (Math.sin((t - tOff) * 16) > 0 ? 1 : 0.2) : 0;
+  const led = off > 0 ? `rgba(255,45,45,${blink})` : `rgba(70,255,160,${ledOn})`;
+  const puff = tOff !== undefined ? window4(t, tOff, tOff + 0.08, tOff + 0.7, tOff + 1.6) : 0;
+  const spark = tOff !== undefined ? window4(t, tOff - 0.02, tOff, tOff + 0.06, tOff + 0.22) : 0;
+  const hum = open * Math.sin(t * 60) * 0.8;
+  const bob = Math.sin((t - t0) * 2.2) * 6;
+  const blur = dissolve ? out * 16 : 0;
+  const top = -h - 70 - bob;
   return (
-    <div style={{ position: 'absolute', left: x, top: y, width: 0, height: 0 }}>
-      <div style={{ position: 'absolute', left: -w * 0.35, top: -w * 0.06, width: w * 0.7, height: w * 0.12, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0))', transform: `scale(${sc})` }} />
-      <div style={{ position: 'absolute', left: -w / 2, top: -w, width: w, height: w, transformOrigin: '50% 100%',
-        transform: `translateY(${(1 - clamp01(s)) * 140}px) scale(${sc}) rotate(${-droop}deg) scaleX(-1)` }}>
-        {layer('fan_body.png')}
-        {/* blades: rotate about the hub (the images share a centre); motion-blur ghosts while fast */}
-        {HAVE.has('fan_blades.png') ? (
-          <>
-            {[0, 1, 2].map((k) => (
-              <div key={k} style={{ position: 'absolute', inset: 0, transform: `rotate(${ang - k * 14}deg)`, opacity: k === 0 ? 1 : 0.35 * (1 - stopped), filter: blurB > 0.2 ? `blur(${blurB}px)` : undefined }}>
-                <Asset name="fan_blades.png" w={w} />
-              </div>
-            ))}
-          </>
-        ) : null}
-        {layer('fan_grill.png')}
-        {puff > 0 && (
-          <div style={{ position: 'absolute', left: w * 0.15, top: -w * 0.25, width: w * 0.7, opacity: puff, transform: `translateY(${-ramp(t, C.band, C.band + 1.4) * w * 0.35}px) scale(${0.6 + 0.6 * ramp(t, C.band, C.band + 1.4)})` }}>
-            <Asset name="smoke_puff.png" w={w * 0.7} blend="screen" />
-          </div>
+    <div style={{ position: 'absolute', left: x, top: y, width: 0, height: 0, opacity: op }}>
+      <div style={{ position: 'absolute', left: -w * 0.42, top: -h * 0.06, width: w * 0.84, height: h * 0.32, borderRadius: '50%',
+        background: 'radial-gradient(closest-side, rgba(0,0,0,0.5), rgba(0,0,0,0))', transform: `scale(${Math.min(1, sc)})` }} />
+      <div style={{ position: 'absolute', left: -w / 2, top, width: w, height: h, transformOrigin: '50% 100%',
+        transform: `translateY(${(1 - clamp01(s)) * 160 + hum}px) scale(${sc}) rotate(${-2 + (tOff !== undefined ? kick(t, tOff, 3, 22, 7) : 0)}deg)`,
+        filter: `${blur > 0.3 ? `blur(${blur.toFixed(1)}px) ` : ''}drop-shadow(0 14px 20px rgba(0,0,0,0.4))` }}>
+        <img src={staticFile('elnino/img/ac_body.png')} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h }} />
+        <div style={{ position: 'absolute', left: '8%', width: '84%', top: '66%', height: '46%', background: 'radial-gradient(closest-side, rgba(150,240,255,0.95), rgba(150,240,255,0))',
+          opacity: open * 0.85, mixBlendMode: 'screen' }} />
+        <div style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, perspective: 700 }}>
+          <img src={staticFile('elnino/img/ac_louver.png')} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, transformOrigin: '50% 78%', transform: `rotateX(${flap}deg)` }} />
+        </div>
+        <div style={{ position: 'absolute', left: w * 0.918 - w * 0.015, top: h * 0.543 - w * 0.015, width: w * 0.03, height: w * 0.03, borderRadius: '50%',
+          background: led, boxShadow: `0 0 ${w * 0.025}px ${led}, 0 0 ${w * 0.06}px ${led}` }} />
+        {spark > 0 && (
+          <div style={{ position: 'absolute', left: '50%', top: '82%', width: w * 1.3, height: w * 1.3, transform: 'translate(-50%,-50%)', opacity: spark,
+            background: 'radial-gradient(closest-side, #fff, rgba(160,230,255,0.75) 22%, rgba(160,230,255,0) 70%)', mixBlendMode: 'screen' }} />
         )}
-        {spark > 0 && <div style={{ position: 'absolute', left: '50%', top: '42%', width: w * 1.6, height: w * 1.6, transform: 'translate(-50%,-50%)', opacity: spark, background: 'radial-gradient(closest-side, rgba(255,255,255,1), rgba(160,230,255,0.6) 30%, rgba(160,230,255,0) 70%)', mixBlendMode: 'screen' }} />}
       </div>
+      {puff > 0 && tOff !== undefined && (
+        <img src={staticFile('elnino/img/smoke_puff.png')} style={{ position: 'absolute', left: -w * 0.32, top: top - w * 0.3 - ramp(t, tOff, tOff + 1.6) * w * 0.35, width: w * 0.64,
+          opacity: puff, mixBlendMode: 'screen', transform: `scale(${0.6 + 0.7 * ramp(t, tOff, tOff + 1.6)})` }} />
+      )}
     </div>
   );
 };
 
-/** Cool air streaming out of the fan toward the west (screen space): a fan of fading streaks. */
-const FanAir: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
-  const a = window4(t, C.pankha + 0.1, C.pankha + 0.5, C.achanak + 0.1, C.band + 0.3);
-  if (a <= 0) return null;
-  const [x, y] = at(c, -81, -2.5);
-  const k = persp(c, -81, -2.5);
-  const lines = Array.from({ length: 26 }, (_, i) => {
-    const r1 = Math.sin(i * 91.7) * 0.5 + 0.5;
-    const r2 = Math.sin(i * 37.3 + 1) * 0.5 + 0.5;
-    const ph = ((t * (1.1 + r1 * 0.8) + r2) % 1);
-    const ang = (180 + (r1 - 0.5) * 34) * (Math.PI / 180);
-    const d0 = 60 + ph * 620 * k;
-    const len = (90 + r2 * 120) * k;
-    const x0 = x + Math.cos(ang) * d0;
-    const y0 = y - 120 * k + Math.sin(ang) * d0 * 0.5;
-    const x1 = x + Math.cos(ang) * (d0 + len);
-    const y1 = y - 120 * k + Math.sin(ang) * (d0 + len) * 0.5;
-    return { x0, y0, x1, y1, o: Math.sin(ph * Math.PI) };
-  });
+/** The AC's frosty breath (GPT plume, tinted cyan), two copies flowing west in a loop from the outlet. */
+const Plume: React.FC<{ t: number; x: number; y: number; w: number; a: number }> = ({ t, x, y, w, a }) => {
+  if (a <= 0.01) return null;
   return (
-    <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, opacity: a, filter: glow('rgba(120,230,255,0.9)', 5, 2) }}>
-      {lines.map((l, i) => (
-        <line key={i} x1={l.x0} y1={l.y0} x2={l.x1} y2={l.y1} stroke="#DFFBFF" strokeOpacity={0.8 * l.o} strokeWidth={3} strokeLinecap="round" />
-      ))}
-    </svg>
-  );
-};
-
-// ---------------------------------------------------------------- ships
-const Ship: React.FC<{ t: number; c: Cam; name: string; lat: number; lon0: number; lon1: number; w: number; delay: number }> = ({ t, c, name, lat, lon0, lon1, w, delay }) => {
-  const t0 = C.jahaz - 0.1 + delay;
-  const t1 = C.garm + 0.1;
-  if (t < t0 - 0.05 || t > t1 + 0.5) return null;
-  const lon = lerp(lon0, lon1, ramp(t, t0, t1 + 0.4, linear));
-  const [x, y] = at(c, lon, lat);
-  const k = persp(c, lon, lat);
-  const roll = Math.sin(t * 3.1 + delay * 5) * 4;
-  return (
-    <>
-      <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, opacity: window4(t, t0, t0 + 0.3, t1, t1 + 0.4) * 0.8 }}>
-        <path d={`M${x + 10},${y - 6} L${x + 160 * k},${y - 34 * k} M${x + 10},${y + 4} L${x + 160 * k},${y + 26 * k}`} stroke="#fff" strokeWidth={3} strokeOpacity={0.5} strokeLinecap="round" style={{ filter: 'blur(1.5px)' }} />
-      </svg>
-      <Prop name={name} t={t} t0={t0} t1={t1} x={x} y={y} w={w * k} bob={4} rot={roll} shadow={false} />
-    </>
+    <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, background: '#000', isolation: 'isolate', mixBlendMode: 'screen', opacity: a }}>
+      {[0, 0.5].map((o, i) => {
+        const ph = (t * 0.6 + o) % 1;
+        return (
+          <div key={i} style={{ position: 'absolute', left: x - w + 30 - ph * w * 0.4, top: y - w * 0.33, width: w, height: w * 0.667, opacity: Math.sin(ph * Math.PI),
+            transform: `scale(${0.8 + 0.35 * ph})`, transformOrigin: '100% 50%' }}>
+            <img src={staticFile('elnino/img/overlay_frost_air.png')} style={{ width: '100%', height: '100%' }} />
+          </div>
+        );
+      })}
+      <div style={{ position: 'absolute', inset: 0, background: '#86ECFF', mixBlendMode: 'multiply' }} />
+    </div>
   );
 };
 
@@ -391,7 +363,7 @@ const SpaceInsert: React.FC<{ t: number }> = ({ t }) => {
 
 /** India beat: a cinematic still of a dry field with the "−13%" counter. */
 const FieldInsert: React.FC<{ t: number }> = ({ t }) => {
-  const t0 = C.p13 - 0.35;
+  const t0 = C.issaal - 0.3;
   const t1 = C.y1876 - 0.05;
   if (t < t0 || t > t1 + 0.1) return null;
   const a = window4(t, t0, t0 + 0.35, t1 - 0.05, t1 + 0.05);
@@ -403,8 +375,8 @@ const FieldInsert: React.FC<{ t: number }> = ({ t }) => {
       </AbsoluteFill>
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%)' }} />
       <Counter t={t} t0={C.p13} t1={t1 + 0.1} from={0} to={-13} fmt={(v) => `${Math.round(v)}%`} x={540} y={760} size={230} color="#fff" glowC="#FF8A3D" />
-      <Label text="मानसून 2026" t={t} t0={C.p13 + 0.15} t1={t1 + 0.1} x={540} y={600} size={58} color="#FFD98A" />
-      <Label text="2015 के बाद सबसे कम" t={t} t0={C.y2015 - 0.1} t1={t1 + 0.1} x={540} y={925} size={52} color="#fff" />
+      <Label text="मानसून 2026" t={t} t0={C.issaal} t1={t1 + 0.1} x={540} y={600} size={58} color="#FFD98A" />
+      <Label text="कम बारिश" t={t} t0={C.kam - 0.05} t1={t1 + 0.1} x={540} y={925} size={60} color="#fff" />
     </AbsoluteFill>
   );
 };
@@ -437,6 +409,75 @@ const FilmInsert: React.FC<{ t: number }> = ({ t }) => {
         </div>
       ))}
       <Title text="1876" t={t} t0={C.y1876 + 0.05} t1={t1 + 0.3} x={540} y={1180} size={190} glowColor="rgba(255,190,120,0.7)" color="#F6E7CF" tilt={0} />
+    </AbsoluteFill>
+  );
+};
+
+/** Burning-Earth plate with drifting embers and a breathing sun flare (hook flash-forward and finale). */
+const Burning: React.FC<{ t: number; t0: number; z0: number; z1: number; dur: number }> = ({ t, t0, z0, z1, dur }) => {
+  const z = lerp(z0, z1, ramp(t, t0, t0 + dur, linear));
+  return (
+    <>
+      <AbsoluteFill style={{ transform: `scale(${z})` }}>
+        <img src={staticFile('elnino/img/scene_earth_burning.png')} style={{ width: 1080, height: 1920, objectFit: 'cover' }} />
+      </AbsoluteFill>
+      <AbsoluteFill style={{ mixBlendMode: 'screen', opacity: 0.85, transform: `translateY(${-((t - t0) * 70) % 1920}px)` }}>
+        <img src={staticFile('elnino/img/overlay_embers.png')} style={{ position: 'absolute', top: 0, width: 1080, height: 1920, objectFit: 'cover' }} />
+        <img src={staticFile('elnino/img/overlay_embers.png')} style={{ position: 'absolute', top: 1920, width: 1080, height: 1920, objectFit: 'cover' }} />
+      </AbsoluteFill>
+      <img src={staticFile('elnino/img/overlay_sun_flare.png')} style={{ position: 'absolute', left: -250, top: -330, width: 1580, mixBlendMode: 'screen',
+        opacity: 0.75 + 0.15 * Math.sin(t * 2.3), transform: `rotate(${(t - t0) * 2}deg)` }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.55) 100%)' }} />
+    </>
+  );
+};
+
+/** Hook: "अगला साल दुनिया का सबसे गर्म साल": a flash-forward to a burning planet, "2027" slams in. */
+const HookInsert: React.FC<{ t: number }> = ({ t }) => {
+  const t0 = C.agla - 0.25;
+  const t1 = C.naam - 0.12;
+  if (t < t0 || t > t1 + 0.3) return null;
+  const inP = ramp(t, t0, t0 + 0.32, easeOut);
+  const outP = ramp(t, t1 - 0.05, t1 + 0.25, easeIn);
+  const bl = (1 - inP) * 16 + outP * 22;
+  return (
+    <AbsoluteFill style={{ opacity: Math.min(1, inP * 1.6) * (1 - outP), transform: `scale(${lerp(1.18, 1, inP) + outP * 0.5})`, filter: bl > 0.3 ? `blur(${bl.toFixed(1)}px)` : undefined }}>
+      <Burning t={t} t0={t0} z0={1.02} z1={1.12} dur={t1 - t0} />
+      <Title text="2027" t={t} t0={C.agla + 0.05} t1={t1 + 0.3} x={540} y={520} size={250} glowColor="rgba(255,120,30,0.95)" stagger={0.07} tilt={0} />
+      <Label text="सबसे गर्म साल?" t={t} t0={C.garmsaal - 0.1} t1={t1 + 0.3} x={540} y={790} size={66} color="#FFD9A0" />
+    </AbsoluteFill>
+  );
+};
+
+/** Finale: the map burns out into the same burning planet (callback to the hook). */
+const FinaleInsert: React.FC<{ t: number }> = ({ t }) => {
+  const t0 = C.sabsegarm - 0.3;
+  if (t < t0) return null;
+  const a = ramp(t, t0, t0 + 0.6, inOut);
+  return (
+    <AbsoluteFill style={{ opacity: a }}>
+      <Burning t={t} t0={t0} z0={1.25} z1={1.0} dur={DURATION_S - t0} />
+    </AbsoluteFill>
+  );
+};
+
+/** "क्या हम रेडी हैं?": the worried Earth fans itself and looks straight at us. */
+const Ending: React.FC<{ t: number }> = ({ t }) => {
+  const t0 = C.kya - 0.12;
+  if (t < t0) return null;
+  const s = pop(t, t0, 9, 170);
+  const fan = Math.sin((t - t0) * 13) * 3.5;
+  const dim = ramp(t, t0, t0 + 0.4);
+  return (
+    <AbsoluteFill>
+      <AbsoluteFill style={{ background: 'rgba(10,4,2,0.5)', opacity: dim }} />
+      <div style={{ position: 'absolute', left: 540, top: 1000, width: 0, height: 0 }}>
+        <div style={{ position: 'absolute', left: -330, top: -680, width: 660, transformOrigin: '50% 100%',
+          transform: `translateY(${(1 - clamp01(s)) * 260}px) scale(${Math.max(0, s)}) rotate(${fan}deg)`, filter: 'drop-shadow(0 0 40px rgba(255,110,40,0.65)) drop-shadow(0 20px 30px rgba(0,0,0,0.5))' }}>
+          <img src={staticFile('elnino/img/earth_worried.png')} style={{ width: 660, display: 'block' }} />
+        </div>
+      </div>
+      <Title text="क्या हम रेडी हैं?" font={FONT} t={t} t0={C.kya} t1={DURATION_S + 1} x={540} y={1210} size={96} glowColor="rgba(255,90,40,0.9)" stagger={0.05} tilt={0} />
     </AbsoluteFill>
   );
 };
@@ -476,81 +517,103 @@ const HeatArrows: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 // ---------------------------------------------------------------- famine rings (1876, India)
 const FAMINE: [string, number, number][] = [['मद्रास', 80.27, 13.08], ['बॉम्बे', 72.88, 19.08], ['मैसूर', 76.64, 12.3], ['हैदराबाद', 78.47, 17.38], ['पुणे', 73.86, 18.52]];
 
+// ---------------------------------------------------------------- NOAA layer schedule (shared with the map)
+/** Today's anomaly at "नाम है सुपर एल नीनो"; at "इतिहास" it rewinds to 1 June and plays forward to 8 October. */
+export const sstAt = (t: number) => {
+  const last = GEO.sst.days.length - 1;
+  const a = window4(t, C.naam - 0.15, C.naam + 0.25, C.ac2 - 0.45, C.ac2 + 0.05);
+  let day = last;
+  if (t > C.itihas - 0.15) day = t < C.itihas + 0.25 ? last * (1 - ramp(t, C.itihas - 0.15, C.itihas + 0.25, inOut)) : last * ramp(t, C.itihas + 0.25, C.ac2 - 0.7, inOut);
+  return { a: a * 0.92, day };
+};
+
 // ---------------------------------------------------------------- the screen layer
 export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   useMontserrat();
   const S = (lon: number, lat: number) => at(c, lon, lat);
   const K = (lon: number, lat: number) => persp(c, lon, lat);
   const last = GEO.sst.n34.length - 1;
-  const n34 = (p: number) => {
-    const f = p * last;
-    const i = Math.min(last - 1, Math.floor(f));
-    return lerp(GEO.sst.n34[i], GEO.sst.n34[i + 1], f - i);
-  };
-  const lapse = ramp(t, C.ab + 0.25, C.taqatwar + 0.9, inOut);
-  const dayLabel = () => {
-    const d = GEO.sst.days[Math.round(lapse * last)];
-    const months = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
-    return `${parseInt(d.slice(6, 8), 10)} ${months[parseInt(d.slice(4, 6), 10) - 1]} ${d.slice(0, 4)}`;
-  };
-  const lapseA = window4(t, C.ab + 0.1, C.ab + 0.4, C.yahan, C.yahan + 0.4);
+  const sd = sstAt(t).day;
+  const i0 = Math.min(last - 1, Math.floor(sd));
+  const reading = lerp(GEO.sst.n34[i0], GEO.sst.n34[i0 + 1], sd - i0);
+  const months = ['जनवरी', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसंबर'];
+  const d = GEO.sst.days[Math.round(sd)];
+  const dayLabel = `${parseInt(d.slice(6, 8), 10)} ${months[parseInt(d.slice(4, 6), 10) - 1]} ${d.slice(0, 4)}`;
+  const lapseA = window4(t, C.itihas - 0.15, C.itihas + 0.15, C.ac2 - 0.45, C.ac2);
+  // AC #1 on the Peru coast; AC #2 mid-ocean ("ये AC हैं हवाएँ") dissolving into the trade winds
+  const ac1 = S(-96, -1);
+  const k1 = K(-96, -1);
+  const ac2 = S(-112, 6);
+  const k2 = K(-112, 6);
   return (
     <AbsoluteFill>
-      {/* opening: the fan and its breath */}
-      <FanAir t={t} c={c} />
-      <Fan t={t} c={c} />
-      <CurveText id="ep" text="पूर्वी Pacific" t={t} t0={C.thanda - 0.1} t1={C.achanak + 0.3} size={58} color="#BFF6FF" glowC={COLD}
-        pts={[S(-92, 4), S(-110, 7), S(-128, 7), S(-146, 5)].map(([x, y]) => [x, y - 60] as P)} dir={-1} />
+      {/* सोचो… AC अचानक बंद */}
+      <Plume t={t} x={ac1[0] - 120 * k1} y={ac1[1] - 190 * k1} w={1300 * k1} a={window4(t, 0.55, 1.0, C.band, C.band + 0.5)} />
+      <AcUnit t={t} c={c} lon={-96} lat={-1} t0={0.25} t1={C.agla} tOff={C.band} w0={540} />
+      <CurveText id="po" text="Pacific Ocean" font={LATIN} t={t} t0={C.pacific - 0.05} t1={C.band + 0.6} size={60} color="#C9F7FF" glowC={COLD}
+        pts={[S(-95, 9), S(-115, 12), S(-135, 12), S(-152, 9)]} dir={-1} />
 
-      {/* El Niño / Super */}
-      <Title text="El Niño" t={t} t0={C.elnino - 0.05} t1={C.hawayen - 0.2} x={560} y={830} size={210} glowColor="rgba(70,120,255,0.95)" />
-      <Title text="Super" t={t} t0={C.super - 0.08} t1={C.hawayen - 0.2} x={500} y={640} size={150} glowColor="rgba(255,40,60,0.95)" color="#FFE9E9" stagger={0.05} tilt={-8} />
+      {/* अगला साल… सबसे गर्म साल (flash-forward) */}
+      <HookInsert t={t} />
 
-      {/* trade winds */}
-      <CurveText id="tw" text="Trade Winds" font={LATIN} t={t} t0={C.trade - 0.05} t1={C.paschim + 0.9} size={78} color="#fff" glowC="rgba(160,230,255,0.9)"
+      {/* नाम है सुपर एल नीनो: real NOAA map + title */}
+      <Title text="Super" t={t} t0={C.super - 0.06} t1={C.itihas + 0.15} x={470} y={650} size={150} glowColor="rgba(255,40,60,0.95)" color="#FFE9E9" stagger={0.05} tilt={-8} />
+      <Title text="El Niño" t={t} t0={C.elnino - 0.06} t1={C.itihas + 0.15} x={570} y={840} size={210} glowColor="rgba(70,120,255,0.95)" />
+
+      {/* इतिहास का सबसे खतरनाक: the June → October time-lapse with date and live reading */}
+      {lapseA > 0 && (
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 400, textAlign: 'center', opacity: lapseA }}>
+          <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 54, color: '#fff', textShadow: '0 3px 10px rgba(0,0,0,0.8)' }}>{dayLabel}</div>
+          <div style={{ fontFamily: LATIN, fontWeight: 900, fontSize: 124, color: '#fff', marginTop: 4,
+            filter: `drop-shadow(0 0 12px ${WARM}) drop-shadow(0 0 30px ${WARM}) drop-shadow(0 4px 8px rgba(0,0,0,0.6))` }}>+{reading.toFixed(1)}°C</div>
+          <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 34, color: 'rgba(255,255,255,0.88)', textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}>Pacific का तापमान, सामान्य से ऊपर · NOAA</div>
+        </div>
+      )}
+      <Prop name="icon_warning.png" t={t} t0={C.khatarnak - 0.1} t1={C.ac2 - 0.4} x={540} y={1140} w={150} bob={5} shadow={false} />
+      <Title text="सबसे खतरनाक?" font={FONT} t={t} t0={C.khatarnak - 0.02} t1={C.ac2 - 0.3} x={540} y={1260} size={100} glowColor="rgba(255,45,45,0.95)" tilt={-3} stagger={0.06} />
+
+      {/* ये AC हैं हवाएँ, ट्रेड विंड्स */}
+      <Plume t={t} x={ac2[0] - 110 * k2} y={ac2[1] - 180 * k2} w={1350 * k2} a={window4(t, C.ac2 + 0.35, C.ac2 + 0.7, C.hawayen + 0.4, C.trade + 0.6)} />
+      <AcUnit t={t} c={c} lon={-112} lat={6} t0={C.ac2 - 0.15} t1={C.hawayen + 0.15} w0={470} dissolve />
+      <CurveText id="tw" text="Trade Winds" font={LATIN} t={t} t0={C.trade - 0.05} t1={C.garm} size={80} color="#fff" glowC="rgba(160,230,255,0.9)"
         pts={[S(-100, 13), S(-130, 15), S(-160, 14), S(175, 12)]} dir={-1} />
-      <Label text="पूरब" t={t} t0={C.purab - 0.05} t1={C.jahaz} x={S(-95, -14)[0]} y={S(-95, -14)[1]} size={50} />
-      <Label text="पश्चिम" t={t} t0={C.paschim - 0.05} t1={C.jahaz} x={S(155, -14)[0]} y={S(155, -14)[1]} size={50} />
-
-      {/* ships */}
-      <Ship t={t} c={c} name="ship_galleon_a.png" lat={9} lon0={-150} lon1={-188} w={190} delay={0} />
-      <Ship t={t} c={c} name="ship_galleon_b.png" lat={3} lon0={-140} lon1={-176} w={150} delay={0.25} />
+      <Label text="पूरब" t={t} t0={C.purab - 0.05} t1={C.garm} x={S(-95, -14)[0]} y={S(-95, -14)[1]} size={52} />
+      <Label text="पश्चिम" t={t} t0={C.paschim - 0.05} t1={C.garm} x={S(155, -14)[0]} y={S(155, -14)[1]} size={52} />
 
       {/* warm water west, rain over Indonesia */}
-      <Label text="इंडोनेशिया" t={t} t0={C.indo} t1={C.peru - 0.1} x={S(112, 4)[0]} y={S(112, 4)[1]} size={44} />
-      <Label text="ऑस्ट्रेलिया" t={t} t0={C.indo + 0.25} t1={C.peru - 0.1} x={S(134, -24)[0]} y={S(134, -24)[1]} size={48} />
-      <Cloud t={t} t0={C.barish - 0.15} t1={C.peru - 0.1} x={S(116, 3)[0]} y={S(116, 3)[1] - 60} w={250 * K(116, 3)} flash />
-      <Cloud t={t} t0={C.barish + 0.1} t1={C.peru - 0.1} x={S(140, -4)[0]} y={S(140, -4)[1] - 40} w={190 * K(140, -4)} />
+      <Label text="इंडोनेशिया" t={t} t0={C.indo} t1={C.peru - 0.1} x={S(112, 4)[0]} y={S(112, 4)[1]} size={46} />
+      <Label text="ऑस्ट्रेलिया" t={t} t0={C.indo + 0.3} t1={C.peru - 0.1} x={S(134, -24)[0]} y={S(134, -24)[1]} size={48} />
+      <Cloud t={t} t0={C.barish - 0.15} t1={C.peru - 0.1} x={S(116, 3)[0]} y={S(116, 3)[1] - 60} w={260 * K(116, 3)} flash />
+      <Cloud t={t} t0={C.barish + 0.1} t1={C.peru - 0.1} x={S(140, -4)[0]} y={S(140, -4)[1] - 40} w={200 * K(140, -4)} />
 
       {/* Peru: cold water, dry coast */}
-      <Label text="पेरू" t={t} t0={C.peru + 0.05} t1={C.lekin} x={S(-74, -10)[0]} y={S(-74, -10)[1]} size={52} />
-      <Label text="ठंडा पानी" t={t} t0={C.thanda4 - 0.05} t1={C.lekin} x={S(-98, -8)[0]} y={S(-98, -8)[1]} size={46} color="#BFF6FF" />
-      <Prop name="icon_sun.png" t={t} t0={C.sukha - 0.15} t1={C.lekin} x={S(-71, -14)[0]} y={S(-71, -14)[1] - 120} w={170 * K(-71, -14)} bob={7} shadow={false} />
-      <Prop name="tile_cracked_earth.png" t={t} t0={C.sukha} t1={C.lekin} x={S(-76, -12)[0]} y={S(-76, -12)[1]} w={170 * K(-76, -12)} bob={2} />
+      <Label text="पेरू" t={t} t0={C.peru + 0.05} t1={C.lekin} x={S(-74, -10)[0]} y={S(-74, -10)[1]} size={54} />
+      <Label text="ठंडा पानी" t={t} t0={C.thanda4 - 0.05} t1={C.lekin} x={S(-98, -8)[0]} y={S(-98, -8)[1]} size={48} color="#BFF6FF" />
+      <Prop name="icon_sun.png" t={t} t0={C.sukha - 0.15} t1={C.lekin} x={S(-71, -14)[0]} y={S(-71, -14)[1] - 150} w={220 * K(-71, -14)} bob={7} shadow={false} />
+      <Prop name="tile_cracked_earth.png" t={t} t0={C.sukha} t1={C.lekin} x={S(-76, -12)[0]} y={S(-76, -12)[1]} w={220 * K(-76, -12)} bob={2} />
 
-      {/* weakening winds → thermometers */}
+      {/* hawaen kamzor → warm water back east, thermometers */}
+      <Label text="हर 2–7 साल" t={t} t0={C.y27 - 0.1} t1={C.garm5} x={540} y={600} size={70} color="#FFE7A3" />
       <Thermo t={t} t0={C.ekdo - 0.2} t1={C.bas - 0.2} x={S(-150, 1)[0]} y={S(-150, 1)[1]} h={150 * K(-150, 1)} to={1.3} />
       <Thermo t={t} t0={C.ekdo} t1={C.bas - 0.2} x={S(-125, -1)[0]} y={S(-125, -1)[1]} h={160 * K(-125, -1)} to={1.8} />
       <Thermo t={t} t0={C.degree - 0.1} t1={C.bas - 0.2} x={S(-100, -2)[0]} y={S(-100, -2)[1]} h={170 * K(-100, -2)} to={2.2} />
 
-      {/* effects tour */}
-      <Prop name="icon_flood_house.png" t={t} t0={C.baadh - 0.1} t1={C.america} x={S(-80, -4)[0]} y={S(-80, -4)[1]} w={200 * K(-80, -4)} />
-      <Label text="बाढ़" t={t} t0={C.baadh} t1={C.america} x={S(-89, -1)[0]} y={S(-89, -1)[1] - 40} size={56} color="#9EC2FF" />
-      <Cloud t={t} t0={C.bhari - 0.2} t1={C.aus7 - 0.1} x={S(-100, 33)[0]} y={S(-100, 33)[1] - 50} w={220 * K(-100, 33)} rain={1.3} flash />
-      <Cloud t={t} t0={C.bhari} t1={C.aus7 - 0.1} x={S(-86, 32)[0]} y={S(-86, 32)[1] - 40} w={170 * K(-86, 32)} rain={1.1} />
-      <Label text="भारी बारिश" t={t} t0={C.bhari} t1={C.aus7 - 0.1} x={S(-95, 26)[0]} y={S(-95, 26)[1] + 30} size={50} color="#BFE6FF" />
-      <Prop name="icon_sun.png" t={t} t0={C.sukha7 - 0.2} t1={C.bharat} x={S(128, -20)[0]} y={S(128, -20)[1] - 130} w={180 * K(128, -20)} bob={7} shadow={false} />
-      <Prop name="tile_cracked_earth.png" t={t} t0={C.sukha7 - 0.05} t1={C.bharat} x={S(136, -27)[0]} y={S(136, -27)[1]} w={180 * K(136, -27)} bob={2} />
-      <Label text="सूखा" t={t} t0={C.sukha7} t1={C.bharat} x={S(134, -33)[0]} y={S(134, -33)[1]} size={60} color={GOLD} />
+      {/* पेरू में बाढ़, ऑस्ट्रेलिया में सूखा */}
+      <Prop name="icon_flood_house.png" t={t} t0={C.baadh - 0.1} t1={C.aus7 - 0.1} x={S(-80, -4)[0]} y={S(-80, -4)[1]} w={320 * K(-80, -4)} />
+      <Label text="बाढ़" t={t} t0={C.baadh} t1={C.aus7 - 0.1} x={S(-90, -1)[0]} y={S(-90, -1)[1] - 40} size={60} color="#9EC2FF" />
+      <Prop name="icon_sun.png" t={t} t0={C.sukha7 - 0.25} t1={C.bharat} x={S(128, -20)[0]} y={S(128, -20)[1] - 170} w={250 * K(128, -20)} bob={7} shadow={false} />
+      <Prop name="tile_cracked_earth.png" t={t} t0={C.sukha7 - 0.1} t1={C.bharat} x={S(136, -27)[0]} y={S(136, -27)[1]} w={250 * K(136, -27)} bob={2} />
+      <Label text="सूखा" t={t} t0={C.sukha7} t1={C.bharat} x={S(134, -33)[0]} y={S(134, -33)[1]} size={62} color={GOLD} />
 
-      {/* India: the monsoon thins out */}
-      <Label text="भारत" t={t} t0={C.bharat + 0.1} t1={C.p13 - 0.2} x={S(78, 23)[0]} y={S(78, 23)[1]} size={70} color="#FFE7A3" />
-      {[[74, 20, 0], [84, 24, 0.12], [78, 15, 0.24], [88, 22, 0.36], [72, 27, 0.48]].map(([lon, lat, d], i) => {
-        const fade = ramp(t, C.kamzor8 + d * 0.8, C.kamzor8 + d * 0.8 + 0.6, inOut);
+      {/* भारत में हमारा मानसून कमजोर */}
+      <Label text="भारत" t={t} t0={C.bharat + 0.1} t1={C.issaal - 0.1} x={S(78, 23)[0]} y={S(78, 23)[1]} size={72} color="#FFE7A3" />
+      {[[74, 20, 0], [84, 24, 0.12], [78, 15, 0.24], [88, 22, 0.36], [72, 27, 0.48]].map(([lon, lat, dd], i) => {
+        const fade = ramp(t, C.kamzor8 - 0.2 + dd * 0.7, C.kamzor8 + 0.3 + dd * 0.7, inOut);
         return (
-          <div key={i} style={{ opacity: 1 - fade * 0.85 }}>
-            <Rain t={t + i} x={S(lon, lat)[0]} y={S(lon, lat)[1] - 40} w={200} h={180} a={window4(t, C.monsoon - 0.1 + d, C.monsoon + 0.3 + d, C.kamzor8 + d * 0.8, C.kamzor8 + d * 0.8 + 0.4)} />
-            <Prop name="cloud_monsoon_dark.png" t={t} t0={C.monsoon - 0.3 + d} t1={C.p13 - 0.25} x={S(lon, lat)[0] - fade * 60} y={S(lon, lat)[1] - 60} w={300 * K(lon, lat)} bob={4} shadow={false} sweep={false} />
+          <div key={i} style={{ position: 'absolute', inset: 0, opacity: 1 - fade * 0.85 }}>
+            <Rain t={t + i} x={S(lon, lat)[0]} y={S(lon, lat)[1] - 40} w={200} h={180}
+              a={window4(t, C.monsoon - 0.3 + dd, C.monsoon + dd, C.kamzor8 - 0.2 + dd * 0.7, C.kamzor8 + 0.2 + dd * 0.7)} />
+            <Prop name="cloud_monsoon_dark.png" t={t} t0={C.bharat + 0.4 + dd} t1={C.issaal - 0.2} x={S(lon, lat)[0] - fade * 70} y={S(lon, lat)[1] - 60} w={320 * K(lon, lat)} bob={4} shadow={false} sweep={false} />
           </div>
         );
       })}
@@ -559,9 +622,9 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* 1876 India: famine regions */}
       {FAMINE.map(([name, lon, lat], i) => {
-        const t0 = C.akaal + i * 0.18;
-        const p = ramp(t, t0, t0 + 0.5, easeOut);
-        const a = window4(t, t0, t0 + 0.1, C.ab - 0.2, C.ab + 0.1);
+        const f0 = C.akaal + i * 0.16;
+        const p = ramp(t, f0, f0 + 0.5, easeOut);
+        const a = window4(t, f0, f0 + 0.1, C.ab - 0.2, C.ab + 0.1);
         if (a <= 0) return null;
         const [x, y] = S(lon, lat);
         return (
@@ -570,28 +633,22 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
               <circle cx={x} cy={y} r={20 + 36 * p} fill="none" stroke="#FF3B30" strokeWidth={9 * (1 - p) + 4} />
               <circle cx={x} cy={y} r={9} fill="#FF3B30" />
             </svg>
-            <Prop name="icon_dry_crop.png" t={t} t0={t0 + 0.15} t1={C.ab - 0.2} x={x + 50} y={y - 10} w={110} bob={2} shadow={false} />
+            <Prop name="icon_dry_crop.png" t={t} t0={f0 + 0.15} t1={C.ab - 0.2} x={x + 52} y={y - 8} w={110} bob={2} shadow={false} />
           </React.Fragment>
         );
       })}
       <Counter t={t} t0={C.lakh50 - 0.1} t1={C.ab - 0.1} from={0} to={50} fmt={(v) => `${Math.round(v)} लाख+`} font={FONT} x={540} y={560} size={150} color="#fff" glowC="#FF2B3D" dur={1.0} />
 
-      {/* the NOAA time-lapse: date and live Niño-3.4 reading */}
-      {lapseA > 0 && (
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 420, textAlign: 'center', opacity: lapseA }}>
-          <div style={{ fontFamily: FONT, fontWeight: 800, fontSize: 54, color: '#fff', textShadow: '0 3px 10px rgba(0,0,0,0.8)' }}>{dayLabel()}</div>
-          <div style={{ fontFamily: LATIN, fontWeight: 900, fontSize: 120, color: '#fff', marginTop: 6, filter: `drop-shadow(0 0 12px ${WARM}) drop-shadow(0 0 30px ${WARM}) drop-shadow(0 4px 8px rgba(0,0,0,0.6))` }}>
-            +{n34(lapse).toFixed(1)}°C
-          </div>
-          <div style={{ fontFamily: FONT, fontWeight: 700, fontSize: 34, color: 'rgba(255,255,255,0.85)', textShadow: '0 2px 6px rgba(0,0,0,0.8)' }}>Pacific का तापमान, सामान्य से ऊपर · NOAA</div>
-        </div>
-      )}
-      <Title text="सबसे ताक़तवर?" font={FONT} t={t} t0={C.itihas - 0.05} t1={C.yahan + 0.2} x={540} y={1200} size={110} glowColor="rgba(255,60,40,0.95)" tilt={-4} stagger={0.06} />
-      <Thermo t={t} t0={C.d3 - 0.3} t1={C.dharti} x={S(-118, -1)[0]} y={S(-118, -1)[1]} h={260 * K(-118, -1)} to={GEO.sst.n34[last]} dur={1.3} />
+      {/* और अब समंदर 3 डिग्री से भी ज़्यादा गर्म: the real reading */}
+      <Thermo t={t} t0={C.d3 - 0.35} t1={C.dharti} x={S(-118, -1)[0]} y={S(-118, -1)[1]} h={270 * K(-118, -1)} to={GEO.sst.n34[last]} dur={1.3} />
+      <Label text="8 अक्टूबर 2026 · NOAA" t={t} t0={C.d3 + 0.4} t1={C.dharti} x={540} y={430} size={44} color="#FFE1C8" />
 
       {/* heat into the atmosphere, 2027 */}
       <HeatArrows t={t} c={c} />
-      <Title text="2027" t={t} t0={C.y2027 - 0.05} t1={DURATION_S + 1} x={540} y={760} size={240} glowColor="rgba(255,120,30,0.95)" stagger={0.07} tilt={0} />
+      <FinaleInsert t={t} />
+      <Title text="2027" t={t} t0={C.y2027 - 0.05} t1={C.kya - 0.05} x={540} y={760} size={250} glowColor="rgba(255,120,30,0.95)" stagger={0.07} tilt={0} />
+      <Label text="अब तक का सबसे गर्म साल?" t={t} t0={C.sabsegarm - 0.1} t1={C.kya - 0.05} x={540} y={960} size={62} color="#FFD9A0" />
+      <Ending t={t} />
       <SpaceInsert t={t} />
     </AbsoluteFill>
   );
@@ -600,20 +657,21 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 // ---------------------------------------------------------------- whole-frame look
 /** Map hidden while an insert fully covers the frame. */
 export const mapHidden = (t: number) =>
-  (t > C.bas + 0.2 && t < C.peru7 - 0.12) || (t > C.y1876 + 0.3 && t < C.akele - 0.2) || (t > C.p13 + 0.05 && t < C.y1876 - 0.1);
+  (t > C.agla + 0.15 && t < C.naam - 0.15) || (t > C.bas + 0.2 && t < C.peru7 - 0.12) || (t > C.issaal + 0.1 && t < C.y1876 - 0.1) ||
+  (t > C.y1876 + 0.3 && t < C.akele - 0.2) || t > C.sabsegarm + 0.35;
 
 /** Colour grade on the map plane: sepia/red for 1876 India, a hot burnt-orange world for the finale. */
 export const mapGrade = (t: number) => {
   const old = window4(t, C.akele - 0.3, C.akele + 0.1, C.ab - 0.2, C.ab + 0.2);
   const heat = ramp(t, C.dharti - 0.2, C.tapayegi + 0.4, inOut);
-  const dim = window4(t, C.elnino - 0.1, C.elnino + 0.1, C.hawayen - 0.3, C.hawayen) * 0.22;
+  const dim = window4(t, C.super - 0.1, C.super + 0.1, C.itihas, C.itihas + 0.3) * 0.18;
   return `sepia(${0.75 * old + 0.55 * heat}) saturate(${1 + 0.6 * heat - 0.3 * old}) hue-rotate(${-12 * heat}deg) brightness(${1 - dim - 0.12 * old + 0.08 * heat}) contrast(${1.04 + 0.08 * heat})`;
 };
 
 /** Screen-space shake for impacts. */
 export const shake = (t: number): [number, number] => {
   let x = 0, y = 0;
-  for (const [t0, a] of [[C.elnino, 14], [C.super, 10], [C.bigad - 0.05, 22], [C.y2027, 16], [C.band, 6]] as [number, number][]) {
+  for (const [t0, a] of [[C.band, 9], [C.agla, 10], [C.super, 10], [C.elnino, 13], [C.bigad - 0.05, 22], [C.y1876, 7], [C.y2027, 16], [C.kya, 6]] as [number, number][]) {
     x += kick(t, t0, a, 31, 9);
     y += kick(t, t0 + 0.02, a * 0.7, 27, 9);
   }
@@ -624,7 +682,8 @@ export const shake = (t: number): [number, number] => {
 export const Grade: React.FC<{ t: number }> = ({ t }) => {
   const heat = ramp(t, C.dharti - 0.2, C.tapayegi + 0.4, inOut);
   const flash = Math.max(
-    window4(t, C.elnino - 0.04, C.elnino, C.elnino + 0.03, C.elnino + 0.22),
+    window4(t, C.super - 0.04, C.super, C.super + 0.03, C.super + 0.22),
+    window4(t, C.agla - 0.3, C.agla - 0.25, C.agla - 0.2, C.agla + 0.05) * 0.8,
     window4(t, C.y2027 - 0.04, C.y2027, C.y2027 + 0.03, C.y2027 + 0.25),
     window4(t, C.peru - 0.05, C.peru + 0.05, C.peru + 0.1, C.peru + 0.3) * 0.5,
   );
@@ -653,7 +712,7 @@ export const Grade: React.FC<{ t: number }> = ({ t }) => {
 export const Subtitles: React.FC<{ t: number }> = ({ t }) => {
   let i = -1;
   for (let j = 0; j < CAPS.length; j++) if (CAPS[j][0] <= t) i = j;
-  const end = DURATION_S - 0.5;
+  const end = C.kya - 0.05;
   if (i < 0 || t > end) return null;
   const [t0, text] = CAPS[i];
   const t1 = i + 1 < CAPS.length ? CAPS[i + 1][0] : end;
