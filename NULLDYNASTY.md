@@ -18,11 +18,12 @@ Read this first in any new session. It holds the decisions made so far, so work 
 
 ## October 2026 schedule
 
-Daily from Oct 9 (changed on Oct 8 from every other day).
+Daily from Oct 9 (changed on Oct 8 from every other day), posted around 11:15 IST.
 - Video 1: Darién Gap, posted Oct 8.
-- Video 2: North Sentinel Island (`src/sentinel/`, `exports/sentinel_*`), Oct 9.
-- Video 3 onward: one per day, built from a competitor reference.
-- Diomede Islands (`src/diomede/`, `exports/diomede_*`) is a **draft**, not in the schedule. The creator isn't sure it will work; keep it parked.
+- Video 2: Diomede Islands v2 (`src/diomede2/`, `exports/diomede_v2_*`), posted Oct 9. First video with the moving watermark.
+- Video 3: North Sentinel Island (`src/sentinel/`, `exports/sentinel_*`), Oct 10 (finished; no watermark, by choice).
+- Video 4 onward: one per day, built from a competitor reference.
+- The first Diomede version (`src/diomede/`, `exports/diomede_hindi_full.mp4`) is retired.
 
 Keep 1-2 finished videos in the buffer. Never post a rushed video; skip a day instead.
 Check-ins on Oct 18 and Oct 31: "viewed vs swiped away", average percentage viewed, subscribers gained per video. If daily posting drags the numbers down, go back to every other day.

@@ -1,6 +1,6 @@
 # Diomede Islands (v2) Short: upload kit
 
-File: `diomede_v2_hindi_full.mp4`. Cover: `diomede_v2_cover_1080x1920.png`.
+Slot: **Oct 9, ~11:15 IST** (video 2). File: `diomede_v2_hindi_full.mp4`. Cover: `diomede_v2_cover_1080x1920.png`.
 
 ## YouTube
 
