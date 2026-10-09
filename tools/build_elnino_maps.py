@@ -29,7 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "elnino" / "maps"
 R = 6378137.0
 WRAP = -20.0
-LON0, LON1, LAT0, LAT1 = 40.0, 340.0, 78.0, -62.0
+LON0, LON1, LAT0, LAT1 = 40.0, 340.0, 84.0, -78.0
 
 
 def unwrap(lon: float) -> float:
@@ -237,7 +237,7 @@ def main() -> None:
     # fade out toward the poles (sea ice)
     ys = b[3] - (np.arange(H) + 0.5) / H * (b[3] - b[1])
     lat = np.degrees(2 * np.arctan(np.exp(ys / R)) - np.pi / 2)
-    fade = np.clip((70 - np.abs(lat)) / 8, 0, 1)[:, None]
+    fade = (np.clip((72 - lat) / 8, 0, 1) * np.clip((lat + 64) / 8, 0, 1))[:, None]
     m = (np.asarray(mask, np.float32) * fade).astype(np.uint8)
     Image.fromarray(m).save(OUT / "ocean_mask.png", optimize=True)
     print("ocean_mask", W, H)
@@ -245,6 +245,7 @@ def main() -> None:
     # Mercator row → latitude, column → longitude (unwrapped, mod 360 for the 0..360 grid)
     lon_cols = (LON0 + (np.arange(W) + 0.5) / P) % 360
     frames = []
+    n34 = []
     for f in sorted(glob.glob(str(oisst / "oisst-avhrr-v02r01.*.nc"))):
         day = Path(f).name.split(".")[1][:8]
         x, glat, glon = sst_grid(f)
@@ -256,10 +257,16 @@ def main() -> None:
         rgb = colourize(v)
         Image.fromarray(rgb.clip(0, 255).astype(np.uint8)).save(OUT / "sst" / f"sst_{day}.jpg", quality=86)
         frames.append(day)
-        if day == frames[0] or len(frames) % 10 == 0:
-            n34 = v[(np.abs(lat) <= 5)][:, (lon_cols >= 190) & (lon_cols <= 240)]
-            print("sst", day, "nino3.4 ~%.2f" % float(n34.mean()))
-    geo["sst"] = {"bounds": b, "w": W, "h": H, "days": frames}
+        # Niño-3.4 box (5°S–5°N, 170°W–120°W), area-weighted mean of the native 0.25° grid: shown on screen as a live reading
+        rows = np.abs(glat) <= 5
+        cols = (glon >= 190) & (glon <= 240)
+        box = x[rows][:, cols]
+        wts = np.cos(np.radians(glat[rows]))[:, None] * np.ones_like(box)
+        n34.append(round(float((box * wts).sum() / wts.sum()), 2))
+        if len(frames) == 1 or len(frames) % 10 == 0:
+            print("sst", day, "nino3.4 %.2f" % n34[-1])
+    print("sst last", frames[-1], "nino3.4 %.2f" % n34[-1])
+    geo["sst"] = {"bounds": b, "w": W, "h": H, "days": frames, "n34": n34}
 
     # ---- countries
     sf50 = shapefile.Reader(str(ne / "z50" / "ne_50m_admin_0_countries.shp"))
