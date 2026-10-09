@@ -22,7 +22,8 @@ Daily from Oct 9 (changed on Oct 8 from every other day), posted around 11:15 IS
 - Video 1: Darién Gap, posted Oct 8.
 - Video 2: Diomede Islands v2 (`src/diomede2/`, `exports/diomede_v2_*`), posted Oct 9. First video with the moving watermark.
 - Video 3: North Sentinel Island (`src/sentinel/`, `exports/sentinel_*`), Oct 10 (finished; no watermark, by choice).
-- Video 4 onward: one per day, built from a competitor reference.
+- Video 4: El Niño / Super El Niño (`public/elnino/`), reference analysed, script and asset prompts written Oct 9; India monsoon (2026: 87% of LPA) as our extra beat. Topical: post while El Niño is in the news.
+- Video 5 onward: one per day, built from a competitor reference.
 - The first Diomede version (`src/diomede/`, `exports/diomede_hindi_full.mp4`) is retired.
 
 Keep 1-2 finished videos in the buffer. Never post a rushed video; skip a day instead.
