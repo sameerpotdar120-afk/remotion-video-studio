@@ -276,7 +276,9 @@ const Plume: React.FC<{ t: number; x: number; y: number; w: number; a: number }>
         const ph = (t * 0.6 + o) % 1;
         return (
           <div key={i} style={{ position: 'absolute', left: x - w + 30 - ph * w * 0.4, top: y - w * 0.33, width: w, height: w * 0.667, opacity: Math.sin(ph * Math.PI),
-            transform: `scale(${0.8 + 0.35 * ph})`, transformOrigin: '100% 50%' }}>
+            transform: `scale(${0.8 + 0.35 * ph})`, transformOrigin: '100% 50%',
+            WebkitMaskImage: 'linear-gradient(90deg, transparent 0%, #000 38%, #000 92%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%)',
+            WebkitMaskComposite: 'source-in' }}>
             <img src={staticFile('elnino/img/overlay_frost_air.png')} style={{ width: '100%', height: '100%' }} />
           </div>
         );
@@ -374,9 +376,9 @@ const FieldInsert: React.FC<{ t: number }> = ({ t }) => {
         {HAVE.has('scene_dry_field.png') ? <img src={staticFile('elnino/img/scene_dry_field.png')} style={{ width: 1080, height: 1920, objectFit: 'cover' }} /> : <Asset name="scene_dry_field.png" w={1080} h={1920} />}
       </AbsoluteFill>
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.6) 100%)' }} />
-      <Counter t={t} t0={C.p13} t1={t1 + 0.1} from={0} to={-13} fmt={(v) => `${Math.round(v)}%`} x={540} y={760} size={230} color="#fff" glowC="#FF8A3D" />
-      <Label text="मानसून 2026" t={t} t0={C.issaal} t1={t1 + 0.1} x={540} y={600} size={58} color="#FFD98A" />
-      <Label text="कम बारिश" t={t} t0={C.kam - 0.05} t1={t1 + 0.1} x={540} y={925} size={60} color="#fff" />
+      <Counter t={t} t0={C.p13} t1={t1 + 0.1} from={0} to={-13} fmt={(v) => `${Math.round(v)}%`} x={540} y={540} size={230} color="#fff" glowC="#FF8A3D" />
+      <Label text="मानसून 2026" t={t} t0={C.issaal} t1={t1 + 0.1} x={540} y={385} size={58} color="#FFD98A" />
+      <Label text="कम बारिश" t={t} t0={C.kam - 0.05} t1={t1 + 0.1} x={540} y={1250} size={64} color="#fff" />
     </AbsoluteFill>
   );
 };
