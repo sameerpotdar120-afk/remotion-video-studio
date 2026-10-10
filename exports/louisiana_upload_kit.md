@@ -6,7 +6,7 @@ Video 5. File: `louisiana_hindi_full.mp4`. Preview: `louisiana_preview.mp4`.
 
 **Title**
 ```
-1 शहर ख़रीदने गए, आधा अमेरिका ले आए! | Louisiana Purchase
+1 शहर ख़रीदने गए, पूरा लुईज़ियाना ले आए! | Louisiana Purchase
 ```
 
 Backup titles:
@@ -51,7 +51,7 @@ louisiana purchase, louisiana purchase hindi, napoleon, napoleon bonaparte, thom
 
 **Caption**
 ```
-1 शहर ख़रीदने गए… आधा अमेरिका ले आए 😳🗺️
+1 शहर ख़रीदने गए… पूरा लुईज़ियाना ले आए 😳🗺️
 Louisiana Purchase, 1803: भारत के 2/3 जितनी ज़मीन, 3 सेंट प्रति एकड़ से भी कम में।
 
 तुम नेपोलियन होते, तो बेचते? 👇
