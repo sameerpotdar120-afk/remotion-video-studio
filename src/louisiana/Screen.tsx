@@ -497,19 +497,16 @@ export const shake = (t: number): [number, number] => {
   return [x, y];
 };
 
-/** Paper vignette, a warm grade, grain, flashes. */
+/** Paper vignette, a warm grade, flashes. */
 export const Grade: React.FC<{ t: number }> = ({ t }) => {
   const flash = Math.max(
     window4(t, C.y1802 - 0.04, C.y1802, C.y1802 + 0.03, C.y1802 + 0.2),
     window4(t, C.toota - 0.03, C.toota, C.toota + 0.03, C.toota + 0.2),
     window4(t, C.ekdin - 0.03, C.ekdin, C.ekdin + 0.03, C.ekdin + 0.25) * 0.6,
   );
-  const gx = (Math.floor(t * 30) * 137) % 512;
-  const gy = (Math.floor(t * 30) * 241) % 512;
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 55%, rgba(40,24,8,0.42) 100%)' }} />
-      <AbsoluteFill style={{ backgroundImage: `url(${staticFile('elnino/fx/noise_b.png')})`, backgroundPosition: `${gx}px ${gy}px`, backgroundSize: '256px 256px', opacity: 0.05, mixBlendMode: 'overlay' }} />
       {flash > 0 && <AbsoluteFill style={{ background: '#fff', opacity: flash * 0.5, mixBlendMode: 'screen' }} />}
     </AbsoluteFill>
   );

@@ -680,7 +680,7 @@ export const shake = (t: number): [number, number] => {
   return [x, y];
 };
 
-/** Vignette, heat glow, embers, flare, flashes and film grain over everything. */
+/** Vignette, heat glow, embers, flare, and flashes over everything. */
 export const Grade: React.FC<{ t: number }> = ({ t }) => {
   const heat = ramp(t, C.dharti - 0.2, C.tapayegi + 0.4, inOut);
   const flash = Math.max(
@@ -689,8 +689,6 @@ export const Grade: React.FC<{ t: number }> = ({ t }) => {
     window4(t, C.y2027 - 0.04, C.y2027, C.y2027 + 0.03, C.y2027 + 0.25),
     window4(t, C.peru - 0.05, C.peru + 0.05, C.peru + 0.1, C.peru + 0.3) * 0.5,
   );
-  const grainX = (Math.floor(t * 30) * 137) % 512;
-  const grainY = (Math.floor(t * 30) * 241) % 512;
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {heat > 0 && (
@@ -705,7 +703,6 @@ export const Grade: React.FC<{ t: number }> = ({ t }) => {
         </>
       )}
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.42) 100%)' }} />
-      <AbsoluteFill style={{ backgroundImage: `url(${staticFile('elnino/fx/noise_b.png')})`, backgroundPosition: `${grainX}px ${grainY}px`, backgroundSize: '256px 256px', opacity: 0.05, mixBlendMode: 'overlay' }} />
       {flash > 0 && <AbsoluteFill style={{ background: '#fff', opacity: flash * 0.55, mixBlendMode: 'screen' }} />}
     </AbsoluteFill>
   );
