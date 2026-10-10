@@ -1,0 +1,86 @@
+{
+ "crane_construction": [
+  1184,
+  1155
+ ],
+ "dowry_chest": [
+  1139,
+  1113
+ ],
+ "hornby_figure": [
+  791,
+  1182
+ ],
+ "koli_boat": [
+  1398,
+  972
+ ],
+ "koli_fisherman": [
+  523,
+  1176
+ ],
+ "koli_woman": [
+  493,
+  1210
+ ],
+ "koliwada_houses": [
+  1199,
+  1042
+ ],
+ "letter_wax_seal": [
+  1161,
+  759
+ ],
+ "monsoon_cloud": [
+  1482,
+  698
+ ],
+ "mumbadevi_temple": [
+  913,
+  1199
+ ],
+ "overlay_rain": [
+  1024,
+  1536
+ ],
+ "overlay_water_shimmer": [
+  1254,
+  1254
+ ],
+ "price_tag_gold": [
+  1006,
+  1105
+ ],
+ "royal_crown": [
+  1113,
+  1141
+ ],
+ "royal_ring": [
+  1197,
+  869
+ ],
+ "rubble_pile": [
+  1212,
+  750
+ ],
+ "sea_wall_segment": [
+  1461,
+  863
+ ],
+ "ship_east_indiaman": [
+  1216,
+  1145
+ ],
+ "ship_portuguese_caravel": [
+  1176,
+  1185
+ ],
+ "texture_nautical_chart": [
+  1254,
+  1254
+ ],
+ "wave_surge": [
+  1536,
+  1024
+ ]
+}
