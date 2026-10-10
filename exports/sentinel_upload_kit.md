@@ -11,7 +11,7 @@ Slot: **Oct 10** (video 3; daily schedule). File: `sentinel_hindi_full.mp4`. Cov
 
 Backup titles:
 ```
-इस टापू पर जाने वाले ज़िंदा क्यों नहीं लौटते? | North Sentinel Island
+भारत का वो टापू, जहाँ जाना मना है | North Sentinel Island
 Port Blair से सिर्फ 64 km, पर यहाँ कोई नहीं जा सकता | North Sentinel
 ```
 
