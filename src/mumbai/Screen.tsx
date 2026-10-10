@@ -450,14 +450,11 @@ export const Grade: React.FC<{ t: number; sat: number }> = ({ t, sat }) => {
     window4(t, C.ek22 - 0.03, C.ek22, C.ek22 + 0.04, C.ek22 + 0.3) * 0.6,
     window4(t, C.pehle - 0.05, C.pehle, C.pehle + 0.05, C.pehle + 0.35) * 0.5,
   );
-  const gx = (Math.floor(t * 30) * 137) % 512;
-  const gy = (Math.floor(t * 30) * 241) % 512;
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 52%, rgba(30,20,8,0.45) 100%)' }} />
       {sat > 0.01 && <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(10,20,30,0.25), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 70%, rgba(10,15,20,0.35))', opacity: sat }} />}
       {storm > 0 && <AbsoluteFill style={{ background: 'rgba(15,25,40,0.38)', mixBlendMode: 'multiply', opacity: storm }} />}
-      <AbsoluteFill style={{ backgroundImage: `url(${staticFile('elnino/fx/noise_b.png')})`, backgroundPosition: `${gx}px ${gy}px`, backgroundSize: '256px 256px', opacity: 0.05, mixBlendMode: 'overlay' }} />
       {bolt > 0 && <AbsoluteFill style={{ background: '#dfe9ff', opacity: bolt * 0.55, mixBlendMode: 'screen' }} />}
       {flash > 0 && <AbsoluteFill style={{ background: '#fff', opacity: flash * 0.5, mixBlendMode: 'screen' }} />}
     </AbsoluteFill>
