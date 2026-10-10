@@ -11,6 +11,7 @@ import { Sentinel, SENTINEL_DURATION } from './sentinel/Sentinel';
 import { SentinelCover } from './sentinel/Cover';
 import { Diomede2, DIOMEDE2_DURATION } from './diomede2/Diomede2';
 import { ElNino, ELNINO_DURATION } from './elnino/ElNino';
+import { Louisiana, LOUISIANA_DURATION } from './louisiana/Louisiana';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -25,6 +26,7 @@ export const RemotionRoot: React.FC = () => {
       />
       <Composition id="Diomede" component={Diomede} durationInFrames={DIOMEDE_DURATION} fps={30} width={1080} height={1920} />
       <Composition id="Sentinel" component={Sentinel} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Louisiana" component={Louisiana} durationInFrames={LOUISIANA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="ElNino" component={ElNino} durationInFrames={ELNINO_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Diomede2" component={Diomede2} durationInFrames={DIOMEDE2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SentinelCover" component={SentinelCover} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />

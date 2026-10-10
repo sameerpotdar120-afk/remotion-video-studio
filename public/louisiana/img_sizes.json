@@ -1,0 +1,134 @@
+{
+"napoleon_neutral.png": [
+731,
+900
+],
+"napoleon_smirk.png": [
+731,
+900
+],
+"napoleon_shrug.png": [
+731,
+900
+],
+"napoleon_handshake.png": [
+731,
+900
+],
+"diplomat_livingston_neutral.png": [
+677,
+900
+],
+"diplomat_livingston_shocked.png": [
+677,
+900
+],
+"diplomat_monroe_neutral.png": [
+594,
+900
+],
+"diplomat_monroe_shocked.png": [
+594,
+900
+],
+"jefferson_neutral.png": [
+641,
+900
+],
+"jefferson_briefcase.png": [
+641,
+900
+],
+"french_soldier.png": [
+533,
+900
+],
+"french_soldier_sick.png": [
+533,
+900
+],
+"briefcase_open.png": [
+900,
+713
+],
+"briton_handshake.png": [
+756,
+900
+],
+"cargo_barrel.png": [
+732,
+900
+],
+"cargo_crate.png": [
+900,
+838
+],
+"chain_broken.png": [
+900,
+462
+],
+"coin_gold.png": [
+896,
+900
+],
+"diplomats_nod.png": [
+900,
+736
+],
+"french_soldier_fallen.png": [
+900,
+454
+],
+"money_pile.png": [
+900,
+577
+],
+"price_tag_blank.png": [
+829,
+900
+],
+"rebels_rise.png": [
+900,
+491
+],
+"sacks_sugar_coffee.png": [
+900,
+581
+],
+"scene_beach.png": [
+941,
+1672
+],
+"scene_dust_puff.png": [
+1254,
+1254
+],
+"scene_plantation.png": [
+941,
+1672
+],
+"set_map_room.png": [
+900,
+725
+],
+"ship_small.png": [
+900,
+794
+],
+"ship_warship.png": [
+900,
+822
+],
+"sign_blank.png": [
+839,
+900
+],
+"texture_parchment.png": [
+1254,
+1254
+],
+"worker_chained.png": [
+504,
+900
+]
+}
