@@ -4,7 +4,7 @@
  */
 import React, { useEffect, useState } from 'react';
 import { AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame } from 'remotion';
-import { FPS, clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from '../darien/anim';
+import { FPS, clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
 import sizes from '../../public/cartoon_animation/img_sizes.json';
 import words from './words.json';
 
@@ -37,7 +37,7 @@ const useFonts = () => {
     if (!fontPromise) {
       const add = (f: FontFace) => f.load().then((x) => (document.fonts as unknown as { add: (f: FontFace) => void }).add(x));
       fontPromise = Promise.all([
-        add(new FontFace('Montserrat', `url(${staticFile('brand/Montserrat.ttf')})`, { weight: '100 900' })),
+        add(new FontFace('Montserrat', `url(${staticFile('cartoon_animation/fonts/Montserrat.ttf')})`, { weight: '100 900' })),
         add(new FontFace('LuckiestGuy', `url(${staticFile('cartoon_animation/fonts/LuckiestGuy.ttf')})`)),
         add(new FontFace('Bangers', `url(${staticFile('cartoon_animation/fonts/Bangers.ttf')})`)),
       ]);

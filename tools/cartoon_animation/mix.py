@@ -1,6 +1,6 @@
 """Mix the cartoon-explainer trial: the reference VO (Demucs vocals) on top, a light comedic bed, cartoon SFX.
 
-    python3 tools/mix_cartoon_animation.py      # writes public/cartoon_animation/audio/mix.wav
+    python3 tools/cartoon_animation/mix.py      # writes public/cartoon_animation/audio/mix.wav
 
 Cue times come from the VO's word timestamps (src/cartoon_animation/words.json).
 SFX: Sonniss GDC game-audio bundles (royalty-free). Music: Mixkit "Summer Fun" (Ahjay Stelino), Mixkit free licence.
@@ -13,10 +13,68 @@ from pathlib import Path
 
 import numpy as np
 
-from mix_audio import SR, db, fade, write_wav
-from mix_diomede import VOICE_CHAIN, envelope, ff, win_rms_db
 
-ROOT = Path(__file__).resolve().parent.parent
+SR = 48000
+VOICE_CHAIN = (
+    "highpass=f=80,equalizer=f=280:t=q:w=1.2:g=-2,equalizer=f=3800:t=q:w=1.0:g=2.5,"
+    "acompressor=threshold=-22dB:ratio=3:attack=5:release=90:makeup=3,"
+    "alimiter=limit=0.89:attack=2:release=40"
+)
+
+
+def db(x):
+    return 10 ** (x / 20)
+
+
+def fade(a: np.ndarray, fin: float, fout: float) -> np.ndarray:
+    n = len(a)
+    i, o = min(n, int(fin * SR)), min(n, int(fout * SR))
+    if i:
+        a[:i] *= np.linspace(0, 1, i)[:, None]
+    if o:
+        a[n - o:] *= np.linspace(1, 0, o)[:, None]
+    return a
+
+
+def write_wav(path: Path, a: np.ndarray) -> None:
+    import wave
+
+    pcm = (np.clip(a, -1, 1) * 32767).astype("<i2")
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(2)
+        w.setsampwidth(2)
+        w.setframerate(SR)
+        w.writeframes(pcm.tobytes())
+
+
+def ff(path: Path, chain: str) -> np.ndarray:
+    raw = subprocess.run(
+        ["ffmpeg", "-v", "error", "-i", str(path), "-af", chain, "-ac", "2", "-ar", str(SR), "-f", "f32le", "-"],
+        capture_output=True, check=True,
+    ).stdout
+    return np.frombuffer(raw, np.float32).reshape(-1, 2).copy()
+
+
+def win_rms_db(a: np.ndarray, w: int = int(0.05 * SR)) -> np.ndarray:
+    p = np.convolve((a**2).mean(1), np.ones(w) / w, "same")
+    return 10 * np.log10(p + 1e-12)
+
+
+def envelope(x: np.ndarray, attack: float, release: float) -> np.ndarray:
+    """One-pole follower on a 0..1 control signal (computed at 1 kHz, then upsampled)."""
+    hop = SR // 1000
+    c = x[::hop]
+    out = np.empty_like(c)
+    ka, kr = np.exp(-1 / (attack * 1000)), np.exp(-1 / (release * 1000))
+    y = 0.0
+    for i, v in enumerate(c):
+        k = ka if v > y else kr
+        y = k * y + (1 - k) * v
+        out[i] = y
+    return np.repeat(out, hop)[: len(x)]
+
+
+ROOT = Path(__file__).resolve().parent.parent.parent
 AUD = ROOT / "public" / "cartoon_animation" / "audio"
 WORDS = json.load(open(ROOT / "src" / "cartoon_animation" / "words.json", encoding="utf-8"))
 DURATION = 89.2
