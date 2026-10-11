@@ -16,6 +16,7 @@ import { Mumbai, MUMBAI_DURATION } from './mumbai/Mumbai';
 import { MumbaiCover } from './mumbai/Cover';
 import { Spain, SPAIN_DURATION } from './spain/Spain';
 import { Market, MARKET_DURATION } from './market/Market';
+import { KingsGuard, KG_DURATION } from './trial_kg/KingsGuard';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -35,6 +36,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Mumbai" component={Mumbai} durationInFrames={MUMBAI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Spain" component={Spain} durationInFrames={SPAIN_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Market" component={Market} durationInFrames={MARKET_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="TrialKingsGuard" component={KingsGuard} durationInFrames={KG_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="ElNino" component={ElNino} durationInFrames={ELNINO_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Diomede2" component={Diomede2} durationInFrames={DIOMEDE2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SentinelCover" component={SentinelCover} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
