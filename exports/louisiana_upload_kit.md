@@ -32,7 +32,7 @@ Backup titles:
 
 ---
 Maps: Natural Earth; NASA Blue Marble. Music: "Classical vibes 3" (Mixkit). Sound effects: Sonniss GDC Game Audio Bundle.
-Characters and scenes are AI-generated illustrations.
+Characters and scenes are AI-generated illustrations. Voiceover is AI-generated.
 ```
 
 **Tags**
@@ -40,7 +40,7 @@ Characters and scenes are AI-generated illustrations.
 louisiana purchase, louisiana purchase hindi, napoleon, napoleon bonaparte, thomas jefferson, haiti revolution, saint domingue, new orleans, america ka naksha, america history hindi, itihas, history in hindi, map facts hindi, geography hindi
 ```
 
-**Settings:** Altered or synthetic content → **Yes** (AI-generated characters and scenes).
+**Settings:** Altered or synthetic content → **Yes** (AI voice and AI-generated characters and scenes).
 
 **Pinned comment**
 ```
@@ -58,7 +58,7 @@ Louisiana Purchase, 1803: भारत के 2/3 जितनी ज़मी�
 
 #LouisianaPurchase #Napoleon #HistoryFacts #MapFacts #HindiFacts #FactsInHindi #GeographyFacts #ReelsIndia #Explore
 
-Maps: Natural Earth, NASA. Music: Mixkit. SFX: Sonniss. Characters are AI-generated.
+Maps: Natural Earth, NASA. Music: Mixkit. SFX: Sonniss. AI voice and characters.
 ```
 Turn on Instagram's "AI info" label in Advanced settings.
 
