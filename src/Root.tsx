@@ -16,7 +16,7 @@ import { Mumbai, MUMBAI_DURATION } from './mumbai/Mumbai';
 import { MumbaiCover } from './mumbai/Cover';
 import { Spain, SPAIN_DURATION } from './spain/Spain';
 import { Market, MARKET_DURATION } from './market/Market';
-import { KingsGuard, KG_DURATION } from './trial_kg/KingsGuard';
+import { KingsGuard, KG_DURATION } from './cartoon_animation/KingsGuard';
 
 export const RemotionRoot: React.FC = () => {
   return (

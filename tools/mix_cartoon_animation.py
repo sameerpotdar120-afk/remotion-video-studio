@@ -1,8 +1,8 @@
 """Mix the cartoon-explainer trial: the reference VO (Demucs vocals) on top, a light comedic bed, cartoon SFX.
 
-    python3 tools/mix_trial_kg.py      # writes public/trial_kg/audio/mix.wav
+    python3 tools/mix_cartoon_animation.py      # writes public/cartoon_animation/audio/mix.wav
 
-Cue times come from the VO's word timestamps (src/trial_kg/words.json).
+Cue times come from the VO's word timestamps (src/cartoon_animation/words.json).
 SFX: Sonniss GDC game-audio bundles (royalty-free). Music: Mixkit "Summer Fun" (Ahjay Stelino), Mixkit free licence.
 """
 
@@ -17,8 +17,8 @@ from mix_audio import SR, db, fade, write_wav
 from mix_diomede import VOICE_CHAIN, envelope, ff, win_rms_db
 
 ROOT = Path(__file__).resolve().parent.parent
-AUD = ROOT / "public" / "trial_kg" / "audio"
-WORDS = json.load(open(ROOT / "src" / "trial_kg" / "words.json", encoding="utf-8"))
+AUD = ROOT / "public" / "cartoon_animation" / "audio"
+WORDS = json.load(open(ROOT / "src" / "cartoon_animation" / "words.json", encoding="utf-8"))
 DURATION = 89.2
 norm = lambda s: "".join(ch for ch in s.lower() if ch.isalnum() or ch == "'")
 

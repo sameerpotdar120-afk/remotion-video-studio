@@ -5,13 +5,13 @@
 import React, { useEffect, useState } from 'react';
 import { AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame } from 'remotion';
 import { FPS, clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from '../darien/anim';
-import sizes from '../../public/trial_kg/img_sizes.json';
+import sizes from '../../public/cartoon_animation/img_sizes.json';
 import words from './words.json';
 
 type Word = { w: string; s: number; e: number };
 const WORDS = words as Word[];
 const SZ = sizes as unknown as Record<string, [number, number]>;
-const img = (n: string) => staticFile(`trial_kg/img/${n}.png`);
+const img = (n: string) => staticFile(`cartoon_animation/img/${n}.png`);
 export const KG_DURATION_S = 89.2;
 export const KG_DURATION = Math.ceil(KG_DURATION_S * FPS);
 
@@ -38,8 +38,8 @@ const useFonts = () => {
       const add = (f: FontFace) => f.load().then((x) => (document.fonts as unknown as { add: (f: FontFace) => void }).add(x));
       fontPromise = Promise.all([
         add(new FontFace('Montserrat', `url(${staticFile('brand/Montserrat.ttf')})`, { weight: '100 900' })),
-        add(new FontFace('LuckiestGuy', `url(${staticFile('trial_kg/fonts/LuckiestGuy.ttf')})`)),
-        add(new FontFace('Bangers', `url(${staticFile('trial_kg/fonts/Bangers.ttf')})`)),
+        add(new FontFace('LuckiestGuy', `url(${staticFile('cartoon_animation/fonts/LuckiestGuy.ttf')})`)),
+        add(new FontFace('Bangers', `url(${staticFile('cartoon_animation/fonts/Bangers.ttf')})`)),
       ]);
     }
     fontPromise.then(() => continueRender(h)).catch(() => continueRender(h));
@@ -525,7 +525,7 @@ export const KingsGuard: React.FC<{ captions?: boolean }> = ({ captions = true }
 
       {captions && <Captions t={t} />}
       <AbsoluteFill style={{ pointerEvents: 'none', background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 62%, rgba(0,0,0,0.28) 100%)' }} />
-      {captions && <Audio src={staticFile('trial_kg/audio/mix.wav')} />}
+      {captions && <Audio src={staticFile('cartoon_animation/audio/mix.wav')} />}
     </AbsoluteFill>
   );
 };
