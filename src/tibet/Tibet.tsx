@@ -33,7 +33,7 @@ export const Tibet: React.FC<{ captions?: boolean }> = ({ captions = true }) => 
   const globeA = 1 - ramp(t, 1.55, 2.15, inOut);
   const fly = flyFade(t);
   // satellite grade: a touch more colour and contrast than raw Sentinel-2; darkened for the count beat
-  const grade = `saturate(${(1.0 - 0.6 * dark).toFixed(2)}) contrast(1.1) brightness(${(1.02 - 0.6 * dark).toFixed(2)}) hue-rotate(-4deg)`;
+  const grade = `saturate(1.08) contrast(1.12) brightness(0.98) sepia(0.06)`;
   return (
     <AbsoluteFill style={{ background: SEA_BG, overflow: 'hidden' }}>
       <svg width={0} height={0} style={{ position: 'absolute' }}>
@@ -57,6 +57,8 @@ export const Tibet: React.FC<{ captions?: boolean }> = ({ captions = true }) => 
         {fly > 0.001 && <AbsoluteFill style={{ opacity: clamp01(fly * 1.3) }}><Fly t={t} /></AbsoluteFill>}
         <ScreenLayer t={t} c={cam} />
       </AbsoluteFill>
+      {/* colour grade: teal shadows, warm highlights (soft split-tone over everything but the subtitles) */}
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,60,90,0.16), rgba(0,0,0,0) 45%, rgba(255,150,60,0.06))', mixBlendMode: 'soft-light', pointerEvents: 'none' }} />
       <Grade t={t} />
       <div style={{ position: 'absolute', right: 22, bottom: 14, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
         Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · elevation: AWS Terrain Tiles (SRTM) · borders: Natural Earth

@@ -72,6 +72,18 @@ const Radar: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {
   );
 };
 
+/** Spotlight: everything outside the region dims, so the highlight reads at a glance. */
+const Spotlight: React.FC<{ c: Cam; rings: P[][]; a: number }> = ({ c, rings, a }) => {
+  if (a <= 0.001) return null;
+  const hole = pathD(c, rings);
+  const outer = `M${-6000},${-6000}H${PLANE.w + 6000}V${PLANE.h + 6000}H${-6000}Z`;
+  return (
+    <svg width={PLANE.w} height={PLANE.h} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', opacity: a }}>
+      <path d={outer + hole} fill="#040a14" fillOpacity={0.34} fillRule="evenodd" />
+    </svg>
+  );
+};
+
 /** The plateau in its "danger zone" look: red fill, a hot orange-gold edge that breathes. */
 export const PlateauGlow: React.FC<{ c: Cam; t: number; a: number; fill?: number }> = ({ c, t, a, fill = 0.62 }) => {
   if (a <= 0.001) return null;
@@ -82,12 +94,20 @@ export const PlateauGlow: React.FC<{ c: Cam; t: number; a: number; fill?: number
       <defs>
         <clipPath id="platC"><path d={d} /></clipPath>
       </defs>
-      <path d={d} fill={COL.red} fillOpacity={fill} />
+      <defs>
+        <radialGradient id="platF" cx="50%" cy="55%" r="65%">
+          <stop offset="0" stopColor="#ff4a3d" stopOpacity={fill * 0.85} />
+          <stop offset="1" stopColor="#b5141a" stopOpacity={fill} />
+        </radialGradient>
+      </defs>
+      <path d={d} fill="url(#platF)" style={{ mixBlendMode: 'multiply' }} />
+      <path d={d} fill="#ff3a2e" fillOpacity={fill * 0.35} />
       <g clipPath="url(#platC)">
-        <path d={d} fill="none" stroke="#7a0d10" strokeWidth={60} strokeOpacity={0.45} style={{ filter: 'blur(18px)' }} />
+        <path d={d} fill="none" stroke="#5a0608" strokeWidth={70} strokeOpacity={0.5} style={{ filter: 'blur(20px)' }} />
+        <path d={d} fill="none" stroke="#ffd27a" strokeWidth={22} strokeOpacity={0.35 * pulse} style={{ filter: 'blur(10px)' }} />
       </g>
-      <path d={d} fill="none" stroke={COL.glow} strokeWidth={34} strokeOpacity={0.35 * pulse} strokeLinejoin="round" style={{ filter: 'blur(14px)' }} />
-      <path d={d} fill="none" stroke={COL.glow} strokeWidth={7} strokeOpacity={0.95} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 ${8 + 8 * pulse}px ${COL.glow})` }} />
+      <path d={d} fill="none" stroke={COL.glow} strokeWidth={46} strokeOpacity={0.3 * pulse} strokeLinejoin="round" style={{ filter: 'blur(18px)' }} />
+      <path d={d} fill="none" stroke="#ffe2a0" strokeWidth={5} strokeOpacity={1} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 ${6 + 8 * pulse}px ${COL.glow}) drop-shadow(0 0 2px #fff)` }} />
     </svg>
   );
 };
@@ -106,7 +126,8 @@ const IndiaLit: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {
       <g clipPath="url(#indC)">
         <rect x={-4000} y={y1 - (y1 - y0) * fillUp * 0.75} width={PLANE.w + 8000} height={(y1 - y0) * 0.75 * fillUp + 10} fill={COL.gold} opacity={0.35} />
       </g>
-      <path d={d} fill="none" stroke="#fff" strokeWidth={3} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 8px ${COL.gold})` }} />
+      <path d={d} fill="none" stroke={COL.gold} strokeWidth={30} strokeOpacity={0.3} strokeLinejoin="round" style={{ filter: 'blur(12px)' }} />
+      <path d={d} fill="none" stroke="#fff6d6" strokeWidth={4} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 8px ${COL.gold}) drop-shadow(0 0 2px #fff)` }} />
     </svg>
   );
 };
@@ -173,10 +194,12 @@ export const radarAt = (t: number) => window4(t, C.radar2 - 0.35, C.radar2 - 0.0
 export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const rad = radarAt(t);
   const glowA = (window4(t, 0.4, 1.0, C.radar2 - 0.4, C.radar2) + window4(t, C.pathar3 - 0.1, C.pathar3 + 0.3, 998, 999)) * (1 - rad);
+  const indiaA = window4(t, C.bharat3 - 0.15, C.bharat3 + 0.25, C.pehli5 - 0.3, C.pehli5);
   return (
     <>
+      <Spotlight c={c} rings={indiaA > 0 ? [...GEO.plateau, ...GEO.india] : GEO.plateau} a={glowA} />
       <PlateauGlow c={c} t={t} a={glowA} fill={t > C.doosri8 - 1 ? 0.5 : 0.62} />
-      <IndiaLit c={c} t={t} a={window4(t, C.bharat3 - 0.15, C.bharat3 + 0.25, C.pehli5 - 0.3, C.pehli5)} />
+      <IndiaLit c={c} t={t} a={indiaA} />
       <Radar c={c} t={t} a={rad} />
       <Airports c={c} t={t} a={window4(t, C.airports9 - 0.1, C.airports9, C.gadbad10 + 0.2, C.gadbad10 + 0.6)} />
       <Routes c={c} t={t} a={window4(t, C.gadbad10, C.gadbad10 + 0.2, 998, 999)} t0={C.gadbad10 + 0.2} />
