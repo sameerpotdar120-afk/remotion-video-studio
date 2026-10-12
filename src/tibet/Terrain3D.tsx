@@ -53,12 +53,13 @@ export const Terrain3D: React.FC<{ cam: Cam3; width: number; height: number; haz
     Promise.all([
       loadDem(),
       new Promise<THREE.Texture>((res, rej) => new THREE.TextureLoader().load(staticFile('tibet/maps/hima_sat.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; res(t); }, undefined, rej)),
-    ]).then(([d, t]) => {
-      setDem(d); setTex(t);
-      // let three.js draw the mesh before the frame is captured
-      requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle))));
-    }).catch(() => continueRender(handle));
+    ]).then(([d, t]) => { setDem(d); setTex(t); }).catch(() => continueRender(handle));
   }, [handle]);
+  // the canvas is created only once the data is in, so its first draw already has the mountains; then give it a few frames
+  useEffect(() => {
+    if (dem && tex) requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle))));
+  }, [dem, tex, handle]);
+  if (!dem || !tex) return <div style={{ width, height, background: 'linear-gradient(180deg, #2f6fc4 0%, #6fa6e6 38%, #c9def2 52%, #e6eef6 60%)' }} />;
   return (
     <ThreeCanvas width={width} height={height} camera={{ fov: cam.fov ?? 55, near: 0.1, far: 2000, position: cam.pos }} gl={{ antialias: true, preserveDrawingBuffer: true, alpha: true }}
       style={{ background: 'linear-gradient(180deg, #2f6fc4 0%, #6fa6e6 38%, #c9def2 52%, #e6eef6 60%)' }}
@@ -67,7 +68,7 @@ export const Terrain3D: React.FC<{ cam: Cam3; width: number; height: number; haz
       <fog attach="fog" args={['#d3e3f3', 70 * haze, 330 * haze]} />
       <hemisphereLight args={['#dfeeff', '#4a3a2a', 0.9]} />
       <directionalLight position={[-120, 90, -60]} intensity={2.2} />
-      {dem && tex && <Terrain dem={dem} tex={tex} />}
+      <Terrain dem={dem} tex={tex} />
     </ThreeCanvas>
   );
 };

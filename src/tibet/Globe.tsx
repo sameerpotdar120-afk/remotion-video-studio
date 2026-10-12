@@ -24,14 +24,18 @@ export const Globe: React.FC<{ lon: number; lat: number; dist: number }> = ({ lo
   const [tex, setTex] = useState<THREE.Texture | null>(null);
   const [h] = useState(() => delayRender('globe texture'));
   useEffect(() => {
-    new THREE.TextureLoader().load(staticFile('tibet/maps/globe_equirect.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; setTex(t); requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(h)))); }, undefined, () => continueRender(h));
+    new THREE.TextureLoader().load(staticFile('tibet/maps/globe_equirect.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; setTex(t); }, undefined, () => continueRender(h));
   }, [h]);
+  useEffect(() => {
+    if (tex) requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(h))));
+  }, [tex, h]);
+  if (!tex) return null;
   return (
     <ThreeCanvas width={1080} height={1920} camera={{ fov: 40, near: 0.01, far: 100, position: camAt(lon, lat, dist) }} gl={{ antialias: true, alpha: true, preserveDrawingBuffer: true }}>
       <Rig lon={lon} lat={lat} dist={dist} />
       <ambientLight intensity={0.55} />
       <directionalLight position={[...camAt(lon - 35, lat + 25, 6)]} intensity={2.1} />
-      {tex && (
+      {(
         <mesh>
           <sphereGeometry args={[1, 128, 96]} />
           <meshStandardMaterial map={tex} roughness={1} metalness={0} />
