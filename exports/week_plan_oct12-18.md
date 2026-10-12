@@ -1,6 +1,7 @@
 # NullDynasty: topic plan, Mon 12 – Sun 18 Oct 2026 (2 Shorts a day)
 
 In hand: Mumbai, Louisiana (Sun 11) · Spain (Mon 12, slot 1). Every topic below has a competitor reference.
+Extra, outside the plan: the sugar word-journey Short (done Mon 12, the creator's own reference).
 
 **How we use this:** when a video is rendered, the creator asks "what's next?". Answer with the row marked NEXT (topic + reference link),
 then mark that row done and move NEXT down one row.
@@ -8,8 +9,8 @@ Multiple = that video's views ÷ its own channel's median Shorts views (public l
 
 | Day | Slot | Topic | Reference (channel, views, multiple) | Status |
 |---|---|---|---|---|
-| Mon 12 | 2 | Märket: one island, two countries | GeoGlobeTales, 30M, 4.6× · "The Strangest Border Between Sweden & Finland 🇸🇪🇫🇮 Märket Island 🤯" · https://www.youtube.com/shorts/o4-ZkUMD0eQ | **NEXT** |
-| Tue 13 | 1 | Why planes don't fly over Tibet | GeoGlobeTales, 33M, 5.1× · "Why Planes Don't Fly Over Tibet ✈️ No-Fly Zone 🚫" · https://www.youtube.com/shorts/yCNSI_EUDow | to do |
+| Mon 12 | 2 | Märket: one island, two countries | GeoGlobeTales, 30M, 4.6× · "The Strangest Border Between Sweden & Finland 🇸🇪🇫🇮 Märket Island 🤯" · https://www.youtube.com/shorts/o4-ZkUMD0eQ | done |
+| Tue 13 | 1 | Why planes don't fly over Tibet | GeoGlobeTales, 33M, 5.1× · "Why Planes Don't Fly Over Tibet ✈️ No-Fly Zone 🚫" · https://www.youtube.com/shorts/yCNSI_EUDow | **NEXT** |
 | Tue 13 | 2 | Wallace Line | GeoGlobeTales, 30M, 4.6× · "Why Animals Don't Cross This Invisible Border 🚧 Wallace Line 😱" · https://www.youtube.com/shorts/O96MiXxXz6k | to do |
 | Wed 14 | 1 | Siachen / Operation Meghdoot | Geo Study (Hindi), 2.4M, 4.8× · "Operation Meghdoot | How India Captured Siachen | INDIA vs PAKISTAN | ऑपरेशन मेघदूत" · https://www.youtube.com/shorts/THAGrhVMdcg | to do |
 | Wed 14 | 2 | Why Chile is so long and thin | GeoGlobeTales, 32M, 4.9× · "Why Chile Is So Long & So Thin 🇨🇱 🌶️ History of the Longest & Narrowest Country 🤯" · https://www.youtube.com/shorts/mB1U5W8nwTg | to do |
