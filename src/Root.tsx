@@ -19,6 +19,8 @@ import { Market, MARKET_DURATION } from './market/Market';
 import { Sugar, SUGAR_DURATION } from './sugar/Sugar';
 import { SugarCover } from './sugar/Cover';
 import { TerrainTest } from './tibet/TerrainTest';
+import { FlyTest } from './tibet/FlyTest';
+import { Tibet, TIBET_DURATION } from './tibet/Tibet';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -41,6 +43,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Sugar" component={Sugar} durationInFrames={SUGAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SugarCover" component={SugarCover} durationInFrames={SUGAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="TibetTerrainTest" component={TerrainTest} durationInFrames={150} fps={30} width={1080} height={1920} />
+      <Composition id="TibetFlyTest" component={FlyTest} durationInFrames={3} fps={30} width={1080} height={1920} />
+      <Composition id="Tibet" component={Tibet} durationInFrames={TIBET_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="ElNino" component={ElNino} durationInFrames={ELNINO_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Diomede2" component={Diomede2} durationInFrames={DIOMEDE2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SentinelCover" component={SentinelCover} durationInFrames={SENTINEL_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />

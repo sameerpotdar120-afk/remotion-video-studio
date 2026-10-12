@@ -86,14 +86,14 @@ def main() -> None:
         geo["plates"][name] = {"bounds": [round(v, 1) for v in b], "w": im.width, "h": im.height}
         print(name, im.size)
 
-    # the world texture for the 3D globe: EOX z3, reprojected from Web Mercator to equirectangular (2048 × 1024)
-    wm, _ = stitch(EOX, 3, -180.0, 179.999, -85.0, 85.0, cache / "eox", "eox")
+    # the world texture for the 3D globe: EOX z4, reprojected from Web Mercator to equirectangular (4096 × 2048)
+    wm, _ = stitch(EOX, 4, -180.0, 179.999, -85.0, 85.0, cache / "eox", "eox")
     wa = np.asarray(wm)
-    eq = np.zeros((1024, 2048, 3), np.uint8)
-    lat = 90 - (np.arange(1024) + 0.5) * 180 / 1024
+    eq = np.zeros((2048, 4096, 3), np.uint8)
+    lat = 90 - (np.arange(2048) + 0.5) * 180 / 2048
     lat_c = np.clip(lat, -85, 85)
     ys = (1 - np.log(np.tan(np.radians(lat_c)) + 1 / np.cos(np.radians(lat_c))) / math.pi) / 2 * wa.shape[0]
-    xs = (np.arange(2048) + 0.5) / 2048 * wa.shape[1]
+    xs = (np.arange(4096) + 0.5) / 4096 * wa.shape[1]
     eq[:] = wa[np.clip(ys.astype(int), 0, wa.shape[0] - 1)][:, np.clip(xs.astype(int), 0, wa.shape[1] - 1)]
     eq[np.abs(lat) > 85] = (230, 236, 240)  # polar caps: ice
     Image.fromarray(eq).save(OUT / "globe_equirect.jpg", quality=90)
