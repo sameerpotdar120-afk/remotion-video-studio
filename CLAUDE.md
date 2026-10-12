@@ -2,6 +2,14 @@
 
 Hindi geography and map-story Shorts (YouTube @null_dynasty, Instagram @nulldynasty), built in Remotion.
 
+## Copyright-free sources only
+
+Never use anything copyrighted by someone else: no Google Earth or Google Maps imagery, no Flightradar24 (or any app's)
+screenshots, data or logos, no clips, music or images from reference videos. Only free sources:
+EOX Sentinel-2 cloudless (CC BY 4.0, credit on screen), AWS Terrain Tiles / SRTM (open data, credit), Natural Earth
+(public domain; India point-of-view edition for borders), Mixkit music (free licence), Sonniss GDC SFX (royalty-free),
+Google Fonts (OFL), the creator's own GPT images, and graphics drawn in code. Credit every source that asks for it.
+
 ## Upload queue
 
 The current topic queue is `exports/week_plan_oct12-18.md`. When the creator asks "what's next?" (usually after a render),
