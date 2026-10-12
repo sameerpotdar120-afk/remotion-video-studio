@@ -1,6 +1,6 @@
 # शक्कर का सफ़र (Sugar word journey) Short: upload kit
 
-File: `sugar_hindi_full.mp4`. Preview: `sugar_preview.mp4`. Thumbnail: `sugar_thumbnail.jpg` (one for both YouTube and Instagram).
+File: `sugar_hindi_full.mp4`. Preview: `sugar_preview.mp4`. Thumbnail: `sugar_thumbnail.jpg` (one for both YouTube and Instagram; frame 1690 of SugarCover).
 
 ## YouTube
 
