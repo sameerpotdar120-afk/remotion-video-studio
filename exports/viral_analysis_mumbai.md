@@ -64,3 +64,22 @@ India topics overperform hugely on Indian channels:
 | 10 | **Kashmir map: PoK, Aksai Chin, Shaksgam, LoC, LAC** (India's official boundary) | "भारत के नक्शे का ये हिस्सा, जो आज भी…" | Geo Study 18M and FactSpark 64×. High reach but politically sensitive, so it needs a strictly factual, official-boundary treatment |
 
 Every idea needs its facts checked during /yt-script before anything is confirmed. The hook lines above are only directions.
+
+## 5. Across all languages (31 channels: English, Hindi, French, Spanish, Turkish, Portuguese, Italian)
+
+Multiple = the Short's views ÷ its own channel's median Shorts views. YouTube serves most titles in English, so French and Turkish Shorts appear translated.
+
+The patterns that keep breaking out, with an India version of each:
+
+| Pattern | Proof (views, multiple) | Our India version |
+|---|---|---|
+| **"Almost nobody lives here" population maps** | Geography By Geoff "America's Empty Belt" 7.5M (227×), "The 'empty' East Coast" 3.8M (115×), "Almost Nobody Lives On Colombia's West Coast" 1.9M (58×); Mini Maps "Why do 95% of Chinese people live in this area?" 1.6M (57×) | **"भारत के आधे लोग नक्शे के इस छोटे से हिस्से में रहते हैं"** (Ganga plain density), or why Ladakh/Arunachal are nearly empty |
+| **"Your country is bigger/smaller than you think"** | Geoff "Europe Is WAY More North Than You Think" 2.5M (76×); Mini Maps "Why Is the United States So Big" 2.4M (86×); JackSucks "India's Population Compared to Other Countries" 1.2M (15×) | **"उत्तर प्रदेश अगर देश होता…"**: Indian states vs whole countries by population/size (needs fresh census numbers) |
+| **Strange borders and enclaves** | Mini Maps "The Strangest Borders in Europe" 8.8M (314×); Geoff "The US Town That Sits In Canada" 3.8M (115×); FactSpark "Turkish Enclave in Syria" (72×) and "Kashmir's disputed borders" (64×); La Minute Géographie (French) "Spain, world champion of bizarre borders" 6.7M (32×) | **The India–Bangladesh enclaves (Cooch Behar)**: the world's only third-order enclave (Dahala Khagrabari), swapped in 2015, when tens of thousands of people chose their country. Mumbai formula: Indian place + shock + real people |
+| **"Nobody wants this land"** | VeeVex "Why Nobody Wants This Land?!" 17M (21×); Shekhar "No one wants this 50,000 Acres of Land!" 22M (14×) | Bir Tawil in Hindi (universal), or an Indian no-man's-land angle |
+| **What-if Earth maps** | Geo All Day "What If Pangea Came Back?" 12M (27×), "What If All Earth's Ice Melted?" 6M (14×); Shekhar's India version 17M (11×) | **"अगर समंदर ऊपर आ गया, तो मुंबई और कोलकाता का क्या होगा?"**, built from real elevation data with our DEM tools. It's a natural sequel to the Mumbai reel |
+| **The planet moving** | La Minute Géographie (French) "Africa is splitting in two!" 3.4M (16×) | **"भारत आज भी हर साल उत्तर की तरफ़ खिसक रहा है"**: the Indian plate and the still-rising Himalaya (3D terrain again) |
+| **Air-traffic and route maps** | JackSucks "Current State of Global Air Traffic" 3.8M (49×); Geographic Insights "Top 5 Longest Non Stop Flights" 2.4M (30×); Tibet no-fly topics on 4 channels | Done (Tibet). Next: why flights to the US from India go over the North Pole |
+| **Geopolitics / WW3 lists** | Geo All Day "Top Safest Countries for World War 3" 34M (77×); Geographic Insights "Team India vs Team Pakistan" 1.3M (16×) | High reach but speculative. Skip unless it's built on facts only |
+
+The two that match the Mumbai formula best (Indian place + "you didn't know" + real people + emotion) are **the Cooch Behar enclaves** and **"if the sea rises: Mumbai/Kolkata"**. Next come **Kolkata ₹1,300**, **Delhi's 7 cities** and **the UP-vs-countries comparison**.
