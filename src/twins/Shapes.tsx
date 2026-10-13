@@ -1,7 +1,8 @@
 import React from 'react';
 import { staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
-import { C, Cam, GEO, P, PLANE, THAI_TWIN, project, pxPerM } from './cam';
+import { C, Cam, GEO, P, PLANE, THAI_TWIN, merc, project, pxPerM } from './cam';
+import continents from './continents.json';
 
 /** Pair colours: bold and saturated, one warm and one cool per pair so the twins read apart. */
 export const PAIR = {
@@ -131,6 +132,86 @@ export const MIRROR_Y = (G.norway.centre[1] + G.chile.centre[1]) / 2;
 /** Norway and Chile are thin at world scale, so they lift out at this size. */
 export const BIG = 1.7;
 
+// ---------------------------------------------------------------- the hook's glowing map (0–7.6 s)
+const CONT = continents as unknown as Record<string, P[][]>;
+const CONT_ORDER: [string, string, number][] = [['namerica', '#FF5468', -0.05], ['samerica', '#3DDC4A', 0.25], ['africa', '#B67CFF', 1.1], ['europe', '#FFD84A', 1.4], ['asia', '#38E1FF', 2.05], ['oceania', '#FF9F1C', 2.45]];
+const PAIRS: [Key, Key][] = [['thailand', 'myanmar'], ['benin', 'togo'], ['italy', 'vietnam'], ['norway', 'chile']];
+const GRAT_LON = Array.from({ length: 19 }, (_, i) => -180 + i * 20);
+const GRAT_LAT = [-60, -40, -20, 0, 20, 40, 60, 80];
+
+/** "हज़ार Maps": a neon latitude/longitude grid draws itself across the world while a scan line sweeps west to east;
+ *  "दुनिया में कुछ देश": the continents light up one after another; "जुड़वा": glowing arcs jump between each pair of twins. */
+const HookFX: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
+  if (t > C.pehla3 + 0.4) return null;
+  const end = 1 - ramp(t, C.pehla3 - 0.3, C.pehla3 + 0.2, linear);
+  const grid = ramp(t, C.maps1 + 0.1, C.notice1 + 0.2, easeOut) * end * (1 - 0.6 * ramp(t, C.judwa2 - 0.2, C.judwa2 + 0.2, linear));
+  const scan = ramp(t, C.maps1 + 0.3, C.notice1 + 0.4, inOut);
+  const line = (pts: P[]) => pts.map((q, i) => {
+    const [x, y] = project(c, ...merc(q[0], q[1]));
+    return (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1);
+  }).join('');
+  const [sx0, sy0] = project(c, ...merc(-180, 80)), [, sy1] = project(c, ...merc(-180, -66)), [sx1] = project(c, ...merc(180, 0));
+  const scanX = lerp(sx0, sx1, scan);
+  return (
+    <g style={{ opacity: end }}>
+      {grid > 0.001 && (
+        <g opacity={grid}>
+          {GRAT_LON.map((lo, i) => (
+            <path key={`o${i}`} d={line(GRAT_LAT.length ? [[lo, -66], [lo, 80]] : [])} fill="none" stroke="#6FE8FF" strokeWidth={2} strokeOpacity={0.45}
+              pathLength={1} strokeDasharray={`${clamp01(grid * 1.4 - i * 0.02)} 1`} style={{ filter: 'drop-shadow(0 0 6px #6FE8FF)' }} />
+          ))}
+          {GRAT_LAT.map((la, i) => (
+            <path key={`a${i}`} d={line(Array.from({ length: 37 }, (_, k) => [-180 + k * 10, la] as P))} fill="none" stroke="#6FE8FF" strokeWidth={la === 0 ? 3 : 2} strokeOpacity={la === 0 ? 0.65 : 0.4}
+              pathLength={1} strokeDasharray={`${clamp01(grid * 1.4 - i * 0.04)} 1`} style={{ filter: 'drop-shadow(0 0 6px #6FE8FF)' }} />
+          ))}
+        </g>
+      )}
+      {scan > 0 && scan < 1 && (
+        <g opacity={Math.sin(scan * Math.PI) * end}>
+          <rect x={scanX - 90} y={sy0} width={180} height={sy1 - sy0} fill="url(#scanG)" />
+          <line x1={scanX} y1={sy0} x2={scanX} y2={sy1} stroke="#E8FDFF" strokeWidth={4} style={{ filter: 'drop-shadow(0 0 14px #6FE8FF)' }} />
+          <defs><linearGradient id="scanG" x1="0" x2="1"><stop offset="0" stopColor="#6FE8FF" stopOpacity={0} /><stop offset="0.5" stopColor="#6FE8FF" stopOpacity={0.28} /><stop offset="1" stopColor="#6FE8FF" stopOpacity={0} /></linearGradient></defs>
+        </g>
+      )}
+      {CONT_ORDER.map(([k, col, dt], i) => {
+        const t0 = C.notice1 + 0.5 + dt;
+        const a = ramp(t, t0, t0 + 0.3, easeOut) * (1 - ramp(t, C.judwa2 - 0.15, C.judwa2 + 0.25, linear));
+        if (a <= 0.001) return null;
+        const d = pathD(c, CONT[k]);  // already Mercator metres
+        const pulse = 0.75 + 0.25 * Math.sin(t * 5 + i);
+        const hit = kick(t, t0 + 0.05, 0.5, 18, 6);
+        return (
+          <g key={k}>
+            <path d={d} fill={col} fillOpacity={(0.2 + 0.15 * hit) * a * pulse} />
+            <path d={d} fill="none" stroke={col} strokeWidth={22} strokeOpacity={0.3 * a} strokeLinejoin="round" style={{ filter: 'blur(10px)' }} />
+            <path d={d} fill="none" stroke="#fff" strokeWidth={2.5} strokeOpacity={0.9 * a} strokeLinejoin="round" pathLength={1} strokeDasharray={`${clamp01(a * 1.2)} 1`}
+              style={{ filter: `drop-shadow(0 0 8px ${col})` }} />
+          </g>
+        );
+      })}
+      {PAIRS.map(([ka, kb], i) => {
+        const t0 = C.judwa2 - 0.05 + i * 0.12;
+        const p = ramp(t, t0, t0 + 0.45, easeOut);
+        if (p <= 0) return null;
+        const [ax, ay] = project(c, ...G[ka].centre), [bx, by] = project(c, ...G[kb].centre);
+        const dist = Math.hypot(bx - ax, by - ay);
+        const mx = (ax + bx) / 2, my = (ay + by) / 2 - Math.max(60, dist * 0.42);
+        const q = (u: number): P => [(1 - u) * (1 - u) * ax + 2 * (1 - u) * u * mx + u * u * bx, (1 - u) * (1 - u) * ay + 2 * (1 - u) * u * my + u * u * by];
+        const d = `M${ax},${ay} Q${mx},${my} ${bx},${by}`;
+        const [hx, hy] = q(p);
+        return (
+          <g key={ka}>
+            <path d={d} fill="none" stroke="#FFD84A" strokeWidth={16} strokeOpacity={0.3} pathLength={1} strokeDasharray={`${p} 1`} style={{ filter: 'blur(6px)' }} />
+            <path d={d} fill="none" stroke="#FFF2B0" strokeWidth={5} strokeLinecap="round" pathLength={1} strokeDasharray={`${p} 1`} style={{ filter: 'drop-shadow(0 0 8px #FFD84A)' }} />
+            {p < 1 && <circle cx={hx} cy={hy} r={13} fill="#fff" style={{ filter: 'drop-shadow(0 0 12px #FFD84A)' }} />}
+            {[[ax, ay], [bx, by]].map(([x, y], j) => <circle key={j} cx={x} cy={y} r={10 + 6 * Math.sin(t * 8 + j)} fill="none" stroke="#fff" strokeWidth={4} opacity={j ? clamp01(p * 3 - 2) : 1} />)}
+          </g>
+        );
+      })}
+    </g>
+  );
+};
+
 /** Sicily as the football: the island fills with a football's black-and-white panels on "Football",
  *  and on "लात" Italy's toe kicks it away to the west, spinning, with a little hop. */
 const SicilyBall: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {
@@ -219,6 +300,7 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Shape c={c} k="vietnam" t={t} p={{ a: vnA, lift: t < C.teesra7 ? 1 - hookOut : Math.max(0.35 * ramp(t, C.boot8, C.boot8 + 0.3), Math.sin(vnFly(t) * Math.PI)),
         dx: t < C.teesra7 ? vnHook.dx * (1 - hookOut) : vnHook.dx * vnFly(t), dy: t < C.teesra7 ? vnHook.dy * (1 - hookOut) : vnHook.dy * vnFly(t),
         grow: t < C.teesra7 ? 1 : growAt(t, C.vietnam8), blink: blink2(t, C.italy8) }} />
+      <HookFX c={c} t={t} />
       <SicilyBall c={c} t={t} a={itA} />
       {/* 1 */}
       <Shape c={c} k="myanmar" t={t} p={{ a: myA, pulse: sameKick + kick(t, C.myan4, 0.05, 18, 7), grow: growAt(t, C.myan3), blink: blink2(t, C.same4) }} />

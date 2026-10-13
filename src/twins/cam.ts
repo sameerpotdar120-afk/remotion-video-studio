@@ -40,12 +40,17 @@ export const HOOK_AT: P = [PL.italy[0] + 0.55e6, PL.italy[1] - 0.1e6];
 /** Camera keys (Mercator metres; span = screen height in metres), anchored to words of the voiceover.
  *  Every move goes the way the map really lies: east is right, north is up. */
 const keys = (): Key[] => [
-  { t: 0, at: HOOK_AT, span: 2.9e6, rot: -2 },
-  { t: C.maps1 - 0.1, at: HOOK_AT, span: 2.6e6, rot: 0, e: linear },
+  // frame 0: already moving, a quick push in on the two boots
+  { t: 0, at: [HOOK_AT[0] + 0.25e6, HOOK_AT[1] + 0.15e6], span: 3.6e6, rot: -5 },
+  { t: C.maps1 - 0.1, at: HOOK_AT, span: 2.5e6, rot: 1, e: easeOut },
   // "हज़ार Maps": pull out to the whole world
   { t: C.maps1 + 1.2, at: PL.world, span: 2.5e7, rot: 2, e: inOut },
-  { t: C.notice1 + 0.6, at: [PL.world[0] - 1.5e6, PL.world[1]], span: 2.25e7, rot: 0, e: linear },
-  { t: C.judwa2 + 0.2, at: [PL.world[0] + 1.0e6, PL.world[1] - 0.5e6], span: 2.6e7, rot: -1, e: inOut },
+  // "Notice… दुनिया में कुछ देश": sweep the world west to east, the continents lighting up as they pass
+  { t: C.notice1 + 0.5, at: [-7.0e6, 1.6e6], span: 2.6e7, rot: -1, e: inOut },
+  { t: C.duniya2 + 0.5, at: [2.5e6, 2.8e6], span: 2.45e7, rot: 1, e: inOut },
+  { t: C.judwa2 - 0.2, at: [9.5e6, 2.2e6], span: 2.6e7, rot: -1, e: inOut },
+  // "जुड़वा": pull out wide so the four twin arcs read
+  { t: C.judwa2 + 0.35, at: [1.5e6, 2.4e6], span: 3.3e7, rot: 0, e: inOut },
   // 1: Thailand and Myanmar
   { t: C.thai3 - 0.1, at: PL.seasia, span: 4.6e6, rot: 0, e: inOut },
   { t: C.palat4, at: [PL.seasia[0] + 0.15e6, PL.seasia[1]], span: 4.2e6, rot: 1, e: linear },
@@ -100,7 +105,7 @@ const camRaw = (t: number): Cam => {
 };
 
 /** Zoom punches on the big hits. */
-export const HITS = () => [C.pehla3, C.palat4 + 0.4, C.doosra5, C.kandhe6, C.n56, C.teesra7, C.boot8, C.laat8, C.asli9, C.aaina11];
+export const HITS = () => [C.maps1 + 1.1, C.judwa2, C.pehla3, C.palat4 + 0.4, C.doosra5, C.kandhe6, C.n56, C.teesra7, C.boot8, C.laat8, C.asli9, C.aaina11];
 
 const SMOOTH = [-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12];
 const W8 = [0.06, 0.12, 0.18, 0.28, 0.18, 0.12, 0.06];

@@ -90,7 +90,8 @@ const draw = (ctx: CanvasRenderingContext2D, src: Source, p: Plate, c: Cam, alph
 const fade = (mpp: number, full: number, none: number) => Math.min(1, Math.max(0, (none - mpp) / (none - full)));
 
 /** Coarse-to-fine stack: the coarsest is skipped once a finer plate fully covers the screen. */
-export const MapCanvas: React.FC<{ cam: Cam }> = ({ cam }) => {
+/** res: canvas pixels per CSS pixel (2 for the 4K render, so the satellite map is drawn at full 4K detail). */
+export const MapCanvas: React.FC<{ cam: Cam; res?: number }> = ({ cam, res = 1 }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const [srcs, setSrcs] = useState<Source[] | null>(null);
   const [handle] = useState(() => delayRender('twins plates'));
@@ -110,11 +111,12 @@ export const MapCanvas: React.FC<{ cam: Cam }> = ({ cam }) => {
     const cv = ref.current;
     if (!cv || !srcs) return;
     const ctx = cv.getContext('2d')!;
+    ctx.setTransform(res, 0, 0, res, 0, 0);
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.fillStyle = SEA_BG;
-    ctx.fillRect(0, 0, cv.width, cv.height);
-    const mpp = cam.span / 1920;
+    ctx.fillRect(0, 0, PLANE.w, PLANE.h);
+    const mpp = cam.span / 1920 / res;
     const a = PLATES.map((p, i) => (i === 0 ? 1 : fade(mpp, p.full, p.none)));
     let start = 0;
     for (let i = PLATES.length - 1; i > 0; i--) if (a[i] >= 1 && covers(PLATES[i], cam)) { start = i; break; }
@@ -122,9 +124,9 @@ export const MapCanvas: React.FC<{ cam: Cam }> = ({ cam }) => {
     // lift the near-black Sentinel-2 sea to a deep navy (anything brighter, i.e. land, is untouched)
     ctx.globalCompositeOperation = 'lighten';
     ctx.fillStyle = '#0f3550';
-    ctx.fillRect(0, 0, cv.width, cv.height);
+    ctx.fillRect(0, 0, PLANE.w, PLANE.h);
     ctx.globalCompositeOperation = 'source-over';
-  }, [cam, srcs]);
+  }, [cam, srcs, res]);
 
-  return <canvas ref={ref} width={PLANE.w} height={PLANE.h} style={{ position: 'absolute', left: 0, top: 0, width: PLANE.w, height: PLANE.h }} />;
+  return <canvas ref={ref} width={PLANE.w * res} height={PLANE.h * res} style={{ position: 'absolute', left: 0, top: 0, width: PLANE.w, height: PLANE.h }} />;
 };

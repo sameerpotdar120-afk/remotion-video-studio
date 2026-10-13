@@ -20,15 +20,15 @@ from build_spain_maps import mx, my, rings  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "twins" / "maps"
-PLATES = [  # name, zoom, lon0, lon1, lat0, lat1
-    ("world", 4, -180.0, 179.9999, -66.0, 80.0),
-    ("eurasia", 5, -12.0, 122.0, -2.0, 62.0),
-    ("seasia", 7, 86.0, 112.0, 3.0, 30.0),
-    ("wafrica", 8, -2.0, 5.5, 5.0, 13.2),
-    ("italy", 7, 4.0, 21.0, 35.0, 48.0),
-    ("vietnam", 7, 99.0, 113.0, 7.0, 24.5),
-    ("norway", 6, -2.0, 36.0, 55.0, 72.5),
-    ("chile", 6, -82.0, -60.0, -57.5, -15.5),
+PLATES = [  # name, zoom, lon0, lon1, lat0, lat1 (zooms sized for the 4K render)
+    ("world", 5, -180.0, 179.9999, -66.0, 80.0),
+    ("eurasia", 6, -12.0, 122.0, -2.0, 62.0),
+    ("seasia", 8, 86.0, 112.0, 3.0, 30.0),
+    ("wafrica", 9, -2.0, 5.5, 5.0, 13.2),
+    ("italy", 8, 4.0, 21.0, 35.0, 48.0),
+    ("vietnam", 8, 99.0, 113.0, 7.0, 24.5),
+    ("norway", 7, -2.0, 36.0, 55.0, 72.5),
+    ("chile", 7, -82.0, -60.0, -57.5, -15.5),
 ]
 COUNTRIES = {"thailand": "Thailand", "myanmar": "Myanmar", "benin": "Benin", "togo": "Togo", "italy": "Italy",
              "vietnam": "Vietnam", "norway": "Norway", "chile": "Chile"}
@@ -41,8 +41,10 @@ def main() -> None:
     geo = {"plates": {}}
     for name, z, lo0, lo1, la0, la1 in PLATES:
         im, b = stitch(EOX, z, lo0, lo1, la0, la1, cache / "eox", "eox")
-        if im.width > 3200:
-            im = im.resize((3200, round(im.height * 3200 / im.width)), Image.LANCZOS)
+        if im.width > 6400:
+            im = im.resize((6400, round(im.height * 6400 / im.width)), Image.LANCZOS)
+        if im.height > 6400:
+            im = im.resize((round(im.width * 6400 / im.height), 6400), Image.LANCZOS)
         im.save(OUT / f"{name}_sat.jpg", quality=90)
         geo["plates"][name] = {"bounds": [round(v, 1) for v in b], "w": im.width, "h": im.height}
         print(name, im.size)
