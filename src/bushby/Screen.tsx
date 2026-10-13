@@ -142,6 +142,44 @@ export const Whips: React.FC<{ t: number }> = ({ t }) => (
   </>
 );
 
+/** Time riding the line, like the reference: big italic years that travel with the head of the route. */
+const RideLabel: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; rot: number }> = ({ t, t0, t1, text, x, y, rot }) => {
+  const a = window4(t, t0, t0 + 0.15, t1 - 0.25, t1);
+  if (a <= 0) return null;
+  const s = clamp01(pop(t, t0, 8, 240));
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${rot}deg) scale(${s})`, opacity: a, whiteSpace: 'nowrap',
+      fontFamily: NUM, fontSize: 96, color: '#fff', fontStyle: 'italic', letterSpacing: 2, textShadow: `${SHADOW}, 0 0 26px ${COL.gold}88`, ...STROKE(7) }}>{text}</div>
+  );
+};
+
+/** Virus icons drifting and spinning over Central Asia for the pandemic. */
+const Viruses: React.FC<{ t: number }> = ({ t }) => {
+  const a = window4(t, C.pandemic10 - 0.1, C.pandemic10 + 0.2, C.caspian11 - 0.3, C.caspian11);
+  if (a <= 0) return null;
+  const spots: [number, number, number, number][] = [[150, 520, 70, 0], [880, 610, 90, 0.1], [320, 820, 60, 0.2], [760, 920, 75, 0.15], [520, 700, 110, 0.05], [940, 1150, 65, 0.25], [110, 1080, 80, 0.3]];
+  return (
+    <>
+      {spots.map(([x, y, r, d], i) => {
+        const s = clamp01(pop(t, C.pandemic10 - 0.1 + d, 7, 240));
+        const dx = Math.sin(t * 0.9 + i) * 26, dy = Math.cos(t * 0.7 + i * 1.3) * 22;
+        return (
+          <svg key={i} width={r * 2.6} height={r * 2.6} viewBox="-130 -130 260 260" style={{ position: 'absolute', left: x + dx - r * 1.3, top: y + dy - r * 1.3, opacity: a * 0.95,
+            transform: `scale(${s}) rotate(${t * (i % 2 ? 40 : -35)}deg)`, filter: 'drop-shadow(0 0 14px rgba(60,255,120,0.7))' }}>
+            {Array.from({ length: 10 }, (_, k) => {
+              const q = (k / 10) * Math.PI * 2;
+              return <g key={k}><line x1={Math.cos(q) * 60} y1={Math.sin(q) * 60} x2={Math.cos(q) * 104} y2={Math.sin(q) * 104} stroke="#39d36b" strokeWidth={10} />
+                <circle cx={Math.cos(q) * 108} cy={Math.sin(q) * 108} r={15} fill="#5df08a" /></g>;
+            })}
+            <circle r={66} fill="#2fbf5c" stroke="#9dffb9" strokeWidth={6} />
+            <circle cx={-18} cy={-14} r={12} fill="#1d8a40" /><circle cx={20} cy={18} r={9} fill="#1d8a40" /><circle cx={16} cy={-24} r={6} fill="#1d8a40" />
+          </svg>
+        );
+      })}
+    </>
+  );
+};
+
 export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t, c, globe }) => {
   const at = (k: string): P => toScreen(c, GEO.places[k]);
   const head = toScreen(c, pointAt(routeAt(t)));
@@ -158,6 +196,11 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
 
       {/* ---- Karl's badge rides the route on every flat map (not while he swims, not on the globe) */}
       <Badge t={t} x={head[0]} y={head[1]} a={(1 - globe) * (1 - window4(t, C.kood12 - 0.2, C.kood12, C.turkey13 - 0.2, C.turkey13)) * (1 - window4(t, C.channel13 - 0.2, C.channel13, C.england13 + 0.4, C.england13 + 0.8)) * (1 - ramp(t, C.ghar14 + 0.2, C.ghar14 + 0.6, linear))} />
+
+      {/* ---- years riding the line */}
+      <RideLabel t={t} t0={C.gaadi4 + 0.2} t1={C.imtihan5 + 0.3} text="2 साल" x={head[0] + 150} y={head[1] + 40} rot={-14} />
+      <RideLabel t={t} t0={C.bering7 - 0.2} t1={C.jamne7 + 0.4} text="5 साल" x={head[0] + 160} y={head[1] + 60} rot={-20} />
+      <Viruses t={t} />
 
       {/* ---- the start */}
       <Tag t={t} t0={C.karl4 + 0.1} t1={C.gaadi4 + 0.4} text="KARL BUSHBY" x={pa[0] + 230} y={pa[1] + 40} color={COL.gold} latin size={58} up={130} />

@@ -59,9 +59,20 @@ const Route: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {
   }
   const [hx, hy] = project(c, ...pointAt(k));
   const pulse = 1 + Math.sin(t * 6) * 0.12;
+  // a sparkle trail behind the head: points a little back along the line, twinkling and fading
+  const sparks: React.ReactNode[] = [];
+  for (let j = 1; j <= 14; j++) {
+    const kk = Math.max(0, k - j * 0.045);
+    const [sx, sy] = project(c, ...pointAt(kk));
+    const tw = 0.5 + 0.5 * Math.sin(t * 11 + j * 1.7);
+    const off = Math.sin(j * 2.3 + t * 3) * 10;
+    sparks.push(<circle key={`s${j}`} cx={sx + off} cy={sy - off * 0.6} r={(5 - j * 0.28) * (0.6 + tw * 0.6)} fill="#fff8d0" opacity={(1 - j / 15) * 0.9 * tw}
+      style={{ filter: `drop-shadow(0 0 6px ${COL.gold})` }} />);
+  }
   return (
     <Svg a={a}>
       {segs}
+      {k > 0.02 && sparks}
       <circle cx={hx} cy={hy} r={34 * pulse} fill={COL.gold} opacity={0.3} style={{ filter: 'blur(8px)' }} />
       <circle cx={hx} cy={hy} r={13} fill="#fff" stroke={COL.gold} strokeWidth={4} style={{ filter: `drop-shadow(0 0 10px ${COL.gold})` }} />
     </Svg>

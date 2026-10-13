@@ -143,7 +143,9 @@ export const camAt = (t: number): Cam => {
   const [hx, hy] = pointAt(routeAt(t));
   const span = Math.exp(ls);
   const w = 0.32;
-  const breathe = 1 + 0.045 * Math.sin(t * 0.85) + 0.02 * Math.sin(t * 2.1 + 1.3);
+  let punch = 0;
+  for (const h of [C.n18, C.giraftar7, C.ban9, C.kood12, C.england13, C.n11]) if (t > h) punch += 0.09 * Math.exp(-7 * (t - h)) * Math.cos((t - h) * 9);
+  const breathe = (1 + 0.045 * Math.sin(t * 0.85) + 0.02 * Math.sin(t * 2.1 + 1.3)) * (1 - punch);
   const drift = span * 0.012;
   return {
     x: lerp(x, hx, w) + Math.sin(t * 1.3) * drift, y: lerp(y, hy, w) + Math.cos(t * 1.1) * drift,
