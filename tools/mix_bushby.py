@@ -49,7 +49,8 @@ CUES = [
     (C["visa6"] - 0.05, "gate", -9, {}), (C["n18"] + 0.6, "boom", -12, {}),
     # Bering Strait, arrest
     (C["bering7"] - 0.4, "wh_big_tonal", -8, {}),
-    (C["jamne7"] - 0.2, "blizzard", -21, {"align": "start", "skip": 10.0, "dur": C["pandemic10"] - C["jamne7"] + 0.2}),
+    (C["jamne7"] - 0.2, "blizzard", -21, {"align": "start", "skip": 10.0, "dur": C["russia7"] - C["jamne7"] + 0.8}),
+    (C["siberia9"] - 0.2, "blizzard", -20, {"align": "start", "skip": 40.0, "dur": C["n11"] - C["siberia9"] + 1.5}),
     (C["n14"] - 0.1, "ice_crack", -11, {}), (C["barf7"], "ice_field", -19, {"align": "start", "skip": 3.0, "dur": 2.5}),
     (C["giraftar7"] - 0.05, "punch", -9, {}), (C["giraftar7"] + 0.02, "gate", -12, {}),
     # Russia: visas, ban, 11 years

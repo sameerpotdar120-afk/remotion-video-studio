@@ -1,9 +1,9 @@
 import React from 'react';
 import { AbsoluteFill } from 'remotion';
-import { clamp01, kick, lerp, linear, pop, ramp, window4 } from './anim2';
+import { clamp01, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim2';
 import { C, CAPS, Cam, DURATION_S, GEO, P, toScreen } from './cam';
 import { HEAD, NUM, SUB } from './fonts';
-import { Actor, COL, Counter, Cross, Kin, Overlay, SHADOW, STROKE, Stamp, Tag } from './kit';
+import { Actor, COL, Counter, Cross, Kin, Overlay, SHADOW, STROKE, Stamp, Tag, img } from './kit';
 import { pointAt, routeAt } from './Plane';
 
 /** A small "chapter" chip at the top: इम्तिहान #1 and friends. */
@@ -44,6 +44,9 @@ const Skulls: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   );
 };
 
+/** How much of the route is drawn on the globe: it races around the planet during the hook. */
+export const hookRoute = (t: number) => 0.05 + 0.95 * ramp(t, 0, C.plan3 + 0.2, inOut);
+
 /** Frame 0 and the hook: picture first, then the vow and 12 → 28 builds on the voice. */
 const Hook: React.FC<{ t: number }> = ({ t }) => {
   const a = 1 - ramp(t, C.karl4 - 0.4, C.karl4, linear);
@@ -54,9 +57,14 @@ const Hook: React.FC<{ t: number }> = ({ t }) => {
   const strike = ramp(t, C.n28 - 0.25, C.n28, linear);
   return (
     <div style={{ position: 'absolute', left: 0, right: 0, top: 210, opacity: a, textAlign: 'center', lineHeight: 1.05 }}>
-      <div style={{ transform: `scale(${1 + kick(t, C.n28, 0.08, 26, 8)})` }}>
+      <div style={{ transform: `scale(${lerp(1.22, 1, ramp(t, 0, 0.3, linear)) + 0.025 * Math.sin(t * 2.6) + kick(t, C.n28, 0.08, 26, 8)})` }}>
         <span style={{ fontFamily: NUM, fontSize: 190, color: COL.gold, textShadow: `${SHADOW}, 0 0 40px ${COL.gold}99`, ...STROKE(10) }}>28</span>
         <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 132, color: '#fff', textShadow: SHADOW, ...STROKE(10) }}> साल पैदल</span>
+      </div>
+      <div style={{ marginTop: 6, opacity: 1 - ramp(t, C.kasam2 - 0.3, C.kasam2, linear) * 0 }}>
+        <span style={{ fontFamily: NUM, fontSize: 54, color: COL.gold, letterSpacing: 2, background: 'rgba(14,8,2,0.62)', padding: '6px 22px 2px', borderRadius: 14, border: `3px solid ${COL.gold}` }}>
+          {Math.round(hookRoute(t) * 50000).toLocaleString('en-IN')} KM
+        </span>
       </div>
       <div style={{ marginTop: 10, opacity: vow, transform: `translateY(${(1 - vow) * 30}px)` }}>
         <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 66, color: '#fff', background: 'rgba(14,8,2,0.7)', padding: '4px 26px 0', borderRadius: 16 }}>एक कसम: पूरी दुनिया पैदल</span>
@@ -99,6 +107,40 @@ const Question: React.FC<{ t: number }> = ({ t }) => {
   );
 };
 
+/** Karl's portrait badge riding the head of the route, like a live tracker. Hidden while he swims (the swimmer is there). */
+const Badge: React.FC<{ t: number; x: number; y: number; a: number }> = ({ t, x, y, a }) => {
+  if (a <= 0.01) return null;
+  const s = clamp01(pop(t, C.karl4 - 0.1, 10, 220));
+  const bob = Math.sin(t * 3.2) * 4;
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, width: 0, height: 0, opacity: a }}>
+      <div style={{ position: 'absolute', left: -62, top: -168 + bob, width: 124, height: 124, borderRadius: '50%', transform: `scale(${s})`, transformOrigin: '50% 100%',
+        border: `6px solid ${COL.gold}`, boxShadow: `0 0 24px ${COL.gold}aa, 0 10px 20px rgba(0,0,0,0.55)`, overflow: 'hidden', background: '#5aa0d8' }}>
+        <img src={img('karl_badge')} style={{ width: '100%', height: '100%', display: 'block' }} />
+      </div>
+      <svg width={30} height={26} style={{ position: 'absolute', left: -15, top: -46 + bob, overflow: 'visible', transform: `scale(${s})` }}>
+        <path d="M0 0 L30 0 L15 24 Z" fill={COL.gold} />
+      </svg>
+    </div>
+  );
+};
+
+/** Whip transitions on the big camera moves: a light streak sweeps across the frame. */
+const WHIPS = [C.karl4 - 0.3, C.imtihan5 - 0.2, C.bering7 - 0.3, C.russia8, C.pandemic10, C.caspian11 - 0.2, C.turkey13 - 0.2, C.channel13 - 0.2, C.n28b - 0.2, C.ghar14 - 0.3];
+export const Whips: React.FC<{ t: number }> = ({ t }) => (
+  <>
+    {WHIPS.map((w, i) => {
+      const p = ramp(t, w, w + 0.32, linear);
+      if (p <= 0 || p >= 1) return null;
+      const dir = i % 2 ? -1 : 1;
+      return (
+        <AbsoluteFill key={i} style={{ pointerEvents: 'none', mixBlendMode: 'screen', opacity: Math.sin(p * Math.PI) * 0.85,
+          background: `linear-gradient(${dir > 0 ? 100 : 80}deg, rgba(255,255,255,0) ${lerp(-40, 100, p) - 25}%, rgba(255,240,200,0.9) ${lerp(-40, 100, p)}%, rgba(255,255,255,0) ${lerp(-40, 100, p) + 25}%)` }} />
+      );
+    })}
+  </>
+);
+
 export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t, c, globe }) => {
   const at = (k: string): P => toScreen(c, GEO.places[k]);
   const head = toScreen(c, pointAt(routeAt(t)));
@@ -107,11 +149,14 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
   return (
     <AbsoluteFill>
       {/* ---- the hook, on the globe */}
-      <Actor t={t} t0={-1} t1={C.karl4 - 0.3} pose="karl_front" x={540} y={1530} h={640} bob={3} glow="rgba(255,216,74,0.35)" />
+      <Actor t={t} t0={-1} t1={C.karl4 - 0.3} pose="karl_walk" x={600} y={1560} h={500} walk={9} flip glow="rgba(255,216,74,0.35)" drop={false} />
       <Hook t={t} />
       <Stamp t={t} t0={C.kyon3 - 0.05} t1={C.karl4 - 0.1} x={540} y={800} rot={-4}>
         <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 96, color: '#fff' }}>पर क्यों?</span>
       </Stamp>
+
+      {/* ---- Karl's badge rides the route on every flat map (not while he swims, not on the globe) */}
+      <Badge t={t} x={head[0]} y={head[1]} a={(1 - globe) * (1 - window4(t, C.kood12 - 0.2, C.kood12, C.turkey13 - 0.2, C.turkey13)) * (1 - window4(t, C.channel13 - 0.2, C.channel13, C.england13 + 0.4, C.england13 + 0.8)) * (1 - ramp(t, C.ghar14 + 0.2, C.ghar14 + 0.6, linear))} />
 
       {/* ---- the start */}
       <Tag t={t} t0={C.karl4 + 0.1} t1={C.gaadi4 + 0.4} text="KARL BUSHBY" x={pa[0]} y={pa[1]} color={COL.gold} latin size={58} up={130} />
@@ -119,7 +164,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
         <span style={{ fontFamily: NUM, fontSize: 120, color: '#fff', letterSpacing: 3 }}>1998</span>
       </Stamp>
       <Kin text="Chile का आखिरी छोर" t={t} t0={C.chile4 - 0.05} t1={C.gaadi4 - 0.1} x={540} y={600} size={64} />
-      <Actor t={t} t0={C.chile4 - 0.1} t1={C.gaadi4 - 0.25} pose="karl_walk" x={380} y={1560} h={400} bob={4} path={{ t0: C.chile4, t1: C.gaadi4, x: 640, y: 1560 }} />
+      <Actor t={t} t0={C.chile4 - 0.1} t1={C.gaadi4 - 0.25} pose="karl_walk" x={700} y={1560} h={400} walk={8} flip path={{ t0: C.chile4, t1: C.gaadi4, x: 420, y: 1560 }} />
       <Actor t={t} t0={C.gaadi4 - 0.15} t1={C.imtihan5 - 0.2} pose="car" x={230} y={1420} h={220} />
       <Actor t={t} t0={C.jahaz4 - 0.15} t1={C.imtihan5 - 0.2} pose="ship" x={540} y={1420} h={200} />
       <Actor t={t} t0={C.plane4 - 0.15} t1={C.imtihan5 - 0.2} pose="plane" x={850} y={1400} h={190} />
@@ -143,7 +188,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Tag t={t} t0={C.jamne7 - 0.1} t1={C.n14 + 0.6} text="BERING STRAIT" x={ber[0]} y={ber[1]} color={COL.ice} latin size={52} up={120} />
       <Kin text="समंदर जमने का इंतज़ार…" t={t} t0={C.jamne7 - 0.05} t1={C.n14 - 0.1} x={540} y={420} size={72} color={COL.ice} />
       <Actor t={t} t0={C.n14 - 0.2} t1={C.giraftar7 - 0.1} pose="ice_floe" x={540} y={1560} h={300} drop={false} />
-      <Actor t={t} t0={C.n14 - 0.1} t1={C.giraftar7 - 0.1} pose="karl_ice" x={420} y={1500} h={420} bob={4} path={{ t0: C.n14, t1: C.russia7, x: 660, y: 1490 }} />
+      <Actor t={t} t0={C.n14 - 0.1} t1={C.giraftar7 - 0.1} pose="karl_ice" x={660} y={1500} h={420} walk={6} flip path={{ t0: C.n14, t1: C.russia7, x: 420, y: 1490 }} />
       <Counter t={t} t0={C.n14 - 0.05} t1={C.russia7 + 0.3} to={14} x={540} y={430} size={170} color={COL.ice} sub="दिन बहती बर्फ़ पर" />
       <Tag t={t} t0={C.russia7 - 0.05} t1={C.russia8 + 0.6} text="RUSSIA" x={uel[0]} y={uel[1]} color={COL.red} latin size={52} up={110} rot={3} />
       <Actor t={t} t0={C.giraftar7 - 0.15} t1={C.russia8 + 0.3} pose="handcuffs" x={540} y={1430} h={300} rot={-8} />
@@ -159,7 +204,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       </Stamp>
       <Kin text="SIBERIA" t={t} t0={C.siberia9 - 0.05} t1={C.n11 - 0.1} x={540} y={420} size={110} color={COL.ice} font={NUM} />
       <Counter t={t} t0={C.n11 - 0.1} t1={C.pandemic10 - 0.1} to={11} x={540} y={430} size={190} color={COL.ice} sub="साल, अकेले Russia में" />
-      <Overlay name="overlay_snow" a={window4(t, C.jamne7 - 0.2, C.jamne7 + 0.4, C.pandemic10 - 0.3, C.pandemic10) * 0.75} x={540} y={960} w={2000} sc={1 + 0.04 * Math.sin(t * 2)} />
+      <Overlay name="overlay_snow" a={(window4(t, C.jamne7 - 0.2, C.jamne7 + 0.3, C.russia7 + 0.2, C.russia7 + 0.6) + window4(t, C.siberia9 - 0.2, C.siberia9 + 0.2, C.n11 + 0.9, C.n11 + 1.3)) * 0.75} x={540} y={960} w={2000} sc={1 + 0.04 * Math.sin(t * 2)} />
 
       {/* ---- the pandemic */}
       <Actor t={t} t0={C.pandemic10 - 0.1} t1={C.caspian11 - 0.1} pose="border_barrier" x={540} y={1480} h={360} />
@@ -170,16 +215,16 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Tag t={t} t0={C.caspian11 - 0.05} t1={C.turkey13} text="CASPIAN SEA" x={cas[0] - 60} y={cas[1] + 520} color={COL.sea} latin size={52} up={0} />
       <Kin text="दोनों रास्ते बंद" t={t} t0={C.band11 - 0.15} t1={C.kood12 - 0.05} x={540} y={430} size={92} color={COL.red} />
       <Overlay name="overlay_splash" a={window4(t, C.kood12 - 0.05, C.kood12 + 0.05, C.kood12 + 0.5, C.kood12 + 0.9)} x={head[0]} y={head[1] - 40} w={900} />
-      <Actor t={t} t0={C.kood12} t1={C.turkey13} pose="karl_swim" x={head[0] - 30} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} />
-      <Actor t={t} t0={C.kood12 + 0.3} t1={C.turkey13} pose="support_boat" x={head[0] + 150} y={head[1] + 40} h={130} shadow={false} drop={false} bob={3} sway={2} />
+      <Actor t={t} t0={C.kood12} t1={C.turkey13} pose="karl_swim" x={head[0] - 30} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} flip />
+      <Actor t={t} t0={C.kood12 + 0.3} t1={C.turkey13} pose="support_boat" x={head[0] + 190} y={head[1] + 40} h={130} shadow={false} drop={false} bob={3} sway={2} flip />
       <Counter t={t} t0={C.n31 - 0.1} t1={C.turkey13 - 0.1} to={31} x={330} y={430} size={160} color={COL.sea} sub="दिन" />
       <Counter t={t} t0={C.n288 - 0.1} t1={C.turkey13 - 0.1} to={288} x={760} y={430} size={140} color={COL.white} post=" KM" sub="तैरकर" dur={0.8} />
 
       {/* ---- Europe, the Channel */}
-      <Actor t={t} t0={C.turkey13 - 0.1} t1={C.channel13 - 0.2} pose="karl_walk" x={330} y={1560} h={400} bob={4} path={{ t0: C.turkey13, t1: C.channel13, x: 760, y: 1560 }} />
+      <Actor t={t} t0={C.turkey13 - 0.1} t1={C.channel13 - 0.2} pose="karl_walk" x={760} y={1560} h={400} walk={8} flip path={{ t0: C.turkey13, t1: C.channel13, x: 330, y: 1560 }} />
       <Kin text="TURKEY → EUROPE" t={t} t0={C.turkey13 - 0.05} t1={C.october13} x={540} y={420} size={88} color={COL.gold} font={NUM} />
-      <Tag t={t} t0={C.channel13 - 0.1} t1={C.n28b} text="ENGLISH CHANNEL" x={dov[0] + 20} y={dov[1] + 120} color={COL.sea} latin size={46} up={0} />
-      <Actor t={t} t0={C.channel13} t1={C.england13 + 0.6} pose="karl_swim" x={head[0] - 20} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} />
+      <Tag t={t} t0={C.channel13 - 0.1} t1={C.n28b} text="ENGLISH CHANNEL" x={dov[0] + 40} y={dov[1] + 380} color={COL.sea} latin size={46} up={0} />
+      <Actor t={t} t0={C.channel13} t1={C.england13 + 0.6} pose="karl_swim" x={head[0] - 20} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} flip />
       <Stamp t={t} t0={C.england13 - 0.05} t1={C.n28b - 0.1} x={540} y={430} rot={-4}>
         <div style={{ fontFamily: NUM, fontSize: 96, color: '#fff', letterSpacing: 3, lineHeight: 1.05 }}>ENGLAND</div>
         <div style={{ fontFamily: NUM, fontSize: 50, color: COL.gold, letterSpacing: 3 }}>OCT 2026</div>
@@ -213,7 +258,7 @@ export const shake = (t: number): [number, number] => {
 /** Scene grades (a Lumetri look per section): jungle warm-green, ice and Siberia cold blue, pandemic drained, sea teal, home golden. */
 export const gradeAt = (t: number) => ({
   jungle: window4(t, C.imtihan5 - 0.2, C.darien5, C.panama6, C.panama6 + 0.4),
-  cold: window4(t, C.jamne7 - 0.4, C.jamne7, C.n11 + 0.6, C.pandemic10),
+  cold: window4(t, C.jamne7 - 0.4, C.jamne7, C.russia7 + 0.3, C.russia7 + 0.8) + window4(t, C.siberia9 - 0.3, C.siberia9 + 0.1, C.n11 + 0.9, C.n11 + 1.4),
   drain: window4(t, C.pandemic10 - 0.1, C.pandemic10 + 0.3, C.caspian11 - 0.2, C.caspian11 + 0.2),
   gold: ramp(t, C.ghar14 - 0.3, C.ghar14 + 0.6),
 });

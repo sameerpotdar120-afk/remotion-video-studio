@@ -71,8 +71,14 @@ export const Globe: React.FC<{ lon: number; lat: number; dist: number; route?: n
       </mesh>
       {pin && (
         <mesh position={onSphere(pin[0], pin[1], 1.01).toArray() as [number, number, number]}>
-          <sphereGeometry args={[0.018, 24, 16]} />
+          <sphereGeometry args={[0.022, 24, 16]} />
           <meshBasicMaterial color="#ffffff" />
+        </mesh>
+      )}
+      {pin && (
+        <mesh position={onSphere(pin[0], pin[1], 1.01).toArray() as [number, number, number]}>
+          <sphereGeometry args={[0.06, 24, 16]} />
+          <meshBasicMaterial color="#FFD84A" transparent opacity={0.35} blending={THREE.AdditiveBlending} depthWrite={false} />
         </mesh>
       )}
       <mesh>

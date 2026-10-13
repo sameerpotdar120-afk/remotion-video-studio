@@ -14,8 +14,8 @@ export const SHADOW = '0 6px 0 rgba(0,0,0,0.35), 0 10px 26px rgba(0,0,0,0.65)';
 /** A miniature at a screen point (bottom-centre anchor): springs in, breathes, can glide along a path, pops out. */
 export const Actor: React.FC<{
   t: number; t0: number; t1: number; pose: string; x: number; y: number; h: number; flip?: boolean; bob?: number; sway?: number;
-  path?: { t0: number; t1: number; x: number; y: number; arc?: number }; shadow?: boolean; rot?: number; glow?: string; drop?: boolean; fadeIn?: number;
-}> = ({ t, t0, t1, pose, x, y, h, flip, bob = 4, sway = 0, path, shadow = true, rot = 0, glow, drop = true, fadeIn }) => {
+  path?: { t0: number; t1: number; x: number; y: number; arc?: number }; shadow?: boolean; rot?: number; glow?: string; drop?: boolean; fadeIn?: number; walk?: number;
+}> = ({ t, t0, t1, pose, x, y, h, flip, bob = 4, sway = 0, path, shadow = true, rot = 0, glow, drop = true, fadeIn, walk = 0 }) => {
   if (t < t0 - 0.02 || t > t1 + 0.35) return null;
   const s = fadeIn ? 1 : pop(t, t0, 10, 200);
   const fa = fadeIn ? ramp(t, t0, t0 + fadeIn, linear) : 1;
@@ -31,8 +31,9 @@ export const Actor: React.FC<{
   const w = (h * iw) / ih;
   const sc = Math.max(0, s) * (fadeIn ? 1 - out * 0.1 : 1 - out);
   if (sc <= 0.01) return null;
-  const breathe = Math.sin((t - t0) * 2.4) * bob;
-  const rock = sway ? Math.sin((t - t0) * 2.1) * sway : 0;
+  // a walking gait: quick bounce per step and a little rock; otherwise a slow breathe
+  const breathe = walk ? -Math.abs(Math.sin((t - t0) * 6.5)) * walk : Math.sin((t - t0) * 2.4) * bob;
+  const rock = walk ? Math.sin((t - t0) * 6.5) * 1.6 : sway ? Math.sin((t - t0) * 2.1) * sway : 0;
   return (
     <div style={{ position: 'absolute', left: px, top: py, width: 0, height: 0, opacity: fa * (fadeIn ? 1 - out : 1) }}>
       {shadow && (
@@ -40,7 +41,7 @@ export const Actor: React.FC<{
           background: 'radial-gradient(closest-side, rgba(0,0,0,0.55), rgba(0,0,0,0))', transform: `scale(${Math.min(1, sc)})` }} />
       )}
       <div style={{ position: 'absolute', left: -w / 2, top: -h, width: w, height: h, transformOrigin: '50% 100%',
-        transform: `translateY(${-(drop && !fadeIn ? (1 - clamp01(s)) * 90 : 0)}px) rotate(${rot + rock}deg) scale(${sc * (1 - land) * (flip ? -1 : 1)}, ${sc * (1 + land) + breathe / h})`,
+        transform: `translateY(${-(drop && !fadeIn ? (1 - clamp01(s)) * 90 : 0) + (walk ? breathe : 0)}px) rotate(${rot + rock}deg) scale(${sc * (1 - land) * (flip ? -1 : 1)}, ${sc * (1 + land) + (walk ? 0 : breathe / h)})`,
         filter: `${glow ? `drop-shadow(0 0 18px ${glow}) ` : ''}drop-shadow(0 10px 12px rgba(0,0,0,0.55))` }}>
         <img src={img(pose)} style={{ width: w, height: h, display: 'block' }} />
       </div>
