@@ -8,19 +8,19 @@ All-new assets for this video. Nothing is reused from earlier videos.
 
 | Script | On screen | Assets |
 |---|---|---|
-| आप एक दिन में थक जाते। पर एक आदमी ने कसम खाई… | Frame 0: satellite globe with the glowing route wrapped around it, the walker standing on top, only "28 साल पैदल" | A2 |
+| आप एक दिन में थक जाते। पर एक आदमी ने कसम खाई… | Frame 0: satellite globe with the glowing route wrapped around it, Karl standing on top, only "28 साल पैदल" | A2 |
 | Plan था 12 साल का… हो गए 28 साल। पर क्यों? | "12" crossed out, "28" slams in, a "?" pill (code) | A2 |
-| Karl Bushby 1998 में Chile के आखिरी छोर से निकला। न गाड़ी, न जहाज़, न Plane। | Dive to Chile's southern tip, pin and "1998" stamp; the walker sets off; car, ship and plane pop up and get crossed out | A1, B1, B2, B3 |
-| पहला इम्तिहान: Darién Gap। घना जंगल, तस्कर, हथियारबंद गुट। | The route races north; the Darién Gap glows green with skull pins; a jungle tile rises with mist, the walker pushes through | A5, C1, D2 |
+| Karl Bushby 1998 में Chile के आखिरी छोर से निकला। न गाड़ी, न जहाज़, न Plane। | Dive to Chile's southern tip, pin and "1998" stamp; Karl sets off; car, ship and plane pop up and get crossed out | A1, B1, B2, B3 |
+| पहला इम्तिहान: Darién Gap। घना जंगल, तस्कर, हथियारबंद गुट। | The route races north; the Darién Gap glows green with skull pins; a jungle tile rises with mist, Karl pushes through | A5, C1, D2 |
 | मौत को छूकर लौटा… और Panama में बिना Visa के 18 दिन जेल। | A jail cell slams down on Panama, "18 दिन" (code) | C2 |
-| फिर Bering Strait… 14 दिन बहती बर्फ़ पर… पहुँचते ही गिरफ़्तार। | A long pan north; the strait turns white, snow falls; the walker in winter gear on an ice floe, "14 दिन"; handcuffs drop in | A3, C3, C4, D1 |
+| फिर Bering Strait… 14 दिन बहती बर्फ़ पर… पहुँचते ही गिरफ़्तार। | A long pan north; the strait turns white, snow falls; the Karl in Arctic gear on an ice floe, "14 दिन"; handcuffs drop in | A3, C3, C4, D1 |
 | Russia में Visa सिर्फ 90 दिन का। हर बार Exit… Entry। | A passport flips open; the route loops out of Russia and back to the same spot (code) | C5 |
 | ऊपर से Ban भी लगा… अकेले Russia ने 11 साल खा लिए। | "BANNED" stamp (code); snow across Siberia; "11 साल" counter (code) | D1 |
-| फिर Pandemic ने रोका। सरहदें बंद। | Borders flash red; a closed checkpoint; the walker waits on his backpack | A6, C6 |
+| फिर Pandemic ने रोका। सरहदें बंद। | Borders flash red; a closed checkpoint; Karl waits on his backpack | A6, C6 |
 | फिर Caspian Sea ने रोका। Russia और Iran, दोनों रास्ते बंद। | Russia and Iran flash red, the Caspian glows blue (code) | — |
-| तो Karl पानी में कूद गया। 31 दिन में 288 KM… नाव पर। | Splash; the walker swims across with the support boat beside him; "31 दिन · 288 KM" (code) | A4, C7, D3 |
+| तो Karl पानी में कूद गया। 31 दिन में 288 KM… नाव पर। | Splash; Karl swims across with the support boat beside him; "31 दिन · 288 KM" (code) | A4, C7, D3 |
 | फिर Turkey, पूरा Europe… English Channel… England पहुँच गया। | The route sweeps across Europe; a quick swim across the Channel to Dover | A4 |
-| 28 साल, करीब 50,000 KM… घर बस कुछ सौ KM दूर। | Pull out to the globe with the full route, "50,000 KM" (code); dive to England, the house with a lit window | A1, C8 |
+| 28 साल, करीब 50,000 KM… घर बस कुछ सौ KM दूर। | Pull out to the globe with the full route, "50,000 KM" (code); dive to England, the house with a lit window | A7, C8 |
 | ये जुनून है या पागलपन? Comment में बताओ। | Two buttons "जुनून" / "पागलपन" (code) | — |
 
 ---
@@ -32,11 +32,12 @@ The route line, pins, stamps, counters, the "BANNED" stamp and every label are d
 
 **2. No text, numbers, letters, flags or logos in any GPT image.**
 
-**3. The walker is a generic figurine, not Karl Bushby.** Karl is a real person and his photos belong to someone else. Never ask GPT for his face or likeness.
-Use the same invented figurine in every pose: a lean bearded long-distance walker in a faded khaki shirt, cargo trousers, a wide-brim hat and a big orange backpack.
+**3. Karl is Karl, as a stylised glossy miniature (not photoreal).** Upload the creator's reference photo of Karl in Karl chat and ask GPT to match only his face and look.
+His look: tall, lean, around 50, swept-back blond-grey hair, short grey goatee beard, black sunglasses, mustard-olive T-shirt and navy shorts (warm clothes where the scene needs them), and his trademark two-wheeled cart piled with bags.
+Only true moments from his journey. The reference photo itself never appears in the video, and the credits say "AI illustration".
 
 **4. One look: "Glossy 3D miniature",** the same premium diorama look as our other videos.
-Soft studio light from the top-left, smooth materials, no outlines. Make set A in one chat, so the walker stays identical.
+Soft studio light from the top-left, smooth materials, no outlines. Make set A in one chat, so Karl stays identical.
 
 ### How to generate (ChatGPT / GPT image)
 - One asset per message. Paste the **Style Lock** once at the start of each chat.
@@ -54,7 +55,7 @@ world on foot, with no car, ship or plane: through jungle, jail, sea ice,
 visa trouble, a pandemic and a sea he had to swim. Every prop is a premium
 glossy 3D miniature, like a high-end diorama or tabletop model: soft studio
 light from the top-left, smooth realistic materials, subtle reflections, no
-outlines, no cartoon line work. The walker is an invented stylised figurine
+outlines, no cartoon line work. Karl is an invented stylised figurine
 (he must not resemble any real person): a lean bearded long-distance walker,
 faded khaki shirt, olive cargo trousers, worn hiking boots, a wide-brim
 canvas hat and a big orange trekking backpack. No text, no letters, no
@@ -69,52 +70,68 @@ shadows; those are added later in the video editor.
 
 ## 2. GPT asset prompts
 
-### A. The walker (same chat, keep him identical)
+### A. Karl (same chat; attach the reference photo once at the start)
 
-#### A1 · `walker_side.png` (1024×1536, PNG-T)
+Start the chat with the Style Lock, attach the photo, then send:
 ```
-A glossy 3D miniature of the walker striding to the right in full side view,
-mid-step, the big orange backpack on his back, a wooden walking stick in his
-right hand, determined face, dust under his boots. Full body, standing on
-nothing. PNG-T, transparent background.
+This is my reference for the main character. Match only his face and look (hair, goatee, sunglasses, build) in every image I ask for, as a stylised glossy 3D miniature figurine in the same style each time. Do not copy the photo, its background, the bridge or the flag.
 ```
 
-#### A2 · `walker_front.png` (1024×1536, PNG-T)
+#### A1 · `karl_walk.png` (1536×1024, PNG-T)
 ```
-The same walker standing and facing the viewer, three-quarter front view,
-both thumbs hooked in his backpack straps, chin up, calm and determined, a
-faint smile. Full body. PNG-T, transparent background.
-```
-
-#### A3 · `walker_ice.png` (1024×1536, PNG-T)
-```
-The same walker in heavy winter gear: a thick hooded orange parka with fur
-trim, snow goggles pushed up, mittens, the same orange backpack, frost on his
-beard, leaning into the wind and walking to the right on a small slab of sea
-ice. PNG-T, transparent background.
+The character walking to the right in full side view, mid-stride, pushing his
+two-wheeled cart in front of him: a long-handled trolley on two bicycle
+wheels, piled high with tied bags, a rolled jacket, an orange hi-vis vest and
+water bottles. Mustard-olive T-shirt, navy shorts, hiking shoes, sunglasses,
+determined face. PNG-T, transparent background.
 ```
 
-#### A4 · `walker_swim.png` (1536×1024, PNG-T)
+#### A2 · `karl_front.png` (1024×1536, PNG-T)
 ```
-The same walker swimming front crawl to the right, seen from the side, one
-arm reaching forward out of the water, wearing a bright swim cap and goggles,
-beard visible, a small patch of dark blue sea water with ripples around him
-fading out softly at the edges. PNG-T, transparent background.
-```
-
-#### A5 · `walker_jungle.png` (1024×1536, PNG-T)
-```
-The same walker pushing through dense jungle, pulling aside big green leaves
-with one hand, sweat on his face, mud on his boots and trousers, the orange
-backpack scratched and dirty, walking toward the viewer at three-quarter
-view. PNG-T, transparent background.
+The character standing and facing the viewer, three-quarter front view, one
+hand resting on the handle of his loaded two-wheeled cart beside him, hands
+calm, a small confident smile, sunglasses on. Full body. PNG-T, transparent
+background.
 ```
 
-#### A6 · `walker_waiting.png` (1024×1024, PNG-T)
+#### A3 · `karl_ice.png` (1536×1024, PNG-T)
 ```
-The same walker sitting on his orange backpack, elbows on his knees, chin on
-his fists, looking tired and patient, his walking stick leaning beside him.
-Side three-quarter view. PNG-T, transparent background.
+The character in heavy Arctic gear: a thick orange hooded parka with fur
+trim, snow goggles, mittens, frost on his grey goatee, leaning into the wind
+and pulling a small loaded sled behind him by a rope, walking to the right
+across a slab of cracked sea ice. PNG-T, transparent background.
+```
+
+#### A4 · `karl_swim.png` (1536×1024, PNG-T)
+```
+The character swimming front crawl to the right, seen from the side, one arm
+reaching forward out of the water, a bright swim cap and goggles, grey goatee
+visible, a small patch of dark blue sea with ripples around him fading out
+softly at the edges. PNG-T, transparent background.
+```
+
+#### A5 · `karl_jungle.png` (1024×1536, PNG-T)
+```
+The character pushing his two-wheeled cart through dense jungle mud,
+shoulders down, pulling aside big green leaves with one hand, sweat on his
+face, mud splashed up his legs and on the cart wheels, sunglasses pushed up
+on his head. Three-quarter front view. PNG-T, transparent background.
+```
+
+#### A6 · `karl_waiting.png` (1024×1024, PNG-T)
+```
+The character sitting on the edge of his parked two-wheeled cart, elbows on
+his knees, chin resting on his fists, tired but patient, a light jacket over
+his T-shirt, sunglasses in his hand. Side three-quarter view. PNG-T,
+transparent background.
+```
+
+#### A7 · `karl_arrive.png` (1024×1536, PNG-T)
+```
+The character close to home on a wet English road in a light rain jacket,
+pushing his worn, mud-stained two-wheeled cart toward the viewer, one hand
+raised in a happy wave, a big tired smile. Full body. PNG-T, transparent
+background.
 ```
 
 ### B. No car, no ship, no plane (same chat)
@@ -232,7 +249,7 @@ flat black #000000 background. BLACK.
 
 ---
 
-**Total:** 20 images (17 props + 3 effects). Put them in one zip.
+**Total:** 21 images (18 props + 3 effects). Put them in one zip.
 
 **Done in code:** the maps, the glowing route, pins, the "1998" stamp, the "12 → 28" counter, the crosses over the car, ship and plane, skull pins, the "BANNED" stamp, the exit/entry loop, the "11 साल", "31 दिन · 288 KM" and "50,000 KM" counters, the two answer buttons and the subtitles.
 
