@@ -119,6 +119,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
         <span style={{ fontFamily: NUM, fontSize: 120, color: '#fff', letterSpacing: 3 }}>1998</span>
       </Stamp>
       <Kin text="Chile का आखिरी छोर" t={t} t0={C.chile4 - 0.05} t1={C.gaadi4 - 0.1} x={540} y={600} size={64} />
+      <Actor t={t} t0={C.chile4 - 0.1} t1={C.gaadi4 - 0.25} pose="karl_walk" x={380} y={1560} h={400} bob={4} path={{ t0: C.chile4, t1: C.gaadi4, x: 640, y: 1560 }} />
       <Actor t={t} t0={C.gaadi4 - 0.15} t1={C.imtihan5 - 0.2} pose="car" x={230} y={1420} h={220} />
       <Actor t={t} t0={C.jahaz4 - 0.15} t1={C.imtihan5 - 0.2} pose="ship" x={540} y={1420} h={200} />
       <Actor t={t} t0={C.plane4 - 0.15} t1={C.imtihan5 - 0.2} pose="plane" x={850} y={1400} h={190} />
@@ -166,7 +167,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Kin text="सरहदें बंद" t={t} t0={C.sarhad10 - 0.05} t1={C.caspian11 - 0.1} x={540} y={430} size={110} color={COL.red} />
 
       {/* ---- the Caspian */}
-      <Tag t={t} t0={C.caspian11 - 0.05} t1={C.turkey13} text="CASPIAN SEA" x={cas[0] - 40} y={cas[1] + 220} color={COL.sea} latin size={52} up={0} />
+      <Tag t={t} t0={C.caspian11 - 0.05} t1={C.turkey13} text="CASPIAN SEA" x={cas[0] - 60} y={cas[1] + 520} color={COL.sea} latin size={52} up={0} />
       <Kin text="दोनों रास्ते बंद" t={t} t0={C.band11 - 0.15} t1={C.kood12 - 0.05} x={540} y={430} size={92} color={COL.red} />
       <Overlay name="overlay_splash" a={window4(t, C.kood12 - 0.05, C.kood12 + 0.05, C.kood12 + 0.5, C.kood12 + 0.9)} x={head[0]} y={head[1] - 40} w={900} />
       <Actor t={t} t0={C.kood12} t1={C.turkey13} pose="karl_swim" x={head[0] - 30} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} />
@@ -175,6 +176,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Counter t={t} t0={C.n288 - 0.1} t1={C.turkey13 - 0.1} to={288} x={760} y={430} size={140} color={COL.white} post=" KM" sub="तैरकर" dur={0.8} />
 
       {/* ---- Europe, the Channel */}
+      <Actor t={t} t0={C.turkey13 - 0.1} t1={C.channel13 - 0.2} pose="karl_walk" x={330} y={1560} h={400} bob={4} path={{ t0: C.turkey13, t1: C.channel13, x: 760, y: 1560 }} />
       <Kin text="TURKEY → EUROPE" t={t} t0={C.turkey13 - 0.05} t1={C.october13} x={540} y={420} size={88} color={COL.gold} font={NUM} />
       <Tag t={t} t0={C.channel13 - 0.1} t1={C.n28b} text="ENGLISH CHANNEL" x={dov[0] + 20} y={dov[1] + 120} color={COL.sea} latin size={46} up={0} />
       <Actor t={t} t0={C.channel13} t1={C.england13 + 0.6} pose="karl_swim" x={head[0] - 20} y={head[1] + 70} h={150} shadow={false} drop={false} bob={4} />
