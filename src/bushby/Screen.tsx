@@ -28,7 +28,7 @@ const Skulls: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <>
       {spots.map(([dx, dy, d], i) => {
-        const s = clamp01(pop(t, C.taskar5 - 0.2 + d, 10, 260));
+        const s = clamp01(pop(t, C.taskar5 - 0.2 + d, 7, 280)) * (1 + 0.8 * Math.exp(-6 * Math.max(0, t - (C.taskar5 - 0.2 + d))));
         if (s <= 0.01) return null;
         return (
           <svg key={i} width={70} height={84} viewBox="0 0 70 84" style={{ position: 'absolute', left: cx + dx - 35, top: cy + dy - 84, opacity: a, transform: `scale(${s})`, transformOrigin: '50% 100%',
@@ -110,7 +110,8 @@ const Question: React.FC<{ t: number }> = ({ t }) => {
 /** Karl's portrait badge riding the head of the route, like a live tracker. Hidden while he swims (the swimmer is there). */
 const Badge: React.FC<{ t: number; x: number; y: number; a: number }> = ({ t, x, y, a }) => {
   if (a <= 0.01) return null;
-  const s = clamp01(pop(t, C.karl4 - 0.1, 10, 220));
+  // enters big, then settles onto the map, like the reference's tracker badge
+  const s = clamp01(pop(t, C.karl4 - 0.1, 8, 220)) * (1 + 1.3 * Math.exp(-3.5 * Math.max(0, t - C.karl4 + 0.1)));
   const bob = Math.sin(t * 3.2) * 4;
   return (
     <div style={{ position: 'absolute', left: x, top: y, width: 0, height: 0, opacity: a }}>
@@ -159,7 +160,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Badge t={t} x={head[0]} y={head[1]} a={(1 - globe) * (1 - window4(t, C.kood12 - 0.2, C.kood12, C.turkey13 - 0.2, C.turkey13)) * (1 - window4(t, C.channel13 - 0.2, C.channel13, C.england13 + 0.4, C.england13 + 0.8)) * (1 - ramp(t, C.ghar14 + 0.2, C.ghar14 + 0.6, linear))} />
 
       {/* ---- the start */}
-      <Tag t={t} t0={C.karl4 + 0.1} t1={C.gaadi4 + 0.4} text="KARL BUSHBY" x={pa[0]} y={pa[1]} color={COL.gold} latin size={58} up={130} />
+      <Tag t={t} t0={C.karl4 + 0.1} t1={C.gaadi4 + 0.4} text="KARL BUSHBY" x={pa[0] + 230} y={pa[1] + 40} color={COL.gold} latin size={58} up={130} />
       <Stamp t={t} t0={C.y1998 - 0.05} t1={C.gaadi4} x={540} y={420} rot={-5}>
         <span style={{ fontFamily: NUM, fontSize: 120, color: '#fff', letterSpacing: 3 }}>1998</span>
       </Stamp>
@@ -174,23 +175,23 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
 
       {/* ---- Darién Gap → jail */}
       <Chip t={t} t0={C.imtihan5 - 0.05} t1={C.jail6 + 0.6} text="पहला इम्तिहान" color={COL.green} />
-      <Tag t={t} t0={C.darien5 - 0.05} t1={C.maut6} text="DARIÉN GAP" x={dar[0]} y={dar[1] - 40} color={COL.green} latin size={56} up={140} />
+      <Tag t={t} t0={C.darien5 - 0.05} t1={C.maut6} text="DARIÉN GAP" x={dar[0] - 150} y={dar[1] - 60} color={COL.green} latin size={56} up={190} />
       <Skulls t={t} c={c} />
       <Actor t={t} t0={C.jungle5 - 0.1} t1={C.panama6 - 0.1} pose="jungle" x={540} y={1530} h={420} />
       <Actor t={t} t0={C.jungle5 + 0.2} t1={C.panama6 - 0.1} pose="karl_jungle" x={560} y={1560} h={520} bob={5} />
       <Overlay name="overlay_jungle_mist" a={window4(t, C.jungle5, C.jungle5 + 0.5, C.panama6 - 0.3, C.panama6) * 0.7} x={540} y={1560} w={1700} />
       <Kin text="मौत को छूकर लौटा…" t={t} t0={C.maut6 - 0.05} t1={C.panama6 - 0.1} x={540} y={420} size={82} color={COL.red} />
-      <Tag t={t} t0={C.panama6 - 0.05} t1={C.bering7 - 0.3} text="PANAMA" x={met[0]} y={met[1]} color={COL.red} latin size={52} up={110} />
+      <Tag t={t} t0={C.panama6 - 0.05} t1={C.bering7 - 0.3} text="PANAMA" x={met[0] + 210} y={met[1] + 30} color={COL.red} latin size={52} up={110} />
       <Actor t={t} t0={C.visa6 - 0.05} t1={C.bering7 - 0.3} pose="jail" x={540} y={1500} h={460} />
       <Counter t={t} t0={C.n18 - 0.1} t1={C.bering7 - 0.3} to={18} x={540} y={430} size={180} color={COL.red} sub="दिन जेल" />
 
       {/* ---- Bering Strait → arrest */}
-      <Tag t={t} t0={C.jamne7 - 0.1} t1={C.n14 + 0.6} text="BERING STRAIT" x={ber[0]} y={ber[1]} color={COL.ice} latin size={52} up={120} />
+      <Tag t={t} t0={C.jamne7 - 0.1} t1={C.n14 + 0.6} text="BERING STRAIT" x={ber[0] + 120} y={ber[1] + 160} color={COL.ice} latin size={52} up={120} />
       <Kin text="समंदर जमने का इंतज़ार…" t={t} t0={C.jamne7 - 0.05} t1={C.n14 - 0.1} x={540} y={420} size={72} color={COL.ice} />
       <Actor t={t} t0={C.n14 - 0.2} t1={C.giraftar7 - 0.1} pose="ice_floe" x={540} y={1560} h={300} drop={false} />
       <Actor t={t} t0={C.n14 - 0.1} t1={C.giraftar7 - 0.1} pose="karl_ice" x={660} y={1500} h={420} walk={6} flip path={{ t0: C.n14, t1: C.russia7, x: 420, y: 1490 }} />
       <Counter t={t} t0={C.n14 - 0.05} t1={C.russia7 + 0.3} to={14} x={540} y={430} size={170} color={COL.ice} sub="दिन बहती बर्फ़ पर" />
-      <Tag t={t} t0={C.russia7 - 0.05} t1={C.russia8 + 0.6} text="RUSSIA" x={uel[0]} y={uel[1]} color={COL.red} latin size={52} up={110} rot={3} />
+      <Tag t={t} t0={C.russia7 - 0.05} t1={C.russia8 + 0.6} text="RUSSIA" x={uel[0] - 200} y={uel[1] + 40} color={COL.red} latin size={52} up={110} rot={3} />
       <Actor t={t} t0={C.giraftar7 - 0.15} t1={C.russia8 + 0.3} pose="handcuffs" x={540} y={1430} h={300} rot={-8} />
       <Kin text="गिरफ़्तार!" t={t} t0={C.giraftar7 - 0.05} t1={C.russia8 + 0.2} x={540} y={430} size={120} color={COL.red} />
 
@@ -235,7 +236,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam; globe: number }> = ({ t,
       <Counter t={t} t0={C.n50k - 0.1} t1={C.ghar14 - 0.2} to={50000} pre="~" x={540} y={640} size={130} color={COL.white} post=" KM" dur={1.0} />
 
       {/* ---- home */}
-      {flat > 0.5 && <Tag t={t} t0={C.ghar14 - 0.05} t1={C.junoon15 - 0.6} text="HULL · घर" x={hull[0]} y={hull[1]} color={COL.gold} size={52} up={120} />}
+      {flat > 0.5 && <Tag t={t} t0={C.ghar14 - 0.05} t1={C.junoon15 - 0.6} text="HULL · घर" x={hull[0] + 200} y={hull[1] + 40} color={COL.gold} size={52} up={120} />}
       <Actor t={t} t0={C.ghar14 + 0.1} t1={DURATION_S + 1} pose="home" x={720} y={1520} h={420} glow="rgba(255,200,110,0.45)" />
       <Actor t={t} t0={C.ghar14 + 0.4} t1={DURATION_S + 1} pose="karl_arrive" x={330} y={1560} h={520} bob={3} />
       <Kin text="बस कुछ सौ KM दूर" t={t} t0={C.sau14 - 0.2} t1={C.junoon15 - 0.6} x={540} y={430} size={84} color={COL.gold} />

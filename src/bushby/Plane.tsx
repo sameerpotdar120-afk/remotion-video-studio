@@ -1,6 +1,7 @@
 import React from 'react';
-import { clamp01, inOut, interpolateKeys, linear, ramp, window4 } from './anim2';
-import { C, Cam, GEO, P, PLANE, merc, project, pxPerM } from './cam';
+import { inOut, linear, ramp, window4 } from './anim2';
+import { C, Cam, GEO, P, PLANE, merc, pointAt, project, pxPerM, routeAt } from './cam';
+export { pointAt, routeAt };
 import { COL } from './kit';
 
 const pathD = (c: Cam, rings: P[][], close = true) =>
@@ -17,39 +18,25 @@ const Svg: React.FC<{ a: number; children: React.ReactNode }> = ({ a, children }
 export const Glow: React.FC<{ c: Cam; rings: P[][]; a: number; color: string; t: number; fill?: number }> = ({ c, rings, a, color, t, fill = 0.22 }) => {
   if (a <= 0.001 || !rings.length) return null;
   const d = pathD(c, rings);
+  const pulse = 0.8 + 0.2 * Math.sin(t * 4.2);
+  const draw = Math.min(1, a * 1.15);
   return (
-    <Svg a={a}>
-      <path d={d} fill={color} fillOpacity={fill} />
-      <path d={d} fill="none" stroke={color} strokeWidth={30} strokeOpacity={0.22} strokeLinejoin="round" style={{ filter: 'blur(12px)' }} />
-      <path d={d} fill="none" stroke={color} strokeWidth={10} strokeOpacity={0.55} strokeLinejoin="round" style={{ filter: 'blur(4px)' }} />
-      <path d={d} fill="none" stroke="#fff" strokeWidth={2.5} strokeOpacity={0.9} strokeLinejoin="round" />
+    <Svg a={Math.min(1, a * 1.6)}>
+      <path d={d} fill={color} fillOpacity={fill * a * pulse} />
+      <path d={d} fill="none" stroke={color} strokeWidth={30} strokeOpacity={0.22 * pulse} strokeLinejoin="round" style={{ filter: 'blur(12px)' }} pathLength={1} strokeDasharray={`${draw} 1`} />
+      <path d={d} fill="none" stroke={color} strokeWidth={10} strokeOpacity={0.55} strokeLinejoin="round" style={{ filter: 'blur(4px)' }} pathLength={1} strokeDasharray={`${draw} 1`} />
+      <path d={d} fill="none" stroke="#fff" strokeWidth={2.5} strokeOpacity={0.9} strokeLinejoin="round" pathLength={1} strokeDasharray={`${draw} 1`} />
       <path d={d} fill="none" stroke="#fff" strokeWidth={6} strokeLinejoin="round" pathLength={1} strokeDasharray="0.06 0.94" strokeDashoffset={-((t * 0.22) % 1)}
         style={{ filter: `drop-shadow(0 0 10px ${color}) drop-shadow(0 0 4px #fff)` }} />
     </Svg>
   );
 };
 
-// ---------------------------------------------------------------- the walk
+// ---------------------------------------------------------------- the walk (routeAt / pointAt live in cam.ts)
 const S = GEO.stage;
-/** How far along the route (fractional point index) Karl is at time t. */
-const ROUTE_KEYS: [number, number][] = [
-  [C.karl4 - 0.4, 0], [C.gaadi4, 0.2], [C.imtihan5 - 0.1, S.darien - 1], [C.darien5 + 0.3, S.darien], [C.maut6 + 0.4, S.darien + 1], [C.panama6 + 0.2, S.panama],
-  [C.jail6 + 0.8, S.panama], [C.bering7 - 0.2, S.alaska - 3], [C.jamne7, S.strait], [C.n14 + 0.2, S.strait + 0.15], [C.russia7 + 0.2, S.russia],
-  [C.giraftar7 + 0.8, S.russia], [C.russia8 + 0.6, S.russia + 1], [C.ban9, S.russia + 2], [C.siberia9 + 0.4, S.russia + 3], [C.n11 + 0.8, S.asia],
-  [C.pandemic10 + 0.3, S.stall - 1], [C.sarhad10 + 0.3, S.stall], [C.caspian11 + 0.3, S.caspian], [C.kood12 + 0.1, S.caspian], [C.naav12, S.baku],
-  [C.turkey13 + 0.2, S.europe - 2], [C.europe13 + 0.4, S.europe + 2], [C.october13 + 0.3, S.channel - 1], [C.channel13 + 0.2, S.channel],
-  [C.england13 + 0.3, S.dover], [C.ghar14, S.dover + 1], [C.sau14 + 0.4, S.home],
-];
-export const routeAt = (t: number) => interpolateKeys(ROUTE_KEYS, t);
 const SWIM = new Set([S.caspian, S.channel]);
 const ICE = new Set([S.strait]);
 
-export const pointAt = (k: number): P => {
-  const i = Math.max(0, Math.min(GEO.route.length - 2, Math.floor(k)));
-  const f = clamp01(k - i);
-  const a = GEO.route[i], b = GEO.route[i + 1];
-  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
-};
 
 /** The route drawn up to Karl's position: gold on land, white over the ice, cyan dashes where he swam. */
 const Route: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {

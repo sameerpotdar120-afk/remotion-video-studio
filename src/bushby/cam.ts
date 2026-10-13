@@ -1,4 +1,5 @@
 import { Ease, easeIn, easeOut, inOut, lerp, linear } from '../darien/anim';
+import { interpolateKeys } from './anim2';
 import raw from './geo.json';
 import timing from './timing.json';
 
@@ -109,6 +110,25 @@ const camRaw = (t: number): Cam => {
   return FULL[FULL.length - 1];
 };
 
+// ---------------------------------------------------------------- where Karl is on the route
+const S = GEO.stage;
+/** How far along the route (fractional point index) Karl is at time t. */
+export const ROUTE_KEYS: [number, number][] = [
+  [C.karl4 - 0.4, 0], [C.gaadi4, 0.2], [C.imtihan5 - 0.1, S.darien - 1], [C.darien5 + 0.3, S.darien], [C.maut6 + 0.4, S.darien + 1], [C.panama6 + 0.2, S.panama],
+  [C.jail6 + 0.8, S.panama], [C.bering7 - 0.2, S.alaska - 3], [C.jamne7, S.strait], [C.n14 + 0.2, S.strait + 0.15], [C.russia7 + 0.2, S.russia],
+  [C.giraftar7 + 0.8, S.russia], [C.russia8 + 0.6, S.russia + 1], [C.ban9, S.russia + 2], [C.siberia9 + 0.4, S.russia + 3], [C.n11 + 0.8, S.asia],
+  [C.pandemic10 + 0.3, S.stall - 1], [C.sarhad10 + 0.3, S.stall], [C.caspian11 + 0.3, S.caspian], [C.kood12 + 0.1, S.caspian], [C.naav12, S.baku],
+  [C.turkey13 + 0.2, S.europe - 2], [C.europe13 + 0.4, S.europe + 2], [C.october13 + 0.3, S.channel - 1], [C.channel13 + 0.2, S.channel],
+  [C.england13 + 0.3, S.dover], [C.ghar14, S.dover + 1], [C.sau14 + 0.4, S.home],
+];
+export const routeAt = (t: number) => interpolateKeys(ROUTE_KEYS, t);
+export const pointAt = (k: number): P => {
+  const i = Math.max(0, Math.min(GEO.route.length - 2, Math.floor(k)));
+  const f = Math.min(1, Math.max(0, k - i));
+  const a = GEO.route[i], b = GEO.route[i + 1];
+  return [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f];
+};
+
 /** Keyed path smoothed with a short centred window: continuous velocity through every key. */
 const SMOOTH = [-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12];
 const W8 = [0.06, 0.12, 0.18, 0.28, 0.18, 0.12, 0.06];
@@ -118,8 +138,17 @@ export const camAt = (t: number): Cam => {
     const c = camRaw(Math.min(DURATION_S, Math.max(0, t + SMOOTH[i])));
     x += c.x * W8[i]; y += c.y * W8[i]; ls += Math.log(c.span) * W8[i]; rot += c.rot * W8[i];
   }
-  // a slow breathing sway on top, so even the holds feel hand-held in 3D
-  return { x, y, span: Math.exp(ls), rot: rot + Math.sin(t * 0.55) * 0.8 };
+  // the camera never rests: it leans toward the head of the route (so the map slides as the line draws),
+  // breathes in and out, tilts, and carries a little hand-held drift
+  const [hx, hy] = pointAt(routeAt(t));
+  const span = Math.exp(ls);
+  const w = 0.32;
+  const breathe = 1 + 0.045 * Math.sin(t * 0.85) + 0.02 * Math.sin(t * 2.1 + 1.3);
+  const drift = span * 0.012;
+  return {
+    x: lerp(x, hx, w) + Math.sin(t * 1.3) * drift, y: lerp(y, hy, w) + Math.cos(t * 1.1) * drift,
+    span: span * breathe, rot: rot + Math.sin(t * 0.55) * 1.4 + Math.sin(t * 1.7) * 0.4,
+  };
 };
 
 export const pxPerM = (c: Cam) => 1920 / c.span;

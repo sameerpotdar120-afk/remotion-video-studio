@@ -17,7 +17,7 @@ export const Actor: React.FC<{
   path?: { t0: number; t1: number; x: number; y: number; arc?: number }; shadow?: boolean; rot?: number; glow?: string; drop?: boolean; fadeIn?: number; walk?: number;
 }> = ({ t, t0, t1, pose, x, y, h, flip, bob = 4, sway = 0, path, shadow = true, rot = 0, glow, drop = true, fadeIn, walk = 0 }) => {
   if (t < t0 - 0.02 || t > t1 + 0.35) return null;
-  const s = fadeIn ? 1 : pop(t, t0, 10, 200);
+  const s = fadeIn ? 1 : pop(t, t0, 8, 210);
   const fa = fadeIn ? ramp(t, t0, t0 + fadeIn, linear) : 1;
   const out = ramp(t, t1, t1 + 0.3, easeIn);
   const land = fadeIn ? 0 : kick(t, t0 + 0.16, 0.1, 26, 10);
@@ -54,7 +54,7 @@ export const Tag: React.FC<{ t: number; t0: number; t1: number; text: string; x:
   t, t0, t1, text, x, y, color, size = 60, sub, rot = -3, latin, up = 80, ink = '#140c03',
 }) => {
   if (t < t0 || t > t1 + 0.3) return null;
-  const s = pop(t, t0, 9, 240) * (1 - ramp(t, t1, t1 + 0.25, easeIn));
+  const s = pop(t, t0, 7, 260) * (1 - ramp(t, t1, t1 + 0.25, easeIn));
   if (s <= 0.01) return null;
   const stem = ramp(t, t0, t0 + 0.2, easeOut) * up;
   return (
