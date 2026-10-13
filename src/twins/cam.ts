@@ -32,7 +32,7 @@ export const THAI_TWIN: P = [c.myanmar.bbox[0] - 0.52e6, 2.15e6];
 export const PL = {
   italy: c.italy.centre, vietnam: c.vietnam.centre, world: [2.0e6, 2.6e6] as P,
   seasia: [10.55e6, 1.95e6] as P, bt: mid(c.benin.centre, c.togo.centre), togoCoast: [0.11e6, 0.72e6] as P,
-  between: [6.6e6, 3.9e6] as P, atlantic: [-2.55e6, 2.4e6] as P,
+  between: [6.6e6, 3.9e6] as P, atlantic: [-2.1e6, 2.4e6] as P,
 };
 // frame 0: Italy with a copy of Vietnam beside it, a little east of Italy's centre
 export const HOOK_AT: P = [PL.italy[0] + 0.55e6, PL.italy[1] - 0.1e6];
@@ -71,9 +71,9 @@ const keys = (): Key[] => [
   { t: C.football8 + 0.3, at: [PL.italy[0] + 0.12e6, PL.italy[1] - 0.45e6], span: 1.55e6, rot: 0, e: inOut },
   { t: C.laat8 + 1.2, at: [PL.italy[0] - 0.05e6, PL.italy[1] - 0.6e6], span: 1.9e6, rot: -1, e: inOut },
   // 4: pull out over the Atlantic: Norway at the top, Chile at the bottom
-  { t: C.norway10, at: PL.atlantic, span: 2.35e7, rot: 0, e: inOut },
-  { t: C.aaina11, at: [PL.atlantic[0], PL.atlantic[1] - 0.3e6], span: 2.25e7, rot: 0, e: linear },
-  { t: DURATION_S, at: [PL.atlantic[0], PL.atlantic[1] - 0.5e6], span: 2.15e7, rot: 0, e: linear },
+  { t: C.norway10, at: PL.atlantic, span: 2.75e7, rot: 0, e: inOut },
+  { t: C.aaina11, at: [PL.atlantic[0], PL.atlantic[1] - 0.3e6], span: 2.62e7, rot: 0, e: linear },
+  { t: DURATION_S, at: [PL.atlantic[0], PL.atlantic[1] - 0.5e6], span: 2.5e7, rot: 0, e: linear },
 ];
 
 type Full = Cam & { t: number; e: Ease };

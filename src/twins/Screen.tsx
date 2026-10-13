@@ -159,9 +159,9 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {/* 3 */}
       <Num t={t} t0={C.teesra7} t1={C.italy7 + 0.4} n="3" word="तीसरा" color={COL.gold} />
       <Label t={t} t0={C.italy7} t1={C.hazaron8 + 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} />
-      <Prop name="boot" x={italy[0] - itH * 0.04} y={italy[1] + bootDrop(C.boot7)} h={itH * 0.98} a={bootIt * 0.92} rot={c.rot - 33 + kickRot} />
+      <Prop name="boot" x={italy[0] - itH * 0.02} y={italy[1] + itH * 0.04 + bootDrop(C.boot7)} h={itH * 0.86} a={bootIt * lerp(0.95, 0.68, ramp(t, C.boot7 + 0.4, C.boot7 + 0.9))} rot={c.rot - 33 + kickRot} />
       <Label t={t} t0={C.vietnam8} t1={C.farak8} text="VIETNAM" x={viet[0] + 210} y={viet[1] - 420} color={PAIR.vietnam} rot={-3} />
-      <Prop name="boot" x={viet[0] - vnH * 0.02} y={viet[1] + bootDrop(C.boot8)} h={vnH * 0.95} a={bootVn * 0.92} rot={c.rot - 4} />
+      <Prop name="boot" x={viet[0] - vnH * 0.02} y={viet[1] + bootDrop(C.boot8)} h={vnH * 0.84} a={bootVn * lerp(0.95, 0.68, ramp(t, C.boot8 + 0.4, C.boot8 + 0.9))} rot={c.rot - 4} />
       <Label t={t} t0={C.italy8} t1={C.asli9 - 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} />
       {SZ.football
         ? <Prop name="football" x={ballX} y={ballY} h={150} a={ballA} sc={ballIn} rot={fly * -720} glow="#fff" />
@@ -236,5 +236,5 @@ export const Subtitles: React.FC<{ t: number; top: number }> = ({ t, top }) => {
 /** The twin friends who pop up on "आपकी Copy" in the top half of the split. */
 export const TwinsPop: React.FC<{ t: number }> = ({ t }) => {
   const a = window4(t, C.copy12 - 0.1, C.copy12, 99, 100);
-  return <Prop name="twins_friends" x={540} y={560} h={560} a={a} sc={clamp01(pop(t, C.copy12, 8, 220)) * (1 + 0.02 * Math.sin(t * 5))} glow={COL.gold} />;
+  return <Prop name="twins_friends" x={540} y={470} h={540} a={a} sc={clamp01(pop(t, C.copy12, 8, 220)) * (1 + 0.02 * Math.sin(t * 5))} glow={COL.gold} />;
 };

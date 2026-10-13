@@ -153,7 +153,7 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // ---------------------------------------------------------------- 4: Norway and Chile, and the mirror
   const p4 = (t0: number) => ramp(t, t0 - 0.1, t0 + 0.3, linear);
   const up = kick(t, C.upar11 + 0.05, 0.08, 18, 6), down = kick(t, C.neeche11 + 0.05, 0.08, 18, 6);
-  const mir = ramp(t, C.aaina11 + 0.1, C.aaina11 + 0.75, inOut), mirSlide = ramp(t, C.aaina11 + 0.6, C.to12 + 0.1, inOut);
+  const mir = ramp(t, C.aaina11 + 0.1, C.aaina11 + 0.75, inOut), mirSlide = ramp(t, C.aaina11 + 0.4, C.aaina11 + 0.95, inOut);
   const [nx, ny] = G.norway.centre;
   const big = ramp(t, C.norway10 + 0.1, C.norway10 + 0.6, easeOut), bigC = ramp(t, C.chile10 + 0.1, C.chile10 + 0.6, easeOut);
   return (
