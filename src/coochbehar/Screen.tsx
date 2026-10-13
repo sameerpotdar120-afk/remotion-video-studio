@@ -147,19 +147,22 @@ const Overlay: React.FC<{ name: string; a: number; x: number; y: number; w: numb
 const Hook: React.FC<{ t: number }> = ({ t }) => {
   const a = 1 - ramp(t, C.raat2 - 0.15, C.raat2 + 0.15, linear);
   if (a <= 0) return null;
-  const n = Math.round(111 * ramp(t, C.n111 - 0.15, C.n111 + 0.45, easeOut));
-  const k = kick(t, C.n111 + 0.45, 0.1, 26, 8);
+  // frame 0 is picture-first: only "111 गाँव"; the rest builds on the voice
+  const pre = clamp01(pop(t, C.bharat1 - 0.1, 10, 230));
+  const k = kick(t, C.n111, 0.1, 26, 8);
+  const bd = clamp01(pop(t, C.bd1 - 0.1, 10, 230));
   return (
-    <div style={{ position: 'absolute', left: 0, right: 0, top: 210, opacity: a, textAlign: 'center', lineHeight: 1.08 }}>
-      <div style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 72, color: '#fff', textShadow: SHADOW, ...STROKE(9) }}>क्या आप जानते हैं?</div>
-      <div style={{ marginTop: 8, transform: `scale(${1 + k})` }}>
-        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 112, color: '#fff', textShadow: SHADOW, ...STROKE(10) }}>भारत के </span>
-        <span style={{ fontFamily: NUM, fontSize: 150, color: COL.saffron, textShadow: `${SHADOW}, 0 0 34px ${COL.saffron}88`, ...STROKE(9) }}>{t < C.n111 - 0.15 ? 111 : n}</span>
-        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 112, color: '#fff', textShadow: SHADOW, ...STROKE(10) }}> गाँव</span>
+    <div style={{ position: 'absolute', left: 0, right: 0, top: 230, opacity: a, textAlign: 'center', lineHeight: 1.04 }}>
+      <div style={{ height: 96, opacity: pre, transform: `translateY(${(1 - pre) * 30}px)` }}>
+        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 92, color: '#fff', textShadow: SHADOW, ...STROKE(9) }}>भारत के</span>
       </div>
-      <div style={{ marginTop: 4, opacity: t < C.bd1 - 0.1 ? 0.0 : 1, transform: `scale(${t < C.bd1 - 0.1 ? 0.6 : clamp01(pop(t, C.bd1 - 0.1, 10, 230))})` }}>
-        <span style={{ fontFamily: NUM, fontSize: 104, color: COL.green, letterSpacing: 1, textShadow: `${SHADOW}, 0 0 30px ${COL.green}77`, ...STROKE(8) }}>BANGLADESH</span>
-        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 96, color: '#fff', textShadow: SHADOW, ...STROKE(9) }}> के अंदर?</span>
+      <div style={{ transform: `scale(${1 + k})` }}>
+        <span style={{ fontFamily: NUM, fontSize: 210, color: COL.saffron, textShadow: `${SHADOW}, 0 0 40px ${COL.saffron}99`, ...STROKE(10) }}>111</span>
+        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 150, color: '#fff', textShadow: SHADOW, ...STROKE(11) }}> गाँव</span>
+      </div>
+      <div style={{ marginTop: 4, opacity: bd, transform: `scale(${lerp(0.6, 1, bd)})` }}>
+        <span style={{ fontFamily: NUM, fontSize: 100, color: COL.green, letterSpacing: 1, textShadow: `${SHADOW}, 0 0 30px ${COL.green}77`, ...STROKE(8) }}>BANGLADESH</span>
+        <span style={{ fontFamily: HEAD, fontWeight: 800, fontSize: 92, color: '#fff', textShadow: SHADOW, ...STROKE(9) }}> के अंदर?</span>
       </div>
     </div>
   );

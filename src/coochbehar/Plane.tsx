@@ -71,7 +71,7 @@ const mixHex = (a: string, b: string, p: number) => {
 const Enclaves: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
   const span = c.span;
   const farA = ramp(span, 2.5e4, 6e4, linear) * (1 - ramp(span, 2.2e6, 3.5e6, linear));
-  const vis = window4(t, C.bd1 - 0.8, C.bd1 - 0.6, C.anokha4 + 0.4, C.dahala4 + 0.2)
+  const vis = window4(t, -1, 0, C.anokha4 + 0.4, C.dahala4 + 0.2)
     + window4(t, C.kehte8 + 0.1, C.kehte8 + 0.5, C.nakshe13 + 1.6, C.parivar14 + 0.3)
     + window4(t, C.n1000 - 0.2, C.n1000 + 0.2, C.mitti16, C.mitti16 + 0.5);
   const a = clamp01(vis) * farA;
@@ -83,7 +83,7 @@ const Enclaves: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
   return (
     <Svg a={a}>
       {DOTS.map((d) => {
-        const appear = d.home === 'in' ? C.bd1 - 0.6 + (d.i / 111) * 1.3 : C.n162 - 0.7 + (d.i / 51) * 0.7;
+        const appear = d.home === 'in' ? -2 : C.n162 - 0.7 + (d.i / 51) * 0.7;
         const appear2 = C.kehte8 + 0.1;
         const s1 = t < C.kehte8 ? clamp01(pop(t, appear, 9, 260)) : clamp01(pop(t, appear2 + ((d.x - X0) / (X1 - X0)) * 0.4, 10, 240));
         if (s1 <= 0.01) return null;
@@ -197,7 +197,7 @@ const Walk: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
 
 export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const indiaA = clamp01(window4(t, -1, 0, C.bd1 + 0.2, C.bd1 + 0.8) + window4(t, C.tirange16 - 0.6, C.tirange16, 999, 1000));
-  const bdA = window4(t, C.bd1 - 0.4, C.bd1, C.raat2, C.raat2 + 0.6) + window4(t, C.poore6 - 0.2, C.bd6, C.yaani7, C.yaani7 + 0.5);
+  const bdA = window4(t, -1, 0, C.raat2, C.raat2 + 0.6) + window4(t, C.poore6 - 0.2, C.bd6, C.yaani7, C.yaani7 + 0.5);
   const borderLine = window4(t, C.border3 - 0.4, C.border3, C.n162 - 0.3, C.n162 + 0.3);
   const border47 = window4(t, C.y1947 - 0.2, C.y1947, C.sochiye10, C.sochiye10 + 0.6) + window4(t, C.bukhar12, C.bukhar12 + 0.4, C.phir13, C.n31);
   const border15 = window4(t, C.nakshe13 - 0.2, C.nakshe13 + 0.3, C.parivar14 + 0.5, C.zameen15);

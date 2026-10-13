@@ -32,6 +32,7 @@ export const DAHALA = merc(88.76246, 26.15005);
 export const PL = {
   india: merc(84.5, 23.2),
   bengal: merc(89.4, 25.2),
+  hook: merc(89.4, 25.35),
   belt: merc(89.15, 26.18),
   cooch: merc(89.2, 26.25),
   dahala: DAHALA,
@@ -42,9 +43,9 @@ export const WALKC: P = [(GEO.walk[0][0] + GEO.walk[3][0]) / 2, (GEO.walk[0][1] 
 /** Camera keys, all anchored to words of the voiceover; every move rolls a few degrees. */
 const keys = (): Key[] => [
   // क्या आप जानते हैं… 111 गाँव Bangladesh के अंदर: India lit, then a fast dive onto the border belt
-  { t: 0, at: PL.india, span: 5.2e6, rot: -2 },
-  { t: C.bharat1, at: PL.india, span: 4.6e6, rot: 0, e: linear },
-  { t: C.n111 + 0.25, at: PL.bengal, span: 1.25e6, rot: 2, e: inOut },
+  // frame 0: India and Bangladesh already lit, the 111 dots already glowing (picture first), then the dive
+  { t: 0, at: PL.hook, span: 1.0e6, rot: -2 },
+  { t: C.n111 + 0.3, at: PL.hook, span: 8.6e5, rot: 0, e: linear },
   { t: C.bd1 + 0.3, at: PL.belt, span: 3.2e5, rot: 0, e: inOut },
   // …एक रात… सोए… जागे: hold on the belt at night
   { t: C.kyon2, at: PL.belt, span: 2.7e5, rot: -1, e: linear },
