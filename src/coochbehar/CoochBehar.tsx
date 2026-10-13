@@ -12,7 +12,7 @@ import { Grade, ScreenLayer, Subtitles, shake } from './Screen';
 export const COOCHBEHAR_DURATION = Math.ceil(DURATION_S * FPS);
 export const HAS_AUDIO = true;
 
-export const CoochBehar: React.FC<{ captions?: boolean }> = ({ captions = true }) => {
+export const CoochBehar: React.FC<{ captions?: boolean; screen?: boolean }> = ({ captions = true, screen = true }) => {
   const t = useCurrentFrame() / FPS;
   useCBFonts();
   useMontserrat();
@@ -43,7 +43,7 @@ export const CoochBehar: React.FC<{ captions?: boolean }> = ({ captions = true }
           </div>
         </AbsoluteFill>
         <Grade t={t} night={night} past={past} cold={cold} />
-        <ScreenLayer t={t} c={cam} />
+        {screen && <ScreenLayer t={t} c={cam} />}
       </AbsoluteFill>
       <div style={{ position: 'absolute', right: 22, bottom: 14, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
         Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · borders: Natural Earth · enclave dots illustrative
