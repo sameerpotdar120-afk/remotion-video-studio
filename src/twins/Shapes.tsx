@@ -1,5 +1,5 @@
 import React from 'react';
-import { clamp01, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
+import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, Cam, GEO, P, PLANE, THAI_TWIN, project, pxPerM } from './cam';
 
 /** Pair colours: bold and saturated, one warm and one cool per pair so the twins read apart. */
@@ -17,7 +17,7 @@ const pathD = (c: Cam, rings: P[][]) =>
 
 /** How a shape is posed: a = visible, lift = raised off the map, d = offset in metres, s = scale, rot in degrees.
  *  anchor: the point it scales and turns about (metres). */
-type Pose = { a: number; lift?: number; dx?: number; dy?: number; sx?: number; sy?: number; rot?: number; anchor?: P; pulse?: number; ghost?: boolean };
+type Pose = { a: number; lift?: number; dx?: number; dy?: number; sx?: number; sy?: number; rot?: number; anchor?: P; pulse?: number; ghost?: boolean; grow?: number; blink?: number };
 
 const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco?: boolean; children?: (ax: number, ay: number, s: number) => React.ReactNode }> = ({ c, k, p, t, main, deco, children }) => {
   if (p.a <= 0.001) return null;
@@ -33,10 +33,15 @@ const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco
   const col = PAIR[k];
   const draw = Math.min(1, p.a * 1.2);
   const id = `g_${k}${p.ghost ? 'x' : ''}`;
+  // the fill grows out from the country's pin, like the reference; blink dips the fill on the comparison words
+  const [gx, gy] = project(c, g.centre[0], g.centre[1]);
+  const gr = Math.hypot(g.bbox[2] - g.bbox[0], g.bbox[3] - g.bbox[1]) * s * (p.grow ?? 1);
+  const bl = 1 - 0.75 * (p.blink ?? 0);
   if (deco) return <g style={{ opacity: Math.min(1, p.a * 1.5) }}><g transform={tf}>{children && children(ax, ay, s)}</g></g>;
   return (
     <g style={{ opacity: Math.min(1, p.a * 1.5) }}>
       <defs>
+        <clipPath id={`${id}c`}><circle cx={gx} cy={gy} r={Math.max(0.1, gr)} /></clipPath>
         <linearGradient id={id} x1="0" y1="0" x2="0.4" y2="1">
           <stop offset="0" stopColor="#fff" stopOpacity={0.55} />
           <stop offset="0.22" stopColor={col} />
@@ -50,7 +55,7 @@ const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco
       )}
       <g transform={tf}>
         <path d={d} fill="none" stroke={col} strokeWidth={34} strokeOpacity={0.32} strokeLinejoin="round" style={{ filter: 'blur(14px)' }} vectorEffect="non-scaling-stroke" />
-        <path d={d} fill={p.ghost ? 'none' : `url(#${id})`} fillOpacity={p.ghost ? 0 : lerp(0.5, 0.95, lift) * draw} />
+        <path d={d} fill={p.ghost ? 'none' : `url(#${id})`} fillOpacity={p.ghost ? 0 : lerp(0.62, 0.97, lift) * draw * bl} clipPath={p.grow !== undefined && p.grow < 1 ? `url(#${id}c)` : undefined} />
         <path d={d} fill="none" stroke="#fff" strokeWidth={p.ghost ? 5 : 4} strokeLinejoin="round" pathLength={1} strokeDasharray={p.ghost ? undefined : `${draw} 1`}
           strokeOpacity={0.95} vectorEffect="non-scaling-stroke" style={{ filter: `drop-shadow(0 0 8px ${col})` }} />
         <path d={d} fill="none" stroke="#fff" strokeWidth={7} strokeLinejoin="round" pathLength={1} strokeDasharray="0.05 0.95" strokeDashoffset={-((t * 0.25) % 1)}
@@ -62,6 +67,14 @@ const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco
 
 const G = GEO.c;
 const off = (from: P, to: P) => ({ dx: to[0] - from[0], dy: to[1] - from[1] });
+/** Vietnam's spot beside Italy (used on frame 0 and again when it flies west to compare). */
+export const VN_BESIDE = off(G.vietnam.centre, [G.italy.centre[0] + 1.05e6, G.italy.centre[1] - 0.05e6]);
+/** How far Vietnam has flown west towards Italy (0 at home, 1 beside Italy). */
+export const vnFly = (t: number) => ramp(t, C.farak8 - 0.2, C.italy8 + 0.1, inOut);
+/** Two quick blinks starting at t0. */
+const blink2 = (t: number, t0: number) => Math.max(window4(t, t0, t0 + 0.05, t0 + 0.12, t0 + 0.18), window4(t, t0 + 0.3, t0 + 0.35, t0 + 0.42, t0 + 0.48));
+/** The fill grows out from the pin as the country is named (full during the hook's quick flashes). */
+const growAt = (t: number, t0: number) => (t < C.pehla3 ? 1 : ramp(t, t0 - 0.1, t0 + 0.45, easeOut));
 
 /** Cartoon eyes that look sideways and blink. */
 const Eyes: React.FC<{ x: number; y: number; r: number; look: number; t: number; t0: number }> = ({ x, y, r, look, t, t0 }) => {
@@ -113,7 +126,7 @@ export const BIG = 1.7;
 export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // ---------------------------------------------------------------- hook: Italy with Vietnam's copy beside it, then the world
   const hookOut = ramp(t, C.maps1 + 0.1, C.maps1 + 1.0, inOut);
-  const vnHook = off(G.vietnam.centre, [G.italy.centre[0] + 1.05e6, G.italy.centre[1] - 0.05e6]);
+  const vnHook = VN_BESIDE;
   const flash = (i: number) => window4(t, C.judwa2 - 0.1 + i * 0.09, C.judwa2 + 0.05 + i * 0.09, C.pehla3 - 0.25, C.pehla3 + 0.05);
   const hookItaly = Math.max(1 - ramp(t, C.notice1, C.notice1 + 0.5, linear), flash(4));
   const hookViet = t < C.notice1 + 0.6 ? 1 - ramp(t, C.notice1, C.notice1 + 0.5, linear) : flash(5);
@@ -134,14 +147,16 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const bnA = Math.max(ramp(t, C.benin5 - 0.1, C.benin5 + 0.3, linear) * p2out, flash(2));
   const tgA = Math.max(ramp(t, C.togo5 - 0.1, C.togo5 + 0.3, linear) * p2out, flash(3));
   const settle = ramp(t, C.suno6 - 0.1, C.togo6 + 0.3, inOut);
-  const lift2 = ramp(t, C.kandhe6 - 0.2, C.kandhe6 + 0.25, easeOut) * (1 - settle);
+  const lift2 = ramp(t, C.kandhe6 - 0.7, C.kandhe6 - 0.3, easeOut) * (1 - settle);
   const tall = ramp(t, C.lambe6 - 0.1, C.lambe6 + 0.35, easeOut) * (1 - settle);
   const thin = ramp(t, C.patle6 - 0.1, C.patle6 + 0.35, easeOut) * (1 - settle);
   const wob = kick(t, C.lambe6 + 0.3, 0.05, 20, 6) + kick(t, C.patle6 + 0.3, 0.05, 20, 6);
   const arms = ramp(t, C.kandhe6 + 0.15, C.kandhe6 + 0.65, easeOut) * (1 - settle);
+  const apart = ramp(t, C.kandhe6 - 0.6, C.kandhe6 - 0.25, easeOut) - ramp(t, C.kandhe6 - 0.05, C.kandhe6 + 0.12, easeIn);
   const bt = (k: 'benin' | 'togo'): Pose => {
     const g = G[k];
-    return { a: k === 'benin' ? bnA : tgA, lift: lift2, sy: 1 + 0.24 * tall + wob, sx: 1 - 0.26 * thin - wob * 0.6, anchor: [g.centre[0], g.bbox[1]] };
+    return { a: k === 'benin' ? bnA : tgA, lift: lift2, sy: 1 + 0.24 * tall + wob, sx: 1 - 0.26 * thin - wob * 0.6, anchor: [g.centre[0], g.bbox[1]],
+      dx: (k === 'benin' ? 1 : -1) * 0.07e6 * apart, grow: growAt(t, k === 'benin' ? C.benin5 : C.togo5), blink: blink2(t, C.patle6 + 0.45) };
   };
 
   // ---------------------------------------------------------------- 3: Italy and Vietnam
@@ -159,13 +174,15 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <svg width={PLANE.w} height={PLANE.h} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
       {/* hook */}
-      <Shape c={c} k="italy" t={t} p={{ a: itA, lift: t < C.teesra7 ? 1 - hookOut : 0.35 * ramp(t, C.boot7, C.boot7 + 0.3), rot: kickRot, anchor: [G.italy.centre[0], G.italy.bbox[3]] }} />
-      <Shape c={c} k="vietnam" t={t} p={{ a: vnA, lift: t < C.teesra7 ? 1 - hookOut : 0.35 * ramp(t, C.boot8, C.boot8 + 0.3),
-        dx: t < C.teesra7 ? vnHook.dx * (1 - hookOut) : 0, dy: t < C.teesra7 ? vnHook.dy * (1 - hookOut) : 0 }} />
+      <Shape c={c} k="italy" t={t} p={{ a: itA, lift: t < C.teesra7 ? 1 - hookOut : 0.35 * ramp(t, C.boot7, C.boot7 + 0.3), rot: kickRot, anchor: [G.italy.centre[0], G.italy.bbox[3]],
+        grow: t < C.teesra7 ? 1 : growAt(t, C.italy7), blink: blink2(t, C.italy8) }} />
+      <Shape c={c} k="vietnam" t={t} p={{ a: vnA, lift: t < C.teesra7 ? 1 - hookOut : Math.max(0.35 * ramp(t, C.boot8, C.boot8 + 0.3), Math.sin(vnFly(t) * Math.PI)),
+        dx: t < C.teesra7 ? vnHook.dx * (1 - hookOut) : vnHook.dx * vnFly(t), dy: t < C.teesra7 ? vnHook.dy * (1 - hookOut) : vnHook.dy * vnFly(t),
+        grow: t < C.teesra7 ? 1 : growAt(t, C.vietnam8), blink: blink2(t, C.italy8) }} />
       {/* 1 */}
-      <Shape c={c} k="myanmar" t={t} p={{ a: myA, pulse: sameKick + kick(t, C.myan4, 0.05, 18, 7) }} />
+      <Shape c={c} k="myanmar" t={t} p={{ a: myA, pulse: sameKick + kick(t, C.myan4, 0.05, 18, 7), grow: growAt(t, C.myan3), blink: blink2(t, C.same4) }} />
       <Shape c={c} k="thailand" t={t} p={{ a: thA, lift: thLift, sx: Math.cos(flip * Math.PI) * (1 + 0.1 * Math.sin(flip * Math.PI)), sy: 1 + 0.1 * Math.sin(flip * Math.PI),
-        dx: th2.dx * slide, dy: th2.dy * slide, pulse: sameKick, rot: Math.sin(slide * Math.PI) * -4 }} />
+        dx: th2.dx * slide, dy: th2.dy * slide, pulse: sameKick, rot: Math.sin(slide * Math.PI) * -4, grow: growAt(t, C.thai3), blink: blink2(t, C.same4) }} />
       {/* 2 */}
       <Shape c={c} k="togo" t={t} main p={bt('togo')} />
       <Shape c={c} k="benin" t={t} main p={bt('benin')} />
@@ -176,7 +193,7 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           return (
             <>
               <Eyes x={ex} y={ey} r={0.02e6 * k} look={1} t={t} t0={C.kandhe6 - 0.1} />
-              <Arm x0={ax + 0.03e6 * k} y0={ay - h * 0.62} x1={ax + 0.2e6 * k} y1={ay - h * 0.74} w={0.013e6 * k} p={arms} />
+              <Arm x0={ax + 0.03e6 * k} y0={ay - h * 0.66} x1={ax + 0.2e6 * k} y1={ay - h * 0.8} w={0.013e6 * k} p={arms} />
             </>
           );
         }}
@@ -188,15 +205,15 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           return (
             <>
               <Eyes x={ex} y={ey} r={0.019e6 * k} look={-1} t={t} t0={C.kandhe6} />
-              <Arm x0={ax - 0.05e6 * k} y0={ay - h * 0.56} x1={ax - 0.19e6 * k} y1={ay - h * 0.66} w={0.014e6 * k} p={arms} />
+              <Arm x0={ax - 0.05e6 * k} y0={ay - h * 0.5} x1={ax - 0.19e6 * k} y1={ay - h * 0.56} w={0.014e6 * k} p={arms} />
             </>
           );
         }}
       </Shape>
       {/* 3 is above (italy / vietnam) */}
       {/* 4 */}
-      <Shape c={c} k="norway" t={t} main p={{ a: Math.max(p4(C.norway10), flash(6)), lift: big, sx: 1 + (BIG - 1) * big, sy: 1 + (BIG - 1) * big, pulse: up }} />
-      <Shape c={c} k="chile" t={t} main p={{ a: Math.max(p4(C.chile10), flash(7)), lift: bigC, sx: 1 + (BIG - 1) * bigC, sy: 1 + (BIG - 1) * bigC, pulse: down }} />
+      <Shape c={c} k="norway" t={t} main p={{ a: Math.max(p4(C.norway10), flash(6)), lift: big, sx: 1 + (BIG - 1) * big, sy: 1 + (BIG - 1) * big, pulse: up, grow: growAt(t, C.norway10), blink: blink2(t, C.aaina11 + 1.0) }} />
+      <Shape c={c} k="chile" t={t} main p={{ a: Math.max(p4(C.chile10), flash(7)), lift: bigC, sx: 1 + (BIG - 1) * bigC, sy: 1 + (BIG - 1) * bigC, pulse: down, grow: growAt(t, C.chile10), blink: blink2(t, C.aaina11 + 1.0) }} />
       {/* the mirror: Norway's reflection across the line, then it slides west onto Chile */}
       {mir > 0 && (
         <Shape c={c} k="norway" t={t} main p={{ a: mir * 0.95, ghost: true, sx: BIG, sy: BIG * lerp(1, -1, mir), dy: (2 * MIRROR_Y - ny - ny) * mir, dx: (G.chile.centre[0] - nx) * mirSlide }} />

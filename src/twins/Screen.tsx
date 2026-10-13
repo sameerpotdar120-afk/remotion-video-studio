@@ -4,7 +4,7 @@ import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4
 import sizes from '../../public/twins/img_sizes.json';
 import { C, CAPS, Cam, DURATION_S, GEO, P, THAI_TWIN, pxPerM, toScreen } from './cam';
 import { HEAD, NUM, SUB } from './fonts';
-import { BIG, MIRROR_Y, PAIR, TOGO_COAST } from './Shapes';
+import { BIG, MIRROR_Y, PAIR, TOGO_COAST, VN_BESIDE, vnFly } from './Shapes';
 
 export const COL = { gold: '#FFD84A', red: '#FF4D5E', green: '#3DDC4A', mint: '#3EE6A0', sea: '#38B6FF', white: '#FFF6E6', violet: '#B67CFF' };
 const SZ = sizes as unknown as Record<string, [number, number]>;
@@ -28,14 +28,30 @@ const Prop: React.FC<{ name: string; x: number; y: number; h: number; a?: number
   );
 };
 
-/** A country name pill (Latin, Anton) that pops in near a shape. */
-const Label: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; color: string; rot?: number }> = ({ t, t0, t1, text, x, y, color, rot = -3 }) => {
-  if (t < t0 || t > t1 + 0.3) return null;
-  const s = clamp01(pop(t, t0, 8, 260)) * (1 - ramp(t, t1, t1 + 0.25, easeIn));
-  if (s <= 0.01) return null;
+/** A country callout, like the reference: a pin ring on the country, a thin line, and a white-outlined name box. */
+const Label: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; color: string; rot?: number; pin?: P }> = ({ t, t0, t1, text, x, y, color, rot = 0, pin }) => {
+  if (t < t0 - 0.05 || t > t1 + 0.3) return null;
+  const out = ramp(t, t1, t1 + 0.25, easeIn);
+  const line = ramp(t, t0 - 0.05, t0 + 0.2, easeOut) * (1 - out);
+  const s = clamp01(pop(t, t0 + 0.12, 8, 260)) * (1 - out);
+  const ring = clamp01(pop(t, t0 - 0.05, 9, 260)) * (1 - out);
   return (
-    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${rot}deg) scale(${s})`, whiteSpace: 'nowrap', background: color, color: '#140c03',
-      padding: '8px 26px 2px', borderRadius: 14, border: '4px solid #140c03', fontFamily: NUM, fontSize: 54, letterSpacing: 1.5, boxShadow: SHADOW, lineHeight: 1.15 }}>{text}</div>
+    <>
+      {pin && (
+        <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
+          <line x1={pin[0]} y1={pin[1]} x2={lerp(pin[0], x, line)} y2={lerp(pin[1], y, line)} stroke="#fff" strokeWidth={4} style={{ filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.7))' }} />
+          <circle cx={pin[0]} cy={pin[1]} r={20 * ring} fill="none" stroke="#fff" strokeWidth={5} style={{ filter: `drop-shadow(0 0 8px ${color})` }} />
+          <circle cx={pin[0]} cy={pin[1]} r={8 * ring} fill="#fff" />
+        </svg>
+      )}
+      {s > 0.01 && (
+        <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${rot}deg) scale(${s})`, whiteSpace: 'nowrap', background: 'rgba(8,16,26,0.62)', color: '#fff',
+          padding: '8px 24px 2px 20px', borderRadius: 10, border: '4px solid #fff', fontFamily: NUM, fontSize: 50, letterSpacing: 1.5, boxShadow: `0 8px 22px rgba(0,0,0,0.55), 0 0 18px ${color}66`, lineHeight: 1.15,
+          display: 'flex', alignItems: 'center', gap: 14 }}>
+          <span style={{ width: 22, height: 22, borderRadius: 6, background: color, display: 'inline-block', marginTop: -6, boxShadow: `0 0 10px ${color}` }} />{text}
+        </div>
+      )}
+    </>
   );
 };
 
@@ -97,7 +113,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const togo = shapePos(c, 'togo'), benin = shapePos(c, 'benin');
   const coastMid = toScreen(c, [(TOGO_COAST.w[0] + TOGO_COAST.e[0]) / 2, TOGO_COAST.w[1]]);
   // ---------------------------------------------------------------- 3
-  const italy = shapePos(c, 'italy'), viet = shapePos(c, 'vietnam');
+  const italy = shapePos(c, 'italy'), vf = t > C.teesra7 ? vnFly(t) : 0, viet = shapePos(c, 'vietnam', VN_BESIDE.dx * vf, VN_BESIDE.dy * vf);
   const itH = (G.italy.bbox[3] - G.italy.bbox[1]) * k, vnH = (G.vietnam.bbox[3] - G.vietnam.bbox[1]) * k;
   const bootIt = window4(t, C.boot7, C.boot7 + 0.35, C.asli9 - 0.1, C.asli9 + 0.3) * (t > C.hazaron8 + 0.3 && t < C.farak8 + 0.2 ? 0 : 1);
   const bootVn = window4(t, C.boot8 - 0.05, C.boot8 + 0.1, C.farak8 + 0.1, C.farak8 + 0.4);
@@ -122,8 +138,8 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* 1 */}
       <Num t={t} t0={C.pehla3} t1={C.thai3 + 0.6} n="1" word="पहला" color={COL.gold} />
-      <Label t={t} t0={C.thai3} t1={C.doosra5 - 0.1} text="THAILAND" x={thai[0] + 30} y={thai[1] + 120} color={PAIR.thailand} />
-      <Label t={t} t0={C.myan3} t1={C.doosra5 - 0.1} text="MYANMAR" x={myan[0] + 40} y={myan[1] - 210} color={PAIR.myanmar} rot={3} />
+      <Label t={t} t0={C.thai3} t1={C.doosra5 - 0.1} text="THAILAND" x={thai[0] + 30} y={thai[1] + 120} color={PAIR.thailand} pin={thai} />
+      <Label t={t} t0={C.myan3} t1={C.doosra5 - 0.1} text="MYANMAR" x={myan[0] + 40} y={myan[1] - 210} color={PAIR.myanmar} rot={3} pin={myan} />
       <Prop name="brass_stamp" x={thai[0]} y={st1.y} h={300} a={st1.a} />
       <Prop name="brass_stamp" x={myan[0]} y={st2.y} h={300} a={st2.a} />
       {(() => {
@@ -140,8 +156,8 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* 2 */}
       <Num t={t} t0={C.doosra5} t1={C.benin5 + 0.5} n="2" word="दूसरा" color={COL.gold} />
-      <Label t={t} t0={C.benin5} t1={C.suno6} text="BENIN" x={benin[0] + 150} y={benin[1] + 260} color={PAIR.benin} rot={4} />
-      <Label t={t} t0={C.togo5} t1={C.suno6} text="TOGO" x={togo[0] - 160} y={togo[1] + 200} color={PAIR.togo} />
+      <Label t={t} t0={C.benin5} t1={C.suno6} text="BENIN" x={benin[0] + 150} y={benin[1] + 260} color={PAIR.benin} rot={4} pin={benin} />
+      <Label t={t} t0={C.togo5} t1={C.suno6} text="TOGO" x={togo[0] - 160} y={togo[1] + 200} color={PAIR.togo} pin={togo} />
       <Big t={t} t0={C.lambe6} t1={C.suno6} text="लंबे" x={300} y={360} size={110} color={COL.gold} rot={-6} />
       <Big t={t} t0={C.patle6} t1={C.suno6} text="पतले" x={780} y={360} size={110} color={COL.red} rot={5} />
       {(() => {
@@ -154,15 +170,16 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
             fontFamily: NUM, fontSize: 170, color: COL.gold, lineHeight: 1, textShadow: `${SHADOW}, 0 0 30px ${COL.gold}66`, ...STROKE(8), whiteSpace: 'nowrap' }}>{v} KM</div>
         );
       })()}
-      <Label t={t} t0={C.togo6} t1={C.teesra7 - 0.2} text="TOGO" x={coastMid[0]} y={coastMid[1] - 420} color={PAIR.togo} />
+      <Label t={t} t0={C.togo6} t1={C.teesra7 - 0.2} text="TOGO" x={coastMid[0]} y={coastMid[1] - 420} color={PAIR.togo} pin={coastMid} />
 
       {/* 3 */}
       <Num t={t} t0={C.teesra7} t1={C.italy7 + 0.4} n="3" word="तीसरा" color={COL.gold} />
-      <Label t={t} t0={C.italy7} t1={C.hazaron8 + 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} />
+      <Label t={t} t0={C.italy7} t1={C.hazaron8 + 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} pin={italy} />
       <Prop name="boot" x={italy[0] - itH * 0.02} y={italy[1] + itH * 0.04 + bootDrop(C.boot7)} h={itH * 0.86} a={bootIt * lerp(0.95, 0.68, ramp(t, C.boot7 + 0.4, C.boot7 + 0.9))} rot={c.rot - 33 + kickRot} />
-      <Label t={t} t0={C.vietnam8} t1={C.farak8} text="VIETNAM" x={viet[0] + 210} y={viet[1] - 420} color={PAIR.vietnam} rot={-3} />
+      <Label t={t} t0={C.vietnam8} t1={C.farak8} text="VIETNAM" x={viet[0] + 210} y={viet[1] - 420} color={PAIR.vietnam} rot={-3} pin={viet} />
       <Prop name="boot" x={viet[0] - vnH * 0.02} y={viet[1] + bootDrop(C.boot8)} h={vnH * 0.84} a={bootVn * lerp(0.95, 0.68, ramp(t, C.boot8 + 0.4, C.boot8 + 0.9))} rot={c.rot - 4} />
-      <Label t={t} t0={C.italy8} t1={C.asli9 - 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} />
+      <Label t={t} t0={C.italy8 + 0.1} t1={C.football8 + 0.3} text="VIETNAM" x={Math.min(880, viet[0] - 40)} y={Math.max(230, viet[1] - 420)} color={PAIR.vietnam} pin={viet} />
+      <Label t={t} t0={C.italy8} t1={C.asli9 - 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} pin={italy} />
       {SZ.football
         ? <Prop name="football" x={ballX} y={ballY} h={150} a={ballA} sc={ballIn} rot={fly * -720} glow="#fff" />
         : ballA > 0 && <div style={{ position: 'absolute', left: ballX - 70, top: ballY - 70, width: 140, height: 140, borderRadius: '50%', opacity: ballA, transform: `scale(${ballIn}) rotate(${fly * -720}deg)`,
@@ -171,10 +188,10 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* 4 */}
       <Big t={t} t0={C.asli9} t1={C.norway10 + 0.2} text="असली जुड़वा…" x={540} y={330} size={120} color={COL.gold} />
-      <Label t={t} t0={C.norway10} t1={C.aaina11 - 0.2} text="NORWAY" x={nor[0] + 30} y={nor[1] + norH * 0.55} color={PAIR.norway} rot={-4} />
-      <Label t={t} t0={C.chile10} t1={C.aaina11 - 0.2} text="CHILE" x={chi[0] + 240} y={chi[1] - 160} color={PAIR.chile} rot={4} />
-      <Prop name="chilli_green" x={nor[0] + norH * 0.02} y={nor[1]} h={norH * 1.15} a={chil} sc={clamp01(pop(t, C.mirchi11, 8, 240))} rot={c.rot + 36} />
-      <Prop name="chilli_red" x={chi[0]} y={chi[1]} h={chH * 1.12} a={chil} sc={clamp01(pop(t, C.mirchi11 + 0.12, 8, 240))} rot={c.rot + 4} />
+      <Label t={t} t0={C.norway10} t1={C.aaina11 - 0.2} text="NORWAY" x={nor[0] + 30} y={nor[1] + norH * 0.55} color={PAIR.norway} rot={-4} pin={nor} />
+      <Label t={t} t0={C.chile10} t1={C.aaina11 - 0.2} text="CHILE" x={chi[0] + 330} y={chi[1] - 300} color={PAIR.chile} rot={4} pin={chi} />
+      <Prop name="chilli_green" x={nor[0] - norH * 0.42} y={nor[1] + norH * 0.12} h={norH * 1.15} a={chil} sc={clamp01(pop(t, C.mirchi11, 8, 240))} rot={c.rot + 36} />
+      <Prop name="chilli_red" x={chi[0] + 170} y={chi[1]} h={chH * 1.12} a={chil} sc={clamp01(pop(t, C.mirchi11 + 0.12, 8, 240))} rot={c.rot + 4} />
       <Big t={t} t0={C.mirchi11} t1={C.upar11} text="मिर्ची!" x={760} y={1380} size={120} color={COL.red} rot={6} />
       <Big t={t} t0={C.upar11} t1={C.aaina11} text="ऊपर ⬆" x={nor[0] - 120} y={Math.max(200, nor[1] - norH * 0.62)} size={84} color={COL.green} rot={-3} />
       <Big t={t} t0={C.neeche11} t1={C.aaina11} text="नीचे ⬇" x={chi[0] + 280} y={chi[1] + 40} size={84} color={COL.red} rot={3} />
@@ -225,10 +242,19 @@ export const Subtitles: React.FC<{ t: number; top: number }> = ({ t, top }) => {
   const a = ramp(t, t0, t0 + 0.08, linear) * (1 - ramp(t, t1 - 0.02, t1, linear));
   if (a <= 0) return null;
   const s = lerp(0.86, 1, clamp01(pop(t, t0, 12, 260)));
+  // karaoke: the word being spoken lights up (word times split the chunk by letters)
+  const words = text.split(' ');
+  const len = words.map((w) => Math.max(1, w.replace(/[…।,?!:]/g, '').length));
+  const tot = len.reduce((a, b) => a + b, 0);
+  const span = Math.max(0.3, Math.min(t1, t0 + tot * 0.075) - t0);
+  let acc = 0, cur = words.length - 1;
+  for (let k = 0; k < words.length; k++) { acc += len[k]; if (t < t0 + (span * acc) / tot) { cur = k; break; } }
   return (
     <div style={{ position: 'absolute', left: 50, right: 50, top, textAlign: 'center', fontFamily: SUB, fontWeight: 800, fontSize: 58, lineHeight: 1.22,
       color: '#fff', opacity: a, transform: `scale(${s})`, textShadow: '0 4px 0 rgba(0,0,0,0.4), 0 6px 18px rgba(0,0,0,0.7)', ...STROKE(9, '#000') }}>
-      {text.split(' ').map((w, k) => <span key={k} style={{ color: HOT.test(w) ? COL.gold : '#fff' }}>{w}{' '}</span>)}
+      {words.map((w, k) => (
+        <span key={k} style={{ color: k === cur ? '#7CFF6B' : HOT.test(w) ? COL.gold : '#fff', display: 'inline-block', transform: `scale(${k === cur ? 1.08 : 1})` }}>{w}&nbsp;</span>
+      ))}
     </div>
   );
 };

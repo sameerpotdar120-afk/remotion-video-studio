@@ -65,9 +65,10 @@ const keys = (): Key[] => [
   // "हज़ारों KM दूर": the long whip east to Vietnam
   { t: C.hazaron8 + 0.9, at: PL.between, span: 8.5e6, rot: 2, e: inOut },
   { t: C.vietnam8 + 0.2, at: PL.vietnam, span: 2.5e6, rot: 0, e: inOut },
-  { t: C.farak8 - 0.1, at: PL.vietnam, span: 2.25e6, rot: -1, e: linear },
-  // back west to Italy for the football
-  { t: C.italy8 + 0.1, at: PL.italy, span: 2.1e6, rot: 1, e: inOut },
+  { t: C.farak8 - 0.2, at: PL.vietnam, span: 2.25e6, rot: -1, e: linear },
+  // Vietnam flies west to stand beside Italy, and the camera rides along with it (pulled out on the way, so the trip reads)
+  { t: (C.farak8 + C.italy8) / 2, at: PL.between, span: 6.5e6, rot: 0, e: inOut },
+  { t: C.italy8 + 0.1, at: [PL.italy[0] + 0.55e6, PL.italy[1] - 0.1e6], span: 3.1e6, rot: 1, e: inOut },
   { t: C.football8 + 0.3, at: [PL.italy[0] + 0.12e6, PL.italy[1] - 0.45e6], span: 1.55e6, rot: 0, e: inOut },
   { t: C.laat8 + 1.2, at: [PL.italy[0] - 0.05e6, PL.italy[1] - 0.6e6], span: 1.9e6, rot: -1, e: inOut },
   // 4: pull out over the Atlantic: Norway at the top, Chile at the bottom
