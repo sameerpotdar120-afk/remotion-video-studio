@@ -40,7 +40,7 @@ const globeCam = (t: number) => {
   return { lon: lerp(lerp(-75, -360.3, q), -360.3, z), lat: lerp(lerp(8, 48, q), 53.7, z), dist: lerp(3.2, 1.5, z), pin: [-0.33, 53.74] as [number, number], route: 1 };
 };
 
-export const Bushby: React.FC<{ captions?: boolean }> = ({ captions = true }) => {
+export const Bushby: React.FC<{ captions?: boolean; screen?: boolean }> = ({ captions = true, screen = true }) => {
   const t = useCurrentFrame() / FPS;
   useBBFonts();
   useMontserrat();
@@ -78,8 +78,8 @@ export const Bushby: React.FC<{ captions?: boolean }> = ({ captions = true }) =>
           </AbsoluteFill>
         )}
         <Grade t={t} />
-        <ScreenLayer t={t} c={cam} globe={globe} />
-        <Whips t={t} />
+        {screen && <ScreenLayer t={t} c={cam} globe={globe} />}
+        {screen && <Whips t={t} />}
       </AbsoluteFill>
       <div style={{ position: 'absolute', right: 22, bottom: 14, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
         Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · borders: Natural Earth · route approximate · Karl: AI illustration

@@ -23,6 +23,7 @@ import { TibetCover } from './tibet/Cover';
 import { CoochBehar, COOCHBEHAR_DURATION } from './coochbehar/CoochBehar';
 import { CoochBeharCover } from './coochbehar/Cover';
 import { Bushby, BUSHBY_DURATION } from './bushby/Bushby';
+import { BushbyCover } from './bushby/Cover';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -48,6 +49,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="TibetCover" component={TibetCover} durationInFrames={TIBET_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="CoochBehar" component={CoochBehar} durationInFrames={COOCHBEHAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Bushby" component={Bushby} durationInFrames={BUSHBY_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="BushbyCover" component={BushbyCover} durationInFrames={BUSHBY_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="CoochBeharCover" component={CoochBeharCover} durationInFrames={COOCHBEHAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="ElNino" component={ElNino} durationInFrames={ELNINO_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Diomede2" component={Diomede2} durationInFrames={DIOMEDE2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
