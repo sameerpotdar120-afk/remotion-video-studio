@@ -1,24 +1,26 @@
 # Karl Bushby, 28 years on foot: asset prompts
 
-Script confirmed: `public/bushby/script_hindi.txt` (117 words, about 45 s).
+Script confirmed: `public/bushby/script_hindi.txt` (187 words, about 72 s).
+Editing style: our GeoGlobe look. A continuous satellite globe and map with fast camera moves, a glowing route line, highlighted regions, pins and tags, and the miniatures below popping in on the map at each beat.
 All-new assets for this video. Nothing is reused from earlier videos.
 
 ## 0. Beat map (script → screen)
 
 | Script | On screen | Assets |
 |---|---|---|
-| एक आदमी, एक कसम: पूरी दुनिया पैदल घूमनी है। | Frame 0: globe with the glowing route wrapped around it, the walker on top, only "28 साल पैदल" | A2 |
+| आप एक दिन में थक जाते। पर एक आदमी ने कसम खाई… | Frame 0: satellite globe with the glowing route wrapped around it, the walker standing on top, only "28 साल पैदल" | A2 |
 | Plan था 12 साल का… हो गए 28 साल। पर क्यों? | "12" crossed out, "28" slams in, a "?" pill (code) | A2 |
-| Karl Bushby 1998 में Chile से निकला। न गाड़ी, न जहाज़, न Plane। | Pin on Chile, "1998" stamp; the walker sets off along the route; car, ship and plane pop up and get crossed out one by one | A1, B1, B2, B3 |
-| Darién Gap के जंगल में मौत को छूकर लौटा… | The jungle glows green with skull pins; a jungle tile rises, the walker pushes through it | A5, C1, D2 |
-| …और Panama में सीधे जेल। | A jail cell slams down, the walker's backpack inside | C2 |
-| Bering Strait पर 14 दिन बर्फ़ पर चलकर Russia पहुँचा… | The frozen strait in white, snow falling; the walker in winter gear crosses an ice floe | A3, C3, D1 |
-| …वहाँ फिर गिरफ़्तार। | Handcuffs drop in | C4 |
-| Russia में Visa सिर्फ 90 दिन का। हर बार Exit, फिर Entry… ऊपर से Ban। | A passport flips open, the route loops out and back on the map (code), a "BANNED" stamp (code) | C5 |
-| अकेले Russia में 11 साल निकल गए। | Snow across Siberia, an "11 साल" counter (code) | D1 |
-| फिर Pandemic ने रोका। | A closed border barrier; the walker waits, sitting on his backpack | A6, C6 |
-| फिर Caspian Sea ने रोका… तो 31 दिन में 288 KM तैर गया। | Caspian glows blue; the walker swims with a support boat beside him, a splash; "31 दिन · 288 KM" (code) | A4, C7, D3 |
-| अब 50,000 KM चलकर, वो घर के बस पास है। | Full route on the globe, "50,000 KM" (code), zoom to England: a warm house with a lit window | A1, C8 |
+| Karl Bushby 1998 में Chile के आखिरी छोर से निकला। न गाड़ी, न जहाज़, न Plane। | Dive to Chile's southern tip, pin and "1998" stamp; the walker sets off; car, ship and plane pop up and get crossed out | A1, B1, B2, B3 |
+| पहला इम्तिहान: Darién Gap। घना जंगल, तस्कर, हथियारबंद गुट। | The route races north; the Darién Gap glows green with skull pins; a jungle tile rises with mist, the walker pushes through | A5, C1, D2 |
+| मौत को छूकर लौटा… और Panama में बिना Visa के 18 दिन जेल। | A jail cell slams down on Panama, "18 दिन" (code) | C2 |
+| फिर Bering Strait… 14 दिन बहती बर्फ़ पर… पहुँचते ही गिरफ़्तार। | A long pan north; the strait turns white, snow falls; the walker in winter gear on an ice floe, "14 दिन"; handcuffs drop in | A3, C3, C4, D1 |
+| Russia में Visa सिर्फ 90 दिन का। हर बार Exit… Entry। | A passport flips open; the route loops out of Russia and back to the same spot (code) | C5 |
+| ऊपर से Ban भी लगा… अकेले Russia ने 11 साल खा लिए। | "BANNED" stamp (code); snow across Siberia; "11 साल" counter (code) | D1 |
+| फिर Pandemic ने रोका। सरहदें बंद। | Borders flash red; a closed checkpoint; the walker waits on his backpack | A6, C6 |
+| फिर Caspian Sea ने रोका। Russia और Iran, दोनों रास्ते बंद। | Russia and Iran flash red, the Caspian glows blue (code) | — |
+| तो Karl पानी में कूद गया। 31 दिन में 288 KM… नाव पर। | Splash; the walker swims across with the support boat beside him; "31 दिन · 288 KM" (code) | A4, C7, D3 |
+| फिर Turkey, पूरा Europe… English Channel… England पहुँच गया। | The route sweeps across Europe; a quick swim across the Channel to Dover | A4 |
+| 28 साल, करीब 50,000 KM… घर बस कुछ सौ KM दूर। | Pull out to the globe with the full route, "50,000 KM" (code); dive to England, the house with a lit window | A1, C8 |
 | ये जुनून है या पागलपन? Comment में बताओ। | Two buttons "जुनून" / "पागलपन" (code) | — |
 
 ---
