@@ -119,11 +119,6 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const bootVn = window4(t, C.boot8 - 0.05, C.boot8 + 0.1, C.farak8 + 0.1, C.farak8 + 0.4);
   const bootDrop = (t0: number) => lerp(-260, 0, clamp01(ramp(t, t0 - 0.05, t0 + 0.2, easeIn))) * (1 - 0) + kick(t, t0 + 0.2, 18, 24, 9);
   const kickRot = t > C.laat8 - 0.15 ? -9 * Math.sin(clamp01((t - C.laat8 + 0.15) / 0.35) * Math.PI) : 0;
-  const sic = toScreen(c, GEO.sicily);
-  const ballIn = clamp01(pop(t, C.football8, 8, 240));
-  const fly = ramp(t, C.laat8 + 0.05, C.laat8 + 0.9, linear);
-  const ballX = sic[0] - 520 * fly, ballY = sic[1] + 90 * fly - Math.sin(fly * Math.PI) * 260;
-  const ballA = window4(t, C.football8 - 0.05, C.football8 + 0.05, C.laat8 + 1.0, C.laat8 + 1.2);
   // ---------------------------------------------------------------- 4
   const nor = shapePos(c, 'norway'), chi = shapePos(c, 'chile');
   const norH = (G.norway.bbox[3] - G.norway.bbox[1]) * k * BIG, chH = (G.chile.bbox[3] - G.chile.bbox[1]) * k * BIG;
@@ -180,10 +175,6 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Prop name="boot" x={viet[0] - vnH * 0.02} y={viet[1] + bootDrop(C.boot8)} h={vnH * 0.84} a={bootVn * lerp(0.95, 0.68, ramp(t, C.boot8 + 0.4, C.boot8 + 0.9))} rot={c.rot - 4} />
       <Label t={t} t0={C.italy8 + 0.1} t1={C.football8 + 0.3} text="VIETNAM" x={Math.min(880, viet[0] - 40)} y={Math.max(230, viet[1] - 420)} color={PAIR.vietnam} pin={viet} />
       <Label t={t} t0={C.italy8} t1={C.asli9 - 0.2} text="ITALY" x={italy[0] + 260} y={Math.max(230, italy[1] - 330)} color={PAIR.italy} rot={4} pin={italy} />
-      {SZ.football
-        ? <Prop name="football" x={ballX} y={ballY} h={150} a={ballA} sc={ballIn} rot={fly * -720} glow="#fff" />
-        : ballA > 0 && <div style={{ position: 'absolute', left: ballX - 70, top: ballY - 70, width: 140, height: 140, borderRadius: '50%', opacity: ballA, transform: `scale(${ballIn}) rotate(${fly * -720}deg)`,
-          background: 'radial-gradient(circle at 35% 30%, #fff, #ddd 60%, #999)', border: '6px solid #111', boxShadow: SHADOW }} />}
       <Big t={t} t0={C.laat8 + 0.05} t1={C.asli9 - 0.1} text="लात!" x={760} y={420} size={130} color={COL.red} rot={8} />
 
       {/* 4 */}

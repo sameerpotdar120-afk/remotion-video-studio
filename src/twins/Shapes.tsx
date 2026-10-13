@@ -1,4 +1,5 @@
 import React from 'react';
+import { staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, Cam, GEO, P, PLANE, THAI_TWIN, project, pxPerM } from './cam';
 
@@ -19,10 +20,10 @@ const pathD = (c: Cam, rings: P[][]) =>
  *  anchor: the point it scales and turns about (metres). */
 type Pose = { a: number; lift?: number; dx?: number; dy?: number; sx?: number; sy?: number; rot?: number; anchor?: P; pulse?: number; ghost?: boolean; grow?: number; blink?: number };
 
-const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco?: boolean; children?: (ax: number, ay: number, s: number) => React.ReactNode }> = ({ c, k, p, t, main, deco, children }) => {
+const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco?: boolean; rings?: P[][]; children?: (ax: number, ay: number, s: number) => React.ReactNode }> = ({ c, k, p, t, main, deco, rings, children }) => {
   if (p.a <= 0.001) return null;
   const g = GEO.c[k];
-  const d = pathD(c, main ? g.main : g.rings);
+  const d = pathD(c, rings ?? (main ? g.main : g.rings));
   const s = pxPerM(c);
   const an = p.anchor ?? g.centre;
   const [ax, ay] = project(c, an[0], an[1]);
@@ -66,6 +67,13 @@ const Shape: React.FC<{ c: Cam; k: Key; p: Pose; t: number; main?: boolean; deco
 };
 
 const G = GEO.c;
+const near = (r: P[], at: P, d: number) => {
+  const cx = r.reduce((a, p) => a + p[0], 0) / r.length, cy = r.reduce((a, p) => a + p[1], 0) / r.length;
+  return Math.hypot(cx - at[0], cy - at[1]) < d;
+};
+/** Sicily's outline (from Italy's rings), and Italy without it: in pair 3 Sicily is the football. */
+export const SICILY: P[][] = G.italy.rings.filter((r) => near(r, GEO.sicily, 1.6e5));
+const ITALY_NO_SICILY: P[][] = G.italy.rings.filter((r) => !near(r, GEO.sicily, 1.6e5));
 const off = (from: P, to: P) => ({ dx: to[0] - from[0], dy: to[1] - from[1] });
 /** Vietnam's spot beside Italy (used on frame 0 and again when it flies west to compare). */
 export const VN_BESIDE = off(G.vietnam.centre, [G.italy.centre[0] + 1.05e6, G.italy.centre[1] - 0.05e6]);
@@ -123,6 +131,38 @@ export const MIRROR_Y = (G.norway.centre[1] + G.chile.centre[1]) / 2;
 /** Norway and Chile are thin at world scale, so they lift out at this size. */
 export const BIG = 1.7;
 
+/** Sicily as the football: the island fills with a football's black-and-white panels on "Football",
+ *  and on "लात" Italy's toe kicks it away to the west, spinning, with a little hop. */
+const SicilyBall: React.FC<{ c: Cam; t: number; a: number }> = ({ c, t, a }) => {
+  const on = ramp(t, C.football8 - 0.15, C.football8 + 0.3, easeOut);
+  if (on <= 0.001 || a <= 0.001 || t > C.asli9 + 0.5) return null;
+  const s = pxPerM(c);
+  const d = pathD(c, SICILY);
+  const xs = SICILY.flat(), x0 = Math.min(...xs.map((p) => p[0])), x1 = Math.max(...xs.map((p) => p[0])), y0 = Math.min(...xs.map((p) => p[1])), y1 = Math.max(...xs.map((p) => p[1]));
+  const [cx, cy] = project(c, (x0 + x1) / 2, (y0 + y1) / 2);
+  const w = (x1 - x0) * s, h = (y1 - y0) * s;
+  const fly = ramp(t, C.laat8 + 0.02, C.laat8 + 1.1, (x) => 1 - (1 - x) * (1 - x));
+  const hop = Math.sin(clamp01((t - C.laat8) / 0.75) * Math.PI) * 0.22e6 * s + Math.max(0, Math.sin(clamp01((t - C.laat8 - 0.75) / 0.4) * Math.PI)) * 0.08e6 * s;
+  const dx = -0.5e6 * s * fly, dy = 0.1e6 * s * fly - hop;
+  const spin = -480 * fly;
+  const wob = 1 + kick(t, C.football8 + 0.1, 0.12, 22, 8);
+  const sz = Math.max(w, h) * 1.15;
+  return (
+    <g style={{ opacity: Math.min(1, a * 1.5) * (1 - ramp(t, C.laat8 + 1.4, C.laat8 + 1.7, linear)) }}>
+      <defs><clipPath id="sicball"><path d={d} /></clipPath></defs>
+      <g transform={`translate(${cx + dx},${cy + dy}) rotate(${spin}) scale(${wob}) translate(${-cx},${-cy})`}>
+        <path d={d} fill="#000" fillOpacity={0.4} transform="translate(10,16)" style={{ filter: 'blur(6px)' }} />
+        <path d={d} fill="#fff" />
+        <g clipPath="url(#sicball)" opacity={on}>
+          <image href={staticFile('twins/img/football.png')} x={cx - sz / 2} y={cy - sz / 2} width={sz} height={sz} preserveAspectRatio="xMidYMid slice" transform={`rotate(${-spin * 0.3},${cx},${cy})`} />
+        </g>
+        <path d={d} fill="none" stroke="#fff" strokeWidth={4} vectorEffect="non-scaling-stroke" style={{ filter: 'drop-shadow(0 0 8px #fff)' }} />
+        <path d={d} fill="none" stroke="#111" strokeWidth={1.5} strokeOpacity={on} vectorEffect="non-scaling-stroke" />
+      </g>
+    </g>
+  );
+};
+
 export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // ---------------------------------------------------------------- hook: Italy with Vietnam's copy beside it, then the world
   const hookOut = ramp(t, C.maps1 + 0.1, C.maps1 + 1.0, inOut);
@@ -174,11 +214,12 @@ export const ShapeLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <svg width={PLANE.w} height={PLANE.h} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
       {/* hook */}
-      <Shape c={c} k="italy" t={t} p={{ a: itA, lift: t < C.teesra7 ? 1 - hookOut : 0.35 * ramp(t, C.boot7, C.boot7 + 0.3), rot: kickRot, anchor: [G.italy.centre[0], G.italy.bbox[3]],
+      <Shape c={c} k="italy" t={t} rings={t > C.football8 - 0.15 && t < C.asli9 + 0.5 ? ITALY_NO_SICILY : undefined} p={{ a: itA, lift: t < C.teesra7 ? 1 - hookOut : 0.35 * ramp(t, C.boot7, C.boot7 + 0.3), rot: kickRot, anchor: [G.italy.centre[0], G.italy.bbox[3]],
         grow: t < C.teesra7 ? 1 : growAt(t, C.italy7), blink: blink2(t, C.italy8) }} />
       <Shape c={c} k="vietnam" t={t} p={{ a: vnA, lift: t < C.teesra7 ? 1 - hookOut : Math.max(0.35 * ramp(t, C.boot8, C.boot8 + 0.3), Math.sin(vnFly(t) * Math.PI)),
         dx: t < C.teesra7 ? vnHook.dx * (1 - hookOut) : vnHook.dx * vnFly(t), dy: t < C.teesra7 ? vnHook.dy * (1 - hookOut) : vnHook.dy * vnFly(t),
         grow: t < C.teesra7 ? 1 : growAt(t, C.vietnam8), blink: blink2(t, C.italy8) }} />
+      <SicilyBall c={c} t={t} a={itA} />
       {/* 1 */}
       <Shape c={c} k="myanmar" t={t} p={{ a: myA, pulse: sameKick + kick(t, C.myan4, 0.05, 18, 7), grow: growAt(t, C.myan3), blink: blink2(t, C.same4) }} />
       <Shape c={c} k="thailand" t={t} p={{ a: thA, lift: thLift, sx: Math.cos(flip * Math.PI) * (1 + 0.1 * Math.sin(flip * Math.PI)), sy: 1 + 0.1 * Math.sin(flip * Math.PI),
