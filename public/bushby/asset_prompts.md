@@ -16,7 +16,7 @@ All-new assets for this video. Nothing is reused from earlier videos.
 | फिर Bering Strait… 14 दिन बहती बर्फ़ पर… पहुँचते ही गिरफ़्तार। | A long pan north; the strait turns white, snow falls; the Karl in Arctic gear on an ice floe, "14 दिन"; handcuffs drop in | A3, C3, C4, D1 |
 | Russia में Visa सिर्फ 90 दिन का। हर बार Exit… Entry। | A passport flips open; the route loops out of Russia and back to the same spot (code) | C5 |
 | ऊपर से Ban भी लगा… अकेले Russia ने 11 साल खा लिए। | "BANNED" stamp (code); snow across Siberia; "11 साल" counter (code) | D1 |
-| फिर Pandemic ने रोका। सरहदें बंद। | Borders flash red; a closed checkpoint; Karl waits on his backpack | A6, C6 |
+| फिर Pandemic ने रोका। सरहदें बंद। | Borders flash red; a closed checkpoint; Karl waits, sitting on his cart | A6, C6 |
 | फिर Caspian Sea ने रोका। Russia और Iran, दोनों रास्ते बंद। | Russia and Iran flash red, the Caspian glows blue (code) | — |
 | तो Karl पानी में कूद गया। 31 दिन में 288 KM… नाव पर। | Splash; Karl swims across with the support boat beside him; "31 दिन · 288 KM" (code) | A4, C7, D3 |
 | फिर Turkey, पूरा Europe… English Channel… England पहुँच गया। | The route sweeps across Europe; a quick swim across the Channel to Dover | A4 |
@@ -173,8 +173,8 @@ transparent background.
 ```
 A glossy 3D miniature of a small old jail cell seen from the front: a
 cracked plaster back wall, a hard metal bench, thick dark iron bars across
-the front with a closed barred door and a heavy padlock, an orange trekking
-backpack on the bench inside. PNG-T, transparent background.
+the front with a closed barred door and a heavy padlock, a pile of tied
+travel bags and an orange hi-vis vest on the bench inside. PNG-T, transparent background.
 ```
 
 #### C3 · `ice_floe.png` (1536×1024, PNG-T)
