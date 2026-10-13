@@ -55,10 +55,11 @@ world on foot, with no car, ship or plane: through jungle, jail, sea ice,
 visa trouble, a pandemic and a sea he had to swim. Every prop is a premium
 glossy 3D miniature, like a high-end diorama or tabletop model: soft studio
 light from the top-left, smooth realistic materials, subtle reflections, no
-outlines, no cartoon line work. Karl is an invented stylised figurine
-(he must not resemble any real person): a lean bearded long-distance walker,
-faded khaki shirt, olive cargo trousers, worn hiking boots, a wide-brim
-canvas hat and a big orange trekking backpack. No text, no letters, no
+outlines, no cartoon line work. The main character is a stylised glossy 3D
+miniature figurine (not photoreal) of a tall, lean man around 50 with
+swept-back blond-grey hair, a short grey goatee and black sunglasses, in a
+mustard-olive T-shirt and navy shorts, with a two-wheeled cart piled with
+bags; match his face to the reference photo I attach. No text, no letters, no
 numbers, no flags, no logos, no watermark, no signature, no frame or border.
 When I say PNG-T, the background must be fully transparent (real alpha
 channel). When I say BLACK, the background must be pure flat black #000000.
