@@ -26,6 +26,7 @@ import { Bushby, BUSHBY_DURATION } from './bushby/Bushby';
 import { BushbyCover } from './bushby/Cover';
 import { Twins, TWINS_DURATION, TWINS_DURATION_60 } from './twins/Twins';
 import { TwinsCover } from './twins/Cover';
+import { Kalpasar, KALPASAR_DURATION, KALPASAR_DURATION_60 } from './kalpasar/Kalpasar';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -52,6 +53,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="CoochBehar" component={CoochBehar} durationInFrames={COOCHBEHAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Bushby" component={Bushby} durationInFrames={BUSHBY_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Twins" component={Twins} durationInFrames={TWINS_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Kalpasar" component={Kalpasar} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Kalpasar4K60" component={Kalpasar} durationInFrames={KALPASAR_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="TwinsCover" component={TwinsCover} durationInFrames={TWINS_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Twins4K60" component={Twins} durationInFrames={TWINS_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="BushbyCover" component={BushbyCover} durationInFrames={BUSHBY_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
