@@ -103,7 +103,7 @@ const TideRuler: React.FC<{ t: number }> = ({ t }) => {
     <div style={{ position: 'absolute', left: 0, top: 0, opacity: a }}>
       <div style={{ position: 'absolute', left: x - 24, top: y0 - H, width: 48, height: H, background: 'repeating-linear-gradient(180deg, #fff 0 45px, #E0262B 45px 90px)', border: '5px solid #111', borderRadius: 8, boxShadow: SHADOW }} />
       <div style={{ position: 'absolute', left: x - 70, top: y0 - H * lvl, width: 140, height: H * lvl, background: 'linear-gradient(180deg, rgba(120,220,255,0.85), rgba(20,90,160,0.85))', borderTop: '6px solid #E8FDFF', borderRadius: 6 }} />
-      <div style={{ position: 'absolute', left: x - 260, top: y0 - H * 0.92 - 40, fontFamily: NUM, fontSize: 96, color: '#E8FDFF', ...STROKE(7), textShadow: SHADOW, opacity: clamp01(lvl * 1.3 - 0.3) }}>10 M+</div>
+      <div style={{ position: 'absolute', left: x - 330, top: y0 - H * 0.92 - 40, fontFamily: NUM, fontSize: 96, color: '#E8FDFF', ...STROKE(7), textShadow: SHADOW, opacity: clamp01(lvl * 1.3 - 0.3) }}>10 M+</div>
     </div>
   );
 };
@@ -158,7 +158,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {/* Kalpasar: the wall */}
       <Big t={t} t0={C.kalpasar7} t1={C.bhavnagar8} text="KALPASAR" x={540} y={330} size={170} color={COL.gold} font={NUM} rot={0} />
       <Label t={t} t0={C.bhavnagar8} t1={C.bharti9} text="BHAVNAGAR" x={bx - 60} y={by + 260} color={COL.gold} pin={[bx, by]} />
-      <Label t={t} t0={C.bharuch8} t1={C.bharti9} text="BHARUCH" x={rx + 20} y={ry + 330} color={COL.gold} pin={[rx, ry]} />
+      <Label t={t} t0={C.bharuch8} t1={C.bharti9} text="BHARUCH" x={Math.min(880, rx - 40)} y={ry + 330} color={COL.gold} pin={[rx, ry]} />
       <Counter t={t} t0={C.km8 - 0.3} t1={C.bharti9} to={60} post=" KM" x={540} y={damMid[1] - 260} />
 
       {/* tide and gates */}

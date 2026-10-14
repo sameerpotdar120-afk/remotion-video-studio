@@ -73,7 +73,7 @@ export const damBuild = (t: number) => ramp(t, C.aarpaar8 - 0.4, C.km8 + 0.7, in
 export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const k = pxPerM(c);
   // ---------------------------------------------------------------- hook and the farmer's dry land
-  const indiaA = window4(t, 0, 0.05, C.n60 - 0.3, C.deewar1 - 0.4);
+  const indiaA = window4(t, -1, -0.5, C.n60 - 0.3, C.deewar1 - 0.4);  // fully lit on frame 0
   const gujA = window4(t, C.n60 - 0.6, C.n60, C.deewar1 + 0.2, C.socho2);
   const sauA = window4(t, C.saurashtra2 - 0.3, C.saurashtra2 + 0.2, C.door4, C.door4 + 0.6) + window4(t, C.kisan10 - 0.2, C.kisan10 + 0.3, C.bonus11 - 0.3, C.bonus11);
   const dryA = window4(t, C.baarish3 - 0.1, C.baarish3 + 0.6, C.door4, C.door4 + 0.6);
@@ -120,7 +120,7 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         </linearGradient>
       </defs>
 
-      <Glow c={c} rings={GEO.india} a={indiaA} color={COL.gold} t={t} fill={0.16} />
+      <Glow c={c} rings={GEO.india} a={indiaA} color={COL.gold} t={t} fill={0.3} />
       <Glow c={c} rings={GEO.gujarat} a={gujA} color={COL.gold} t={t} fill={0.12} />
       <Glow c={c} rings={GEO.saurashtra} a={Math.min(1, sauA)} color={dryA > 0.5 ? COL.sand : COL.gold} t={t} fill={0.14 + 0.18 * dryA} />
 
