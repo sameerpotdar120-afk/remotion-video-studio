@@ -39,11 +39,13 @@ Soft studio light from the top-left, smooth materials, no outlines. Make set A i
 
 **4. The farmer:** an imagined, ordinary Saurashtra farmer, not a real person. Show him with dignity and warmth, as one of "हमारे किसान भाई": hardworking, patient, never as a figure of pity or a joke.
 
-### How to generate (ChatGPT / GPT image)
-- One asset per message. Paste the **Style Lock** once at the start of the chat.
-- Sizes: **1024×1024** for props, **1536×1024** for wide items, **1024×1536** for tall items.
-- `PNG-T` = real transparent background. If you get a checkerboard or white background, reply: *"Regenerate with a truly transparent alpha background, not a drawn checkerboard."* If it still fails, use remove.bg or Photoroom.
-- `BLACK` = pure black background (#000000), for the water effects.
+### How to generate: 4K (we render every video in 4K 60 fps now)
+- **Best: Gemini, Nano Banana Pro image model, resolution set to 4K.** Pick the aspect ratio listed on each asset: **9:16** for tall items (2160×3840), **16:9** for wide items (3840×2160), **1:1** for props.
+- **If you use ChatGPT instead:** ask for the largest size it offers, then send it as is. ChatGPT tops out well below 4K, so I upscale those in code, and they come out a little softer than the Gemini ones.
+- One asset per message. Paste the **Style Lock** once at the start of the chat, and make all the farmer images in that same chat so he stays identical.
+- `WHITE` = plain flat white background (#FFFFFF), no floor, no shadow on the background. I cut every object out myself, at full 4K, so you don't need transparency. (If your tool gives a real transparent PNG, that's fine too.)
+- `BLACK` = pure flat black background (#000000), for the water effects.
+- Download the original full-size file, not a screenshot or the chat preview, so the 4K pixels survive.
 - Make 2–3 versions of each and keep the best. Name the files exactly as listed. They go in `public/kalpasar/img/`.
 
 ### Style Lock (paste once at the top of the chat)
@@ -61,11 +63,13 @@ a lean, weathered man in his late 40s with a short grey moustache, a
 white kediyu (traditional short Gujarati jacket), white dhoti, a bright red
 cotton turban (pagdi), and simple leather sandals. He is dignified and
 hardworking. No text, no letters, no numbers, no flags, no logos, no
-watermark, no signature, no frame or border. When I say PNG-T, the
-background must be fully transparent (real alpha channel). When I say
-BLACK, the background must be pure flat black #000000. Centre the subject
-with generous empty padding. Do not add glow or drop shadows; those are
-added later in the video editor.
+watermark, no signature, no frame or border. When I say WHITE, the
+background must be plain flat white #FFFFFF with no floor and no shadow on
+it. When I say BLACK, the background must be pure flat black #000000. Render in ultra-high
+detail at 4K resolution: crisp edges, fine material textures (fabric
+weave, stone, concrete, water droplets), no blur, no noise, no compression
+artefacts. Centre the subject with generous empty padding. Do not add glow
+or drop shadows; those are added later in the video editor.
 ```
 
 ---
@@ -74,71 +78,71 @@ added later in the video editor.
 
 ### A. The farmer and his props (same chat, so he stays identical)
 
-**A1. `farmer_stand.png`** (PNG-T, 1024×1536)
+**A1. `farmer_stand.png`** (WHITE, 9:16, 4K)
 ```
-The farmer standing full body, front three-quarter view facing slightly left, one hand shading his eyes as he looks into the distance, the other holding a simple wooden walking stick. A calm, patient expression. Full body from the turban to the sandals. PNG-T.
-```
-
-**A2. `farmer_worried.png`** (PNG-T, 1024×1536)
-```
-The same farmer, full body, crouching on one knee and touching the ground with one hand, looking down with a quietly worried expression, as if feeling dry, cracked soil. Side three-quarter view facing right. PNG-T.
+The farmer standing full body, front three-quarter view facing slightly left, one hand shading his eyes as he looks into the distance, the other holding a simple wooden walking stick. A calm, patient expression. Full body from the turban to the sandals. WHITE.
 ```
 
-**A3. `well_dry.png`** (PNG-T, 1024×1024)
+**A2. `farmer_worried.png`** (WHITE, 9:16, 4K)
 ```
-A small traditional Indian village well: a round, low stone wall with an old wooden frame and pulley on top and a rope with an empty metal bucket. Looking slightly down into it, the well is dry, with a cracked, dusty bottom. Glossy 3D miniature. PNG-T.
-```
-
-**A4. `lightbulb.png`** (PNG-T, 1024×1024)
-```
-A classic glowing light bulb, a warm golden filament lit inside clear glass with a brass screw base, seen straight on. Bright and cheerful, symbolising an idea. Glossy 3D miniature. PNG-T.
+The same farmer, full body, crouching on one knee and touching the ground with one hand, looking down with a quietly worried expression, as if feeling dry, cracked soil. Side three-quarter view facing right. WHITE.
 ```
 
-**A6. `farmer_happy.png`** (PNG-T, 1024×1536)
+**A3. `well_dry.png`** (WHITE, 1:1, 4K)
 ```
-The same farmer, full body, standing in a small patch of lush green crop with a narrow channel of clear blue water running past his feet. He smiles warmly with both arms slightly open, relieved and happy. Front three-quarter view facing left. PNG-T.
+A small traditional Indian village well: a round, low stone wall with an old wooden frame and pulley on top and a rope with an empty metal bucket. Looking slightly down into it, the well is dry, with a cracked, dusty bottom. Glossy 3D miniature. WHITE.
 ```
 
-**A11. `farmer_waiting.png`** (PNG-T, 1536×1024)
+**A4. `lightbulb.png`** (WHITE, 1:1, 4K)
 ```
-The same farmer sitting on a large flat rock by the shore, seen from behind and slightly to the side, his walking stick resting across his knees, quietly looking out at a calm sea, as if waiting for something. A small patch of rocky shore under him and gentle waves at the front. Wide, calm, a little hopeful. PNG-T.
+A classic glowing light bulb, a warm golden filament lit inside clear glass with a brass screw base, seen straight on. Bright and cheerful, symbolising an idea. Glossy 3D miniature. WHITE.
+```
+
+**A6. `farmer_happy.png`** (WHITE, 9:16, 4K)
+```
+The same farmer, full body, standing in a small patch of lush green crop with a narrow channel of clear blue water running past his feet. He smiles warmly with both arms slightly open, relieved and happy. Front three-quarter view facing left. WHITE.
+```
+
+**A11. `farmer_waiting.png`** (WHITE, 16:9, 4K)
+```
+The same farmer sitting on a large flat rock by the shore, seen from behind and slightly to the side, his walking stick resting across his knees, quietly looking out at a calm sea, as if waiting for something. A small patch of rocky shore under him and gentle waves at the front. Wide, calm, a little hopeful. WHITE.
 ```
 
 ### B. The wall and the sea
 
-**A5. `dam_gates.png`** (PNG-T, 1536×1024)
+**A5. `dam_gates.png`** (WHITE, 16:9, 4K)
 ```
-A wide section of a massive modern sea dam seen from the sea side at a low three-quarter angle: a long concrete wall with a row of tall steel sluice gates. The middle gates are raised and white foaming water rushes out through them into the sea; the gates at the ends are closed. Dark blue sea water in front. Glossy 3D miniature, like a large engineering model. PNG-T.
-```
-
-**A7. `dam_top_road.png`** (PNG-T, 1536×1024)
-```
-A high three-quarter aerial view of a long, wide sea dam stretching diagonally from the bottom left into the distance at the top right. On top of the dam: a very wide multi-lane highway with many small cars and trucks, and beside it a railway line with a long modern passenger train. Sea water on both sides, darker blue on one side and lighter turquoise on the other. Glossy 3D miniature diorama. No signs, no text. PNG-T.
+A wide section of a massive modern sea dam seen from the sea side at a low three-quarter angle: a long concrete wall with a row of tall steel sluice gates. The middle gates are raised and white foaming water rushes out through them into the sea; the gates at the ends are closed. Dark blue sea water in front. Glossy 3D miniature, like a large engineering model. WHITE.
 ```
 
-**A8. `seabed_cutaway.png`** (PNG-T, 1024×1536)
+**A7. `dam_top_road.png`** (WHITE, 16:9, 4K)
 ```
-A vertical cross-section cut-away diorama: the top third is clear blue sea water, below it a thick layer of soft, wet grey-brown mud and silt, and at the bottom harder rock layers. A single tall concrete pillar stands in the middle, tilting slightly and sinking into the soft mud, with ripples of mud around its base. Clean educational model look. Glossy 3D miniature. PNG-T.
-```
-
-**A9. `brick.png`** (PNG-T, 1024×1024)
-```
-A single classic red clay brick, slightly weathered at the edges, seen at a three-quarter angle, resting alone. Glossy 3D miniature. PNG-T.
+A high three-quarter aerial view of a long, wide sea dam stretching diagonally from the bottom left into the distance at the top right. On top of the dam: a very wide multi-lane highway with many small cars and trucks, and beside it a railway line with a long modern passenger train. Sea water on both sides, darker blue on one side and lighter turquoise on the other. Glossy 3D miniature diorama. No signs, no text. WHITE.
 ```
 
-**A10. `file_stack.png`** (PNG-T, 1024×1536)
+**A8. `seabed_cutaway.png`** (WHITE, 9:16, 4K)
 ```
-A very tall, wobbly stack of thick old government office files and folders in beige and faded khaki, tied with red cloth ribbons, dusty, with papers sticking out at the edges. Front three-quarter view. Glossy 3D miniature. No writing on the files. PNG-T.
+A vertical cross-section cut-away diorama: the top third is clear blue sea water, below it a thick layer of soft, wet grey-brown mud and silt, and at the bottom harder rock layers. A single tall concrete pillar stands in the middle, tilting slightly and sinking into the soft mud, with ripples of mud around its base. Clean educational model look. Glossy 3D miniature. WHITE.
+```
+
+**A9. `brick.png`** (WHITE, 1:1, 4K)
+```
+A single classic red clay brick, slightly weathered at the edges, seen at a three-quarter angle, resting alone. Glossy 3D miniature. WHITE.
+```
+
+**A10. `file_stack.png`** (WHITE, 9:16, 4K)
+```
+A very tall, wobbly stack of thick old government office files and folders in beige and faded khaki, tied with red cloth ribbons, dusty, with papers sticking out at the edges. Front three-quarter view. Glossy 3D miniature. No writing on the files. WHITE.
 ```
 
 ### D. Effects (pure black background, added with screen blending)
 
-**D1. `fx_splash.png`** (BLACK, 1536×1024)
+**D1. `fx_splash.png`** (BLACK, 16:9, 4K)
 ```
 A wide burst of white sea foam and water splash flying sideways, bright white and pale aqua droplets, realistic, on a pure flat black #000000 background. BLACK.
 ```
 
-**D2. `fx_wave.png`** (BLACK, 1024×1536)
+**D2. `fx_wave.png`** (BLACK, 9:16, 4K)
 ```
 A single huge tall ocean wave rising and about to break, dark teal water with bright white foam on the crest, dramatic, filling most of the frame, on a pure flat black #000000 background. BLACK.
 ```
