@@ -12,12 +12,12 @@ All-new assets for this video. Nothing is reused from earlier videos. Null's cli
 | सोचो, वो किसान जो Saurashtra में रहता है। | Saurashtra lights up; the farmer pops up standing on it | A1 |
 | बारिश कम, कुएँ सूखे, ज़मीन में खारा पानी… खेत प्यासे | Saurashtra cracks into dry earth with a heat shimmer; a dry well pops up; salt crust spreads (code) | A2, A3 |
 | पानी ज़्यादा दूर नहीं… Gulf of Khambhat… नदियाँ… खारे समंदर में बहा देती हैं | Camera swings east across the gulf; glowing blue rivers flow in and turn salty green in the sea (code); a water splash where they meet | D1 |
-| तभी 50 साल पहले एक Idea आया… समंदर को ही रोक दें? | Old sepia map grade, a lightbulb pops over the farmer, a pencil line sketches across the gulf (code) | A4 |
+| तभी 50 साल पहले एक Idea आया… समंदर को ही रोक दें? | Old sepia map grade, a lightbulb pops over the farmer, a pencil line sketches across the gulf (code). Split screen: Null below (clip B, 3–4 s) | A4 + Null |
 | यहीं से पैदा हुआ Kalpasar। Bhavnagar से Bharuch तक… 60 KM | Pins on Bhavnagar and Bharuch, the wall builds across the gulf with a "60 KM" counter, "KALPASAR" title (code) | — |
 | भरती आएगी तो Gates बंद, उतरेगी तो Gates खुलेंगे… | The tide rises and falls against the wall; a close-up of the gates opening with water rushing out | A5, D1 |
 | 1,600 वर्ग KM की मीठे पानी की झील… Saurashtra के 9 ज़िलों तक | The lake fills bright blue with a counter; canals run out to 9 glowing districts; the farmer, now happy, in a green field | A6 |
 | ऊपर से 16 Lane का Highway और Railway… 356 KM से 177 KM | Tilt onto the dam top with the highway and train; the old route goes around the gulf, the new one cuts straight across (code) | A7 |
-| सुनने में Perfect है ना? पर समंदर… हार नहीं मानता। | Record-scratch stop, the grade drains to stormy blue, a big wave rises | D2 |
+| सुनने में Perfect है ना? पर समंदर… हार नहीं मानता। | Record-scratch stop, the grade drains to stormy blue, a big wave rises. Split screen: Null below (clip C, 4–5 s) | D2 + Null |
 | ज्वार 10 मीटर से ऊपर… ज़मीन पत्थर नहीं, दलदल है | A tide ruler surges past "10 M" (code); a seabed cut-away with a pillar sinking into the mud | A8 |
 | 50 साल हो गए… File तो मोटी हो गई… एक ईंट भी नहीं लगी | A huge dusty file stack slams down; a single brick sits alone on the shore | A9, A10 |
 | Cost… अब 1 लाख 33 हज़ार करोड़ | A ₹ counter spins up (code) | — |
