@@ -1,7 +1,7 @@
 # Twin countries: upload kit
 
 Upload file: `twins_4k60_master.mp4` (4K 60 fps, 2160×3840, 63 s). Backup copies: `twins_hindi_full.mp4` (1080p), `twins_preview.mp4`.
-Thumbnail: not made yet (ask for it if you want one; Shorts mostly use a chosen frame, and frame 0 here is Italy and Vietnam side by side).
+Thumbnail: `twins_thumbnail.jpg` (1080×1920, one for YouTube and Instagram; frame 24 of TwinsCover). Everything sits inside the 3:4 crop.
 
 ## Search queries this should win
 

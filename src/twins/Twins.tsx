@@ -36,12 +36,13 @@ const NullPanel: React.FC<{ t: number; q: number; fps: number }> = ({ t, q, fps 
   );
 };
 
-export const Twins: React.FC<{ captions?: boolean; screen?: boolean; res?: number }> = ({ captions = true, screen = true, res = 1 }) => {
+export const Twins: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; shiftX?: number }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, shiftX = 0 }) => {
   const { fps } = useVideoConfig();
   const t = useCurrentFrame() / fps;
   useTWFonts();
   useMontserrat();
-  const cam = camAt(t);
+  const c0 = camAt(t);
+  const cam = zoomOut === 1 && !shiftX ? c0 : { ...c0, span: c0.span * zoomOut, x: c0.x + shiftX };
   const mv = camMotion(t);
   // motion blur is tuned per 30 fps frame; at 60 fps each frame moves half as far
   const blurK = 30 / fps;
