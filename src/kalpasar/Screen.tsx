@@ -24,7 +24,8 @@ const Prop: React.FC<{ name: string; x: number; y: number; h: number; t: number;
   const dy = drop ? (1 - clamp01(pop(t, t0, 10, 200))) * -120 : 0;
   return (
     <div style={{ position: 'absolute', left: x - w / 2, top: y - h / 2 + bob + dy, width: w, height: h, opacity: blend ? s : 1, transform: `rotate(${rot}deg) scale(${blend ? 1 : s * (flip ? -1 : 1)}, ${blend ? 1 : s})`,
-      mixBlendMode: blend ? 'screen' : undefined, filter: blend ? undefined : `${glow ? `drop-shadow(0 0 22px ${glow}) ` : ''}drop-shadow(0 14px 14px rgba(0,0,0,0.55))` }}>
+      mixBlendMode: blend ? 'screen' : undefined, WebkitMaskImage: blend ? 'radial-gradient(ellipse at 50% 50%, #000 55%, transparent 78%)' : undefined,
+      maskImage: blend ? 'radial-gradient(ellipse at 50% 50%, #000 55%, transparent 78%)' : undefined, filter: blend ? undefined : `${glow ? `drop-shadow(0 0 22px ${glow}) ` : ''}drop-shadow(0 14px 14px rgba(0,0,0,0.55))` }}>
       <img src={img(name)} style={{ width: w, height: h, display: 'block' }} />
     </div>
   );

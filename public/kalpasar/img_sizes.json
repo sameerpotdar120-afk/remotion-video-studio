@@ -1,1 +1,54 @@
-{}
+{
+ "brick": [
+  2366,
+  1598
+ ],
+ "dam_gates": [
+  3276,
+  1376
+ ],
+ "dam_top_road": [
+  3316,
+  1769
+ ],
+ "farmer_happy": [
+  1800,
+  3190
+ ],
+ "farmer_stand": [
+  1346,
+  3236
+ ],
+ "farmer_waiting": [
+  2204,
+  1694
+ ],
+ "farmer_worried": [
+  1722,
+  2792
+ ],
+ "file_stack": [
+  1474,
+  3264
+ ],
+ "fx_splash": [
+  3344,
+  1882
+ ],
+ "fx_wave": [
+  1882,
+  3344
+ ],
+ "lightbulb": [
+  1456,
+  2386
+ ],
+ "seabed_cutaway": [
+  1839,
+  3274
+ ],
+ "well_dry": [
+  2140,
+  2432
+ ]
+}
