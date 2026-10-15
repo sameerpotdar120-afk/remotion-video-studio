@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { Cam, PLANE, P, project } from './cam';
 import { paintPlates, usePlates } from './Map';
-import { Region } from './Plane';
+import type { Region } from './Plane';
 
 /** Regions lifted out of the satellite map as 3D slabs, the After Effects way: the map around them dims, a soft shadow
  *  falls down-right, extruded side walls in the region's colour, the real satellite texture on the raised top with a
@@ -35,6 +35,13 @@ const pathOf = (c: Cam, rings: P[][]) => {
   return { p, w: x1 - x0, h: y1 - y0, top: y0, bottom: y1 };
 };
 
+/** A slab's height in plane pixels (also used to lift the village pins onto the slab's top). */
+export const slabHeight = (c: Cam, rings: P[][], a: number) => {
+  if (a <= 0.002) return 0;
+  const g = pathOf(c, rings);
+  return Math.max(16, Math.min(72, Math.min(g.w, g.h) * 0.07)) * backOut(Math.min(1, a));
+};
+
 export const Cutouts: React.FC<{ cam: Cam; t: number; regions: Region[]; res?: number }> = ({ cam, t, regions, res = 1 }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const srcs = usePlates('kolkata cut-out plates');
@@ -57,8 +64,7 @@ export const Cutouts: React.FC<{ cam: Cam; t: number; regions: Region[]; res?: n
       const g = pathOf(cam, r.rings);
       const size = Math.min(g.w, g.h);
       if (size < 4) continue;
-      const lift = backOut(Math.min(1, r.a));
-      const H = Math.max(16, Math.min(72, size * 0.07)) * lift;
+      const H = slabHeight(cam, r.rings, r.a);
       const z0 = PARENT[r.key] && tops[PARENT[r.key]] ? tops[PARENT[r.key]] : 0;
       tops[r.key] = z0 + H;
       const col = hex(r.color);

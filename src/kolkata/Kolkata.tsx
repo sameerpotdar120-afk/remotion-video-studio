@@ -3,12 +3,13 @@ import { AbsoluteFill, Audio, OffthreadVideo, Sequence, staticFile, useCurrentFr
 import { FPS, inOut, ramp } from './anim';
 import { useMontserrat } from '../darien/Brand';
 import { Watermark } from '../brand/Watermark';
-import { DURATION_S, NULL_WIN, PLANE, camAt, camMotion, shake } from './cam';
+import { DURATION_S, NULL_WIN, PERSP, PLANE, camAt, camMotion, shake } from './cam';
 import { useKKFonts } from './fonts';
 import { MapCanvas, SEA_BG } from './Map';
-import { PlaneLayer, regionsAt } from './Plane';
+import { PlaneLayer, regionsAt, tiltAt } from './Plane';
 import { Cutouts } from './Cutout';
 import { Grade, NamesCard, ScreenLayer, Subtitles, Whips } from './Screen';
+import { VeoFull, VeoOverlays } from './Veo';
 
 export const KOLKATA_DURATION = Math.ceil(DURATION_S * FPS);
 /** The 4K 60 fps master: same timeline at 60 frames a second (render with --scale=2). */
@@ -43,13 +44,13 @@ const NullPanel: React.FC<{ t: number; q: number; name: string; t0: number; t1: 
 };
 
 /** cut3d: regions rise as 3D cut-outs instead of flat glows. */
-export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; cut3d?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, cut3d = false }) => {
+export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; cut3d?: boolean; veo?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, cut3d = false, veo = false }) => {
   const { fps } = useVideoConfig();
   const t = useCurrentFrame() / fps;
   useKKFonts();
   useMontserrat();
   const c0 = camAt(t);
-  const cam = zoomOut === 1 ? c0 : { ...c0, span: c0.span * zoomOut };
+  const cam = { ...c0, span: c0.span * zoomOut, tilt: cut3d ? tiltAt(t) : 0, cut: cut3d };
   const mv = camMotion(t);
   const blurK = (30 / fps) ** 0.5;
   const bx = Math.min(10, Math.abs(mv.vx) * 0.22 + mv.zoom * 1.2) * blurK;
@@ -67,23 +68,28 @@ export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: num
       </svg>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy - 480 * q}px) scale(1.03)` }}>
         <AbsoluteFill style={{ filter: blurOn ? 'url(#kkblur)' : undefined }}>
+          <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transformOrigin: '540px 960px',
+            transform: cam.tilt ? `perspective(${PERSP}px) rotateX(${cam.tilt}deg)` : undefined }}>
           <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h,
             transformOrigin: `${PLANE.ox}px ${PLANE.oy}px`, transform: `rotate(${cam.rot}deg)` }}>
             <div style={{ position: 'absolute', inset: 0, filter: 'saturate(1.2) contrast(1.16) brightness(1.02)' }}><MapCanvas cam={cam} res={res} /></div>
             <PlaneLayer t={t} c={cam} flat={!cut3d} between={cut3d ? <Cutouts cam={cam} t={t} regions={regionsAt(t)} res={res} /> : undefined} />
           </div>
+          </div>
         </AbsoluteFill>
         <Grade t={t} frame={Math.round(t * fps)} />
         {screen && <ScreenLayer t={t} c={cam} />}
+        {screen && veo && <VeoOverlays t={t} />}
         {screen && <Whips t={t} />}
       </AbsoluteFill>
+      {screen && veo && <VeoFull t={t} />}
       {screen && q > 0 && <div style={{ position: 'absolute', inset: 0, opacity: q }}><NamesCard t={t} /></div>}
       {NULL_WIN().map((w) => {
         const s = splitAt(t);
         return s && s.w.name === w.name ? <NullPanel key={w.name} t={t} q={s.q} name={w.name} t0={w.t0} t1={w.t1} from={w.from} fps={fps} /> : null;
       })}
       <div style={{ position: 'absolute', right: 22, bottom: q > 0 ? 974 : 14, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
-        Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · borders: Natural Earth · village spots approximate · props, people &amp; host: AI illustration
+        Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · borders: Natural Earth · village spots approximate · props, people, video clips &amp; host: AI
       </div>
       {captions && <Subtitles t={t} top={q > 0.5 ? 800 : 1620} />}
       {captions && <Watermark t={t} />}

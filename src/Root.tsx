@@ -60,6 +60,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Kalpasar" component={Kalpasar} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="KalpasarCover" component={KalpasarCover} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Kolkata" component={Kolkata} durationInFrames={KOLKATA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Kolkata60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, cut3d: true, veo: true }} />
       <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="Tibet2" component={Tibet2} durationInFrames={TIBET2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Tibet2-2K60" component={Tibet2} durationInFrames={TIBET2_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 4 / 3 }} />

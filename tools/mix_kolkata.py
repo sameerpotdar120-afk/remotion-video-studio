@@ -47,7 +47,9 @@ CUES = [
     (C["raj1"] - 0.3, "wh_fast", -10, {}), (C["raj1"] + 0.1, "boom", -13, {}), (C["raj1"] + 0.3, "ui_perc", -12, {}),
     # the three villages
     (C["pehla2"] - 0.15, "wh_fast", -10, {}), (C["sutanuti2"], "pop_high", -11, {}),
-    (C["soot2"] + 0.4, "thud", -14, {}), (C["soot2"] + 0.65, "thud", -14, {}), (C["soot2"] + 0.9, "thud", -13, {}),
+    # Veo cutaway: the 1690s cotton market (full screen), then back to the map
+    (C["soot2"] - 0.2, "wh_air", -10, {}), (C["soot2"] - 0.05, "village", -21, {"align": "start", "skip": 3.0, "dur": C["aaj2"] - C["soot2"] + 0.1}),
+    (C["aaj2"] - 0.1, "wh_fast", -11, {}),
     (C["shobha2"], "ui_snap", -13, {}),
     (C["doosra3"] - 0.1, "wh_air", -11, {}), (C["gobind3"], "pop_high", -11, {}), (C["maidan3"], "ui_snap", -13, {}),
     (C["teesra4"] - 0.1, "wh_air", -11, {}), (C["kalikata4"], "pop_high", -11, {}), (C["kalikata4"] + 0.3, "bell", -14, {"align": "start", "dur": 3.0}),
@@ -62,18 +64,20 @@ CUES = [
     (C["sabarna5"] + 0.4, "wh_soft", -14, {}), (C["haq5"] + 0.1, "heavy_knock", -10, {}), (C["haq5"] + 0.12, "punch", -14, {}),
     # Fort William: Gobindapur emptied — huts lift away, the family walks off, the gates slam, the cannon fires
     (C["fort6"] - 0.15, "wh_fast", -10, {}), (C["fort6"] + 0.1, "braam", -14, {}),
+    (C["fort6"] + 1.2, "wh_soft", -11, {}),  # Veo cutaway: the families leave Gobindapur
     (C["gobind6"], "wh_air", -12, {}), (C["khali6"], "subdrop", -12, {}),
     (C["gobind6"] + 0.2, "village", -26, {"align": "start", "skip": 6.0, "dur": 1.4}),
     (C["khali6"] + 0.25, "wh_soft", -12, {}), (C["khali6"] + 0.45, "wood_door", -12, {"align": "start"}), (C["khali6"] + 1.02, "gate_metal", -11, {}),
     (C["yahin7"] + 0.15, "cannon", -10, {}),
     # one city, the capital: the crown settles
     (C["yahin7"] - 0.05, "wh_big_tonal", -11, {}), (C["shehar7"], "chime_hit", -12, {}),
+    (C["shehar7"] + 0.95, "wh_air", -10, {}), (C["shehar7"] + 1.08, "city", -25, {"align": "start", "skip": 8.0, "dur": C["raj7"] - C["shehar7"] - 1.0}),  # Veo: City of Palaces
     (C["raj7"] - 0.3, "wh_fast", -10, {}), (C["raj7"] + 0.45, "metal_thud", -13, {}), (C["raj7"] + 0.5, "magic", -15, {"dur": 0.9}),
     # the book opens, the court, the gavel, the red ✗
     (C["kitab8"], "page_turn", -11, {}), (C["kitab8"] + 0.4, "pages", -15, {"align": "start", "dur": 1.0}),
     (C["kitab8"] + 0.9, "writing", -18, {"align": "start", "dur": 2.0}),
     (C["court8"] - 0.1, "wh_fast", -10, {}), (C["court8"] + 0.1, "boom", -13, {}),
-    (C["court8"] + 1.15, "hammer", -8, {}), (C["court8"] + 1.17, "punch", -11, {}), (C["court8"] + 1.3, "scratch", -12, {}),
+    (C["court8"] + 1.15, "hammer", -8, {}), (C["court8"] + 1.17, "punch", -11, {}), (C["court8"] + 1.3, "scratch", -12, {}), (C["court8"] + 2.69, "hammer", -11, {}),  # the Veo gavel strikes twice
     (C["pehle8"], "magic", -14, {"dur": 1.0}),
     # the ending: the village becomes today's city
     (C["matlab9"] - 0.2, "wh_soft", -11, {}), (C["matlab9"], "village", -24, {"align": "start", "dur": C["hamesha9"] - C["matlab9"] + 0.4}),

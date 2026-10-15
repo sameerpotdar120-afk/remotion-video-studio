@@ -2,6 +2,8 @@ import React from 'react';
 import { AbsoluteFill, staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, CAPS, Cam, DURATION_S, GEO, P, merc, toScreen } from './cam';
+import { regionsAt } from './Plane';
+import { slabHeight } from './Cutout';
 import { HEAD, NUM, SUB } from './fonts';
 import { COL } from './Plane';
 import { Part, Rig, has, hinge, strike } from './Rig';
@@ -37,7 +39,7 @@ const Label: React.FC<{ t: number; t0: number; t1: number; text: string; x: numb
 };
 
 /** Kinetic headline. */
-const Big: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; size?: number; color?: string; font?: string; rot?: number }> = ({ t, t0, t1, text, x, y, size = 110, color = '#fff', font = HEAD, rot = -3 }) => {
+export const Big: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; size?: number; color?: string; font?: string; rot?: number }> = ({ t, t0, t1, text, x, y, size = 110, color = '#fff', font = HEAD, rot = -3 }) => {
   const a = window4(t, t0, t0 + 0.06, t1 - 0.15, t1);
   if (a <= 0) return null;
   const s = clamp01(pop(t, t0, 9, 260)) + kick(t, t0 + 0.12, 0.06, 24, 9);
@@ -48,7 +50,7 @@ const Big: React.FC<{ t: number; t0: number; t1: number; text: string; x: number
 };
 
 /** A chip: a small boxed line of text. */
-const Chip: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; color: string; size?: number; rot?: number }> = ({ t, t0, t1, text, x, y, color, size = 52, rot = -2 }) => {
+export const Chip: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; color: string; size?: number; rot?: number }> = ({ t, t0, t1, text, x, y, color, size = 52, rot = -2 }) => {
   const a = window4(t, t0, t0 + 0.05, t1 - 0.15, t1);
   if (a <= 0) return null;
   const s = clamp01(pop(t, t0, 8, 260));
@@ -73,13 +75,14 @@ const Counter: React.FC<{ t: number; t0: number; t1: number; to: number; x: numb
 };
 
 /** The textbook line and the red ✗ that lands on "Founder". Sits on the open book's right page. */
-const BookText: React.FC<{ t: number; x: number; y: number }> = ({ t, x, y }) => {
-  const a = window4(t, C.kitab8 + 0.7, C.kitab8 + 0.9, C.pehle8 - 0.3, C.pehle8);
+/** delay: wait for the book to finish opening (the Veo book flips its pages for about 1.5 s). */
+export const BookText: React.FC<{ t: number; x: number; y: number; delay?: number; rot?: number }> = ({ t, x, y, delay = 0, rot = -3 }) => {
+  const a = window4(t, C.kitab8 + 0.7 + delay, C.kitab8 + 0.9 + delay, C.pehle8 - 0.3, C.pehle8);
   if (a <= 0) return null;
-  const write = ramp(t, C.kitab8 + 0.8, C.basaya8 + 0.3, linear);
+  const write = ramp(t, C.kitab8 + 0.8 + delay, C.basaya8 + 0.3, linear);
   const xA = ramp(t, C.court8 + 1.1, C.court8 + 1.35, easeOut);
   return (
-    <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%) rotate(-3deg)', opacity: a, textAlign: 'center', fontFamily: NUM, color: '#3a2412', lineHeight: 1.05 }}>
+    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${rot}deg)`, opacity: a, textAlign: 'center', fontFamily: NUM, color: '#3a2412', lineHeight: 1.05 }}>
       <div style={{ fontSize: 28, letterSpacing: 2, clipPath: `inset(0 ${(1 - clamp01(write * 2)) * 100}% 0 0)` }}>FOUNDER:</div>
       <div style={{ fontSize: 34, clipPath: `inset(0 ${(1 - clamp01(write * 2 - 1)) * 100}% 0 0)` }}>JOB CHARNOCK</div>
       {xA > 0 && (
@@ -92,6 +95,13 @@ const BookText: React.FC<{ t: number; x: number; y: number }> = ({ t, x, y }) =>
 };
 
 const S = (c: Cam, at: P) => toScreen(c, at);
+/** A pin on a region that stands up as a 3D slab sits on the slab's top. */
+const SL = (t: number, c: Cam, at: P, key: string): P => {
+  const [x, y] = S(c, at);
+  if (!c.cut) return [x, y];
+  const r = regionsAt(t).find((g) => g.key === key);
+  return r ? [x, y - slabHeight(c, r.rings, r.a) * Math.cos(((c.tilt ?? 0) * Math.PI) / 180)] : [x, y];
+};
 
 /** Scenes of rigged UE5 props. Each piece is its own cut-out, placed with a box [x, y, height] in units of the rig's
  *  height from its centre, and moved on its own pivot. A missing file is skipped. */
@@ -138,14 +148,6 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
   const gate = hinge(t, C.khali6 + 0.45, 0.12, 1, 0.6);
   const fireT = C.yahin7 + 0.15;
   const recoil = t > fireT ? Math.exp(-(t - fireT) * 6) * Math.sin(Math.min(Math.PI / 2, (t - fireT) * 30)) : 0;
-  // ---- the family walks away up the path, getting smaller, with a small step bob
-  const walk = (i: number, x0: number) => {
-    const p = ramp(t, C.gobind6 + 0.1 + i * 0.12, C.khali6 + 0.7, linear);
-    const s = lerp(1, 0.55, p);
-    return { box: [x0 * s, lerp(0.1, -0.25, p) - Math.abs(Math.sin((t + i) * 6)) * 0.01, 0.62 * s] as [number, number, number] };
-  };
-  // ---- the gavel
-  const gv = strike(t, C.court8 + 1.15);
   return (
     <>
       {street(0.15, C.teen1 - 0.15)}
@@ -169,14 +171,8 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
       {/* Kalikata: the temple, its bell swinging in the frame beside the steps */}
       <Rig set="k8" parts={[
         { name: 'temple', box: [0, 0, 1] },
-        { name: 'bell', box: [0.431, 0.135, 0.1], pivot: [0.5, 0.02], rot: Math.sin((t - C.kalikata4) * 5.5) * 16 * Math.exp(-Math.max(0, t - C.kali4) * 0.5) },
+        { name: 'bell', box: [0.431, 0.135, 0.1], a: 0, pivot: [0.5, 0.02], rot: Math.sin((t - C.kalikata4) * 5.5) * 16 * Math.exp(-Math.max(0, t - C.kali4) * 0.5) },
       ]} x={540} y={1180} h={720} t={t} t0={C.kalikata4 - 0.05} t1={C.hooghly5 - 0.15} entry="rise" />
-
-      {/* the trading ship sails up the Hooghly, its sails breathing with the wind */}
-      <Rig set="k9" parts={[
-        { name: 'hull', box: [0, 0.1, 0.8] },
-        { name: 'sails', box: [0.04, -0.1, 0.5], pivot: [0.5, 0.95], sx: 1 + 0.03 * Math.sin(t * 2.4), sy: 1 + 0.015 * Math.sin(t * 2.4 + 1) },
-      ]} x={lerp(60, 600, ramp(t, C.hooghly5, C.y1698, linear))} y={1150 + Math.sin(t * 2.2) * 10} h={640} t={t} t0={C.hooghly5 + 0.1} t1={C.y1698 - 0.2} entry="slideL" tilt={Math.sin(t * 1.8) * 2} />
 
       {/* 1698: the deed unrolls, the quill writes, the seal stamps; two hands meet above it */}
       <Rig set="k10" parts={[
@@ -185,17 +181,14 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
         { name: 'rod_bottom', box: [0, lerp(-0.29, 0.33, unroll), 0.36], flip: true },
         { name: 'quill', box: [0.45 + Math.sin(t * 3) * 0.04, -0.2, 0.55], pivot: [0.05, 0.95], rot: Math.sin(t * 9) * 4 * writing, a: ramp(t, C.company5 - 0.2, C.company5) },
         { name: 'seal', box: [0.42, 0.18, 0.24], dy: -sealS * 0.35, a: t > C.sabarna5 ? 1 : 0 },
-      ]} x={540} y={1190} h={600} t={t} t0={C.y1698 - 0.1} t1={C.fort6 - 0.15} entry="rise" />
+      ]} x={540} y={1190} h={600} t={t} t0={C.y1698 - 0.1} t1={C.haq5 - 0.45} entry="rise" />
       <Rig set="k11" parts={(() => {
         const s = 1 - ramp(t, C.sabarna5 - 0.2, C.sabarna5 + 0.7, easeOut);
         return [{ name: 'hand_left', box: [-0.5 - s * 1.4, 0.02, 0.62] }, { name: 'hand_right', box: [0.52 + s * 1.4, -0.02, 0.55] }] as Part[];
-      })()} x={540} y={760} h={340} t={t} t0={C.sabarna5 - 0.25} t1={C.fort6 - 0.15} entry="fade" shadow={false} float={0.4} />
+      })()} x={540} y={760} h={340} t={t} t0={C.sabarna5 - 0.25} t1={C.haq5 - 0.45} entry="fade" shadow={false} float={0.4} />
 
       {/* Fort William rises on Gobindapur's ground; the family walks away; close-up: the gates swing shut; a cannon fires */}
       <Rig set="k12" parts={[{ name: 'fort', box: [0, 0, 1] }]} x={540} y={1150} h={560} t={t} t0={C.khali6 - 0.1} t1={C.yahin7 + 0.4} entry="rise" />
-      <Rig set="k13" parts={[
-        { name: 'grandmother', ...walk(2, -0.5) }, { name: 'mother_child', ...walk(1, 0.05) }, { name: 'father', ...walk(0, 0.55) },
-      ]} x={540} y={1430} h={330} t={t} t0={C.gobind6} t1={C.khali6 + 0.7} entry="fade" float={0} />
       <Rig set="k12" parts={[
         { name: 'door', box: [-0.274, 0, 1], pivot: [0, 0.5], sx: gate },
         { name: 'door', box: [0.274, 0, 1], pivot: [1, 0.5], sx: gate, flip: true },
@@ -213,16 +206,7 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
       ]} x={540} y={1180} h={480} t={t} t0={C.raj7 - 0.4} t1={C.kitab8 - 0.05} entry="pop" glow={COL.gold} />
 
       {/* the book (closed → open), then the High Court and the gavel */}
-      <Rig set="k15" parts={[
-        { name: 'closed', box: [0, 0, 0.9], a: 1 - ramp(t, C.kitab8 + 0.35, C.kitab8 + 0.6), sx: lerp(1, 0.2, ramp(t, C.kitab8 + 0.3, C.kitab8 + 0.6, easeIn)) },
-        { name: 'open', box: [0, 0.05, 0.62], a: ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.65), sx: lerp(0.3, 1, ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.75, easeOut)) },
-      ]} x={540} y={1180} h={600} t={t} t0={C.kitab8 - 0.05} t1={C.court8 + 1.9} entry="rise" sweep={false} />
-      <BookText t={t} x={705} y={1150} />
       <Rig set="k16" parts={[{ name: 'court', box: [0, 0, 1] }]} x={540} y={680} h={420} t={t} t0={C.court8 - 0.05} t1={C.pehle8 + 0.2} entry="rise" />
-      <Rig set="k17" parts={[
-        { name: 'block', box: [-0.22, 0.26, 0.42] },
-        { name: 'gavel', box: [0.12, -0.08, 0.5], pivot: [0.95, 0.55], rot: -gv * 38 },
-      ]} x={820} y={1400} h={320} t={t} t0={C.court8 + 0.3} t1={C.pehle8 + 0.2} entry="slideR" />
 
       {/* the ending: the village becomes today's city on the same riverbank */}
       {village(540, 1250, 620, C.matlab9 - 0.05, C.hamesha9 + 0.3, 0, 'vend')}
@@ -278,7 +262,7 @@ const MuzzleFlash: React.FC<{ t: number; t0: number; x: number; y: number }> = (
 
 export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const pl = GEO.places;
-  const su = S(c, pl.sutanuti), ka = S(c, pl.kalikata), go = S(c, pl.gobindapur), fo = S(c, pl.fort), hc = S(c, pl.highcourt);
+  const su = SL(t, c, pl.sutanuti, 'sutanuti'), ka = SL(t, c, pl.kalikata, 'kalikata'), go = SL(t, c, pl.gobindapur, 'gobindapur'), fo = S(c, pl.fort), hc = SL(t, c, pl.highcourt, 'highcourt');
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       <Props t={t} />
@@ -293,14 +277,14 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* the three villages and today's names */}
       <Label t={t} t0={C.sutanuti2} t1={C.doosra3 - 0.1} text="SUTANUTI" x={540} y={300} color={COL.amber} pin={su} size={60} />
-      <Label t={t} t0={C.shobha2} t1={C.doosra3 - 0.1} text="SHOBHABAZAR" x={300} y={470} color={COL.violet} size={40} pin={S(c, merc(88.365, 22.598))} />
-      <Label t={t} t0={C.chitpur2} t1={C.doosra3 - 0.1} text="CHITPUR" x={790} y={470} color={COL.coral} size={40} pin={S(c, merc(88.374, 22.612))} />
+      <Label t={t} t0={C.shobha2} t1={C.doosra3 - 0.1} text="SHOBHABAZAR" x={300} y={470} color={COL.violet} size={40} pin={SL(t, c, merc(88.365, 22.598), 'shobhabazar')} />
+      <Label t={t} t0={C.chitpur2} t1={C.doosra3 - 0.1} text="CHITPUR" x={790} y={470} color={COL.coral} size={40} pin={SL(t, c, merc(88.374, 22.612), 'chitpur')} />
       <Label t={t} t0={C.gobind3} t1={C.teesra4 - 0.1} text="GOBINDAPUR" x={540} y={300} color={COL.teal} pin={go} size={60} />
-      <Label t={t} t0={C.maidan3} t1={C.teesra4 - 0.1} text="MAIDAN" x={300} y={470} color={COL.green} size={40} pin={S(c, merc(88.346, 22.548))} />
+      <Label t={t} t0={C.maidan3} t1={C.teesra4 - 0.1} text="MAIDAN" x={300} y={470} color={COL.green} size={40} pin={SL(t, c, merc(88.346, 22.548), 'maidan')} />
       <Label t={t} t0={C.fort3} t1={C.teesra4 - 0.1} text="FORT WILLIAM" x={790} y={470} color={COL.red} size={40} pin={fo} />
       <Label t={t} t0={C.kalikata4} t1={C.hooghly5 - 0.1} text="KALIKATA" x={540} y={300} color={COL.gold} pin={ka} size={60} />
       <Chip t={t} t0={C.kali4 - 0.3} t1={C.central4} text="माँ काली?" x={540} y={460} color={COL.red} size={50} />
-      <Label t={t} t0={C.central4} t1={C.hooghly5 - 0.1} text="CENTRAL KOLKATA" x={540} y={470} color={COL.coral} size={40} pin={S(c, merc(88.358, 22.566))} />
+      <Label t={t} t0={C.central4} t1={C.hooghly5 - 0.1} text="CENTRAL KOLKATA" x={540} y={470} color={COL.coral} size={40} pin={SL(t, c, merc(88.358, 22.566), 'central')} />
 
       {/* the Hooghly and the trade */}
       <Label t={t} t0={C.hooghly5 + 0.3} t1={C.y1698 - 0.2} text="HOOGHLY" x={760} y={420} color={COL.river} size={56} />

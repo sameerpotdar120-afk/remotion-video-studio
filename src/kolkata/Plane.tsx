@@ -2,6 +2,7 @@ import React from 'react';
 import { staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, Cam, DURATION_S, GEO, P, merc, project } from './cam';
+import { slabHeight } from './Cutout';
 
 export const COL = { gold: '#FFD84A', amber: '#FFB347', red: '#FF4D5E', green: '#3DDC84', teal: '#2EC4B6', river: '#38D6FF', white: '#FFF6E6', sand: '#E3B05A',
   violet: '#B67CFF', coral: '#FF7A59', ice: '#9FE8FF' };
@@ -87,9 +88,10 @@ const River: React.FC<{ c: Cam; t: number; a: number; warm: number }> = ({ c, t,
 };
 
 /** A village spot: a warm glow with an expanding ring (it can fade, crack away, or merge into the others). */
-const Village: React.FC<{ c: Cam; at: P; a: number; t: number; color: string; r?: number }> = ({ c, at, a, t, color, r = 260 }) => {
+const Village: React.FC<{ c: Cam; at: P; a: number; t: number; color: string; r?: number; lift?: number }> = ({ c, at, a, t, color, r = 260, lift = 0 }) => {
   if (a <= 0.001) return null;
-  const [x, y] = project(c, at[0], at[1]);
+  const [x, y0] = project(c, at[0], at[1]);
+  const y = y0 - lift;
   const R = r;
   const ring = (t * 0.8) % 1;
   return (
@@ -174,11 +176,30 @@ export const regionsAt = (t: number): Region[] => {
   ];
 };
 
+/** How far the map leans back (degrees): the camera tilts in while regions stand up as 3D slabs, eased over a window. */
+export const TILT_MAX = 20;
+export const tiltAt = (t: number) => {
+  let sum = 0, n = 0;
+  for (let k = -6; k <= 6; k++) {
+    const regs = regionsAt(t + k * 0.06);
+    const w = 7 - Math.abs(k);
+    sum += w * Math.max(0, ...regs.filter((r) => r.key !== 'urban').map((r) => r.a));
+    n += w;
+  }
+  const v = sum / n;
+  return TILT_MAX * v * v * (3 - 2 * v);
+};
+
 /** flat: the glows are drawn here (false when the 3D cut-out layer draws the regions instead). */
 export const PlaneLayer: React.FC<{ t: number; c: Cam; flat?: boolean; between?: React.ReactNode }> = ({ t, c, flat = true, between }) => {
   const pl = GEO.places;
   const { riverA, warm, suA, goA, kaA, merge, mergeA, centre, mv, againA, fortGhost, fortDraw, fortA, borderA, borderDraw } = beats(t);
   const regs = regionsAt(t);
+  const lift = (key: string) => {
+    if (flat) return 0;
+    const g = regs.find((r) => r.key === key)!;
+    return slabHeight(c, g.rings, g.a);
+  };
   return (
     <>
       <River c={c} t={t} a={clamp01(riverA)} warm={warm} />
@@ -196,9 +217,9 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam; flat?: boolean; between?:
           </g>
         )}
         {flat && regs.slice(2).map((g) => <Glow key={g.key} c={c} rings={g.rings} a={g.a} color={g.color} t={t + g.phase} fill={g.fill} />)}
-        <Village c={c} at={mv(pl.sutanuti)} a={clamp01(Math.max(suA, mergeA, againA))} t={t} color={COL.amber} />
-        <Village c={c} at={mv(pl.kalikata)} a={clamp01(Math.max(kaA, mergeA, againA))} t={t + 0.3} color={COL.gold} />
-        <Village c={c} at={mv(pl.gobindapur)} a={clamp01(Math.max(goA, mergeA, againA))} t={t + 0.6} color={COL.teal} />
+        <Village c={c} at={mv(pl.sutanuti)} a={clamp01(Math.max(suA, mergeA, againA))} t={t} color={COL.amber} lift={lift('sutanuti')} />
+        <Village c={c} at={mv(pl.kalikata)} a={clamp01(Math.max(kaA, mergeA, againA))} t={t + 0.3} color={COL.gold} lift={lift('kalikata')} />
+        <Village c={c} at={mv(pl.gobindapur)} a={clamp01(Math.max(goA, mergeA, againA))} t={t + 0.6} color={COL.teal} lift={lift('gobindapur')} />
         {merge > 0.6 && mergeA > 0 && <Village c={c} at={centre} a={clamp01((merge - 0.6) * 2.5) * mergeA} t={t} color={COL.gold} r={520} />}
       </svg>
     </>

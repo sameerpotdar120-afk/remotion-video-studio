@@ -21,7 +21,9 @@ export const C = T.cues;
 export const CAPS = T.caps;
 export const DURATION_S = T.duration;
 
-export type Cam = { x: number; y: number; span: number; rot: number };
+/** tilt: After Effects style camera tilt in degrees (the map leans back), applied to the map layer and to every label. */
+export type Cam = { x: number; y: number; span: number; rot: number; tilt?: number; cut?: boolean };
+export const PERSP = 1800;
 type Key = { t: number; at: P; span: number; rot?: number; e?: Ease };
 
 export const PLANE = { w: 2600, h: 3200, ox: 1300, oy: 1600 };
@@ -132,7 +134,10 @@ export const toScreen = (k: Cam, at: P): P => {
   const [px, py] = project(k, at[0], at[1]);
   const x = px - PLANE.ox, y = py - PLANE.oy;
   const r = (k.rot * Math.PI) / 180;
-  return [540 + x * Math.cos(r) - y * Math.sin(r), 960 + x * Math.sin(r) + y * Math.cos(r)];
+  const dx = x * Math.cos(r) - y * Math.sin(r), dy = x * Math.sin(r) + y * Math.cos(r);
+  if (!k.tilt) return [540 + dx, 960 + dy];
+  const a = (k.tilt * Math.PI) / 180, w = 1 - (dy * Math.sin(a)) / PERSP;
+  return [540 + dx / w, 960 + (dy * Math.cos(a)) / w];
 };
 export const camMotion = (t: number) => {
   const a = camAt(t), b = camAt(t + 1 / 30);
