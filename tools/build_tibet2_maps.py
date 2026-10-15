@@ -32,6 +32,7 @@ PLATES = [  # name, zoom, lon0, lon1, lat0, lat1
     ("tibet", 7, 66.0, 112.0, 18.0, 44.0),
 ]
 HIMA = (85.9, 88.1, 27.3, 28.9)  # the 3D fly-over box around Everest
+RANGE = (78.0, 97.0, 25.6, 36.0)  # the wide 3D shot: the whole Himalayan arc and the southern plateau
 PLACES = {"everest": (86.925, 27.988), "lhasa": (91.11, 29.65), "tibet_c": (88.0, 32.5), "delhi": (77.2, 28.6), "india_c": (78.5, 22.5)}
 AIRPORTS = {  # a few civil airports on the plateau (approximate), drawn as dots: Lhasa Gonggar, Shigatse, Nyingchi, Qamdo Bamda, Ngari Gunsa
     "lhasa": (90.91, 29.30), "shigatse": (89.31, 29.35), "nyingchi": (94.34, 29.30), "qamdo": (97.11, 30.55), "ngari": (80.05, 32.10),
@@ -78,8 +79,45 @@ def plateau(cache: Path) -> Polygon:
     return Polygon(poly.exterior)
 
 
+def build_range(cache: Path, geo: dict) -> None:
+    """The wide shot: Terrain Tiles z7 (about 1 km) and Sentinel-2 z9 over the Himalayan arc, as a 3D height field."""
+    lo0, lo1, la0, la1 = RANGE
+    tex, tb = stitch(EOX, 9, lo0, lo1, la0, la1, cache / "eox", "eox")
+    if tex.width > 6144:
+        tex = tex.resize((6144, round(tex.height * 6144 / tex.width)), Image.LANCZOS)
+    tex.save(OUT / "range_sat.jpg", quality=90)
+    h, hb = dem(7, lo0, lo1, la0, la1, cache)
+    h = np.clip(h, 0, 9000)
+    hs = Image.fromarray(((h / 9000) * 65535).astype(np.uint16)).resize((1024, round(1024 * h.shape[0] / h.shape[1])), Image.BILINEAR)
+    small = np.asarray(hs).astype(np.float32) / 65535 * 9000
+    geo["range"] = {"bounds": [round(v, 1) for v in hb], "lonlat": [lo0, lo1, la0, la1], "w": int(small.shape[1]), "h": int(small.shape[0]),
+                    "max": round(float(small.max())), "min": round(float(small.min()))}
+    (OUT / "range_dem.json").write_text(json.dumps([int(v) for v in small.ravel()], separators=(",", ":")))
+    print("range", tex.size, small.shape)
+
+
 def main() -> None:
     cache, ne = Path(sys.argv[1]), Path(sys.argv[2])
+    if len(sys.argv) > 3 and sys.argv[3] == "--3d-only":
+        # rebuild only the 3D terrain data, keeping the plates and vectors already in geo.json
+        gp = ROOT / "src" / "tibet2" / "geo.json"
+        geo = json.loads(gp.read_text())
+        build_range(cache, geo)
+        lo0, lo1, la0, la1 = HIMA
+        tex, tb = stitch(EOX, 12, lo0, lo1, la0, la1, cache / "eox", "eox")
+        if tex.width > 4096:
+            tex = tex.resize((4096, round(tex.height * 4096 / tex.width)), Image.LANCZOS)
+        tex.save(OUT / "hima_sat.jpg", quality=92)
+        h, hb = dem(11, lo0, lo1, la0, la1, cache)
+        h = np.clip(h, 0, 9000)
+        hs = Image.fromarray(((h / 9000) * 65535).astype(np.uint16)).resize((1024, round(1024 * h.shape[0] / h.shape[1])), Image.BILINEAR)
+        small = np.asarray(hs).astype(np.float32) / 65535 * 9000
+        geo["hima"] = {"bounds": [round(v, 1) for v in hb], "lonlat": [lo0, lo1, la0, la1], "w": int(small.shape[1]), "h": int(small.shape[0]),
+                       "max": round(float(small.max())), "min": round(float(small.min()))}
+        (OUT / "hima_dem.json").write_text(json.dumps([int(v) for v in small.ravel()], separators=(",", ":")))
+        gp.write_text(json.dumps(geo, separators=(",", ":")))
+        print("hima", small.shape)
+        return
     OUT.mkdir(parents=True, exist_ok=True)
     geo = {"plates": {}}
     for name, z, lo0, lo1, la0, la1 in PLATES:
@@ -111,7 +149,7 @@ def main() -> None:
     h, hb = dem(11, lo0, lo1, la0, la1, cache)
     h = np.clip(h, 0, 9000)
     hs = Image.fromarray(((h / 9000) * 65535).astype(np.uint16))
-    hs = hs.resize((640, round(640 * hs.height / hs.width)), Image.BILINEAR)
+    hs = hs.resize((1024, round(1024 * hs.height / hs.width)), Image.BILINEAR)
     small = np.asarray(hs).astype(np.float32) / 65535 * 9000
     geo["hima"] = {"bounds": [round(v, 1) for v in hb], "lonlat": [lo0, lo1, la0, la1], "w": int(small.shape[1]), "h": int(small.shape[0]),
                    "max": round(float(small.max())), "min": round(float(small.min()))}

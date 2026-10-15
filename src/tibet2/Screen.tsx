@@ -136,7 +136,8 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {/* the plateau */}
       <Tag t={t} t0={C.tibet2} t1={C.france2 - 0.1} text="TIBET का पठार" x={540} y={420} color={COL.red} pin={tib} size={64} />
       <Big t={t} t0={C.chaar2} t1={C.duniya2} text="FRANCE × 4+" x={540} y={330} size={130} color={COL.france} font={NUM} rot={-2} />
-      <Chip t={t} t0={C.duniya2} t1={C.zameen3} text="दुनिया का सबसे ऊँचा पठार" x={540} y={330} color={COL.gold} size={54} />
+      <Chip t={t} t0={C.duniya2} t1={C.zameen3 + 0.4} text="दुनिया का सबसे ऊँचा पठार" x={540} y={330} color={COL.gold} size={54} />
+      <Big t={t} t0={C.zameen3 + 0.4} t1={C.everest3 - 0.2} text="HIMALAYA" x={540} y={320} size={130} color="#ffffff" font={NUM} rot={0} />
 
       {/* the 3D section's words */}
       <Big t={t} t0={C.socho4} t1={C.n10000 - 0.1} text="सोचो…" x={540} y={300} size={110} color="#fff" />
@@ -184,7 +185,7 @@ export const YesNo: React.FC<{ t: number }> = ({ t }) => {
 };
 
 /** Whip transitions on the big moves. */
-const WHIPS = () => [C.ye2 - 0.2, C.zameen3 - 0.3, C.oxygen4 - 0.25, C.pilot5 - 0.25, C.mausam7 - 0.3, C.airports8 - 0.2, C.par9 - 0.1];
+const WHIPS = () => [C.ye2 - 0.2, C.duniya2 - 0.3, C.oxygen4 - 0.25, C.pilot5 - 0.25, C.mausam7 - 0.3, C.airports8 - 0.2, C.par9 - 0.1];
 export const Whips: React.FC<{ t: number }> = ({ t }) => (
   <>
     {WHIPS().map((w, i) => {

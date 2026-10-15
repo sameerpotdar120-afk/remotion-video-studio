@@ -222,7 +222,7 @@ export const PlaneLayers: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     <>
       <Spotlight c={c} rings={GEO.plateau} a={glowA * 0.9} />
       <PlateauGlow c={c} t={t} a={glowA} fill={t > C.raasta9 ? 0.4 : 0.62} hot={hot} />
-      <Frances c={c} t={t} a={window4(t, C.france2, C.france2 + 0.1, C.zameen3 - 0.3, C.zameen3)} />
+      <Frances c={c} t={t} a={window4(t, C.france2, C.france2 + 0.1, C.duniya2 - 0.3, C.duniya2)} />
       <FlightMap c={c} t={t} a={fm} />
       <IndiaLit c={c} a={indiaA} />
       <Airports c={c} t={t} a={window4(t, C.airports8 - 0.3, C.airports8 - 0.2, C.raasta9 - 0.3, C.raasta9)} />

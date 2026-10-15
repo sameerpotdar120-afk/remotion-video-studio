@@ -5,23 +5,35 @@ import { clamp01, easeIn, easeOut, inOut, kick, lerp, pop, ramp, window4 } from 
 import { C } from './cam';
 import { NUM, HEAD } from './fonts';
 import { has } from './Rig';
-import { Cam3, Terrain3D, VEXAG, lonlatToScene } from './Terrain3D';
+import { Cam3, Terrain3D, VEX, VEXAG, lonlatTo, lonlatToScene } from './Terrain3D';
 
 const [EX, EZ] = lonlatToScene(86.925, 27.988);
 const EY = 8.849 * VEXAG;
 const SHADOW = '0 6px 0 rgba(0,0,0,0.35), 0 10px 26px rgba(0,0,0,0.65)';
 
-/** When the 3D fly-over is on screen: in on "ज़मीन… 4,500 मीटर", out on "मौसम". */
-export const FLY0 = () => C.zameen3 - 0.35;
+/** The wide Himalaya shot comes in on "दुनिया का सबसे ऊँचा पठार" and sweeps down the range toward Everest;
+ *  the detailed fly-over takes over just after "4,500 मीटर" and runs until "मौसम". */
+export const RANGE0 = () => C.duniya2 - 0.25;
+export const FLY0 = () => C.n4500 + 1.4;
 export const FLY1 = () => C.mausam7 - 0.2;
+
+const [RX, RZ] = lonlatTo('range', 86.925, 27.988);
+const RY = 8.849 * VEX.range;
+const rangeKeys = (): K[] => [
+  // high over the Indian plains, looking north: the whole snow-capped arc with the plateau behind it
+  { t: RANGE0(), pos: [RX - 300, 330, RZ + 245], look: [RX - 80, 0, RZ - 430], fov: 52 },
+  { t: C.zameen3, pos: [RX - 380, 175, RZ + 235], look: [RX - 80, 30, RZ - 220], fov: 48 },
+  // gliding along the range, lower, toward Everest
+  { t: C.n4500 + 0.8, pos: [RX - 150, 95, RZ + 190], look: [RX, RY * 0.55, RZ - 40], fov: 46 },
+  { t: FLY0() + 0.5, pos: [RX - 70, 62, RZ + 110], look: [RX, RY * 0.7, RZ], fov: 44 },
+];
+const rangeCamAt = (t: number): Cam3 => keyed(rangeKeys(), t);
 
 type K = { t: number; pos: [number, number, number]; look: [number, number, number]; fov?: number };
 const keys = (): K[] => [
-  // dropping onto the plateau, north of Everest
-  { t: FLY0(), pos: [EX - 8, 70, EZ - 95], look: [EX, 4, EZ - 20], fov: 58 },
-  { t: C.n4500, pos: [EX - 20, 17, EZ - 78], look: [EX, 6, EZ - 10], fov: 52 },
-  // gliding low toward the Himalaya wall
-  { t: C.n4500 + 2.6, pos: [EX - 12, 11.5, EZ - 52], look: [EX + 4, 8, EZ], fov: 50 },
+  // handed over from the wide shot: low over the plateau north of Everest, gliding toward the wall
+  { t: FLY0(), pos: [EX - 20, 17, EZ - 78], look: [EX, 6, EZ - 10], fov: 52 },
+  { t: C.n4500 + 3.4, pos: [EX - 12, 11.5, EZ - 52], look: [EX + 4, 8, EZ], fov: 50 },
   // Everest on the plateau's edge
   { t: C.everest3 + 0.6, pos: [EX - 26, 14, EZ - 24], look: [EX, EY - 1, EZ], fov: 46 },
   // tilt up into the sky: the airliner cruises far above
@@ -33,8 +45,8 @@ const keys = (): K[] => [
   { t: FLY1() + 0.4, pos: [EX - 20, 13, EZ + 30], look: [EX, 8, EZ], fov: 50 },
 ];
 
-const camAt = (t: number): Cam3 => {
-  const K = keys();
+const camAt = (t: number): Cam3 => keyed(keys(), t);
+function keyed(K: K[], t: number): Cam3 {
   if (t <= K[0].t) return K[0];
   for (let i = 1; i < K.length; i++) {
     if (t <= K[i].t) {
@@ -45,7 +57,7 @@ const camAt = (t: number): Cam3 => {
     }
   }
   return K[K.length - 1];
-};
+}
 
 const toScreen3 = (cam: Cam3, p: [number, number, number]): [number, number, boolean] => {
   const c = new THREE.PerspectiveCamera(cam.fov ?? 52, 1080 / 1920, 0.1, 2000);
@@ -189,12 +201,15 @@ export const Cabin: React.FC<{ t: number }> = ({ t }) => {
 
 /** The 3D section: terrain, camera, ruler, pin, the airliner and the "no room" beat. */
 export const Fly: React.FC<{ t: number; w?: number; h?: number }> = ({ t }) => {
-  if (t < FLY0() - 0.05 || t > FLY1() + 0.4) return null;
+  if (t < RANGE0() - 0.05 || t > FLY1() + 0.4) return null;
   const cam = camAt(t);
   const sh = t > C.achanak4 && t < C.pilot5 ? kick(t, C.achanak4, 7, 28, 2.5) : 0;
+  const rangeA = 1 - ramp(t, FLY0(), FLY0() + 0.5, inOut);
+  const himaOn = t > FLY0() - 0.05;
   return (
     <div style={{ position: 'absolute', inset: 0, transform: `translate(${sh}px, ${sh * 0.6}px)` }}>
-      <Terrain3D cam={cam} width={1080} height={1920} haze={1} />
+      {himaOn && <Terrain3D cam={cam} width={1080} height={1920} haze={1} />}
+      {rangeA > 0.001 && <div style={{ position: 'absolute', inset: 0, opacity: rangeA }}><Terrain3D set="range" cam={rangeCamAt(t)} width={1080} height={1920} haze={1} /></div>}
       <NoRoom t={t} />
       <Ruler t={t} />
       <EverestPin t={t} cam={cam} />
@@ -205,5 +220,5 @@ export const Fly: React.FC<{ t: number; w?: number; h?: number }> = ({ t }) => {
   );
 };
 
-export const flyFade = (t: number) => window4(t, FLY0() - 0.05, FLY0() + 0.35, FLY1() - 0.3, FLY1() + 0.3);
+export const flyFade = (t: number) => window4(t, RANGE0() - 0.05, RANGE0() + 0.35, FLY1() - 0.3, FLY1() + 0.3);
 export { easeIn, SHADOW };

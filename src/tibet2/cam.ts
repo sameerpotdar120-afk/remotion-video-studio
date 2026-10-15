@@ -50,8 +50,8 @@ const keys = (): Key[] => [
   // "France से चार गुना": pull out a little so the four Frances read
   { t: C.france2 + 0.2, at: PL.tibet, span: 7.2e6, rot: 0, e: inOut },
   { t: C.unchaa2 + 0.6, at: PL.tibet, span: 6.6e6, rot: 1, e: linear },
-  // "ज़मीन… 4,500 मीटर": dive toward Everest (the 3D fly-over takes over)
-  { t: C.zameen3 + 0.2, at: PL.everest, span: 1.6e6, rot: 0, e: easeIn },
+  // "दुनिया का सबसे ऊँचा पठार": dive toward Everest (the 3D Himalaya shot takes over)
+  { t: C.duniya2 + 0.3, at: PL.everest, span: 2.4e6, rot: 0, e: easeIn },
   { t: C.mausam7 - 0.6, at: PL.tibet, span: 6.6e6, rot: -1, e: inOut },
   // weather over the plateau
   { t: C.mausam7 + 0.1, at: PL.tibet, span: 6.2e6, rot: 1, e: inOut },
