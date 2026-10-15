@@ -120,7 +120,8 @@ const BORDER: P[] = (() => {
   return [[w0, n0], [e0, n0], [e0, s0], [w0, s0], [w0, n0]];
 })();
 
-export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
+/** Every beat's opacity, shared by the flat glows and the 3D cut-outs. */
+const beats = (t: number) => {
   const pl = GEO.places;
   // the river is graded all video long (stronger on the Hooghly beat and the golden ending)
   const riverA = 0.75 + 0.25 * window4(t, C.hooghly5 - 0.4, C.hooghly5, C.y1698, C.y1698 + 0.4) + 0.25 * ramp(t, C.matlab9, C.hamesha9 + 0.5);
@@ -150,12 +151,40 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const cityA = window4(t, -1, -0.5, C.teen1 - 0.3, C.teen1 + 0.2) + window4(t, C.shehar7 - 0.2, C.shehar7 + 0.3, C.raj7 - 0.4, C.raj7) + ramp(t, C.hamesha9 - 0.2, C.hamesha9 + 0.4);
   const borderA = window4(t, C.company5 - 0.2, C.company5 + 0.2, C.fort6 - 0.3, C.fort6);
   const borderDraw = ramp(t, C.company5, C.haq5 + 0.3, inOut);
+  return { riverA, warm, indiaA, wbA, all3, suA, goA, kaA, merge, mergeHide, mergeA, centre, mv, againA, fortGhost, fortDraw, fortA, cityA, borderA, borderDraw };
+};
+
+export type Region = { key: string; rings: P[][]; a: number; color: string; fill: number; phase: number };
+/** The regions that light up (flat Glow, or a raised 3D cut-out), in drawing order: big to small. */
+export const regionsAt = (t: number): Region[] => {
+  const b = beats(t);
+  const r = (key: string, rings: P[][], a: number, color: string, fill: number, phase = 0): Region => ({ key, rings, a: clamp01(a), color, fill, phase });
+  return [
+    r('india', GEO.india, b.indiaA, COL.gold, 0.1),
+    r('westbengal', GEO.westbengal, b.wbA, COL.amber, 0.28),
+    r('urban', GEO.urban, b.cityA, COL.gold, 0.2),
+    r('sutanuti', ZONES.sutanuti, Math.max(b.suA, b.againA) * (1 - b.mergeHide), COL.amber, 0.26),
+    r('kalikata', ZONES.kalikata, Math.max(b.kaA, b.againA) * (1 - b.mergeHide), COL.gold, 0.26, 0.4),
+    r('gobindapur', ZONES.gobindapur, Math.max(b.goA, b.againA) * (1 - b.mergeHide), COL.teal, 0.26, 0.8),
+    r('shobhabazar', ZONES.shobhabazar, window4(t, C.shobha2 - 0.1, C.shobha2 + 0.2, C.doosra3 - 0.2, C.doosra3), COL.violet, 0.34),
+    r('chitpur', ZONES.chitpur, window4(t, C.chitpur2 - 0.1, C.chitpur2 + 0.2, C.doosra3 - 0.2, C.doosra3), COL.coral, 0.34, 0.3),
+    r('maidan', ZONES.maidan, window4(t, C.maidan3 - 0.1, C.maidan3 + 0.2, C.teesra4 - 0.3, C.teesra4), COL.green, 0.3),
+    r('central', ZONES.central, window4(t, C.central4 - 0.1, C.central4 + 0.2, C.hooghly5 - 0.2, C.hooghly5 + 0.2), COL.coral, 0.3),
+    r('highcourt', ZONES.highcourt, window4(t, C.court8 - 0.1, C.court8 + 0.2, C.pehle8 - 0.2, C.pehle8 + 0.2), COL.ice, 0.45),
+  ];
+};
+
+/** flat: the glows are drawn here (false when the 3D cut-out layer draws the regions instead). */
+export const PlaneLayer: React.FC<{ t: number; c: Cam; flat?: boolean; between?: React.ReactNode }> = ({ t, c, flat = true, between }) => {
+  const pl = GEO.places;
+  const { riverA, warm, suA, goA, kaA, merge, mergeA, centre, mv, againA, fortGhost, fortDraw, fortA, borderA, borderDraw } = beats(t);
+  const regs = regionsAt(t);
   return (
     <>
       <River c={c} t={t} a={clamp01(riverA)} warm={warm} />
+      {between}
       <svg width={2600} height={3200} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
-        <Glow c={c} rings={GEO.india} a={clamp01(indiaA)} color={COL.gold} t={t} fill={0.1} />
-        <Glow c={c} rings={GEO.westbengal} a={clamp01(wbA)} color={COL.amber} t={t} fill={0.28} />
+        {flat && regs.slice(0, 2).map((g) => <Glow key={g.key} c={c} rings={g.rings} a={g.a} color={g.color} t={t + g.phase} fill={g.fill} />)}
         {borderA > 0 && (
           <path d={lineD(c, BORDER)} fill={COL.gold} fillOpacity={0.06 * borderA} stroke={COL.gold} strokeWidth={8} strokeDasharray="34 18" opacity={borderA}
             style={{ filter: `drop-shadow(0 0 10px ${COL.gold})`, clipPath: `inset(0 ${(1 - borderDraw) * 100}% 0 0)` }} />
@@ -166,18 +195,7 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
               pathLength={1} strokeDasharray={fortA > 0 ? `${fortDraw} 1` : '0.02 0.015'} style={{ filter: `drop-shadow(0 0 12px ${COL.red})` }} />
           </g>
         )}
-        {/* the city itself (its built-up area) on every "Kolkata" / "शहर" */}
-        <Glow c={c} rings={GEO.urban} a={clamp01(cityA)} color={COL.gold} t={t} fill={0.2} />
-        {/* village zones: each village its own colour, lit on its name and whenever all three show */}
-        <Glow c={c} rings={ZONES.sutanuti} a={clamp01(Math.max(suA, againA) * (1 - mergeHide))} color={COL.amber} t={t} fill={0.26} />
-        <Glow c={c} rings={ZONES.kalikata} a={clamp01(Math.max(kaA, againA) * (1 - mergeHide))} color={COL.gold} t={t + 0.4} fill={0.26} />
-        <Glow c={c} rings={ZONES.gobindapur} a={clamp01(Math.max(goA, againA) * (1 - mergeHide))} color={COL.teal} t={t + 0.8} fill={0.26} />
-        {/* today's neighbourhoods, on their names */}
-        <Glow c={c} rings={ZONES.shobhabazar} a={window4(t, C.shobha2 - 0.1, C.shobha2 + 0.2, C.doosra3 - 0.2, C.doosra3)} color={COL.violet} t={t} fill={0.34} />
-        <Glow c={c} rings={ZONES.chitpur} a={window4(t, C.chitpur2 - 0.1, C.chitpur2 + 0.2, C.doosra3 - 0.2, C.doosra3)} color={COL.coral} t={t + 0.3} fill={0.34} />
-        <Glow c={c} rings={ZONES.maidan} a={window4(t, C.maidan3 - 0.1, C.maidan3 + 0.2, C.teesra4 - 0.3, C.teesra4)} color={COL.green} t={t} fill={0.3} />
-        <Glow c={c} rings={ZONES.central} a={window4(t, C.central4 - 0.1, C.central4 + 0.2, C.hooghly5 - 0.2, C.hooghly5 + 0.2)} color={COL.coral} t={t} fill={0.3} />
-        <Glow c={c} rings={ZONES.highcourt} a={window4(t, C.court8 - 0.1, C.court8 + 0.2, C.pehle8 - 0.2, C.pehle8 + 0.2)} color={COL.ice} t={t} fill={0.45} />
+        {flat && regs.slice(2).map((g) => <Glow key={g.key} c={c} rings={g.rings} a={g.a} color={g.color} t={t + g.phase} fill={g.fill} />)}
         <Village c={c} at={mv(pl.sutanuti)} a={clamp01(Math.max(suA, mergeA, againA))} t={t} color={COL.amber} />
         <Village c={c} at={mv(pl.kalikata)} a={clamp01(Math.max(kaA, mergeA, againA))} t={t + 0.3} color={COL.gold} />
         <Village c={c} at={mv(pl.gobindapur)} a={clamp01(Math.max(goA, mergeA, againA))} t={t + 0.6} color={COL.teal} />

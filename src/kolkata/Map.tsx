@@ -84,12 +84,20 @@ const draw = (ctx: CanvasRenderingContext2D, src: Source, p: Plate, c: Cam, alph
 
 const fade = (mpp: number, full: number, none: number) => Math.min(1, Math.max(0, (none - mpp) / (none - full)));
 
-/** Coarse-to-fine stack: the coarsest is skipped once a finer plate fully covers the screen. */
-/** res: canvas pixels per CSS pixel (2 for the 4K render, so the satellite map is drawn at full 4K detail). */
-export const MapCanvas: React.FC<{ cam: Cam; res?: number }> = ({ cam, res = 1 }) => {
-  const ref = useRef<HTMLCanvasElement>(null);
+/** Paints the coarse-to-fine plate stack for a camera into a context already set to plane coordinates.
+ *  The coarsest is skipped once a finer plate fully covers the screen. */
+export const paintPlates = (ctx: CanvasRenderingContext2D, srcs: Source[], cam: Cam, res: number) => {
+  const mpp = cam.span / 1920 / res;
+  const a = PLATES.map((p, i) => (i === 0 ? 1 : fade(mpp, p.full, p.none)));
+  let start = 0;
+  for (let i = PLATES.length - 1; i > 0; i--) if (a[i] >= 1 && covers(PLATES[i], cam)) { start = i; break; }
+  for (let i = start; i < PLATES.length; i++) draw(ctx, srcs[i], PLATES[i], cam, i === start ? 1 : a[i]);
+};
+
+/** The loaded plates (shared by the map and the 3D cut-outs). */
+export const usePlates = (label: string) => {
   const [srcs, setSrcs] = useState<Source[] | null>(null);
-  const [handle] = useState(() => delayRender('kolkata plates'));
+  const [handle] = useState(() => delayRender(label));
   useEffect(() => {
     Promise.all(PLATES.map(get))
       .then((s) => {
@@ -101,6 +109,14 @@ export const MapCanvas: React.FC<{ cam: Cam; res?: number }> = ({ cam, res = 1 }
         continueRender(handle);
       });
   }, [handle]);
+  return srcs;
+};
+export type { Source };
+
+/** res: canvas pixels per CSS pixel (2 for the 4K render, so the satellite map is drawn at full 4K detail). */
+export const MapCanvas: React.FC<{ cam: Cam; res?: number }> = ({ cam, res = 1 }) => {
+  const ref = useRef<HTMLCanvasElement>(null);
+  const srcs = usePlates('kolkata plates');
 
   useLayoutEffect(() => {
     const cv = ref.current;
@@ -111,11 +127,7 @@ export const MapCanvas: React.FC<{ cam: Cam; res?: number }> = ({ cam, res = 1 }
     ctx.imageSmoothingQuality = 'high';
     ctx.fillStyle = SEA_BG;
     ctx.fillRect(0, 0, PLANE.w, PLANE.h);
-    const mpp = cam.span / 1920 / res;
-    const a = PLATES.map((p, i) => (i === 0 ? 1 : fade(mpp, p.full, p.none)));
-    let start = 0;
-    for (let i = PLATES.length - 1; i > 0; i--) if (a[i] >= 1 && covers(PLATES[i], cam)) { start = i; break; }
-    for (let i = start; i < PLATES.length; i++) draw(ctx, srcs[i], PLATES[i], cam, i === start ? 1 : a[i]);
+    paintPlates(ctx, srcs, cam, res);
     // lift the near-black Sentinel-2 sea to a deep navy (anything brighter, i.e. land, is untouched)
     ctx.globalCompositeOperation = 'lighten';
     ctx.fillStyle = '#0f3550';

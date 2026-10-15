@@ -6,7 +6,8 @@ import { Watermark } from '../brand/Watermark';
 import { DURATION_S, NULL_WIN, PLANE, camAt, camMotion, shake } from './cam';
 import { useKKFonts } from './fonts';
 import { MapCanvas, SEA_BG } from './Map';
-import { PlaneLayer } from './Plane';
+import { PlaneLayer, regionsAt } from './Plane';
+import { Cutouts } from './Cutout';
 import { Grade, NamesCard, ScreenLayer, Subtitles, Whips } from './Screen';
 
 export const KOLKATA_DURATION = Math.ceil(DURATION_S * FPS);
@@ -41,7 +42,8 @@ const NullPanel: React.FC<{ t: number; q: number; name: string; t0: number; t1: 
   );
 };
 
-export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number }> = ({ captions = true, screen = true, res = 1, zoomOut = 1 }) => {
+/** cut3d: regions rise as 3D cut-outs instead of flat glows. */
+export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; cut3d?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, cut3d = false }) => {
   const { fps } = useVideoConfig();
   const t = useCurrentFrame() / fps;
   useKKFonts();
@@ -68,7 +70,7 @@ export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: num
           <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h,
             transformOrigin: `${PLANE.ox}px ${PLANE.oy}px`, transform: `rotate(${cam.rot}deg)` }}>
             <div style={{ position: 'absolute', inset: 0, filter: 'saturate(1.2) contrast(1.16) brightness(1.02)' }}><MapCanvas cam={cam} res={res} /></div>
-            <PlaneLayer t={t} c={cam} />
+            <PlaneLayer t={t} c={cam} flat={!cut3d} between={cut3d ? <Cutouts cam={cam} t={t} regions={regionsAt(t)} res={res} /> : undefined} />
           </div>
         </AbsoluteFill>
         <Grade t={t} frame={Math.round(t * fps)} />
