@@ -155,7 +155,7 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
       <Rig set="k5" parts={[...coins, { name: 'pouch', box: [0, 0.12, 0.8] }]} x={540} y={1020} h={360} t={t} t0={C.n1300 - 0.05} t1={C.to1 - 0.1} entry="pop" />
 
       {/* Sutanuti: the charkha wheel spins; thread bales drop and stack */}
-      <Rig set="k6" parts={[{ name: 'frame', box: [0.1, 0.2, 0.7] }, { name: 'wheel', box: [-0.15, -0.05, 0.85], rot: (t - C.sutanuti2) * 150 }]} x={330} y={1200} h={560} t={t} t0={C.soot2 - 0.1} t1={C.doosra3 - 0.1} entry="slideL" />
+      <Rig set="k6" parts={[{ name: 'wheel', box: [-0.233, -0.02, 0.85], rot: (t - C.sutanuti2) * 150 }, { name: 'frame', box: [0.1, 0.2, 0.7] }]} x={330} y={1200} h={560} t={t} t0={C.soot2 - 0.1} t1={C.doosra3 - 0.1} entry="slideL" />
       <Rig set="k7" parts={[0, 1, 2].map((i) => {
         const t0 = C.soot2 + 0.3 + i * 0.25;
         const p = ramp(t, t0, t0 + 0.35, easeIn);
