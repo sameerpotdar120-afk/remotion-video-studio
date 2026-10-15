@@ -69,12 +69,19 @@ const Fx: React.FC<{ t: number; name: string; t0: number; t1: number; from?: num
   if (t < t0 - 0.05 || t > t1 + 0.05) return null;
   const h = (w * 9) / 16;
   const o = a * window4(t, t0, t0 + 0.2, t1 - 0.5, t1);
+  // Veo's "black" is a very dark grey: crush it to true black (contrast) and feather all four edges, so no rectangle shows
+  const fv = 'linear-gradient(180deg, transparent 0%, #000 22%, #000 78%, transparent 100%)';
+  const fh = 'linear-gradient(90deg, transparent 0%, #000 16%, #000 84%, transparent 100%)';
   return (
     <div style={{ position: 'absolute', left: x - w / 2, top: y - h / 2, width: w, height: h, opacity: o, mixBlendMode: 'screen', transform: `${flip ? 'scaleX(-1) ' : ''}rotate(${rot}deg)`,
-      WebkitMaskImage: mask, maskImage: mask }}>
-      <Clip t0={t0 - 0.05} t1={t1 + 0.05} from={from}>
-        {(f) => <OffthreadVideo src={P(`${name}.mp4`)} muted startFrom={f} style={{ width: w, height: h }} />}
-      </Clip>
+      WebkitMaskImage: fv, maskImage: fv }}>
+      <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: fh, maskImage: fh }}>
+        <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask, filter: 'contrast(1.3) brightness(0.95)' }}>
+          <Clip t0={t0 - 0.05} t1={t1 + 0.05} from={from}>
+            {(f) => <OffthreadVideo src={P(`${name}.mp4`)} muted startFrom={f} style={{ width: w, height: h }} />}
+          </Clip>
+        </div>
+      </div>
     </div>
   );
 };
@@ -117,7 +124,7 @@ export const VeoOverlays: React.FC<{ t: number }> = ({ t }) => (
     {/* Kalikata: incense rising beside the temple, the brass bell dropping in on its chain and swinging */}
     <Fx t={t} name="v04_incense_smoke" t0={C.kalikata4 + 0.3} t1={C.hooghly5 - 0.1} from={0.8} x={300} y={760} w={1300} a={0.85}
       mask="linear-gradient(90deg, transparent 0%, transparent 22%, #000 40%)" />
-    <Keyed t={t} name="v03_temple_bell" t0={C.kalikata4 + 0.25} t1={C.hooghly5 - 0.15} x={700} y={560} h={560} entry="drop" shadow={0} />
+    <Keyed t={t} name="v03_temple_bell" t0={C.kalikata4 + 0.25} t1={C.hooghly5 - 0.15} x={700} y={560} h={560} entry="drop" shadow={0} inset="0 0 0 30%" />
     {/* the Hooghly: the Company ship sails up the river through low morning mist */}
     <Fx t={t} name="v05_river_mist" t0={C.hooghly5 + 0.1} t1={C.y1698 - 0.1} from={1.0} x={540} y={1380} w={2000} a={0.6} />
     <Keyed t={t} name="v00_ship_raw" t0={C.hooghly5 + 0.1} t1={C.y1698 - 0.2} x={lerp(380, 680, ramp(t, C.hooghly5, C.y1698))} y={1120 + Math.sin(t * 2.2) * 8} h={720}
@@ -127,7 +134,7 @@ export const VeoOverlays: React.FC<{ t: number }> = ({ t }) => (
     {/* dust rolls over the emptied village into the gates */}
     <Fx t={t} name="v08_dust_drift" t0={C.khali6 - 0.1} t1={C.yahin7 + 0.2} from={0.6} x={600} y={1350} w={2200} a={0.9} />
     {/* the cannon's blast smoke billows across the frame */}
-    <Fx t={t} name="v09_cannon_smoke" t0={FIRE - 0.05} t1={FIRE + 2.0} from={0.15} x={250 + 760} y={1150} w={1520} a={0.95} flip={false} />
+    <Fx t={t} name="v09_cannon_smoke" t0={FIRE - 0.05} t1={FIRE + 2.0} from={0.15} x={-40} y={1130} w={1150} a={0.95} flip />
     {/* the history book flies open; the High Court's gavel comes down */}
     <Keyed t={t} name="v11_old_book" t0={C.kitab8 - 0.05} t1={C.pehle8} from={1.0} rate={1.8} x={540} y={1110} h={520} entry="pop" />
     <BookText t={t} x={748} y={1169} delay={0.9} rot={-5} />
