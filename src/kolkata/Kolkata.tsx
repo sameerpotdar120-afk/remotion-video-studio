@@ -14,7 +14,7 @@ export const KOLKATA_DURATION = Math.ceil(DURATION_S * FPS);
 export const KOLKATA_DURATION_60 = Math.ceil(DURATION_S * 60);
 export const HAS_AUDIO = true;
 /** The mixed track once it exists (VO, music, SFX); the raw VO until then. */
-const AUDIO = 'kolkata/audio/vo.mp3';
+const AUDIO = 'kolkata/audio/mix.wav';
 
 /** Null's Omni clips. We only ever show the band of each clip from source y 420 to 1380 (around the mask and hands),
  *  well above the Gemini sparkle at source y 1704–1775, so the watermark is never in frame. */
