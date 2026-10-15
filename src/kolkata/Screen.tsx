@@ -1,10 +1,10 @@
 import React from 'react';
-import { AbsoluteFill } from 'remotion';
+import { AbsoluteFill, staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, kick, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, CAPS, Cam, DURATION_S, GEO, P, merc, toScreen } from './cam';
 import { HEAD, NUM, SUB } from './fonts';
 import { COL } from './Plane';
-import { Rig, hinge, strike } from './Rig';
+import { Part, Rig, has, hinge, strike } from './Rig';
 
 const STROKE = (w: number, col = '#120a02') => ({ WebkitTextStroke: `${w}px ${col}`, paintOrder: 'stroke fill' as const });
 const SHADOW = '0 6px 0 rgba(0,0,0,0.35), 0 10px 26px rgba(0,0,0,0.65)';
@@ -80,10 +80,10 @@ const BookText: React.FC<{ t: number; x: number; y: number }> = ({ t, x, y }) =>
   const xA = ramp(t, C.court8 + 1.1, C.court8 + 1.35, easeOut);
   return (
     <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%) rotate(-3deg)', opacity: a, textAlign: 'center', fontFamily: NUM, color: '#3a2412', lineHeight: 1.05 }}>
-      <div style={{ fontSize: 46, letterSpacing: 2, clipPath: `inset(0 ${(1 - clamp01(write * 2)) * 100}% 0 0)` }}>FOUNDER:</div>
-      <div style={{ fontSize: 66, clipPath: `inset(0 ${(1 - clamp01(write * 2 - 1)) * 100}% 0 0)` }}>JOB CHARNOCK</div>
+      <div style={{ fontSize: 30, letterSpacing: 2, clipPath: `inset(0 ${(1 - clamp01(write * 2)) * 100}% 0 0)` }}>FOUNDER:</div>
+      <div style={{ fontSize: 40, clipPath: `inset(0 ${(1 - clamp01(write * 2 - 1)) * 100}% 0 0)` }}>JOB CHARNOCK</div>
       {xA > 0 && (
-        <svg width={420} height={220} viewBox="0 0 420 220" style={{ position: 'absolute', left: '50%', top: '50%', transform: `translate(-50%,-50%) scale(${lerp(1.6, 1, xA)})`, overflow: 'visible' }}>
+        <svg width={300} height={160} viewBox="0 0 420 220" style={{ position: 'absolute', left: '50%', top: '50%', transform: `translate(-50%,-50%) scale(${lerp(1.6, 1, xA)})`, overflow: 'visible' }}>
           <path d="M40 30 L380 190 M380 30 L40 190" stroke={COL.red} strokeWidth={26} strokeLinecap="round" pathLength={1} strokeDasharray={`${xA} 1`} style={{ filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.5))' }} />
         </svg>
       )}
@@ -93,129 +93,188 @@ const BookText: React.FC<{ t: number; x: number; y: number }> = ({ t, x, y }) =>
 
 const S = (c: Cam, at: P) => toScreen(c, at);
 
-/** Scenes of rigged UE5 props. Every moving piece is a separate cut-out; positions and pivots are fractions of each set. */
+/** Scenes of rigged UE5 props. Each piece is its own cut-out, placed with a box [x, y, height] in units of the rig's
+ *  height from its centre, and moved on its own pivot. A missing file is skipped. */
 const Props: React.FC<{ t: number }> = ({ t }) => {
-  // K1/K2/K3 — today's street corner on the hook, the taxi driving through, the tram sliding past; again at the end
-  const hookEnd = C.teen1 - 0.15;
-  const endIn = C.hamesha9 - 0.1;
-  const taxiX = (t0: number) => lerp(-700, 1800, ramp(t, t0, t0 + 3.6, linear));
-  const wheel = (t * 540) % 360;
-  const street = (t0: number, t1: number) => (
-    <>
-      <Rig set="k1" parts={[{ name: 'base' }, { name: 'hero', a: 0 }]} x={540} y={1180} h={760} t={t} t0={t0} t1={t1} entry="rise" />
-      <Rig set="k3" parts={[{ name: 'tram' }, { name: 'pantograph', pivot: [0.5, 0.2], rot: Math.sin(t * 3) * 1.5 }]} x={lerp(1200, 360, ramp(t, t0 + 0.2, t0 + 4, linear))} y={1110} h={300}
-        t={t} t0={t0 + 0.2} t1={t1} entry="fade" shadow={false} float={0.3} />
-      <Rig set="k2" parts={[{ name: 'taxi_body', dy: Math.sin(t * 14) * 0.004 }]} x={taxiX(t0 + 0.4)} y={1390} h={260} t={t} t0={t0 + 0.4} t1={t1} entry="fade" float={0} />
-      <WheelPair t={t} x={taxiX(t0 + 0.4)} y={1390} h={260} rot={wheel} t0={t0 + 0.4} t1={t1} />
-    </>
-  );
-  // K4 — villages (three small ones on "तीन गाँव", one big one for Gobindapur and the ending)
+  // ---- today's street: the tram slides left along the tracks, the taxi drives right, wheels turning
+  const street = (t0: number, t1: number) => {
+    const taxiX = lerp(-0.95, 0.95, ramp(t, t0 + 0.3, t0 + 4.2, linear));
+    const tramX = lerp(0.75, -0.55, ramp(t, t0 + 0.1, t0 + 5.0, linear));
+    const spin = (t * 600) % 360;
+    const bump = Math.sin(t * 15) * 0.003;
+    return (
+      <Rig set="k1" parts={[
+        { name: 'street', box: [0, -0.02, 1] },
+        { name: 'tram', box: [tramX, 0.06, 0.34], a: ramp(t, t0 + 0.1, t0 + 0.4) },
+        { name: 'taxi', box: [taxiX, 0.33 + bump, 0.25], a: has('k2/taxi') ? 1 : 0 },
+      ].map((p) => ({ ...p, set: p.name === 'street' ? 'k1' : p.name === 'tram' ? 'k3' : 'k2' } as Part))} x={540} y={1200} h={640} t={t} t0={t0} t1={t1} entry="rise">
+        <TaxiWheels x={taxiX} y={0.33 + bump} h={0.25} spin={spin} H={640} />
+      </Rig>
+    );
+  };
+  // ---- villages: ground, three huts (one design, placed and mirrored), the banyan swaying; huts can lift away
   const village = (x: number, y: number, h: number, t0: number, t1: number, lift = 0, key = 'v') => (
     <Rig key={key} set="k4" parts={[
-      { name: 'ground' },
-      { name: 'banyan', pivot: [0.5, 0.95], rot: Math.sin(t * 1.3 + x) * 1.6, dy: -lift * 1.2, a: 1 - lift },
-      { name: 'palm', pivot: [0.5, 0.97], rot: Math.sin(t * 1.9 + x) * 2.4, dy: -lift * 1.4, a: 1 - lift },
-      { name: 'hut_a', dy: -lift * 0.9, rot: lift * -8, a: 1 - lift },
-      { name: 'hut_b', dy: -lift * 1.1, rot: lift * 6, a: 1 - lift },
-      { name: 'hut_c', dy: -lift * 1.0, rot: lift * -4, a: 1 - lift },
+      { name: 'ground', box: [0, 0.2, 0.62] },
+      { name: 'banyan', box: [-0.42, -0.2, 0.78], pivot: [0.5, 0.95], rot: Math.sin(t * 1.2 + x) * 1.4, dy: -lift * 1.3, a: 1 - lift },
+      { name: 'palm', box: [0.52, -0.22, 0.72], pivot: [0.5, 0.97], rot: Math.sin(t * 1.8 + x) * 2.2, dy: -lift * 1.4, a: 1 - lift },
+      { name: 'hut', box: [0.08, -0.02, 0.4], dy: -lift * 1.0, rot: lift * -8, a: 1 - lift },
+      { name: 'hut', box: [0.4, 0.06, 0.34], flip: true, dy: -lift * 1.2, rot: lift * 6, a: 1 - lift },
+      { name: 'hut', box: [-0.18, 0.12, 0.3], dy: -lift * 0.9, rot: lift * -4, a: 1 - lift },
     ]} x={x} y={y} h={h} t={t} t0={t0} t1={t1} entry="rise" />
   );
-  const liftG = ramp(t, C.gobind6, C.khali6 + 0.5, easeIn);
-  // K5 — coins dropping into the pouch
-  const coins = [0, 1, 2, 3, 4].map((i) => {
+  const liftG = ramp(t, C.gobind6, C.khali6 + 0.2, easeIn);
+  // ---- the rent: five coins spin down into the open pouch
+  const coins: Part[] = [0, 1, 2, 3, 4].map((i) => {
     const t0 = C.n1300 + 0.1 + i * 0.28;
-    const p = ramp(t, t0, t0 + 0.32, easeIn);
-    return { name: 'coin', dy: lerp(-0.9, -0.05, p) - (i % 2) * 0.02, dx: (i - 2) * 0.05 * (1 - p), rot: (1 - p) * 220 + i * 30, a: t > t0 && p < 1 ? 1 : 0 } as const;
+    const p = ramp(t, t0, t0 + 0.34, easeIn);
+    return { name: 'coin', box: [lerp((i - 2) * 0.18, 0, p), lerp(-1.1, -0.12, p), 0.2], sx: Math.cos((t - t0) * 14) * (1 - p) + p * 0.3, rot: (1 - p) * 40, a: t > t0 && p < 1 ? 1 : 0 };
   });
-  // K10 — the deed unrolls (rods move apart, the paper is revealed between them), the quill writes, the seal stamps
+  // ---- the deed: the top rod stays, the paper unrolls down behind the second rod; the quill writes; the seal stamps
   const unroll = ramp(t, C.y1698 + 0.2, C.company5 + 0.3, inOut);
-  const seal = strike(t, C.haq5 + 0.1);
-  // K12 — the fort's gates close, the cannon recoils
-  const gate = hinge(t, C.khali6 + 1.3, 1, 0, 0.9);
-  const recoil = t > C.yahin7 - 0.4 ? Math.exp(-(t - (C.yahin7 - 0.4)) * 7) * Math.sin(Math.min(Math.PI / 2, (t - (C.yahin7 - 0.4)) * 30)) : 0;
-  // K13 — the family walks away (staggered, a small step bob)
-  const walk = (i: number) => ({ dx: -ramp(t, C.khali6 + 0.1 + i * 0.15, C.yahin7 + 0.5, linear) * 1.2, dy: -Math.abs(Math.sin((t + i) * 6)) * 0.012 });
-  // K17 — the gavel strikes
+  const sealS = strike(t, C.haq5 + 0.1);
+  const writing = window4(t, C.company5, C.company5 + 0.2, C.sabarna5 + 0.8, C.haq5);
+  // ---- the fort: it rises, then a close-up of the two gate doors swinging shut; then a cannon fires
+  const gate = hinge(t, C.khali6 + 0.45, 0.12, 1, 0.6);
+  const fireT = C.yahin7 + 0.15;
+  const recoil = t > fireT ? Math.exp(-(t - fireT) * 6) * Math.sin(Math.min(Math.PI / 2, (t - fireT) * 30)) : 0;
+  // ---- the family walks away up the path, getting smaller, with a small step bob
+  const walk = (i: number, x0: number) => {
+    const p = ramp(t, C.gobind6 + 0.1 + i * 0.12, C.khali6 + 0.7, linear);
+    const s = lerp(1, 0.55, p);
+    return { box: [x0 * s, lerp(0.1, -0.25, p) - Math.abs(Math.sin((t + i) * 6)) * 0.01, 0.62 * s] as [number, number, number] };
+  };
+  // ---- the gavel
   const gv = strike(t, C.court8 + 1.15);
   return (
     <>
-      {street(0.15, hookEnd)}
-      {village(220, 1220, 330, C.teen1, C.raj1 - 0.2, 0, 'v1')}
-      {village(540, 1300, 380, C.teen1 + 0.15, C.raj1 - 0.2, 0, 'v2')}
-      {village(860, 1220, 330, C.teen1 + 0.3, C.raj1 - 0.2, 0, 'v3')}
-      <Rig set="k5" parts={[...coins, { name: 'pouch' }]} x={540} y={1000} h={330} t={t} t0={C.n1300 - 0.05} t1={C.to1 - 0.1} entry="pop" />
+      {street(0.15, C.teen1 - 0.15)}
+      {village(220, 1150, 280, C.teen1, C.raj1 - 0.2, 0, 'v1')}
+      {village(860, 1170, 280, C.teen1 + 0.15, C.raj1 - 0.2, 0, 'v3')}
+      {village(540, 1350, 330, C.teen1 + 0.3, C.raj1 - 0.2, 0, 'v2')}
+      <Rig set="k5" parts={[...coins, { name: 'pouch', box: [0, 0.12, 0.8] }]} x={540} y={1020} h={360} t={t} t0={C.n1300 - 0.05} t1={C.to1 - 0.1} entry="pop" />
 
-      {/* Sutanuti: the charkha spins, thread bales drop and stack */}
-      <Rig set="k6" parts={[{ name: 'frame' }, { name: 'wheel', pivot: [0.36, 0.42], rot: (t - C.sutanuti2) * 160 }]} x={330} y={1200} h={560} t={t} t0={C.soot2 - 0.1} t1={C.doosra3 - 0.1} entry="slideL" />
-      <Rig set="k7" parts={['c', 'b', 'a'].map((n, i) => {
-        const p = ramp(t, C.soot2 + 0.3 + i * 0.25, C.soot2 + 0.65 + i * 0.25, easeIn);
-        return { name: `bale_${n}`, dy: lerp(-1.4, 0, p) + (p >= 1 ? kick(t, C.soot2 + 0.65 + i * 0.25, 0.02, 20, 10) : 0), a: p > 0 ? 1 : 0 };
+      {/* Sutanuti: the charkha wheel spins; thread bales drop and stack */}
+      <Rig set="k6" parts={[{ name: 'frame', box: [0.1, 0.2, 0.7] }, { name: 'wheel', box: [-0.15, -0.05, 0.85], rot: (t - C.sutanuti2) * 150 }]} x={330} y={1200} h={560} t={t} t0={C.soot2 - 0.1} t1={C.doosra3 - 0.1} entry="slideL" />
+      <Rig set="k7" parts={[0, 1, 2].map((i) => {
+        const t0 = C.soot2 + 0.3 + i * 0.25;
+        const p = ramp(t, t0, t0 + 0.35, easeIn);
+        return { name: 'bale', box: [i === 1 ? 0.18 : -0.12 + i * 0.05, lerp(-1.6, 0.2 - i * 0.28, p), 0.42], flip: i === 1, a: p > 0 ? 1 : 0 } as Part;
       })} x={790} y={1230} h={480} t={t} t0={C.soot2 + 0.2} t1={C.doosra3 - 0.1} entry="fade" />
 
       {/* Gobindapur, and later its emptying */}
-      {village(540, 1230, 640, C.gobind3 - 0.1, C.teesra4 - 0.1, 0, 'vg')}
-      {village(540, 1250, 620, C.fort6 - 0.1, C.khali6 + 0.6, liftG, 'vg2')}
+      {village(540, 1240, 640, C.gobind3 - 0.1, C.teesra4 - 0.1, 0, 'vg')}
+      {village(540, 1250, 620, C.fort6 - 0.1, C.khali6 + 0.3, liftG, 'vg2')}
 
-      {/* Kalikata: the temple bell swings */}
-      <Rig set="k8" parts={[{ name: 'base' }, { name: 'bell', pivot: [0.82, 0.38], rot: Math.sin((t - C.kalikata4) * 5.5) * 14 * Math.exp(-Math.max(0, t - C.kali4) * 0.6) }]}
-        x={540} y={1180} h={720} t={t} t0={C.kalikata4 - 0.05} t1={C.hooghly5 - 0.15} entry="rise" />
+      {/* Kalikata: the temple, its bell swinging in the frame beside the steps */}
+      <Rig set="k8" parts={[
+        { name: 'temple', box: [0, 0, 1] },
+        { name: 'bell', box: [0.431, 0.135, 0.1], pivot: [0.5, 0.02], rot: Math.sin((t - C.kalikata4) * 5.5) * 16 * Math.exp(-Math.max(0, t - C.kali4) * 0.5) },
+      ]} x={540} y={1180} h={720} t={t} t0={C.kalikata4 - 0.05} t1={C.hooghly5 - 0.15} entry="rise" />
 
-      {/* the trading ship sails up the Hooghly, its sails filling */}
+      {/* the trading ship sails up the Hooghly, its sails breathing with the wind */}
       <Rig set="k9" parts={[
-        { name: 'hull' },
-        ...(['fore', 'main', 'mizzen'] as const).map((s, i) => ({ name: `sails_${s}`, pivot: [0.5, 0.75] as [number, number], sx: 1 + 0.04 * Math.sin(t * 2.4 + i), sy: 1 + 0.02 * Math.sin(t * 2.4 + i + 1) })),
-      ]} x={lerp(80, 620, ramp(t, C.hooghly5, C.y1698, linear))} y={1150 + Math.sin(t * 2.2) * 10} h={640} t={t} t0={C.hooghly5 + 0.1} t1={C.y1698 - 0.2} entry="slideL" tilt={Math.sin(t * 1.8) * 2} />
+        { name: 'hull', box: [0, 0.1, 0.8] },
+        { name: 'sails', box: [0.04, -0.1, 0.5], pivot: [0.5, 0.95], sx: 1 + 0.03 * Math.sin(t * 2.4), sy: 1 + 0.015 * Math.sin(t * 2.4 + 1) },
+      ]} x={lerp(60, 600, ramp(t, C.hooghly5, C.y1698, linear))} y={1150 + Math.sin(t * 2.2) * 10} h={640} t={t} t0={C.hooghly5 + 0.1} t1={C.y1698 - 0.2} entry="slideL" tilt={Math.sin(t * 1.8) * 2} />
 
-      {/* 1698: the deed, the quill, the seal, and two hands meeting */}
+      {/* 1698: the deed unrolls, the quill writes, the seal stamps; two hands meet above it */}
       <Rig set="k10" parts={[
-        { name: 'paper', sy: Math.max(0.02, unroll), pivot: [0.5, 0.5] },
-        { name: 'rod_top', dy: -0.0 - (1 - unroll) * -0.32 },
-        { name: 'rod_bottom', dy: (1 - unroll) * -0.32 },
-        { name: 'inkpot' },
-        { name: 'quill', pivot: [0.2, 0.9], rot: Math.sin(t * 9) * 4 * window4(t, C.company5, C.company5 + 0.2, C.sabarna5 + 0.8, C.haq5), dx: Math.sin(t * 3) * 0.02 },
-        { name: 'seal', dy: -seal * 0.35, sx: 1 + (t > C.haq5 + 0.1 ? kick(t, C.haq5 + 0.1, 0.1, 22, 9) : 0), a: t > C.sabarna5 ? 1 : 0 },
-      ]} x={540} y={1180} h={620} t={t} t0={C.y1698 - 0.1} t1={C.fort6 - 0.15} entry="rise" />
-      <Rig set="k11" parts={[
-        { name: 'hand_left', dx: -(1 - ramp(t, C.sabarna5 - 0.2, C.sabarna5 + 0.7, easeOut)) * 0.9 },
-        { name: 'hand_right', dx: (1 - ramp(t, C.sabarna5 - 0.2, C.sabarna5 + 0.7, easeOut)) * 0.9 },
-      ]} x={540} y={760} h={360} t={t} t0={C.sabarna5 - 0.25} t1={C.fort6 - 0.15} entry="fade" shadow={false} float={0.4} />
+        { name: 'paper', box: [0, 0.02, 0.62], clip: [0, 0, 1 - unroll, 0] },
+        { name: 'rod_bottom', box: [0, -0.29, 0.36] },
+        { name: 'rod_bottom', box: [0, lerp(-0.29, 0.33, unroll), 0.36], flip: true },
+        { name: 'quill', box: [0.45 + Math.sin(t * 3) * 0.04, -0.2, 0.55], pivot: [0.05, 0.95], rot: Math.sin(t * 9) * 4 * writing, a: ramp(t, C.company5 - 0.2, C.company5) },
+        { name: 'seal', box: [0.42, 0.18, 0.24], dy: -sealS * 0.35, a: t > C.sabarna5 ? 1 : 0 },
+      ]} x={540} y={1190} h={600} t={t} t0={C.y1698 - 0.1} t1={C.fort6 - 0.15} entry="rise" />
+      <Rig set="k11" parts={(() => {
+        const s = 1 - ramp(t, C.sabarna5 - 0.2, C.sabarna5 + 0.7, easeOut);
+        return [{ name: 'hand_left', box: [-0.5 - s * 1.4, 0.02, 0.62] }, { name: 'hand_right', box: [0.52 + s * 1.4, -0.02, 0.55] }] as Part[];
+      })()} x={540} y={760} h={340} t={t} t0={C.sabarna5 - 0.25} t1={C.fort6 - 0.15} entry="fade" shadow={false} float={0.4} />
 
-      {/* Fort William rises on Gobindapur's ground, the family walks away, the gates swing shut, a cannon fires */}
-      <Rig set="k13" parts={[{ name: 'grandmother', ...walk(2) }, { name: 'mother_child', ...walk(1) }, { name: 'father', ...walk(0) }]} x={700} y={1430} h={330} t={t} t0={C.khali6 - 0.1} t1={C.yahin7 + 0.4} entry="fade" float={0} />
+      {/* Fort William rises on Gobindapur's ground; the family walks away; close-up: the gates swing shut; a cannon fires */}
+      <Rig set="k12" parts={[{ name: 'fort', box: [0, 0, 1] }]} x={540} y={1150} h={560} t={t} t0={C.khali6 - 0.1} t1={C.yahin7 + 0.4} entry="rise" />
+      <Rig set="k13" parts={[
+        { name: 'grandmother', ...walk(2, -0.5) }, { name: 'mother_child', ...walk(1, 0.05) }, { name: 'father', ...walk(0, 0.55) },
+      ]} x={540} y={1430} h={330} t={t} t0={C.gobind6} t1={C.khali6 + 0.7} entry="fade" float={0} />
       <Rig set="k12" parts={[
-        { name: 'base' },
-        { name: 'door_left', pivot: [0.43, 0.6], sx: lerp(1, 0.15, gate) },
-        { name: 'door_right', pivot: [0.57, 0.6], sx: lerp(1, 0.15, gate) },
-        { name: 'cannon_carriage' },
-        { name: 'cannon_barrel', dx: -recoil * 0.03, dy: recoil * 0.01 },
-      ]} x={540} y={1150} h={700} t={t} t0={C.khali6 + 0.35} t1={C.yahin7 + 0.6} entry="rise" />
+        { name: 'door', box: [-0.274, 0, 1], pivot: [0, 0.5], sx: gate },
+        { name: 'door', box: [0.274, 0, 1], pivot: [1, 0.5], sx: gate, flip: true },
+      ]} x={540} y={1120} h={760} t={t} t0={C.khali6 + 0.3} t1={C.yahin7 - 0.15} entry="pop" float={0.3} />
+      <Rig set="k12" parts={[
+        { name: 'carriage', box: [0, 0.12, 0.55] },
+        { name: 'cannon_barrel', box: [0.06 - recoil * 0.12, -0.1, 0.4], pivot: [0.8, 0.5], rot: -6 + recoil * 4 },
+      ]} x={560} y={1200} h={520} t={t} t0={C.yahin7 - 0.2} t1={C.yahin7 + 0.9} entry="slideR" />
+      <MuzzleFlash t={t} t0={fireT} x={300} y={1150} />
 
       {/* the capital: a crown settles on its cushion */}
-      <Rig set="k14" parts={[{ name: 'cushion' }, { name: 'crown', dy: -(1 - ramp(t, C.raj7, C.raj7 + 0.45, easeIn)) * 0.8 + (t > C.raj7 + 0.45 ? kick(t, C.raj7 + 0.45, 0.02, 22, 9) : 0) }]}
-        x={540} y={1180} h={460} t={t} t0={C.raj7 - 0.4} t1={C.kitab8 - 0.05} entry="pop" glow={COL.gold} />
+      <Rig set="k14" parts={[
+        { name: 'cushion', box: [0, 0.22, 0.5] },
+        { name: 'crown', box: [0, -0.12 - (1 - ramp(t, C.raj7, C.raj7 + 0.45, easeIn)) * 0.9, 0.62], dy: t > C.raj7 + 0.45 ? kick(t, C.raj7 + 0.45, 0.02, 22, 9) : 0 },
+      ]} x={540} y={1180} h={480} t={t} t0={C.raj7 - 0.4} t1={C.kitab8 - 0.05} entry="pop" glow={COL.gold} />
 
-      {/* the book, then the High Court and the gavel */}
-      <Rig set="k15" parts={[{ name: 'closed', a: 1 - ramp(t, C.kitab8 + 0.35, C.kitab8 + 0.6), sx: lerp(1, 0.2, ramp(t, C.kitab8 + 0.3, C.kitab8 + 0.6, easeIn)) }, { name: 'open', a: ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.65), sx: lerp(0.3, 1, ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.75, easeOut)) }]}
-        x={540} y={1150} h={620} t={t} t0={C.kitab8 - 0.05} t1={C.court8 + 1.9} entry="rise" sweep={false} />
-      <BookText t={t} x={700} y={1100} />
-      <Rig set="k16" parts={[{ name: 'court' }]} x={540} y={760} h={560} t={t} t0={C.court8 - 0.05} t1={C.pehle8 + 0.2} entry="rise" />
-      <Rig set="k17" parts={[{ name: 'block' }, { name: 'gavel', pivot: [0.85, 0.75], rot: -gv * 40 }]} x={820} y={1380} h={300} t={t} t0={C.court8 + 0.3} t1={C.pehle8 + 0.2} entry="slideR" />
+      {/* the book (closed → open), then the High Court and the gavel */}
+      <Rig set="k15" parts={[
+        { name: 'closed', box: [0, 0, 0.9], a: 1 - ramp(t, C.kitab8 + 0.35, C.kitab8 + 0.6), sx: lerp(1, 0.2, ramp(t, C.kitab8 + 0.3, C.kitab8 + 0.6, easeIn)) },
+        { name: 'open', box: [0, 0.05, 0.62], a: ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.65), sx: lerp(0.3, 1, ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.75, easeOut)) },
+      ]} x={540} y={1180} h={600} t={t} t0={C.kitab8 - 0.05} t1={C.court8 + 1.9} entry="rise" sweep={false} />
+      <BookText t={t} x={738} y={1150} />
+      <Rig set="k16" parts={[{ name: 'court', box: [0, 0, 1] }]} x={540} y={680} h={420} t={t} t0={C.court8 - 0.05} t1={C.pehle8 + 0.2} entry="rise" />
+      <Rig set="k17" parts={[
+        { name: 'block', box: [-0.22, 0.26, 0.42] },
+        { name: 'gavel', box: [0.12, -0.08, 0.5], pivot: [0.95, 0.55], rot: -gv * 38 },
+      ]} x={820} y={1400} h={320} t={t} t0={C.court8 + 0.3} t1={C.pehle8 + 0.2} entry="slideR" />
 
       {/* the ending: the village becomes today's city on the same riverbank */}
-      {village(540, 1250, 620, C.matlab9 - 0.05, endIn + 0.4, 0, 'vend')}
-      {street(endIn, C.to10 + 0.1)}
+      {village(540, 1250, 620, C.matlab9 - 0.05, C.hamesha9 + 0.3, 0, 'vend')}
+      {street(C.hamesha9 - 0.1, C.to10 + 0.1)}
     </>
   );
 };
 
-/** The taxi's two wheels (one cut-out, used twice). Positions are fractions of the taxi body; tuned when the asset lands. */
-const WheelPair: React.FC<{ t: number; x: number; y: number; h: number; rot: number; t0: number; t1: number }> = ({ t, x, y, h, rot, t0, t1 }) => (
-  <>
-    {[-0.62, 0.62].map((f) => (
-      <Rig key={f} set="k2" parts={[{ name: 'wheel', rot }]} x={x + f * h} y={y + h * 0.28} h={h * 0.36} t={t} t0={t0} t1={t1} entry="fade" shadow={false} float={0} sweep={false} />
-    ))}
-  </>
-);
+/** The taxi's two wheels, in the rig's own space (H = rig height): turning cut-outs once k2/wheel exists, drawn in code until then.
+ *  Wheel arches sit at 20% and 79% of the taxi's width, 78% down its height (measured on the cut-out). */
+const TaxiWheels: React.FC<{ x: number; y: number; h: number; spin: number; H?: number }> = ({ x, y, h, spin, H = 720 }) => {
+  const w = h * 2.8;
+  const d = 0.12 * w * H;
+  return (
+    <>
+      {[-0.3, 0.29].map((f, i) => {
+        const cx = H / 2 + (x + f * w) * H, cy = H / 2 + (y + 0.28 * h) * H;
+        return (
+          <div key={i} style={{ position: 'absolute', left: cx - d / 2, top: cy - d / 2, width: d, height: d, transform: `rotate(${spin}deg)` }}>
+            {has('k2/wheel') ? <img src={staticFile('kolkata/img/k2/wheel.png')} style={{ width: d, height: d }} /> : (
+              <svg viewBox="-50 -50 100 100" width={d} height={d}>
+                <defs><radialGradient id={`kkhub${i}`}><stop offset="0" stopColor="#f4f4f4" /><stop offset="1" stopColor="#8a8a8a" /></radialGradient></defs>
+                <circle r={48} fill="#141414" stroke="#2a2a2a" strokeWidth={4} />
+                <circle r={30} fill="#3a3a3a" />
+                <circle r={24} fill={`url(#kkhub${i})`} />
+                {[0, 72, 144, 216, 288].map((a) => <rect key={a} x={-2.5} y={-22} width={5} height={14} fill="#d8d8d8" transform={`rotate(${a})`} />)}
+                <circle r={7} fill="#eee" />
+              </svg>
+            )}
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
+/** A cannon's muzzle flash and smoke puff, drawn in code. */
+const MuzzleFlash: React.FC<{ t: number; t0: number; x: number; y: number }> = ({ t, t0, x, y }) => {
+  const p = (t - t0) / 1.2;
+  if (p < 0 || p > 1) return null;
+  const flash = Math.max(0, 1 - p * 6);
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%)' }}>
+      <div style={{ position: 'absolute', left: -160, top: -160, width: 320, height: 320, borderRadius: '50%', opacity: flash,
+        background: 'radial-gradient(circle, #fff8d0 0%, #ffb347 30%, rgba(255,90,20,0.6) 55%, rgba(255,90,20,0) 72%)', transform: `scale(${0.6 + p * 2})` }} />
+      {[0, 1, 2, 3, 4].map((i) => (
+        <div key={i} style={{ position: 'absolute', left: -120 - i * 40 - p * 160, top: -110 + Math.sin(i * 2.1) * 50 - p * 60, width: 240, height: 220, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(220,210,195,0.75), rgba(160,150,140,0) 70%)', opacity: (1 - p) * 0.9, transform: `scale(${0.5 + p * (1.4 + i * 0.2)})`, filter: 'blur(6px)' }} />
+      ))}
+    </div>
+  );
+};
 
 export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const pl = GEO.places;

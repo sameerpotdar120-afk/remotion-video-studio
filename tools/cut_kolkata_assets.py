@@ -21,11 +21,38 @@ from scipy import ndimage
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "kolkata" / "img"
 SIZES = ROOT / "public" / "kolkata" / "img_sizes.json"
-MAX_SIDE = 2600
+MAX_SIDE = 1800  # displayed at most ~1400 px tall in the 4K render
 
 
-def cut(im: Image.Image, sess) -> Image.Image:
+# Busy scenes with lots of thin detail and open space (a street with wires, a gothic facade, a banyan's canopy):
+# rembg eats them, so these use a pure white key instead (only white that touches the border is removed).
+WHITE_KEY = {"k1_street", "k16_court", "k4_banyan"}
+
+
+def white_key(rgb: Image.Image) -> Image.Image:
+    arr = np.asarray(rgb).astype(np.float32)
+    dist = (255 - arr).max(axis=2)
+    lab, _ = ndimage.label(dist < 22)
+    edge = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
+    bg = np.isin(lab, edge[edge > 0])
+    # enclosed holes of pure backdrop white (between roots, under balconies) go too, if they are big enough
+    lab2, n2 = ndimage.label((dist < 9) & ~bg)
+    if n2:
+        sizes = ndimage.sum(np.ones_like(dist), lab2, range(1, n2 + 1))
+        bg |= np.isin(lab2, 1 + np.where(sizes > 900)[0])
+    # soft edge: fade over the last few levels of near-white next to the background
+    a = np.where(bg, 0.0, 255.0)
+    near = ndimage.binary_dilation(bg, iterations=2) & ~bg
+    a[near] = np.clip((dist[near] - 6) / 30, 0, 1) * 255
+    out = rgb.copy()
+    out.putalpha(Image.fromarray(a.astype(np.uint8)).filter(ImageFilter.GaussianBlur(0.7)))
+    return out
+
+
+def cut(im: Image.Image, sess, name: str = "") -> Image.Image:
     rgb = im.convert("RGB")
+    if name in WHITE_KEY:
+        return white_key(rgb)
     a = np.asarray(remove(rgb, session=sess, post_process_mask=True).split()[-1]).astype(np.float32)
     # also drop near-white regions that touch the border (rembg sometimes leaves a soft halo of the white backdrop)
     arr = np.asarray(rgb).astype(np.float32)
@@ -47,7 +74,7 @@ def main() -> None:
     for f in files:
         name = os.path.basename(f)[:-4]
         st, part = name.split("_", 1)
-        im = cut(Image.open(f), sess)
+        im = cut(Image.open(f), sess, name)
         im = im.resize((im.width * 2, im.height * 2), Image.LANCZOS)
         rgb = im.convert("RGB").filter(ImageFilter.UnsharpMask(radius=2, percent=60, threshold=2))
         rgb.putalpha(im.split()[-1])

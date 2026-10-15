@@ -63,8 +63,9 @@ CUES = [
     # Fort William: Gobindapur emptied — huts lift away, the family walks off, the gates slam, the cannon fires
     (C["fort6"] - 0.15, "wh_fast", -10, {}), (C["fort6"] + 0.1, "braam", -14, {}),
     (C["gobind6"], "wh_air", -12, {}), (C["khali6"], "subdrop", -12, {}),
-    (C["khali6"] + 0.35, "wh_soft", -12, {}), (C["khali6"] + 1.25, "wood_door", -12, {"align": "start"}), (C["khali6"] + 2.2, "gate_metal", -12, {}),
-    (C["yahin7"] - 0.4, "cannon", -10, {}),
+    (C["gobind6"] + 0.2, "village", -26, {"align": "start", "skip": 6.0, "dur": 1.4}),
+    (C["khali6"] + 0.25, "wh_soft", -12, {}), (C["khali6"] + 0.45, "wood_door", -12, {"align": "start"}), (C["khali6"] + 1.02, "gate_metal", -11, {}),
+    (C["yahin7"] + 0.15, "cannon", -10, {}),
     # one city, the capital: the crown settles
     (C["yahin7"] - 0.05, "wh_big_tonal", -11, {}), (C["shehar7"], "chime_hit", -12, {}),
     (C["raj7"] - 0.3, "wh_fast", -10, {}), (C["raj7"] + 0.45, "metal_thud", -13, {}), (C["raj7"] + 0.5, "magic", -15, {"dur": 0.9}),
@@ -120,7 +121,7 @@ def main() -> None:
     music *= db(MUSIC_PAUSE + (MUSIC_TALK - MUSIC_PAUSE) * activity)
     # short dips so the gavel, the cannon and the gates land
     t_ax = np.arange(n) / SR
-    dip = sum(np.clip(1 - np.abs(t_ax - (x + 0.2)) / 0.7, 0, 1) for x in (C["court8"] + 1.15, C["yahin7"] - 0.4, C["khali6"]))
+    dip = sum(np.clip(1 - np.abs(t_ax - (x + 0.2)) / 0.7, 0, 1) for x in (C["court8"] + 1.15, C["yahin7"] + 0.15, C["khali6"] + 1.0))
     music *= db(-5.0 * np.clip(dip, 0, 1))[:, None]
     music = fade(music, 0.25, 2.5)
 

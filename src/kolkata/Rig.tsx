@@ -12,6 +12,8 @@ const src = (key: string) => staticFile(`kolkata/img/${key}.png`);
 /** One moving part. Pivot is in fractions of the set's canvas (0..1). */
 export type Part = {
   name: string;
+  /** Take this part from another set (e.g. the taxi from k2 placed in the k1 street). */
+  set?: string;
   pivot?: [number, number];
   rot?: number;            // degrees
   dx?: number; dy?: number; // fractions of the set height
@@ -22,6 +24,8 @@ export type Part = {
    *  height, from the rig's centre. The part keeps its own aspect ratio. */
   box?: [number, number, number];
   flip?: boolean;
+  /** Reveal: inset from [top, right, bottom, left] as fractions of the part (for unrolling, wiping in). */
+  clip?: [number, number, number, number];
 };
 
 export type Entry = 'rise' | 'pop' | 'drop' | 'slideL' | 'slideR' | 'fade';
@@ -30,12 +34,13 @@ export type Entry = 'rise' | 'pop' | 'drop' | 'slideL' | 'slideR' | 'fade';
  *  a warm rim-light sweep across it, and an entrance/exit. Skipped until its files exist. */
 export const Rig: React.FC<{
   set: string; parts: Part[]; x: number; y: number; h: number; t: number; t0: number; t1: number;
-  entry?: Entry; tilt?: number; shadow?: boolean; sweep?: boolean; glow?: string; float?: number; z?: number;
-}> = ({ set, parts, x, y, h, t, t0, t1, entry = 'rise', tilt = 0, shadow = true, sweep = true, glow, float = 1 }) => {
-  const base = parts.find((p) => SZ[`${set}/${p.name}`]);
+  entry?: Entry; tilt?: number; shadow?: boolean; sweep?: boolean; glow?: string; float?: number; z?: number; children?: React.ReactNode;
+}> = ({ set, parts, x, y, h, t, t0, t1, entry = 'rise', tilt = 0, shadow = true, sweep = true, glow, float = 1, children }) => {
+  const keyOf = (p: Part) => `${p.set ?? set}/${p.name}`;
+  const base = parts.find((p) => SZ[keyOf(p)]);
   if (!base || t < t0 - 0.05 || t > t1 + 0.45) return null;
   const boxed = parts.some((p) => p.box);
-  const [iw, ih] = SZ[`${set}/${base.name}`];
+  const [iw, ih] = SZ[keyOf(base)];
   const w = boxed ? h : (h * iw) / ih;
   const inP = clamp01(pop(t, t0, 10, 190));
   const outP = ramp(t, t1, t1 + 0.4, easeIn);
@@ -58,11 +63,11 @@ export const Rig: React.FC<{
         <div style={{ position: 'absolute', left: w * 0.1, right: w * 0.1, top: h * 0.86, height: h * 0.12, borderRadius: '50%', background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0.6), rgba(0,0,0,0) 70%)',
           filter: 'blur(14px)', transform: `scale(${1 - fl / 200})` }} />
       )}
-      {parts.map((p) => {
-        const key = `${set}/${p.name}`;
+      {parts.map((p, i) => {
+        const key = keyOf(p);
         if (!SZ[key] || (p.a ?? 1) <= 0.005) return null;
         const [px, py] = p.pivot ?? [0.5, 0.5];
-        const tr = `translate(${(p.dx ?? 0) * h}px, ${(p.dy ?? 0) * h}px) rotate(${p.rot ?? 0}deg) scale(${(p.sx ?? 1) * (p.flip ? -1 : 1)}, ${p.sy ?? 1})`;
+        const tr = `translate(${(p.dx ?? 0) * h}px, ${(p.dy ?? 0) * h}px) rotate(${p.rot ?? 0}deg) scale(${p.sx ?? 1}, ${p.sy ?? 1})`;
         const mask = `url(${src(key)})`;
         const [pw0, ph0] = SZ[key];
         const ph = p.box ? p.box[2] * h : h;
@@ -70,16 +75,17 @@ export const Rig: React.FC<{
         const left = p.box ? w / 2 + p.box[0] * h - pw / 2 : 0;
         const top = p.box ? h / 2 + p.box[1] * h - ph / 2 : 0;
         return (
-          <div key={p.name} style={{ position: 'absolute', left, top, width: pw, height: ph, transformOrigin: `${px * 100}% ${py * 100}%`, transform: tr, opacity: p.a ?? 1,
+          <div key={`${key}-${i}`} style={{ position: 'absolute', left, top, width: pw, height: ph, transformOrigin: `${px * 100}% ${py * 100}%`, transform: tr, opacity: p.a ?? 1,
             filter: `${p.blur ? `blur(${p.blur}px) ` : ''}${glow ? `drop-shadow(0 0 22px ${glow}) ` : ''}drop-shadow(0 18px 18px rgba(0,0,0,0.45))` }}>
-            <img src={src(key)} style={{ width: pw, height: ph, display: 'block' }} />
+            <img src={src(key)} style={{ width: pw, height: ph, display: 'block', transform: p.flip ? 'scaleX(-1)' : undefined, clipPath: p.clip ? `inset(${p.clip.map((v) => `${(v * 100).toFixed(2)}%`).join(' ')})` : undefined }} />
             {sweep && (
-              <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '100% 100%', maskSize: '100% 100%', mixBlendMode: 'screen',
+              <div style={{ position: 'absolute', inset: 0, transform: p.flip ? 'scaleX(-1)' : undefined, WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '100% 100%', maskSize: '100% 100%', mixBlendMode: 'screen',
                 background: `linear-gradient(105deg, rgba(255,210,140,0) ${sweepX * 100 - 18}%, rgba(255,214,150,0.5) ${sweepX * 100}%, rgba(255,210,140,0) ${sweepX * 100 + 18}%)` }} />
             )}
           </div>
         );
       })}
+      {children}
     </div>
   );
 };
