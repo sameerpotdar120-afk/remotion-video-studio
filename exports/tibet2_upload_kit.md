@@ -1,7 +1,7 @@
 # Tibet, the empty patch on the flight map: upload kit
 
 Upload file: `tibet2_2k60_master.mp4` (2K 60 fps, 1440×2560, 1:19). Backup copies: `tibet2_hindi_full.mp4` (1080p), `tibet2_preview.mp4`.
-Thumbnail: not made yet.
+Thumbnail: `tibet2_thumbnail.jpg` (1080×1920) and `tibet2_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram (frame 140 of Tibet2Cover). Everything sits inside the 3:4 crop.
 
 ## Search queries this should win
 

@@ -30,6 +30,7 @@ import { Kalpasar, KALPASAR_DURATION, KALPASAR_DURATION_60 } from './kalpasar/Ka
 import { KalpasarCover } from './kalpasar/Cover';
 import { Kolkata, KOLKATA_DURATION, KOLKATA_DURATION_60 } from './kolkata/Kolkata';
 import { Tibet2, TIBET2_DURATION, TIBET2_DURATION_60 } from './tibet2/Tibet2';
+import { Tibet2Cover } from './tibet2/Cover';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -62,6 +63,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="Tibet2" component={Tibet2} durationInFrames={TIBET2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Tibet2-2K60" component={Tibet2} durationInFrames={TIBET2_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 4 / 3 }} />
+      <Composition id="Tibet2Cover" component={Tibet2Cover} durationInFrames={TIBET2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
       <Composition id="Kalpasar4K60" component={Kalpasar} durationInFrames={KALPASAR_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="TwinsCover" component={TwinsCover} durationInFrames={TWINS_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Twins4K60" component={Twins} durationInFrames={TWINS_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
