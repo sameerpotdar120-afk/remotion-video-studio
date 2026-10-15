@@ -18,6 +18,10 @@ export type Part = {
   sx?: number; sy?: number;
   a?: number;
   blur?: number;
+  /** For parts generated on their own (not on a shared canvas): [centre x, centre y, height], in units of the rig's
+   *  height, from the rig's centre. The part keeps its own aspect ratio. */
+  box?: [number, number, number];
+  flip?: boolean;
 };
 
 export type Entry = 'rise' | 'pop' | 'drop' | 'slideL' | 'slideR' | 'fade';
@@ -30,8 +34,9 @@ export const Rig: React.FC<{
 }> = ({ set, parts, x, y, h, t, t0, t1, entry = 'rise', tilt = 0, shadow = true, sweep = true, glow, float = 1 }) => {
   const base = parts.find((p) => SZ[`${set}/${p.name}`]);
   if (!base || t < t0 - 0.05 || t > t1 + 0.45) return null;
+  const boxed = parts.some((p) => p.box);
   const [iw, ih] = SZ[`${set}/${base.name}`];
-  const w = (h * iw) / ih;
+  const w = boxed ? h : (h * iw) / ih;
   const inP = clamp01(pop(t, t0, 10, 190));
   const outP = ramp(t, t1, t1 + 0.4, easeIn);
   let tx = 0, ty = 0, s = 1, op = 1;
@@ -57,12 +62,17 @@ export const Rig: React.FC<{
         const key = `${set}/${p.name}`;
         if (!SZ[key] || (p.a ?? 1) <= 0.005) return null;
         const [px, py] = p.pivot ?? [0.5, 0.5];
-        const tr = `translate(${(p.dx ?? 0) * h}px, ${(p.dy ?? 0) * h}px) rotate(${p.rot ?? 0}deg) scale(${p.sx ?? 1}, ${p.sy ?? 1})`;
+        const tr = `translate(${(p.dx ?? 0) * h}px, ${(p.dy ?? 0) * h}px) rotate(${p.rot ?? 0}deg) scale(${(p.sx ?? 1) * (p.flip ? -1 : 1)}, ${p.sy ?? 1})`;
         const mask = `url(${src(key)})`;
+        const [pw0, ph0] = SZ[key];
+        const ph = p.box ? p.box[2] * h : h;
+        const pw = p.box ? (ph * pw0) / ph0 : w;
+        const left = p.box ? w / 2 + p.box[0] * h - pw / 2 : 0;
+        const top = p.box ? h / 2 + p.box[1] * h - ph / 2 : 0;
         return (
-          <div key={p.name} style={{ position: 'absolute', left: 0, top: 0, width: w, height: h, transformOrigin: `${px * 100}% ${py * 100}%`, transform: tr, opacity: p.a ?? 1,
+          <div key={p.name} style={{ position: 'absolute', left, top, width: pw, height: ph, transformOrigin: `${px * 100}% ${py * 100}%`, transform: tr, opacity: p.a ?? 1,
             filter: `${p.blur ? `blur(${p.blur}px) ` : ''}${glow ? `drop-shadow(0 0 22px ${glow}) ` : ''}drop-shadow(0 18px 18px rgba(0,0,0,0.45))` }}>
-            <img src={src(key)} style={{ width: w, height: h, display: 'block' }} />
+            <img src={src(key)} style={{ width: pw, height: ph, display: 'block' }} />
             {sweep && (
               <div style={{ position: 'absolute', inset: 0, WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '100% 100%', maskSize: '100% 100%', mixBlendMode: 'screen',
                 background: `linear-gradient(105deg, rgba(255,210,140,0) ${sweepX * 100 - 18}%, rgba(255,214,150,0.5) ${sweepX * 100}%, rgba(255,210,140,0) ${sweepX * 100 + 18}%)` }} />
