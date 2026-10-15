@@ -226,6 +226,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Props t={t} />
 
       {/* hook: picture first, then three words */}
+      <Label t={t} t0={C.kolkata1} t1={C.teen1 - 0.1} text="KOLKATA" x={540} y={470} color={COL.gold} size={64} pin={S(c, merc(88.355, 22.575))} />
       <Big t={t} t0={0.25} t1={C.teen1 - 0.05} text="CITY OF JOY" x={540} y={300} size={140} color={COL.gold} font={NUM} rot={-2} />
       <Big t={t} t0={C.teen1} t1={C.n1300 - 0.1} text="कभी सिर्फ़ 3 गाँव!" x={540} y={320} size={118} color="#fff" />
       <Counter t={t} t0={C.n1300 - 0.1} t1={C.to1} to={1300} pre="₹" x={540} y={330} size={170} />
@@ -234,12 +235,14 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
       {/* the three villages and today's names */}
       <Label t={t} t0={C.sutanuti2} t1={C.doosra3 - 0.1} text="SUTANUTI" x={540} y={300} color={COL.amber} pin={su} size={60} />
-      <Label t={t} t0={C.shobha2} t1={C.doosra3 - 0.1} text="SHOBHABAZAR · CHITPUR" x={540} y={460} color={COL.white} size={40} ghost />
+      <Label t={t} t0={C.shobha2} t1={C.doosra3 - 0.1} text="SHOBHABAZAR" x={300} y={470} color={COL.violet} size={40} pin={S(c, merc(88.365, 22.598))} />
+      <Label t={t} t0={C.chitpur2} t1={C.doosra3 - 0.1} text="CHITPUR" x={790} y={470} color={COL.coral} size={40} pin={S(c, merc(88.374, 22.612))} />
       <Label t={t} t0={C.gobind3} t1={C.teesra4 - 0.1} text="GOBINDAPUR" x={540} y={300} color={COL.teal} pin={go} size={60} />
-      <Label t={t} t0={C.maidan3} t1={C.teesra4 - 0.1} text="MAIDAN · FORT WILLIAM" x={540} y={460} color={COL.white} size={40} ghost pin={fo} />
+      <Label t={t} t0={C.maidan3} t1={C.teesra4 - 0.1} text="MAIDAN" x={300} y={470} color={COL.green} size={40} pin={S(c, merc(88.346, 22.548))} />
+      <Label t={t} t0={C.fort3} t1={C.teesra4 - 0.1} text="FORT WILLIAM" x={790} y={470} color={COL.red} size={40} pin={fo} />
       <Label t={t} t0={C.kalikata4} t1={C.hooghly5 - 0.1} text="KALIKATA" x={540} y={300} color={COL.gold} pin={ka} size={60} />
       <Chip t={t} t0={C.kali4 - 0.3} t1={C.central4} text="माँ काली?" x={540} y={460} color={COL.red} size={50} />
-      <Label t={t} t0={C.central4} t1={C.hooghly5 - 0.1} text="CENTRAL KOLKATA" x={540} y={460} color={COL.white} size={40} ghost />
+      <Label t={t} t0={C.central4} t1={C.hooghly5 - 0.1} text="CENTRAL KOLKATA" x={540} y={470} color={COL.coral} size={40} pin={S(c, merc(88.358, 22.566))} />
 
       {/* the Hooghly and the trade */}
       <Label t={t} t0={C.hooghly5 + 0.3} t1={C.y1698 - 0.2} text="HOOGHLY" x={760} y={420} color={COL.river} pin={river} size={56} />
@@ -256,11 +259,12 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Big t={t} t0={C.khali6} t1={C.yahin7} text="पूरा गाँव खाली!" x={540} y={320} size={112} color={COL.red} rot={-2} />
 
       {/* one city, the capital */}
+      <Label t={t} t0={C.shehar7} t1={C.raj7 - 0.4} text="CALCUTTA" x={540} y={470} color={COL.gold} size={60} pin={S(c, merc(88.352, 22.578))} />
       <Big t={t} t0={C.yahin7 + 0.1} t1={C.british7 - 0.1} text="3 गाँव → 1 शहर" x={540} y={320} size={116} color={COL.gold} rot={0} />
       <Chip t={t} t0={C.british7 - 0.1} t1={C.kitab8 - 0.1} text="BRITISH INDIA की राजधानी" x={540} y={320} color={COL.gold} size={56} />
 
       {/* the book and the court */}
-      <Label t={t} t0={C.court8} t1={C.pehle8 - 0.1} text="CALCUTTA HIGH COURT" x={540} y={300} color={COL.white} pin={hc} size={50} />
+      <Label t={t} t0={C.court8} t1={C.pehle8 - 0.1} text="CALCUTTA HIGH COURT" x={540} y={300} color={COL.ice} pin={hc} size={50} />
       <Big t={t} t0={C.pehle8} t1={C.matlab9} text="बहुत पहले से!" x={540} y={320} size={120} color={COL.green} rot={2} />
 
       {/* the ending */}

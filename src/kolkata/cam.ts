@@ -13,7 +13,7 @@ export const merc = (lon: number, lat: number): P => {
 
 type Plate = { bounds: [number, number, number, number]; w: number; h: number };
 export const GEO = raw as unknown as {
-  plates: Record<string, Plate>; india: P[][]; westbengal: P[][]; places: Record<string, P>; hooghly: P[];
+  plates: Record<string, Plate>; india: P[][]; westbengal: P[][]; urban: P[][]; places: Record<string, P>; hooghly: P[];
 };
 
 const T = timing as unknown as { duration: number; cues: Record<string, number>; caps: [number, string][] };
@@ -43,7 +43,7 @@ const off = (p: P, dx: number, dy: number): P => [p[0] + dx, p[1] + dy];
  *  the Hooghly runs down to the Bay of Bengal in the south. */
 const keys = (): Key[] => [
   // frame 0: today's Kolkata from above, already pushing in on the river
-  { t: 0, at: off(PL.city, 1200, -1500), span: 3.0e4, rot: -4 },
+  { t: 0, at: off(PL.city, 1200, -1500), span: 5.2e4, rot: -4 },
   { t: C.kolkata1, at: PL.city, span: 1.9e4, rot: 1, e: easeOut },
   // "तीन गाँव": closer, onto the three village spots (the past grade comes in)
   { t: C.teen1 + 0.3, at: PL.villages, span: 1.15e4, rot: 0, e: inOut },

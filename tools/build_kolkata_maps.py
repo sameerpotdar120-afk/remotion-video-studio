@@ -2,7 +2,7 @@
 
     python3 -I tools/build_kolkata_maps.py <tile_cache> <ne_dir>
 
-Satellite: EOX Sentinel-2 cloudless 2024 (CC BY 4.0, credited on screen). Borders: Natural Earth (public domain;
+Satellite: EOX Sentinel-2 cloudless 2024 (CC BY 4.0, credited on screen). Borders and the built-up area: Natural Earth (public domain;
 India point-of-view edition for India). The Hooghly glow is a water mask taken from the city plate itself, and the
 lower river line is traced from its known course (approximate). Village spots are approximate: Sutanuti around
 today's Bagbazar/Shobhabazar, Kalikata around BBD Bag/Burrabazar, Gobindapur on the Fort William/Maidan site.
@@ -15,7 +15,7 @@ from pathlib import Path
 import numpy as np
 import shapefile
 from PIL import Image, ImageFilter
-from shapely.geometry import shape
+from shapely.geometry import Point, box, shape
 from shapely.ops import unary_union
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -88,6 +88,14 @@ def main() -> None:
     st = shapefile.Reader(glob.glob(str(ne / "extra" / "ne_10m_admin_1_states_provinces_lakes" / "*.shp"))[0])
     wb = [shape(s.__geo_interface__) for r, s in zip(st.records(), st.shapes()) if r["adm0_a3"] == "IND" and r["name"] == "West Bengal"][0]
     geo["westbengal"] = rings(wb.intersection(india), 0.004)
+    # Kolkata's built-up area (Natural Earth urban areas), for the city highlight
+    ua = shapefile.Reader(glob.glob(str(ne / "extra" / "ne_10m_urban_areas" / "*.shp"))[0])
+    pt = Point(88.355, 22.575)
+    city = [shape(s.__geo_interface__) for s in ua.shapes() if shape(s.__geo_interface__).buffer(0.01).contains(pt)]
+    if city:
+        g = unary_union(city).intersection(box(88.22, 22.44, 88.48, 22.70))
+        g = max(g.geoms, key=lambda q: q.area) if hasattr(g, "geoms") else g
+        geo["urban"] = rings(g, 0.0015)
     geo["places"] = {k: [round(mx(a), 1), round(my(b), 1)] for k, (a, b) in PLACES.items()}
     geo["hooghly"] = [[round(mx(a), 1), round(my(b), 1)] for a, b in HOOGHLY_LOWER]
     (ROOT / "src" / "kolkata").mkdir(parents=True, exist_ok=True)

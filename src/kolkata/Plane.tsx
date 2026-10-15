@@ -3,7 +3,34 @@ import { staticFile } from 'remotion';
 import { clamp01, easeIn, easeOut, inOut, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, Cam, DURATION_S, GEO, P, merc, project } from './cam';
 
-export const COL = { gold: '#FFD84A', amber: '#FFB347', red: '#FF4D5E', green: '#3DDC84', teal: '#2EC4B6', river: '#38D6FF', white: '#FFF6E6', sand: '#E3B05A' };
+export const COL = { gold: '#FFD84A', amber: '#FFB347', red: '#FF4D5E', green: '#3DDC84', teal: '#2EC4B6', river: '#38D6FF', white: '#FFF6E6', sand: '#E3B05A',
+  violet: '#B67CFF', coral: '#FF7A59', ice: '#9FE8FF' };
+
+/** An organic zone (a wobbly ellipse, in metres) for a named place: villages and today's neighbourhoods. Approximate. */
+const blob = (c: P, rx: number, ry: number, seed: number, rotDeg = 0): P[][] => {
+  const r = (rotDeg * Math.PI) / 180, out: P[] = [];
+  for (let i = 0; i < 48; i++) {
+    const a = (i / 48) * Math.PI * 2;
+    const w = 1 + 0.09 * Math.sin(a * 3 + seed) + 0.06 * Math.sin(a * 5 + seed * 2.3) + 0.04 * Math.sin(a * 7 + seed * 0.7);
+    const x = Math.cos(a) * rx * w, y = Math.sin(a) * ry * w;
+    out.push([c[0] + x * Math.cos(r) - y * Math.sin(r), c[1] + x * Math.sin(r) + y * Math.cos(r)]);
+  }
+  return [out];
+};
+const ll = (lon: number, lat: number) => merc(lon, lat);
+/** Named zones. Village extents follow the usual reading (Sutanuti ≈ Bagbazar–Shobhabazar–Chitpur, Kalikata ≈ BBD Bag–
+ *  Burrabazar, Gobindapur ≈ the Fort William and Maidan area); neighbourhood zones are approximate. */
+export const ZONES = {
+  // the village zones lie along the east bank (major axis along the river, about 59° from east), clear of the water
+  sutanuti: blob(ll(88.3705, 22.600), 1800, 900, 1.1, 59),
+  kalikata: blob(ll(88.354, 22.574), 1300, 800, 2.7, 59),
+  gobindapur: blob(ll(88.342, 22.551), 1200, 900, 4.2, 50),
+  shobhabazar: blob(ll(88.365, 22.598), 450, 400, 0.6),
+  chitpur: blob(ll(88.374, 22.612), 500, 560, 3.3),
+  maidan: blob(ll(88.346, 22.548), 1400, 700, 5.1, 80),
+  central: blob(ll(88.358, 22.566), 1000, 800, 2.0),
+  highcourt: blob(ll(88.3437, 22.5687), 220, 180, 1.7),
+};
 
 const ringD = (c: Cam, rings: P[][]) =>
   rings.map((r) => r.map((pt, i) => {
@@ -109,6 +136,7 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const kaA = Math.max(all3, window4(t, C.kalikata4 - 0.3, C.kalikata4 + 0.1, C.hooghly5 - 0.2, C.hooghly5 + 0.3));
   // one city: the three glows slide together and become one big gold glow
   const merge = ramp(t, C.yahin7 + 0.2, C.shehar7 + 0.4, inOut);
+  const mergeHide = t < C.raj7 + 0.6 ? merge : 0;
   const mergeA = window4(t, C.yahin7 - 0.2, C.yahin7 + 0.2, C.raj7 - 0.4, C.raj7 + 0.2);
   const centre = merc(88.352, 22.578);
   const mv = (p: P): P => [lerp(p[0], centre[0], merge), lerp(p[1], centre[1], merge)];
@@ -118,6 +146,8 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const fortGhost = window4(t, C.maidan3, C.fort3 + 0.2, C.teesra4 - 0.4, C.teesra4);
   const fortDraw = ramp(t, C.fort6 + 0.2, C.gobind6 + 0.4, inOut);
   const fortA = window4(t, C.fort6, C.fort6 + 0.2, C.yahin7 - 0.2, C.yahin7 + 0.3);
+  // the city's built-up area: frame 0 → "तीन गाँव", the merged city → the capital, and the golden ending
+  const cityA = window4(t, -1, -0.5, C.teen1 - 0.3, C.teen1 + 0.2) + window4(t, C.shehar7 - 0.2, C.shehar7 + 0.3, C.raj7 - 0.4, C.raj7) + ramp(t, C.hamesha9 - 0.2, C.hamesha9 + 0.4);
   const borderA = window4(t, C.company5 - 0.2, C.company5 + 0.2, C.fort6 - 0.3, C.fort6);
   const borderDraw = ramp(t, C.company5, C.haq5 + 0.3, inOut);
   return (
@@ -136,6 +166,18 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
               pathLength={1} strokeDasharray={fortA > 0 ? `${fortDraw} 1` : '0.02 0.015'} style={{ filter: `drop-shadow(0 0 12px ${COL.red})` }} />
           </g>
         )}
+        {/* the city itself (its built-up area) on every "Kolkata" / "शहर" */}
+        <Glow c={c} rings={GEO.urban} a={clamp01(cityA)} color={COL.gold} t={t} fill={0.2} />
+        {/* village zones: each village its own colour, lit on its name and whenever all three show */}
+        <Glow c={c} rings={ZONES.sutanuti} a={clamp01(Math.max(suA, againA) * (1 - mergeHide))} color={COL.amber} t={t} fill={0.26} />
+        <Glow c={c} rings={ZONES.kalikata} a={clamp01(Math.max(kaA, againA) * (1 - mergeHide))} color={COL.gold} t={t + 0.4} fill={0.26} />
+        <Glow c={c} rings={ZONES.gobindapur} a={clamp01(Math.max(goA, againA) * (1 - mergeHide))} color={COL.teal} t={t + 0.8} fill={0.26} />
+        {/* today's neighbourhoods, on their names */}
+        <Glow c={c} rings={ZONES.shobhabazar} a={window4(t, C.shobha2 - 0.1, C.shobha2 + 0.2, C.doosra3 - 0.2, C.doosra3)} color={COL.violet} t={t} fill={0.34} />
+        <Glow c={c} rings={ZONES.chitpur} a={window4(t, C.chitpur2 - 0.1, C.chitpur2 + 0.2, C.doosra3 - 0.2, C.doosra3)} color={COL.coral} t={t + 0.3} fill={0.34} />
+        <Glow c={c} rings={ZONES.maidan} a={window4(t, C.maidan3 - 0.1, C.maidan3 + 0.2, C.teesra4 - 0.3, C.teesra4)} color={COL.green} t={t} fill={0.3} />
+        <Glow c={c} rings={ZONES.central} a={window4(t, C.central4 - 0.1, C.central4 + 0.2, C.hooghly5 - 0.2, C.hooghly5 + 0.2)} color={COL.coral} t={t} fill={0.3} />
+        <Glow c={c} rings={ZONES.highcourt} a={window4(t, C.court8 - 0.1, C.court8 + 0.2, C.pehle8 - 0.2, C.pehle8 + 0.2)} color={COL.ice} t={t} fill={0.45} />
         <Village c={c} at={mv(pl.sutanuti)} a={clamp01(Math.max(suA, mergeA, againA))} t={t} color={COL.amber} />
         <Village c={c} at={mv(pl.kalikata)} a={clamp01(Math.max(kaA, mergeA, againA))} t={t + 0.3} color={COL.gold} />
         <Village c={c} at={mv(pl.gobindapur)} a={clamp01(Math.max(goA, mergeA, againA))} t={t + 0.6} color={COL.teal} />
