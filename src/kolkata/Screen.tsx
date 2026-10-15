@@ -80,8 +80,8 @@ const BookText: React.FC<{ t: number; x: number; y: number }> = ({ t, x, y }) =>
   const xA = ramp(t, C.court8 + 1.1, C.court8 + 1.35, easeOut);
   return (
     <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%,-50%) rotate(-3deg)', opacity: a, textAlign: 'center', fontFamily: NUM, color: '#3a2412', lineHeight: 1.05 }}>
-      <div style={{ fontSize: 30, letterSpacing: 2, clipPath: `inset(0 ${(1 - clamp01(write * 2)) * 100}% 0 0)` }}>FOUNDER:</div>
-      <div style={{ fontSize: 40, clipPath: `inset(0 ${(1 - clamp01(write * 2 - 1)) * 100}% 0 0)` }}>JOB CHARNOCK</div>
+      <div style={{ fontSize: 28, letterSpacing: 2, clipPath: `inset(0 ${(1 - clamp01(write * 2)) * 100}% 0 0)` }}>FOUNDER:</div>
+      <div style={{ fontSize: 34, clipPath: `inset(0 ${(1 - clamp01(write * 2 - 1)) * 100}% 0 0)` }}>JOB CHARNOCK</div>
       {xA > 0 && (
         <svg width={300} height={160} viewBox="0 0 420 220" style={{ position: 'absolute', left: '50%', top: '50%', transform: `translate(-50%,-50%) scale(${lerp(1.6, 1, xA)})`, overflow: 'visible' }}>
           <path d="M40 30 L380 190 M380 30 L40 190" stroke={COL.red} strokeWidth={26} strokeLinecap="round" pathLength={1} strokeDasharray={`${xA} 1`} style={{ filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.5))' }} />
@@ -217,7 +217,7 @@ const Props: React.FC<{ t: number }> = ({ t }) => {
         { name: 'closed', box: [0, 0, 0.9], a: 1 - ramp(t, C.kitab8 + 0.35, C.kitab8 + 0.6), sx: lerp(1, 0.2, ramp(t, C.kitab8 + 0.3, C.kitab8 + 0.6, easeIn)) },
         { name: 'open', box: [0, 0.05, 0.62], a: ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.65), sx: lerp(0.3, 1, ramp(t, C.kitab8 + 0.45, C.kitab8 + 0.75, easeOut)) },
       ]} x={540} y={1180} h={600} t={t} t0={C.kitab8 - 0.05} t1={C.court8 + 1.9} entry="rise" sweep={false} />
-      <BookText t={t} x={738} y={1150} />
+      <BookText t={t} x={705} y={1150} />
       <Rig set="k16" parts={[{ name: 'court', box: [0, 0, 1] }]} x={540} y={680} h={420} t={t} t0={C.court8 - 0.05} t1={C.pehle8 + 0.2} entry="rise" />
       <Rig set="k17" parts={[
         { name: 'block', box: [-0.22, 0.26, 0.42] },
@@ -279,7 +279,6 @@ const MuzzleFlash: React.FC<{ t: number; t0: number; x: number; y: number }> = (
 export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const pl = GEO.places;
   const su = S(c, pl.sutanuti), ka = S(c, pl.kalikata), go = S(c, pl.gobindapur), fo = S(c, pl.fort), hc = S(c, pl.highcourt);
-  const river = S(c, merc(88.338, 22.57));  // mid-channel by the old villages
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       <Props t={t} />
@@ -304,7 +303,7 @@ export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Label t={t} t0={C.central4} t1={C.hooghly5 - 0.1} text="CENTRAL KOLKATA" x={540} y={470} color={COL.coral} size={40} pin={S(c, merc(88.358, 22.566))} />
 
       {/* the Hooghly and the trade */}
-      <Label t={t} t0={C.hooghly5 + 0.3} t1={C.y1698 - 0.2} text="HOOGHLY" x={760} y={420} color={COL.river} pin={river} size={56} />
+      <Label t={t} t0={C.hooghly5 + 0.3} t1={C.y1698 - 0.2} text="HOOGHLY" x={760} y={420} color={COL.river} size={56} />
       <Chip t={t} t0={C.perfect5 - 0.2} t1={C.y1698 - 0.1} text="व्यापार के लिए PERFECT" x={540} y={300} color={COL.teal} size={56} />
 
       {/* 1698 */}
