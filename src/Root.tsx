@@ -28,6 +28,7 @@ import { Twins, TWINS_DURATION, TWINS_DURATION_60 } from './twins/Twins';
 import { TwinsCover } from './twins/Cover';
 import { Kalpasar, KALPASAR_DURATION, KALPASAR_DURATION_60 } from './kalpasar/Kalpasar';
 import { KalpasarCover } from './kalpasar/Cover';
+import { Kolkata, KOLKATA_DURATION, KOLKATA_DURATION_60 } from './kolkata/Kolkata';
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -56,6 +57,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Twins" component={Twins} durationInFrames={TWINS_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Kalpasar" component={Kalpasar} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="KalpasarCover" component={KalpasarCover} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
+      <Composition id="Kolkata" component={Kolkata} durationInFrames={KOLKATA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="Kalpasar4K60" component={Kalpasar} durationInFrames={KALPASAR_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="TwinsCover" component={TwinsCover} durationInFrames={TWINS_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Twins4K60" component={Twins} durationInFrames={TWINS_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />

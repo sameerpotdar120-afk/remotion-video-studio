@@ -59,7 +59,11 @@ def water_mask(im: Image.Image) -> Image.Image:
     big = [i for i, (_, x) in zip(big, cx) if x < m.shape[1] * 0.65]
     keep = np.isin(lab, big) if n else m
     keep = ndimage.binary_fill_holes(keep)
-    return Image.fromarray((keep * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    alpha = Image.fromarray((keep * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))
+    # CSS masks read alpha, so the mask is white with the water as its alpha
+    out = Image.new("RGBA", alpha.size, (255, 255, 255, 0))
+    out.putalpha(alpha)
+    return out
 
 
 def main() -> None:
