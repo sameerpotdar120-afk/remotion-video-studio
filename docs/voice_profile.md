@@ -75,3 +75,8 @@ The channel has a recurring host character: "Null", a masked man (matte black fu
 ## Real people as assets (creator, Oct 16)
 
 - When a real person is needed as an asset, the prompt tells the image tool to first find a free reference photo (public domain / Wikimedia Commons / official government photo) and base the likeness on it, then render in the same Unreal Engine 5 cinematic style, in parts if they move. Never copy a copyrighted photo as-is.
+
+## Map style (creator, Oct 16): the Judwa Desh look, not 3D
+
+- The 3D-relief / tilted-slab map style "won't work". Default to the Judwa Desh (Twins) style: flat top-down EOX satellite map (no relief, no tilt), the Twins grade (teal shadows + warm highlights soft-light, vignette, dark top/bottom), bold flat region fills with a white top sheen that grow out from the centre, white edge draw-on + running light + outer glow, a small lift (scale + shadow) on landing, boxed name labels on pins, big white/gold numbers, and the restless camera (breathe, drift, punch on hits, long whips with motion blur).
+- Skip props that look cheap (the Siliguri chicken was cut).
