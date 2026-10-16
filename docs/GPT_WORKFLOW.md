@@ -10,6 +10,8 @@ The **creator** (the person talking to you) decides topics, writes or approves t
 (VO), and generates every image and video asset with AI tools from the prompts you write. **You** do the research,
 scripts, prompt files, the edit in code, the sound mix, the render and the upload kit.
 
+> **Update (Oct 16): Veo is scrapped.** Don't write Veo prompt files or plan Veo cutaways. Use GPT image assets (UE5 style, in parts) and the map animation editing only. The Veo sections below are kept for reference; Kolkata v2's Veo layer stays as it is.
+
 ---
 
 ## 0. What you can and can't do from a chat

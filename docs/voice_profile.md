@@ -67,3 +67,7 @@ The channel has a recurring host character: "Null", a masked man (matte black fu
 ## Upload kit = SEO + thumbnail (creator, Oct 16)
 
 - "Upload kit" or "SEO kit" always includes the thumbnail: make it in the same turn (a Cover composition from the video's strongest frame, 1080×1920 + 4K jpg in exports/), don't offer it as an extra.
+
+## Veo scrapped (creator, Oct 16; overrides the Veo rules above)
+
+- No Veo clips from now on: don't write Veo prompt files or plan Veo cutaways. Assets are GPT images only (UE5 style, in parts), plus my map animation editing (3D cut-out maps, rigs, labels, effects drawn in code). Omni clips for Null stay.
