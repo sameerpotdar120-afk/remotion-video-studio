@@ -15,6 +15,7 @@ import { Louisiana, LOUISIANA_DURATION } from './louisiana/Louisiana';
 import { Mumbai, MUMBAI_DURATION } from './mumbai/Mumbai';
 import { MumbaiCover } from './mumbai/Cover';
 import { Spain, SPAIN_DURATION } from './spain/Spain';
+import { SpainCover } from './spain/Cover';
 import { Market, MARKET_DURATION } from './market/Market';
 import { Sugar, SUGAR_DURATION } from './sugar/Sugar';
 import { SugarCover } from './sugar/Cover';
@@ -50,6 +51,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="MumbaiCover" component={MumbaiCover} durationInFrames={MUMBAI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Mumbai" component={Mumbai} durationInFrames={MUMBAI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Spain" component={Spain} durationInFrames={SPAIN_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="SpainCover" component={SpainCover} durationInFrames={SPAIN_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Market" component={Market} durationInFrames={MARKET_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Sugar" component={Sugar} durationInFrames={SUGAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SugarCover" component={SugarCover} durationInFrames={SUGAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
