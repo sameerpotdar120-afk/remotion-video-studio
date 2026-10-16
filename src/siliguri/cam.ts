@@ -40,8 +40,8 @@ const ll = merc;
 const pl = GEO.places;
 export const PL = {
   india: ll(84, 24), east: ll(91.0, 25.6), neck: pl.neck, corridor: ll(88.3, 26.6), nbrs: ll(88.9, 26.9),
-  bengal: ll(90.2, 23.6), mongla: pl.mongla, teesta: ll(88.95, 26.2), bases: ll(88.95, 26.2), kaladan: ll(92.2, 22.0),
-  asia: ll(98, 12), malacca: ll(100.8, 3.6), andaman: ll(94.5, 9.5), ne: ll(92.6, 25.9),
+  bengal: ll(90.2, 23.6), mongla: pl.mongla, teesta: ll(88.95, 26.2), bases: ll(88.75, 26.35), kaladan: ll(92.2, 22.0),
+  asia: ll(98, 12), malacca: ll(100.8, 3.6), andaman: ll(93.6, 10.2), ne: ll(92.6, 25.9),
 };
 const off = (p: P, dx: number, dy: number): P => [p[0] + dx, p[1] + dy];
 
@@ -85,6 +85,7 @@ const keys = (): Key[] => [
   { t: C.malacca9 + 0.5, at: PL.malacca, span: 1.9e6, rot: -2, e: inOut },
   { t: C.n28 + 1.2, at: ll(102.6, 2.0), span: 9.0e5, rot: 0, e: inOut },
   { t: C.darwaze9 + 0.4, at: PL.andaman, span: 2.6e6, rot: 1, e: inOut },
+  { t: C.to10 - 0.2, at: off(PL.andaman, 0, 4e4), span: 2.3e6, rot: 0, e: linear },
   // the question: back on India and the neck
   { t: C.to10 + 0.4, at: off(PL.east, -2e5, -1e5), span: 2.2e6, rot: 0, e: inOut },
   { t: DURATION_S, at: off(PL.east, -2e5, -1e5), span: 2.0e6, rot: -1, e: linear },

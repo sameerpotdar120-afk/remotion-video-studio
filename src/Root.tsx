@@ -31,6 +31,7 @@ import { Kalpasar, KALPASAR_DURATION, KALPASAR_DURATION_60 } from './kalpasar/Ka
 import { KalpasarCover } from './kalpasar/Cover';
 import { Kolkata, KOLKATA_DURATION, KOLKATA_DURATION_60 } from './kolkata/Kolkata';
 import { KolkataCover } from './kolkata/Cover';
+import { Siliguri, SILIGURI_DURATION, SILIGURI_DURATION_60 } from './siliguri/Siliguri';
 import { Tibet2, TIBET2_DURATION, TIBET2_DURATION_60 } from './tibet2/Tibet2';
 import { Tibet2Cover } from './tibet2/Cover';
 
@@ -64,6 +65,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="KalpasarCover" component={KalpasarCover} durationInFrames={KALPASAR_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Kolkata" component={Kolkata} durationInFrames={KOLKATA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="KolkataCover" component={KolkataCover} durationInFrames={KOLKATA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
+      <Composition id="Siliguri" component={Siliguri} durationInFrames={SILIGURI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Siliguri60" component={Siliguri} durationInFrames={SILIGURI_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="Kolkata60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, cut3d: true, veo: true }} />
       <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="Tibet2" component={Tibet2} durationInFrames={TIBET2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
