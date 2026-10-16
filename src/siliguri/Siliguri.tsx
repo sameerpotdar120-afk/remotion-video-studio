@@ -7,7 +7,7 @@ import { DURATION_S, NULL_WIN, PERSP, PLANE, camAt, camMotion, shake } from './c
 import { useSGFonts } from './fonts';
 import { MapCanvas, SEA_BG } from './Map';
 import { PlaneLayer, regionsAt, tiltAt } from './Plane';
-import { Cutouts } from './Cutout';
+import { Shapes } from './Shapes';
 import { Grade, ScreenLayer, Subtitles, Whips } from './Screen';
 
 export const SILIGURI_DURATION = Math.ceil(DURATION_S * FPS);
@@ -42,13 +42,24 @@ const NullPanel: React.FC<{ t: number; q: number; name: string; t0: number; t1: 
   );
 };
 
+/** When each region last landed (rose past half), looked up over the previous second: drives the little lift on entry. */
+const landings = (t: number) => {
+  const now = regionsAt(t);
+  const out: Record<string, number> = {};
+  for (let k = 1; k <= 20; k++) {
+    const back = regionsAt(t - k * 0.05);
+    for (const r of now) if (out[r.key] === undefined && r.a > 0.5 && (back.find((q) => q.key === r.key)?.a ?? 0) <= 0.5) out[r.key] = t - (k - 0.5) * 0.05;
+  }
+  return out;
+};
+
 export const Siliguri: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; propsOnly?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, propsOnly = false }) => {
   const { fps } = useVideoConfig();
   const t = useCurrentFrame() / fps;
   useSGFonts();
   useMontserrat();
   const c0 = camAt(t);
-  const cam = { ...c0, span: c0.span * zoomOut, tilt: tiltAt(t), cut: true };
+  const cam = { ...c0, span: c0.span * zoomOut, tilt: tiltAt(t) };
   const mv = camMotion(t);
   const blurK = (30 / fps) ** 0.5;
   const bx = Math.min(10, Math.abs(mv.vx) * 0.22 + mv.zoom * 1.2) * blurK;
@@ -71,7 +82,7 @@ export const Siliguri: React.FC<{ captions?: boolean; screen?: boolean; res?: nu
           <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h,
             transformOrigin: `${PLANE.ox}px ${PLANE.oy}px`, transform: `rotate(${cam.rot}deg)` }}>
             <div style={{ position: 'absolute', inset: 0, filter: 'saturate(1.2) contrast(1.16) brightness(1.02)' }}><MapCanvas cam={cam} res={res} /></div>
-            <PlaneLayer t={t} c={cam} between={<Cutouts cam={cam} t={t} regions={regionsAt(t)} res={res} />} />
+            <PlaneLayer t={t} c={cam} between={<Shapes c={cam} t={t} regions={regionsAt(t)} starts={landings(t)} />} />
           </div>
           </div>
         </AbsoluteFill>

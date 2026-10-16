@@ -3,10 +3,10 @@ import { clamp01, easeIn, easeOut, inOut, lerp, linear, ramp, window4 } from './
 import { C, Cam, DURATION_S, GEO, P, merc, project } from './cam';
 import { NUM } from './fonts';
 
-/** Country colours, saturated the way the reference paints them (India blue, China red, Bangladesh green …). */
+/** Region colours: the Judwa Desh palette (bold, flat, one warm and one cool next to each other). */
 export const COL = {
-  india: '#2F6BFF', ne: '#2EE07A', corridor: '#E443FF', nepal: '#FF9F1C', bangladesh: '#1FBF5B', bhutan: '#B9C23A',
-  china: '#FF3344', chumbi: '#FF2D3A', myanmar: '#A45BFF', mizoram: '#31D7FF', andaman: '#FFD84A',
+  india: '#4F8BFF', ne: '#3EE6A0', corridor: '#FF5468', nepal: '#FFC93C', bangladesh: '#3DDC4A', bhutan: '#B67CFF',
+  china: '#FF3B30', chumbi: '#FF3B30', myanmar: '#B67CFF', mizoram: '#38E1FF', andaman: '#FFC93C',
   gold: '#FFD84A', red: '#FF3B30', white: '#FFF6E6', teal: '#2EC4B6', river: '#38D6FF', road: '#FFB347', rail: '#7CC4FF', oil: '#FF5E7E',
 };
 const ll = (lon: number, lat: number) => merc(lon, lat);
@@ -41,19 +41,8 @@ export const regionsAt = (t: number): Region[] => {
   ];
 };
 
-/** How far the map leans back (degrees): the camera tilts while regions stand up as slabs, eased over a window. */
-export const TILT_MAX = 22;
-export const tiltAt = (t: number) => {
-  let sum = 0, n = 0;
-  for (let k = -6; k <= 6; k++) {
-    const regs = regionsAt(t + k * 0.06);
-    const wgt = 7 - Math.abs(k);
-    sum += wgt * Math.max(0, ...regs.map((r) => r.a));
-    n += wgt;
-  }
-  const v = sum / n;
-  return 8 + (TILT_MAX - 8) * v * v * (3 - 2 * v);
-};
+/** The Judwa Desh style is a flat, top-down map: no tilt. */
+export const tiltAt = (_t: number) => 0;
 
 // ---- lines (Mercator): the narrowest gap, the lifelines, routes
 export const NECK_A = ll(88.1466, 26.6612), NECK_B = ll(88.3528, 26.5787); // Nepal ↔ Bangladesh, 22.5 km (Natural Earth)
@@ -127,15 +116,19 @@ const Measure: React.FC<{ c: Cam; a: P; b: P; t: number; t0: number; t1: number;
   );
 };
 
-/** A big italic name laid flat on the map, so it leans back with the camera (the reference's 3D labels). */
-const MapName: React.FC<{ c: Cam; at: P; t: number; t0: number; t1: number; text: string; size?: number; rot?: number; color?: string }> = ({ c, at, t, t0, t1, text, size = 96, rot = -8, color = '#fff' }) => {
+/** A country name as a boxed label on the map (white border, a colour chip), the Judwa Desh way. */
+const MapName: React.FC<{ c: Cam; at: P; t: number; t0: number; t1: number; text: string; size?: number; rot?: number; color?: string }> = ({ c, at, t, t0, t1, text, size = 96, color = '#fff' }) => {
   const a = window4(t, t0, t0 + 0.12, t1 - 0.25, t1);
   if (a <= 0) return null;
   const [x, y] = project(c, at[0], at[1]);
-  const s = lerp(1.4, 1, ramp(t, t0, t0 + 0.35, easeOut));
+  const s = clamp01(lerp(0.3, 1, ramp(t, t0, t0 + 0.25, easeOut))) * (1 + 0.06 * Math.sin(Math.min(1, (t - t0) / 0.35) * Math.PI));
+  const fs = Math.max(34, Math.min(64, size * 0.5));
   return (
-    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${rot}deg) scale(${s}) skewX(-8deg)`, opacity: a, whiteSpace: 'nowrap',
-      fontFamily: NUM, fontSize: size, letterSpacing: 4, color, textShadow: '0 8px 0 rgba(0,0,0,0.35), 0 14px 30px rgba(0,0,0,0.7)', WebkitTextStroke: '3px rgba(0,0,0,0.35)' }}>{text}</div>
+    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${s})`, opacity: a, whiteSpace: 'nowrap', background: 'rgba(8,16,26,0.72)', color: '#fff',
+      padding: '8px 22px 2px 18px', borderRadius: 10, border: '4px solid #fff', fontFamily: NUM, fontSize: fs, letterSpacing: 1.5, lineHeight: 1.15,
+      boxShadow: '0 8px 22px rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', gap: 12 }}>
+      <span style={{ width: fs * 0.42, height: fs * 0.42, borderRadius: 5, background: color === '#fff' ? '#FFD84A' : color, display: 'inline-block', marginTop: -5 }} />{text}
+    </div>
   );
 };
 
@@ -200,20 +193,20 @@ export const PlaneLayer: React.FC<{ t: number; c: Cam; between?: React.ReactNode
         <Route c={c} pts={ROUTES.oil} t={t} t0={C.tel9 - 0.2} t1={C.to10 - 0.2} dur={2.0} color={COL.oil} width={10} />
       </svg>
       {/* names on the map */}
-      <MapName c={c} at={ll(80.5, 22.5)} t={t} t0={0.2} t1={C.n22 + 0.2} text="INDIA" size={150} rot={-6} />
-      <MapName c={c} at={ll(88.25, 26.62)} t={t} t0={C.siliguri2} t1={C.northeast2 - 0.1} text="SILIGURI CORRIDOR" size={78} rot={-38} />
-      <MapName c={c} at={ll(93.6, 26.4)} t={t} t0={C.northeast2 + 0.2} t1={C.sadak3 - 0.1} text="NORTHEAST" size={110} rot={-8} />
-      <MapName c={c} at={ll(86.0, 27.8)} t={t} t0={C.nepal4} t1={C.isiliye5 + 0.4} text="NEPAL" size={120} rot={-14} />
-      <MapName c={c} at={ll(89.6, 24.6)} t={t} t0={C.bangla4} t1={C.isiliye5 + 0.4} text="BANGLADESH" size={110} rot={-10} />
-      <MapName c={c} at={ll(90.4, 27.5)} t={t} t0={C.bhutan4} t1={C.isiliye5 + 0.4} text="BHUTAN" size={100} rot={-10} />
-      <MapName c={c} at={ll(89.6, 29.4)} t={t} t0={C.china4} t1={C.isiliye5 + 0.4} text="CHINA" size={140} rot={-6} />
-      <MapName c={c} at={ll(88.95, 27.62)} t={t} t0={C.chumbi4} t1={C.isiliye5 + 0.4} text="CHUMBI VALLEY" size={46} rot={-40} color="#FFD3D6" />
-      <MapName c={c} at={ll(90.0, 21.0)} t={t} t0={C.y2018 - 0.2} t1={C.par6} text="BAY OF BENGAL" size={64} rot={-6} color="#BFE6FF" />
-      <MapName c={c} at={ll(96.0, 21.2)} t={t} t0={C.myanmar8} t1={C.aur9} text="MYANMAR" size={110} rot={-8} />
-      <MapName c={c} at={ll(105.0, 33.0)} t={t} t0={C.china9} t1={C.malacca9 + 0.3} text="CHINA" size={170} rot={-6} />
-      <MapName c={c} at={ll(99.6, 4.0)} t={t} t0={C.malacca9} t1={C.darwaze9 + 0.3} text="MALACCA STRAIT" size={70} rot={-38} color="#BFE6FF" />
-      <MapName c={c} at={ll(91.6, 10.5)} t={t} t0={C.andaman9} t1={C.to10} text="ANDAMAN & NICOBAR" size={58} rot={-76} color={COL.gold} />
-      <MapName c={c} at={ll(80.5, 22.5)} t={t} t0={C.to10 + 0.3} t1={DURATION_S + 1} text="INDIA" size={150} rot={-6} />
+      <MapName c={c} at={ll(80.5, 22.5)} t={t} t0={0.2} t1={C.n22 + 0.2} text="INDIA" size={150} color={COL.india} />
+      <MapName c={c} at={ll(88.25, 26.62)} t={t} t0={C.siliguri2} t1={C.northeast2 - 0.1} text="SILIGURI CORRIDOR" size={78} color={COL.corridor} />
+      <MapName c={c} at={ll(93.6, 26.4)} t={t} t0={C.northeast2 + 0.2} t1={C.sadak3 - 0.1} text="NORTHEAST" size={110} color={COL.ne} />
+      <MapName c={c} at={ll(86.0, 27.8)} t={t} t0={C.nepal4} t1={C.isiliye5 + 0.4} text="NEPAL" size={120} color={COL.nepal} />
+      <MapName c={c} at={ll(89.6, 24.6)} t={t} t0={C.bangla4} t1={C.isiliye5 + 0.4} text="BANGLADESH" size={110} color={COL.bangladesh} />
+      <MapName c={c} at={ll(90.4, 27.5)} t={t} t0={C.bhutan4} t1={C.isiliye5 + 0.4} text="BHUTAN" size={100} color={COL.bhutan} />
+      <MapName c={c} at={ll(89.6, 29.4)} t={t} t0={C.china4} t1={C.isiliye5 + 0.4} text="CHINA" size={140} color={COL.china} />
+      <MapName c={c} at={ll(88.95, 27.62)} t={t} t0={C.chumbi4} t1={C.isiliye5 + 0.4} text="CHUMBI VALLEY" size={80} color={COL.chumbi} />
+      <MapName c={c} at={ll(90.0, 21.0)} t={t} t0={C.y2018 - 0.2} t1={C.par6} text="BAY OF BENGAL" size={80} color={COL.river} />
+      <MapName c={c} at={ll(96.0, 21.2)} t={t} t0={C.myanmar8} t1={C.aur9} text="MYANMAR" size={110} color={COL.myanmar} />
+      <MapName c={c} at={ll(105.0, 33.0)} t={t} t0={C.china9} t1={C.malacca9 + 0.3} text="CHINA" size={170} color={COL.china} />
+      <MapName c={c} at={ll(99.6, 4.0)} t={t} t0={C.malacca9} t1={C.darwaze9 + 0.3} text="MALACCA STRAIT" size={90} color={COL.river} />
+      <MapName c={c} at={ll(91.6, 10.5)} t={t} t0={C.andaman9} t1={C.to10} text="ANDAMAN & NICOBAR" size={80} color={COL.andaman} />
+      <MapName c={c} at={ll(80.5, 22.5)} t={t} t0={C.to10 + 0.3} t1={DURATION_S + 1} text="INDIA" size={150} color={COL.india} />
     </>
   );
 };

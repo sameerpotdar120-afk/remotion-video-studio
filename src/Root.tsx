@@ -68,7 +68,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="KolkataCover" component={KolkataCover} durationInFrames={KOLKATA_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
       <Composition id="Siliguri" component={Siliguri} durationInFrames={SILIGURI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />
       <Composition id="SiliguriCover" component={SiliguriCover} durationInFrames={SILIGURI_DURATION} fps={30} width={1080} height={1920} defaultProps={{ text: true }} />
-      <Composition id="Siliguri60" component={Siliguri} durationInFrames={SILIGURI_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true }} />
+      <Composition id="Siliguri2K60" component={Siliguri} durationInFrames={SILIGURI_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 4 / 3 }} />
       <Composition id="Kolkata60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, cut3d: true, veo: true }} />
       <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
       <Composition id="Tibet2" component={Tibet2} durationInFrames={TIBET2_DURATION} fps={30} width={1080} height={1920} defaultProps={{ captions: true }} />

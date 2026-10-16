@@ -29,10 +29,11 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "siliguri" / "maps"
 TERRARIUM = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
 PLATES = [  # name, zoom, lon0, lon1, lat0, lat1, relief strength
-    ("asia", 6, 60.0, 125.0, -10.0, 45.0, 0.55),
-    ("east", 8, 84.0, 98.0, 18.5, 30.0, 0.75),
-    ("corridor", 11, 87.8, 89.4, 25.9, 27.6, 0.8),
-    ("malacca", 8, 91.0, 105.0, -1.0, 14.0, 0.55),
+    # relief 0: the plain satellite map, like the Judwa Desh video (the creator preferred it to the 3D-relief look)
+    ("asia", 6, 60.0, 125.0, -10.0, 45.0, 0.0),
+    ("east", 8, 84.0, 98.0, 18.5, 30.0, 0.0),
+    ("corridor", 11, 87.8, 89.4, 25.9, 27.6, 0.0),
+    ("malacca", 8, 91.0, 105.0, -1.0, 14.0, 0.0),
 ]
 PLACES = {
     "siliguri": (88.43, 26.72), "kolkata": (88.36, 22.57), "guwahati": (91.75, 26.14), "agartala": (91.28, 23.83),
@@ -74,8 +75,8 @@ def main() -> None:
             if im.size[side] > 4096:
                 f = 4096 / im.size[side]
                 im = im.resize((round(im.width * f), round(im.height * f)), Image.LANCZOS)
-        sh = relief(z - 1, lo0, lo1, la0, la1, im.size, cache)
         a = np.asarray(im).astype(np.float32)
+        sh = relief(z - 1, lo0, lo1, la0, la1, im.size, cache) if k > 0 else np.full(a.shape[:2], 0.67, np.float32)
         # multiply-style relief: shadows deepen, lit faces stay; flat ground (shade ≈ 0.67) barely changes
         m = (1 - k) + k * (sh / 0.67)
         out = np.clip(a * m[..., None], 0, 255).astype(np.uint8)

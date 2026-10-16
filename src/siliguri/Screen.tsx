@@ -128,9 +128,6 @@ const Props: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const dish = Math.cos(t * 2.4);
   return (
     <>
-      {/* the chicken's neck */}
-      <Rig set="s1" parts={[{ name: 'chicken', box: [0, 0, 1], rot: Math.sin(t * 7) * 3 * window4(t, C.chicken2, C.chicken2 + 0.2, C.chicken2 + 1, C.chicken2 + 1.4) }]}
-        x={ux + 250} y={uy - 120} h={300} t={t} t0={C.chicken2 - 0.05} t1={C.northeast2 - 0.2} entry="pop" />
       {/* road, rail: the truck and the train run through the strip */}
       <Mover t={t} c={c} set="s2" part="truck" route={ROUTES.road} t0={C.sadak3} t1={C.nepal4 - 0.2} f0={0.12} f1={0.75} h={120} wheels />
       <Mover t={t} c={c} set="s3" part="train" route={ROUTES.rail} t0={C.rail3} t1={C.nepal4 - 0.2} f0={0.08} f1={0.68} h={90} dy={10} />
@@ -260,31 +257,18 @@ export const Whips: React.FC<{ t: number }> = ({ t }) => (
   </>
 );
 
-/** Section grades: a cool, dark geopolitical base (deep blue shadows); a red danger pulse when the strip is cut and
- *  when China closes in; a warm gold when India answers. Vignette and film grain on top. */
-export const gradeAt = (t: number) => ({
-  danger: window4(t, C.kati1 - 0.05, C.kati1 + 0.2, C.kahan1, C.kahan1 + 0.4) + window4(t, C.chumbi4, C.chumbi4 + 0.3, C.isiliye5, C.isiliye5 + 0.4) * 0.6 +
-    window4(t, C.china6, C.china6 + 0.3, C.port6, C.port6 + 0.5) * 0.5 + window4(t, C.karib7, C.karib7 + 0.3, C.par8, C.par8 + 0.3) * 0.5,
-  gold: window4(t, C.taiyar8 - 0.2, C.taiyar8 + 0.3, C.kaladan8, C.kaladan8 + 0.5) + window4(t, C.andaman9, C.andaman9 + 0.4, C.to10, C.to10 + 0.4),
-});
+/** The Judwa Desh grade: teal shadows and warm highlights (soft light), a vignette, darker top and bottom edges, a light
+ *  film grain, and a short flash on the big hits. */
 export const Grade: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
-  const g = gradeAt(t);
   let flash = 0;
   for (const h of [C.kati1, C.siliguri2, C.chumbi4, C.china6, C.n3_8, C.n28]) flash = Math.max(flash, window4(t, h - 0.02, h, h + 0.04, h + 0.3));
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(10,40,110,0.32), rgba(0,20,60,0.12) 45%, rgba(10,30,80,0.22))', mixBlendMode: 'soft-light' }} />
-      {g.danger > 0 && (
-        <>
-          <AbsoluteFill style={{ background: '#ff1a2a', opacity: clamp01(g.danger) * (0.18 + 0.08 * Math.sin(t * 9)), mixBlendMode: 'soft-light' }} />
-          <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,0,0,0) 45%, rgba(200,0,20,0.55) 100%)', opacity: clamp01(g.danger) }} />
-        </>
-      )}
-      {g.gold > 0 && <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(255,170,60,0.35), rgba(255,120,40,0.18))', opacity: clamp01(g.gold), mixBlendMode: 'soft-light' }} />}
-      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.6) 100%)' }} />
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,6,16,0.5), rgba(0,0,0,0) 24%, rgba(0,0,0,0) 70%, rgba(0,6,12,0.55))' }} />
-      <AbsoluteFill style={{ opacity: 0.07, mixBlendMode: 'overlay', backgroundImage: GRAIN, backgroundSize: '256px 256px', backgroundPosition: `${(frame * 73) % 256}px ${(frame * 151) % 256}px` }} />
-      {flash > 0 && <AbsoluteFill style={{ background: '#eaf2ff', opacity: flash * 0.3, mixBlendMode: 'screen' }} />}
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,70,90,0.24), rgba(0,40,60,0.08) 40%, rgba(255,150,60,0.08) 70%, rgba(255,140,40,0.14))', mixBlendMode: 'soft-light' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.55) 100%)' }} />
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.45), rgba(0,0,0,0) 24%, rgba(0,0,0,0) 70%, rgba(0,6,12,0.55))' }} />
+      <AbsoluteFill style={{ opacity: 0.05, mixBlendMode: 'overlay', backgroundImage: GRAIN, backgroundSize: '256px 256px', backgroundPosition: `${(frame * 73) % 256}px ${(frame * 151) % 256}px` }} />
+      {flash > 0 && <AbsoluteFill style={{ background: '#fff4dc', opacity: flash * 0.35, mixBlendMode: 'screen' }} />}
     </AbsoluteFill>
   );
 };
