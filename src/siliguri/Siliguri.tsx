@@ -95,7 +95,7 @@ export const Siliguri: React.FC<{ captions?: boolean; screen?: boolean; res?: nu
         return s && s.w.name === w.name ? <NullPanel key={w.name} t={t} q={s.q} name={w.name} t0={w.t0} t1={w.t1} from={w.from} fps={fps} /> : null;
       })}
       <div style={{ position: 'absolute', right: 22, bottom: q > 0 ? 974 : 14, fontFamily: "'Montserrat', sans-serif", fontSize: 15, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}>
-        Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · relief: AWS Terrain Tiles (SRTM) · borders: Natural Earth · routes approximate · props &amp; host: AI illustration
+        Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · borders: Natural Earth · routes approximate · props &amp; host: AI illustration
       </div>
       {captions && <Subtitles t={t} top={q > 0.5 ? 800 : 1620} />}
       {captions && <Watermark t={t} />}

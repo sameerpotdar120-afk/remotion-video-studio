@@ -1,7 +1,7 @@
 # Siliguri Corridor, India's Chicken's Neck: upload kit
 
-Upload file: `siliguri_hindi_full.mp4` (1080p 60 fps, 1:27). Preview: `siliguri_preview.mp4`.
-Thumbnail: `siliguri_thumbnail.jpg` (1080×1920), one for YouTube and Instagram (frame 105 of SiliguriCover). Everything that matters sits inside the 3:4 crop.
+Upload file: `siliguri_2k60.mp4` (2K 60 fps, 1440×2560, 1:27). Preview: `siliguri_preview.mp4` (1080p).
+Thumbnail: `siliguri_thumbnail.jpg` (1080×1920) and `siliguri_thumbnail_2k.jpg` (1440×2560), one for YouTube and Instagram (frame 105 of SiliguriCover). Everything that matters sits inside the 3:4 crop.
 
 ## Search queries this should win
 
@@ -43,7 +43,7 @@ Chicken's Neck India की कमज़ोरी है या ताकत? Co
 
 ---
 Satellite: Sentinel-2 cloudless 2024 by EOX IT Services GmbH (s2maps.eu), contains modified Copernicus Sentinel data, CC BY 4.0.
-Relief: AWS Terrain Tiles (SRTM and other open data). Borders: Natural Earth (India point-of-view edition). Routes and the corridor outline are approximate.
+Borders: Natural Earth (India point-of-view edition). Routes and the corridor outline are approximate.
 Props and host "Null" are AI-generated illustrations; the voiceover is AI-generated.
 Music: "Silent Descent" by Eugenio Mininni and "Epical Drums 06" (Mixkit). Sound effects: Sonniss GDC Game Audio Bundle.
 ```
@@ -72,7 +72,7 @@ India का Chicken's Neck! 😳
 
 #SiliguriCorridor #ChickensNeck #NortheastIndia #India #Geopolitics #Geography #MapFacts #HindiFacts #IndianArmy #NullDynasty
 
-Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). Relief: AWS Terrain Tiles (SRTM). Borders: Natural Earth. Routes approximate. Props, host and voice: AI. Music: Mixkit. SFX: Sonniss.
+Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). Borders: Natural Earth. Routes approximate. Props, host and voice: AI. Music: Mixkit. SFX: Sonniss.
 ```
 Turn on Instagram's "AI info" label in Advanced settings.
 
