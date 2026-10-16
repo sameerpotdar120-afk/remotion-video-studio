@@ -71,3 +71,7 @@ The channel has a recurring host character: "Null", a masked man (matte black fu
 ## Veo scrapped (creator, Oct 16; overrides the Veo rules above)
 
 - No Veo clips from now on: don't write Veo prompt files or plan Veo cutaways. Assets are GPT images only (UE5 style, in parts), plus my map animation editing (3D cut-out maps, rigs, labels, effects drawn in code). Omni clips for Null stay.
+
+## Real people as assets (creator, Oct 16)
+
+- When a real person is needed as an asset, the prompt tells the image tool to first find a free reference photo (public domain / Wikimedia Commons / official government photo) and base the likeness on it, then render in the same Unreal Engine 5 cinematic style, in parts if they move. Never copy a copyrighted photo as-is.
