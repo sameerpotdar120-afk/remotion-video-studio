@@ -77,6 +77,7 @@ const keys = (): Key[] => [
   { t: C.karib7 + 0.4, at: off(PL.teesta, -3e4, 2e4), span: 4.6e5, rot: 0, e: linear },
   // India is ready: 3 new bases; then the Kaladan route
   { t: C.army8, at: PL.bases, span: 6.2e5, rot: 1, e: inOut },
+  { t: C.kaladan8 - 0.2, at: off(PL.bases, 1e4, 0), span: 5.8e5, rot: 0, e: linear },
   { t: C.kaladan8 + 0.3, at: PL.kaladan, span: 1.5e6, rot: -1, e: inOut },
   { t: C.mizoram8 + 1.4, at: off(PL.kaladan, 0, 6e4), span: 1.35e6, rot: 0, e: linear },
   // China's own thin neck: Malacca; India's Andaman-Nicobar at its door

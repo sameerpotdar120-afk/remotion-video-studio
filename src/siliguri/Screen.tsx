@@ -111,8 +111,10 @@ const Mover: React.FC<{ t: number; c: Cam; set: string; part: string; route: P[]
   const [x2] = S(c, along(route, Math.min(1, f + 0.01)));
   const right = x2 >= x;
   const spin = (t * 540) % 360;
-  const parts: Part[] = [{ name: part, flip: flip ? right : !right }];
-  if (wheels) for (const wx of [-0.27, 0.27]) parts.push({ name: 'wheel', box: [wx, 0.2, 0.32], rot: spin });
+  const mirror = flip ? right : !right;
+  const parts: Part[] = [{ name: part, flip: mirror }];
+  // the truck's wheel arches sit at 22% and 83% of its width, 85% down (measured on the cut-out; width = 2.26 × height)
+  if (wheels) for (const wx of [-0.63, 0.75]) parts.push({ name: 'wheel', box: [mirror ? -wx : wx, 0.36, 0.3], rot: mirror ? -spin : spin });
   return <Rig set={set} parts={parts.map((p) => ({ ...p, box: p.box ?? [0, 0, 1] }))} x={x} y={y + dy} h={h} t={t} t0={t0} t1={t1} entry="pop" float={0.3} />;
 };
 
@@ -151,7 +153,7 @@ const Props: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {/* Kaladan: the same cargo ship, now to Sittwe */}
       <Mover t={t} c={c} set="s4" part="ship" route={ROUTES.kaladan} t0={C.kaladan8 + 0.4} t1={C.aur9 - 0.2} f0={0.05} f1={0.48} h={130} />
       {/* China's oil comes by tanker through Malacca */}
-      <Mover t={t} c={c} set="s10" part="tanker" route={ROUTES.oil} t0={C.tel9} t1={C.darwaze9} f0={0.3} f1={0.62} h={110} />
+      <Mover t={t} c={c} set="s10" part="tanker" route={ROUTES.oil} t0={C.tel9} t1={C.darwaze9} f0={0.36} f1={0.62} h={150} />
       {/* India at the door: a radar post on the Andamans, its antenna sweeping */}
       <Rig set="s11" parts={[
         { name: 'radar_base', box: [0, 0.08, 1] },

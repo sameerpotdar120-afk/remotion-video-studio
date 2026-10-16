@@ -26,7 +26,7 @@ MAX_SIDE = 1800  # displayed at most ~1400 px tall in the 4K render
 
 # Busy scenes with lots of thin detail and open space (a street with wires, a gothic facade, a banyan's canopy):
 # rembg eats them, so these use a pure white key instead (only white that touches the border is removed).
-WHITE_KEY: set[str] = set()
+WHITE_KEY = {"s7_army_base", "s11_radar_base", "s5_crane", "s11_radar_dish", "s8_launcher_tubes"}
 
 
 def white_key(rgb: Image.Image) -> Image.Image:
