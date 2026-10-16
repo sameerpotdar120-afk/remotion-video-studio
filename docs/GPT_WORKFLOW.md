@@ -378,7 +378,7 @@ It contains:
    credits) and the AI label.
 4. **Fact notes:** each claim with its source and exact wording.
 
-**Thumbnail:** add a `Cover.tsx` composition that reuses the video's strongest frame (usually the hook) with 2 lines of
+**Thumbnail (always part of the upload kit; never offer it as an extra):** add a `Cover.tsx` composition that reuses the video's strongest frame (usually the hook) with 2 lines of
 big text (a white line plus a red or gold line) and one badge. Keep everything inside the 3:4 crop (y 240–1680). Export
 `exports/<topic>_thumbnail.jpg` at 1080×1920. Example: `src/tibet2/Cover.tsx` → `exports/tibet2_thumbnail.jpg`.
 

@@ -63,3 +63,7 @@ The channel has a recurring host character: "Null", a masked man (matte black fu
 - Veo has no real transparency (it paints a fake checkerboard). I choose the background: chroma green #00FF00 for solid props, pure black for effects (smoke, mist, dust, fire, light). Veo props animate in place; I move them across the map.
 - **Maps get 3D cut-out highlights:** regions extruded out of the satellite map with side walls, bevel, drop shadow and a camera tilt, like After Effects or Premiere, not flat glows.
 - Received for Kolkata: veo/ship (17th-century ship on a painted checkerboard, 4K 24 fps, 4 s). Don't ask for it again.
+
+## Upload kit = SEO + thumbnail (creator, Oct 16)
+
+- "Upload kit" or "SEO kit" always includes the thumbnail: make it in the same turn (a Cover composition from the video's strongest frame, 1080×1920 + 4K jpg in exports/), don't offer it as an extra.

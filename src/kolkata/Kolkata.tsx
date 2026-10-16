@@ -44,7 +44,7 @@ const NullPanel: React.FC<{ t: number; q: number; name: string; t0: number; t1: 
 };
 
 /** cut3d: regions rise as 3D cut-outs instead of flat glows. */
-export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; cut3d?: boolean; veo?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, cut3d = false, veo = false }) => {
+export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: number; zoomOut?: number; cut3d?: boolean; veo?: boolean; propsOnly?: boolean }> = ({ captions = true, screen = true, res = 1, zoomOut = 1, cut3d = false, veo = false, propsOnly = false }) => {
   const { fps } = useVideoConfig();
   const t = useCurrentFrame() / fps;
   useKKFonts();
@@ -78,9 +78,9 @@ export const Kolkata: React.FC<{ captions?: boolean; screen?: boolean; res?: num
           </div>
         </AbsoluteFill>
         <Grade t={t} frame={Math.round(t * fps)} />
-        {screen && <ScreenLayer t={t} c={cam} />}
+        {screen && <ScreenLayer t={t} c={cam} propsOnly={propsOnly} />}
         {screen && veo && <VeoOverlays t={t} />}
-        {screen && <Whips t={t} />}
+        {screen && !propsOnly && <Whips t={t} />}
       </AbsoluteFill>
       {screen && veo && <VeoFull t={t} />}
       {screen && q > 0 && <div style={{ position: 'absolute', inset: 0, opacity: q }}><NamesCard t={t} /></div>}

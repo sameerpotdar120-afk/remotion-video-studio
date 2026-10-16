@@ -260,7 +260,9 @@ const MuzzleFlash: React.FC<{ t: number; t0: number; x: number; y: number }> = (
   );
 };
 
-export const ScreenLayer: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
+/** propsOnly: just the rigged props, no labels or titles (for the thumbnail). */
+export const ScreenLayer: React.FC<{ t: number; c: Cam; propsOnly?: boolean }> = ({ t, c, propsOnly }) => {
+  if (propsOnly) return <AbsoluteFill style={{ pointerEvents: 'none' }}><Props t={t} /></AbsoluteFill>;
   const pl = GEO.places;
   const su = SL(t, c, pl.sutanuti, 'sutanuti'), ka = SL(t, c, pl.kalikata, 'kalikata'), go = SL(t, c, pl.gobindapur, 'gobindapur'), fo = S(c, pl.fort), hc = SL(t, c, pl.highcourt, 'highcourt');
   return (

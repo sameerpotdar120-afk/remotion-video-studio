@@ -1,7 +1,7 @@
 # Kolkata, once three villages: upload kit
 
 Upload file: `kolkata_v2_hindi_full.mp4` (1080p 60 fps, 1:20). The first version (`kolkata_hindi_full.mp4`, `kolkata_4k60_master.mp4`) is superseded.
-Thumbnail: not made yet.
+Thumbnail: `kolkata_thumbnail.jpg` (1080×1920) and `kolkata_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram (frame 186 of KolkataCover). Everything sits inside the 3:4 crop.
 
 ## Search queries this should win
 
