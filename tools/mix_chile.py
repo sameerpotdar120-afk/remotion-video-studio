@@ -46,7 +46,7 @@ CUES = [
     (C["spain6"] - 0.35, "page_turn", -11, {}), (C["spain6"], "waves_soft", -20, {"align": "start", "dur": 2.0}), (C["baat6"], "magic", -14, {}), (C["baat6"] + 0.05, "pop_light", -12, {}),
     # the skit
     (C["wah7"] - 0.3, "wh_soft", -12, {}), (C["bhai8"] - 0.3, "whoosh_cinematic_fast", -11, {}), (C["rehte8"] + 0.3, "whoosh_cinematic_fast", -11, {}),
-    (C["rehte8"] + 0.45, "metal_thud", -9, {}), (C["rehte8"] + 0.55, "stinger", -10, {}), (C["aham9"] + 0.1, "tap_negative", -14, {}),
+    (C["rehte8"] + 0.45, "metal_thud", -9, {}), (C["rehte8"] + 0.55, "stinger", -10, {}), (C["aham9"] + 0.6, "tap_negative", -14, {}),
     # Spain and the Mapuche, independence, the lens
     (C["mapuche10"] - 0.3, "wh_air", -12, {}), (C["jeet10"], "impact_chord", -12, {}),
     (C["y1818"], "ui_glassy_snap", -11, {}), *[(C["y1818"] + 0.15 + i * 0.16, "pop_light", -16, {}) for i in range(7)],

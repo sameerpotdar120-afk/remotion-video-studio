@@ -189,7 +189,7 @@ export const Whips: React.FC<{ t: number }> = ({ t }) => (
 export const Grade: React.FC<{ t: number; frame: number; vintage: boolean }> = ({ t, frame, vintage }) => {
   let flash = 0;
   for (const h of [C.chile1, C.n1000, C.y1818, C.andes14, C.y1879, C.kinara17]) flash = Math.max(flash, window4(t, h - 0.02, h, h + 0.04, h + 0.3));
-  const guns = window4(t, C.rehte8 + 0.4, C.rehte8 + 0.5, C.aham9 - 0.1, C.aham9 + 0.2);
+  const guns = window4(t, C.rehte8 + 0.4, C.rehte8 + 0.5, C.aham9 + 0.4, C.aham9 + 0.7);
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {!vintage && <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,70,90,0.24), rgba(0,40,60,0.08) 40%, rgba(255,150,60,0.08) 70%, rgba(255,140,40,0.14))', mixBlendMode: 'soft-light' }} />}
@@ -441,13 +441,13 @@ const Ships: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 const Skit: React.FC<{ t: number }> = ({ t }) => {
   if (t < SC.skit || t > SC.skitEnd) return null;
   const locals = t > C.bhai8 - 0.3 && t < C.rehte8 + 0.45;
-  const guns = t >= C.rehte8 + 0.45 && t < C.aham9 + 0.15;
+  const guns = t >= C.rehte8 + 0.45 && t < C.aham9 + 0.6;
   const tt = t - SC.skit;
   const push = 1.04 + 0.04 * ramp(t, SC.skit, SC.skitEnd, linear);
   const [cw, chh] = SZ.c05_captain_body, [aw, ah] = SZ.c05_captain_arm;
   const CH = 980, CW = (CH * cw) / chh;
   const sweep = t < C.bhai8 ? Math.sin(ramp(t, C.wah7, C.khali7 + 0.4, inOut) * Math.PI) * 18 : t > C.aham9 ? Math.sin(ramp(t, C.aham9 + 0.3, C.khali9 + 0.4, inOut) * Math.PI) * 16 : 0;
-  const shy = t > C.aham9 - 0.1 && t < C.aham9 + 0.6 ? 6 : 0;
+  const shy = t > C.aham9 + 0.55 && t < C.aham9 + 1.2 ? 6 : 0;
   const AW = CW * 1.15, AH = (AW * ah) / aw;
   const soldier = (pose: 'rest' | 'aim', x: number, s = 1) => {
     const n = `c06_soldier_${pose}`;
