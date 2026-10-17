@@ -120,8 +120,11 @@ export const usePlates = (label: string, PLATES: Plate[] = SAT) => {
 };
 export type { Source };
 
-/** res: canvas pixels per CSS pixel. */
-export const MapCanvas: React.FC<{ cam: Cam; res?: number; vintage?: boolean }> = ({ cam, res = 1, vintage = false }) => {
+/** res: canvas pixels per CSS pixel. Keyed by stack, so switching between the satellite and vintage maps remounts
+ *  and waits for the new plates instead of drawing the old ones for a frame. */
+export const MapCanvas: React.FC<{ cam: Cam; res?: number; vintage?: boolean }> = (props) => <StackCanvas key={props.vintage ? 'vintage' : 'sat'} {...props} />;
+
+const StackCanvas: React.FC<{ cam: Cam; res?: number; vintage?: boolean }> = ({ cam, res = 1, vintage = false }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   const stack = vintage ? VINTAGE : SAT;
   const srcs = usePlates(vintage ? 'chile vintage' : 'chile plates', stack);
