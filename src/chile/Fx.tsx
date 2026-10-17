@@ -10,7 +10,7 @@ const FPS = 60;
 
 /** A motion asset rendered from motion_assets.md (transparent 60 fps WebM): loops, or holds its last frame. */
 const LEN: Record<string, number> = { m01_chili_label: 300, m02_long_letters: 240, m03_ship_to_emoji: 300, m04_flag_talk: 240, m04_flag_shocked: 240, m04_flag_south: 240,
-  m05_mini_flags: 120, m06_bolivia_face: 300, m07_arrows_wider: 150, m07_arrows_longer: 150, m08_send_burst: 180, m09_title_1500: 180 };
+  m05_mini_flags: 120, m06_bolivia_face: 300, m07_arrows_wider: 150, m07_arrows_longer: 150, m08_send_burst: 180, m09_title_1500: 180, m10_musket_fire: 120 };
 const Clip: React.FC<{ name: string; loop?: boolean }> = ({ name, loop }) => {
   const n = LEN[name];
   const v = <OffthreadVideo src={staticFile(`chile/motion/${name}.webm`)} transparent muted style={{ width: '100%', height: '100%' }} />;
@@ -188,8 +188,8 @@ export const Whips: React.FC<{ t: number }> = ({ t }) => (
 /** The grade: teal shadows and warm highlights (soft light), a vignette, darker edges, grain, and flashes on the hits. */
 export const Grade: React.FC<{ t: number; frame: number; vintage: boolean }> = ({ t, frame, vintage }) => {
   let flash = 0;
-  for (const h of [C.chile1, C.n1000, C.y1818, C.andes14, C.y1879, C.kinara17]) flash = Math.max(flash, window4(t, h - 0.02, h, h + 0.04, h + 0.3));
-  const guns = window4(t, C.rehte8 + 0.4, C.rehte8 + 0.5, C.aham9 + 0.4, C.aham9 + 0.7);
+  for (const h of [C.chile1, C.n1000, C.y1818, C.andes14, C.y1879, C.kinara17, C.rehte8 + 1.15]) flash = Math.max(flash, window4(t, h - 0.02, h, h + 0.04, h + 0.3));
+  const guns = window4(t, C.rehte8 + 0.4, C.rehte8 + 0.5, C.to9 - 0.45, C.to9 - 0.15);
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {!vintage && <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,70,90,0.24), rgba(0,40,60,0.08) 40%, rgba(255,150,60,0.08) 70%, rgba(255,140,40,0.14))', mixBlendMode: 'soft-light' }} />}
@@ -197,7 +197,7 @@ export const Grade: React.FC<{ t: number; frame: number; vintage: boolean }> = (
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.5) 100%)' }} />
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.4), rgba(0,0,0,0) 22%, rgba(0,0,0,0) 72%, rgba(0,6,12,0.5))' }} />
       <AbsoluteFill style={{ opacity: vintage ? 0.12 : 0.05, mixBlendMode: 'overlay', backgroundImage: GRAIN, backgroundSize: '256px 256px', backgroundPosition: `${(frame * 73) % 256}px ${(frame * 151) % 256}px` }} />
-      {guns > 0 && <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 35%, rgba(150,0,0,0.55) 100%)', opacity: guns }} />}
+      {guns > 0 && <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 35%, rgba(150,0,0,0.35) 100%)', opacity: guns }} />}
       {flash > 0 && <AbsoluteFill style={{ background: '#fff4dc', opacity: flash * 0.3, mixBlendMode: 'screen' }} />}
     </AbsoluteFill>
   );
@@ -441,19 +441,37 @@ const Ships: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 const Skit: React.FC<{ t: number }> = ({ t }) => {
   if (t < SC.skit || t > SC.skitEnd) return null;
   const locals = t > C.bhai8 - 0.3 && t < C.rehte8 + 0.45;
-  const guns = t >= C.rehte8 + 0.45 && t < C.aham9 + 0.6;
+  const guns = t >= C.rehte8 + 0.45 && t < C.to9 - 0.15;
+  const FIRE = C.rehte8 + 1.15;
   const tt = t - SC.skit;
   const push = 1.04 + 0.04 * ramp(t, SC.skit, SC.skitEnd, linear);
   const [cw, chh] = SZ.c05_captain_body, [aw, ah] = SZ.c05_captain_arm;
   const CH = 980, CW = (CH * cw) / chh;
-  const sweep = t < C.bhai8 ? Math.sin(ramp(t, C.wah7, C.khali7 + 0.4, inOut) * Math.PI) * 18 : t > C.aham9 ? Math.sin(ramp(t, C.aham9 + 0.3, C.khali9 + 0.4, inOut) * Math.PI) * 16 : 0;
-  const shy = t > C.aham9 + 0.55 && t < C.aham9 + 1.2 ? 6 : 0;
+  const sweep = t < C.bhai8 ? Math.sin(ramp(t, C.wah7, C.khali7 + 0.4, inOut) * Math.PI) * 18 : t > C.to9 ? Math.sin(ramp(t, C.to9 + 0.3, C.khali9 + 0.4, inOut) * Math.PI) * 16 : 0;
+  const shy = t > C.to9 - 0.15 && t < C.to9 + 0.5 ? 6 : 0;
   const AW = CW * 1.15, AH = (AW * ah) / aw;
-  const soldier = (pose: 'rest' | 'aim', x: number, s = 1) => {
+  const soldier = (pose: 'rest' | 'aim', x: number, s = 1, i = 0) => {
     const n = `c06_soldier_${pose}`;
     const [w, h] = SZ[n];
     const H = 800 * s, W = (H * w) / h;
-    return <Img key={`${pose}${x}`} src={staticFile(`chile/img/${n}.png`)} style={{ position: 'absolute', left: x - W / 2, top: 1700 - H, width: W, height: H, filter: 'drop-shadow(0 20px 18px rgba(0,0,0,0.45))' }} />;
+    // the volley: each fires in turn, the musket kicking up and back, a flash and smoke at the muzzle (left end of the barrel)
+    const f0 = FIRE + i * 0.12;
+    const kickT = t - f0;
+    const kick = pose === 'aim' && kickT > 0 ? Math.exp(-kickT * 7) * Math.sin(Math.min(kickT * 24, Math.PI / 2 + kickT * 6)) : 0;
+    // when aiming they turn to face the locals (to the right), so the muzzle is the right end of the barrel
+    const aim = pose === 'aim';
+    const mx = aim ? x + W / 2 - 6 : x - W / 2 + 6, my = 1700 - H + H * 0.18;
+    return (
+      <React.Fragment key={`${pose}${x}`}>
+        <Img src={staticFile(`chile/img/${n}.png`)} style={{ position: 'absolute', left: x - W / 2, top: 1700 - H, width: W, height: H, transformOrigin: aim ? '28% 22%' : '72% 22%',
+          transform: `${aim ? 'scaleX(-1) ' : ''}translateX(${kick * 22}px) rotate(${kick * 9}deg)`, filter: 'drop-shadow(0 20px 18px rgba(0,0,0,0.45))' }} />
+        {aim && t > f0 - 0.02 && (
+          <div style={{ position: 'absolute', left: mx - 60, top: my - 250, width: 700, height: 500, transform: 'scale(1.15)', transformOrigin: '60px 250px', pointerEvents: 'none' }}>
+            <Sequence from={Math.round(f0 * FPS)} durationInFrames={120} layout="none"><Clip name="m10_musket_fire" /></Sequence>
+          </div>
+        )}
+      </React.Fragment>
+    );
   };
   if (locals) {
     const haveVillage = has('c08_village_bg'), haveGroup = has('c07_mapuche_group');
@@ -466,13 +484,13 @@ const Skit: React.FC<{ t: number }> = ({ t }) => {
       </AbsoluteFill>
     );
   }
-  const zoom = guns ? 1 + 0.22 * clamp01(pop(t, C.rehte8 + 0.45, 12, 260)) : 1;
+  const zoom = guns ? 1 + 0.45 * clamp01(pop(t, C.rehte8 + 0.45, 12, 260)) : 1;
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: '#2a3a30' }}>
-      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push * zoom})`, transformOrigin: guns ? '30% 70%' : '50% 60%' }}>
+      <div style={{ position: 'absolute', inset: 0, transform: `scale(${push * zoom})`, transformOrigin: guns ? '8% 78%' : '50% 60%' }}>
         <Img src={staticFile('chile/img/c04_beach_bg.jpg')} style={{ position: 'absolute', width: 1080, height: 1920 }} />
-        {[150, 330, 500].map((x, i) => soldier(guns ? 'aim' : 'rest', x - (guns ? 20 : 0), 0.88 + i * 0.04))}
-        <div style={{ position: 'absolute', left: 790 - CW / 2, top: 1720 - CH + Math.sin(tt * 2) * 4, width: CW, height: CH, transform: `rotate(${shy ? -3 : 0}deg)`, filter: 'drop-shadow(0 24px 22px rgba(0,0,0,0.5))' }}>
+        {[150, 330, 500].map((x, i) => soldier(guns ? 'aim' : 'rest', x - (guns ? 60 : 0), 0.88 + i * 0.04, i))}
+        <div style={{ position: 'absolute', left: 790 - CW / 2 + (guns ? 260 : 0), top: 1720 - CH + Math.sin(tt * 2) * 4, width: CW, height: CH, transform: `rotate(${shy ? -3 : 0}deg)`, filter: 'drop-shadow(0 24px 22px rgba(0,0,0,0.5))' }}>
           {/* his right arm: the shoulder socket sits at about (26%, 26%) of the body cut-out; the arm's shoulder end is its right edge */}
           <Img src={staticFile('chile/img/c05_captain_arm.png')} style={{ position: 'absolute', left: CW * 0.28 - AW, top: CH * 0.255 - AH * 0.42, width: AW, height: AH,
             transformOrigin: '100% 42%', transform: `rotate(${sweep - (guns ? 25 : 0) + shy * 4}deg)` }} />

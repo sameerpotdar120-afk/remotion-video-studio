@@ -9,6 +9,7 @@ import { M06BoliviaFace } from './M06BoliviaFace';
 import { M07Arrows } from './M07Arrows';
 import { M08SendBurst } from './M08SendBurst';
 import { M09Title1500 } from './M09Title1500';
+import { M10MusketFire } from './M10MusketFire';
 
 export const MotionRoot: React.FC = () => (
   <>
@@ -23,6 +24,7 @@ export const MotionRoot: React.FC = () => (
     <Composition id="m07-arrows-wider" component={M07Arrows} width={700} height={1000} fps={60} durationInFrames={150} defaultProps={{ kind: 'wider' as const }} />
     <Composition id="m07-arrows-longer" component={M07Arrows} width={700} height={1000} fps={60} durationInFrames={150} defaultProps={{ kind: 'longer' as const }} />
     <Composition id="m08-send-burst" component={M08SendBurst} width={500} height={500} fps={60} durationInFrames={180} />
+    <Composition id="m10-musket-fire" component={M10MusketFire} width={700} height={500} fps={60} durationInFrames={120} />
     <Composition id="m09-title-1500" component={M09Title1500} width={1080} height={400} fps={60} durationInFrames={180} />
   </>
 );

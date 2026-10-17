@@ -1,6 +1,9 @@
 """Beat timing for the Chile video.
 
-    python3 tools/chile_timing.py words.json      # real word timings (faster-whisper output, keys w/s/e)
+    python3 tools/chile_timing.py words.json      # real word timings (faster-whisper output, keys w/s/e), on vo_edit.wav
+
+The VO used in the video is audio/vo_edit.wav: vo.mp3 with a 1.4 s beat of silence after "हम यहीं रहते हैं" (at 39.05 s)
+for the musket volley, so word times after 39.05 s are shifted by +1.4 s.
 
 Writes src/chile/timing.json: named cue times, caption chunks, duration. Cues are anchored to words of the script.
 """
@@ -21,7 +24,7 @@ CUES = [
     ("shakal4", 4, "शक्ल", 1), ("kaise4", 4, "कैसे", 1),
     ("y1500", 5, "1500", 1), ("adivasi5", 5, "आदिवासी", 1), ("inca5", 5, "Inca", 1), ("mapuche5", 5, "Mapuche", 1),
     ("spain6", 6, "Spain", 1), ("baat6", 6, "बातचीत", 1),
-    ("wah7", 7, "वाह", 1), ("khali7", 7, "खाली", 1), ("bhai8", 8, "भाई", 1), ("rehte8", 8, "रहते", 1), ("aham9", 9, "अहम", 1), ("khali9", 9, "खाली", 1),
+    ("wah7", 7, "वाह", 1), ("khali7", 7, "खाली", 1), ("bhai8", 8, "भाई", 1), ("rehte8", 8, "रहते", 1), ("aham9", 9, "अहम", 1), ("to9", 9, "तो", 1), ("khali9", 9, "खाली", 1),
     ("mapuche10", 10, "Mapuche", 1), ("jeet10", 10, "जीत", 1),
     ("y1818", 11, "1818", 1), ("shuru11", 11, "शुरुआत", 1), ("itna11", 11, "इतना", 1),
     ("chalo12", 12, "चलो", 1), ("poorab12", 12, "पूरब", 1), ("accha13", 13, "अच्छा", 1), ("dakshin13", 13, "दक्षिण", 1),

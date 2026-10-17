@@ -186,7 +186,7 @@ export const camMotion = (t: number) => {
 
 export const shake = (t: number): [number, number] => {
   let x = 0, y = 0;
-  for (const [t0, a] of [[C.accha13, 9], [C.chaude15 + 0.3, 7], [C.y1879, 8], [C.kinara17, 6]] as [number, number][]) {
+  for (const [t0, a] of [[C.rehte8 + 1.15, 14], [C.rehte8 + 1.27, 10], [C.rehte8 + 1.39, 8], [C.accha13, 9], [C.chaude15 + 0.3, 7], [C.y1879, 8], [C.kinara17, 6]] as [number, number][]) {
     x += kick(t, t0, a, 31, 9);
     y += kick(t, t0 + 0.02, a * 0.7, 27, 9);
   }
