@@ -1,55 +1,127 @@
 import React from 'react';
-import { AbsoluteFill, Easing, interpolate, random, useCurrentFrame } from 'remotion';
+import {AbsoluteFill, Easing, interpolate, random, useCurrentFrame} from 'remotion';
 
-// m10_musket_fire: one matchlock musket shot, seen from the side, the barrel pointing right. The muzzle is at the left
-// edge, middle height (x 60, y 250). A hot white-orange flash and a short flame cone, sparks, then a big puff of grey
-// gun smoke that billows forward and drifts up and away. 700x500, 60 fps, 120 frames. Transparent.
-
-const c = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
-const MX = 60, MY = 250;
+const clamp = {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'} as const;
+const muzzleX = 60;
+const muzzleY = 250;
 
 export const M10MusketFire: React.FC = () => {
-  const f = useCurrentFrame();
-  const flash = interpolate(f, [0, 2, 7], [0, 1, 0], c);
-  const cone = interpolate(f, [0, 2, 9], [0, 1, 0], c);
-  const ring = interpolate(f, [0, 14], [0, 1], { ...c, easing: Easing.out(Easing.cubic) });
-  const puffs = Array.from({ length: 22 }, (_, i) => {
-    const t0 = random(`t${i}`) * 6;
-    const life = interpolate(f, [t0, t0 + 110], [0, 1], { ...c, easing: Easing.out(Easing.quad) });
-    const dist = 40 + random(`d${i}`) * 380;
-    const spread = (random(`s${i}`) - 0.5) * 120;
+  const frame = useCurrentFrame();
+  const flash = interpolate(frame, [0, 2, 7], [0, 1, 0], clamp);
+  const cone = interpolate(frame, [0, 2, 9], [0, 1, 0], clamp);
+  const ring = interpolate(frame, [0, 14], [0, 1], {
+    ...clamp,
+    easing: Easing.out(Easing.cubic),
+  });
+
+  const puffs = Array.from({length: 22}, (_, index) => {
+    const start = random(`time-${index}`) * 6;
+    const life = interpolate(frame, [start, start + 110], [0, 1], {
+      ...clamp,
+      easing: Easing.out(Easing.quad),
+    });
+    const distance = 40 + random(`distance-${index}`) * 380;
+    const spread = (random(`spread-${index}`) - 0.5) * 120;
     return {
-      x: MX + dist * life + 18,
-      y: MY + spread * life - life * life * (70 + random(`u${i}`) * 90),
-      r: (18 + random(`r${i}`) * 26) * (0.4 + life * 1.9),
-      o: f < t0 ? 0 : interpolate(life, [0, 0.08, 0.6, 1], [0, 0.85, 0.5, 0]),
-      g: 150 + Math.floor(random(`g${i}`) * 70),
+      x: muzzleX + distance * life + 18,
+      y:
+        muzzleY +
+        spread * life -
+        life * life * (70 + random(`rise-${index}`) * 90),
+      radius: (18 + random(`radius-${index}`) * 26) * (0.4 + life * 1.9),
+      opacity:
+        frame < start
+          ? 0
+          : interpolate(life, [0, 0.08, 0.6, 1], [0, 0.85, 0.5, 0]),
+      grey: 150 + Math.floor(random(`grey-${index}`) * 70),
     };
   });
-  const sparks = Array.from({ length: 12 }, (_, i) => {
-    const a = (random(`a${i}`) - 0.5) * 0.9;
-    const v = 220 + random(`v${i}`) * 260;
-    const p = interpolate(f, [0, 16], [0, 1], { ...c, easing: Easing.out(Easing.quad) });
-    return { x: MX + Math.cos(a) * v * p, y: MY + Math.sin(a) * v * p + p * p * 40, o: interpolate(f, [0, 3, 16], [0, 1, 0], c) };
+
+  const sparks = Array.from({length: 12}, (_, index) => {
+    const angle = (random(`angle-${index}`) - 0.5) * 0.9;
+    const velocity = 220 + random(`velocity-${index}`) * 260;
+    const progress = interpolate(frame, [0, 16], [0, 1], {
+      ...clamp,
+      easing: Easing.out(Easing.quad),
+    });
+    return {
+      x: muzzleX + Math.cos(angle) * velocity * progress,
+      y:
+        muzzleY +
+        Math.sin(angle) * velocity * progress +
+        progress * progress * 40,
+      opacity: interpolate(frame, [0, 3, 16], [0, 1, 0], clamp),
+    };
   });
+
   return (
     <AbsoluteFill>
       <svg width={700} height={500}>
         <defs>
           <filter id="smoke" x="-30%" y="-30%" width="160%" height="160%">
-            <feTurbulence type="fractalNoise" baseFrequency="0.022" numOctaves={3} seed={5} result="n" />
-            <feDisplacementMap in="SourceGraphic" in2="n" scale={34} />
+            <feTurbulence
+              type="fractalNoise"
+              baseFrequency="0.022"
+              numOctaves={3}
+              seed={5}
+              result="noise"
+            />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale={34} />
             <feGaussianBlur stdDeviation={5} />
           </filter>
-          <radialGradient id="fl"><stop offset="0" stopColor="#fff" /><stop offset="0.35" stopColor="#fff2b0" /><stop offset="0.7" stopColor="#ff9a2a" stopOpacity={0.6} /><stop offset="1" stopColor="#ff6a00" stopOpacity={0} /></radialGradient>
+          <radialGradient id="flash-gradient">
+            <stop offset="0" stopColor="#fff" />
+            <stop offset="0.35" stopColor="#fff2b0" />
+            <stop offset="0.7" stopColor="#ff9a2a" stopOpacity={0.6} />
+            <stop offset="1" stopColor="#ff6a00" stopOpacity={0} />
+          </radialGradient>
         </defs>
+
         <g filter="url(#smoke)">
-          {puffs.map((p, i) => <circle key={i} cx={p.x} cy={p.y} r={p.r} fill={`rgb(${p.g},${p.g},${p.g - 6})`} opacity={p.o} />)}
+          {puffs.map((puff, index) => (
+            <circle
+              key={index}
+              cx={puff.x}
+              cy={puff.y}
+              r={puff.radius}
+              fill={`rgb(${puff.grey},${puff.grey},${puff.grey - 6})`}
+              opacity={puff.opacity}
+            />
+          ))}
         </g>
-        <circle cx={MX + 30} cy={MY} r={40 + ring * 120} fill="none" stroke="#fff" strokeWidth={6 * (1 - ring)} opacity={(1 - ring) * 0.6} />
-        <path d={`M ${MX} ${MY - 22} L ${MX + 230 * cone} ${MY} L ${MX} ${MY + 22} Z`} fill="#ffd36b" opacity={cone} style={{ filter: 'blur(3px)' }} />
-        <circle cx={MX + 20} cy={MY} r={90} fill="url(#fl)" opacity={flash} />
-        {sparks.map((s, i) => <circle key={`s${i}`} cx={s.x} cy={s.y} r={3.5} fill="#ffe08a" opacity={s.o} />)}
+
+        <circle
+          cx={muzzleX + 30}
+          cy={muzzleY}
+          r={40 + ring * 120}
+          fill="none"
+          stroke="#fff"
+          strokeWidth={6 * (1 - ring)}
+          opacity={(1 - ring) * 0.6}
+        />
+        <path
+          d={`M ${muzzleX} ${muzzleY - 22} L ${muzzleX + 230 * cone} ${muzzleY} L ${muzzleX} ${muzzleY + 22} Z`}
+          fill="#ffd36b"
+          opacity={cone}
+          style={{filter: 'blur(3px)'}}
+        />
+        <circle
+          cx={muzzleX + 20}
+          cy={muzzleY}
+          r={90}
+          fill="url(#flash-gradient)"
+          opacity={flash}
+        />
+        {sparks.map((spark, index) => (
+          <circle
+            key={`spark-${index}`}
+            cx={spark.x}
+            cy={spark.y}
+            r={3.5}
+            fill="#ffe08a"
+            opacity={spark.opacity}
+          />
+        ))}
       </svg>
     </AbsoluteFill>
   );
