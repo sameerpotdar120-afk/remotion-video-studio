@@ -1,4 +1,4 @@
-"""The vintage paper map for the Chile video's history scenes (like an old atlas): tan land, teal sea, paper grain,
+"""The vintage paper map for the Chile video's history scenes (like an old atlas, from the Americas across to Spain): tan land, teal sea, paper grain,
 inked coastlines. Drawn from Natural Earth (public domain) on a Web Mercator grid; no imagery.
 
     python3 -I tools/build_chile_vintage.py <ne_dir>
@@ -17,7 +17,7 @@ from shapely.geometry import box, shape
 
 ROOT = Path(__file__).resolve().parent.parent
 R = 6378137.0
-LON0, LON1, LAT0, LAT1 = -125.0, -10.0, -62.0, 40.0
+LON0, LON1, LAT0, LAT1 = -125.0, 8.0, -62.0, 47.0
 W = 4096
 
 

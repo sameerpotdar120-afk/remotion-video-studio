@@ -115,6 +115,7 @@ def main() -> None:
     CL = {r["name"]: shape(s.__geo_interface__) for r, s in zip(st.records(), st.shapes()) if r["adm0_a3"] == "CHL"}
     geo["countries"] = {n: rings(C[n], 0.01 if n == "Chile" else 0.03, 0.003 if n == "Chile" else 0.05) for n in SA}
     geo["countries"]["India"] = rings(C["India"], 0.03, 0.05)
+    geo["countries"]["Spain"] = rings(C["Spain"].intersection(box(-10, 35, 5, 44.5)), 0.02, 0.05)
     chile = C["Chile"].intersection(box(-80, -56.5, -66, -17))
     main = max(chile.geoms, key=lambda p: p.area) if hasattr(chile, "geoms") else chile
     geo["chile_main"] = rings(main, 0.01, 0.003)

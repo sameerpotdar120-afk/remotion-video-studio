@@ -338,7 +338,7 @@ const OverIndia: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const [kx, ky] = toScreen(c, merc(...KASH)), [qx, qy] = toScreen(c, merc(...KANYA)), [tx, ty] = toScreen(c, chileOnIndia.tail);
   const d = pts.map(([x, y], i) => (i ? 'L' : 'M') + x.toFixed(1) + ',' + y.toFixed(1)).join('') + 'Z';
   const lineI = ramp(t, C.kanya2 - 0.2, C.kanya2 + 0.5, inOut), lineC = ramp(t, C.n1000 - 0.4, C.n1000 + 0.2, inOut);
-  const fade = 1 - ramp(t, C.par3 + 0.2, C.par3 + 0.6, linear) * 0.35;
+  const fade = 1 - ramp(t, C.par3 + 0.2, C.par3 + 0.6, linear) * 0.35 - ramp(t, C.delhi3 - 0.5, C.delhi3 - 0.1, linear) * 0.4;
   const ext = window4(t, C.n1000 - 0.1, C.n1000 + 0.2, SC.back - 0.3, SC.back);
   return (
     <>
@@ -417,19 +417,22 @@ const OldLabel: React.FC<{ t: number; t0: number; t1: number; text: string; x: n
   );
 };
 
-/** The Spanish ships sailing in, then turning into smiling faces ("बातचीत"). */
+/** The Spanish ships sail from Spain across the Atlantic to South America's coasts, then turn into smiling faces ("बातचीत"). */
 const Ships: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
-  if (t < C.spain6 - 0.4 || t > SC.skit + 0.1) return null;
-  const spots: [number, number][] = [[-79, 2], [-82, -10], [-76, -22], [-34, -8], [-38, -24], [-47, -33]];
-  const start = C.baat6 - 2.0;
+  if (t < C.spain6 - 0.2 || t > SC.skit + 0.1) return null;
+  const spots: [number, number][] = [[-80, 1], [-81, -9], [-73, -20], [-35, -7], [-39, -20], [-50, -30]];
+  const from = merc(-9.8, 37.8);
   return (
     <>
       {spots.map(([lo, la], i) => {
-        const [x, y] = S(c, lo, la);
-        const s0 = start + i * 0.06;
-        const p = ramp(t, C.spain6 - 0.35 + i * 0.07, C.spain6 + 0.6 + i * 0.07, easeOut);
-        return <At key={i} t0={s0} t1={SC.skit + 0.1} x={lerp(x + (lo < -60 ? -500 : 500), x, p)} y={y} w={300} h={300} scale={0.8}><Clip name="m03_ship_to_emoji" /></At>;
+        const to = merc(lo, la);
+        const s0 = C.spain6 - 0.1 + i * 0.09;
+        const p = ramp(t, s0, C.baat6 - 0.45, inOut);
+        const arc = Math.sin(p * Math.PI) * 6e5 * (i % 2 ? 1 : -1);
+        const [x, y] = toScreen(c, [lerp(from[0], to[0], p), lerp(from[1], to[1], p) + arc]);
+        return <At key={i} t0={C.baat6 - 2.0} t1={SC.skit + 0.1} x={x} y={y} w={300} h={300} scale={0.62}><Clip name="m03_ship_to_emoji" /></At>;
       })}
+      <OldLabel t={t} t0={C.spain6 + 0.05} t1={SC.skit} text="SPAIN" x={S(c, -4, 41.5)[0]} y={S(c, -4, 41.5)[1] - 70} size={52} color="#5a0f0a" />
     </>
   );
 };
@@ -562,7 +565,8 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       )}
       <Chip t={t} t0={C.chor15 - 0.2} t1={C.uttar16} text="आख़िरी छोर तक" x={540} y={330} color={COL.chile} size={60} />
       {/* the war */}
-      <Big t={t} t0={C.y1879 - 0.05} t1={C.jung17} text="⚔ 1879" x={540} y={340} size={150} color={COL.gold} font={NUM} rot={-3} />
+      <Sticker t={t} t0={C.y1879 - 0.25} t1={C.jung17 + 0.3} name="c13_crossed_swords" x={540} y={600} h={300} />
+      <Big t={t} t0={C.y1879 - 0.05} t1={C.jung17 + 0.3} text="1879" x={540} y={340} size={170} color={COL.gold} font={NUM} rot={-3} />
       <MapName t={t} t0={C.bolivia16 + 0.05} t1={C.bhai18 - 0.3} text="BOLIVIA" at={merc(-64.5, -16.8)} c={c} size={60} caps />
       <MapName t={t} t0={C.peru16 + 0.05} t1={SC.lake - 0.2} text="PERU" at={merc(-75, -10.5)} c={c} size={60} caps />
       <Chip t={t} t0={C.kinara17 - 0.1} t1={C.bhai18 - 0.2} text="Bolivia का समुद्री किनारा ➜ Chile" x={540} y={330} color={COL.bolivia} size={46} />
@@ -612,6 +616,8 @@ export const LakeFx: React.FC<{ t: number }> = ({ t }) => {
         {[0, 1, 2].map((k) => { const p = ((t - SC.lake) * 0.8 + k / 3) % 1; return <ellipse key={k} cx={x} cy={990 + H * 0.4} rx={W * (0.4 + p * 0.5)} ry={18 + p * 22} fill="none" stroke="#dff6ff" strokeWidth={4} opacity={(1 - p) * 0.6} />; })}
       </svg>
       <Chip t={t} t0={C.navy19 - 0.1} t1={SC.close} text="BOLIVIAN NAVY ⚓" x={540} y={420} color={COL.bolivia} size={60} />
+      <Chip t={t} t0={SC.lake + 0.3} t1={SC.close} text="BOLIVIA" x={860} y={1380} color={COL.bolivia} size={46} rot={0} />
+      <Chip t={t} t0={SC.lake + 0.4} t1={SC.close} text="PERU" x={220} y={700} color={COL.peru} size={46} rot={0} />
       <Chip t={t} t0={C.jheel19 - 0.1} t1={SC.close} text="LAKE TITICACA" x={540} y={560} color="#7fe3ff" size={48} />
     </>
   );

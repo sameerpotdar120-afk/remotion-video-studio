@@ -81,8 +81,12 @@ const keys = (): Key[] => [
   { t: SC.vintage, at: PL.sa, span: 9.5e6, rot: 0, e: easeOut },
   // the vintage map: 1500, the peoples, the Spanish arrive
   { t: SC.vintage + 0.01, at: PL.vint, span: 1.25e7, rot: 0, cut: true },
-  { t: C.baat6 + 0.6, at: PL.vint, span: 1.15e7, rot: 0, e: linear },
-  { t: SC.skit, at: PL.vint, span: 1.12e7, rot: 0, e: linear },
+  { t: C.spain6 - 0.45, at: PL.vint, span: 1.2e7, rot: 0, e: linear },
+  // "फिर आए Spain वाले": out over the Atlantic so Spain and South America are both in view, the ships sailing across
+  { t: C.spain6 + 0.35, at: ll(-36, 9), span: 1.9e7, rot: 0, e: inOut },
+  { t: C.baat6 - 0.5, at: ll(-38, 6), span: 1.85e7, rot: 0, e: linear },
+  { t: C.baat6 + 0.35, at: PL.vint, span: 1.2e7, rot: 0, e: inOut },
+  { t: SC.skit, at: PL.vint, span: 1.15e7, rot: 0, e: linear },
   // after the skit: Spain and the Mapuche, independence, then down onto early Chile
   { t: SC.skitEnd + 0.01, at: off(PL.vint, 0, -1e6), span: 1.1e7, rot: 0, cut: true },
   { t: C.y1818, at: off(PL.vint, 0, -8e5), span: 1.0e7, rot: 0, e: linear },

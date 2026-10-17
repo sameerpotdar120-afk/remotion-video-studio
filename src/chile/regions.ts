@@ -17,6 +17,12 @@ const ctry = (n: string) => GEO.countries[n];
 /** Every region's beat. Chile's own fill is drawn separately (it grows south), see ChileFill in Fx. */
 export const regionsAt = (t: number): Region[] => {
   const out: Region[] = [];
+  // India under Chile's true-size shape ("India पर रख दो"), in saffron so the red reads on top
+  const india = window4(t, C.india2 - 0.05, C.india2 + 0.35, SC.back - 0.25, SC.back);
+  if (india > 0) out.push(reg('india', ctry('India'), india, '#FF9933', 0.6));
+  // "फिर आए Spain वाले": Spain lights up across the Atlantic on the vintage map
+  const spain = window4(t, C.spain6 - 0.15, C.spain6 + 0.25, SC.skit - 0.25, SC.skit);
+  if (spain > 0) out.push(reg('spain_eu', ctry('Spain'), spain, COL.spain, 0.85));
   // the vintage map after the skit: Spain and Portugal take the continent, the Mapuche hold the south
   const col = window4(t, C.mapuche10 - 0.3, C.mapuche10 + 0.3, C.y1818 - 0.2, C.y1818 + 0.2);
   if (col > 0) {
@@ -46,6 +52,12 @@ export const regionsAt = (t: number): Region[] => {
     const ps = ramp(t, C.peru16 - 0.1, C.peru16 + 0.3, easeOut) * (1 - ramp(t, C.hissa17 - 0.2, C.hissa17 + 0.2, linear));
     out.push(reg('war_bcoast', GEO.bolivia_coast, bc, COL.bolivia, 0.85));
     out.push(reg('war_psouth', GEO.peru_south, ps, COL.peru, 0.85));
+  }
+  // Lake Titicaca: the Bolivian and Peruvian sides of the lake
+  const lake = window4(t, SC.lake + 0.1, SC.lake + 0.5, SC.close - 0.3, SC.close);
+  if (lake > 0) {
+    out.push(reg('lake_bolivia', ctry('Bolivia'), lake * 0.55, COL.bolivia, 0.6));
+    out.push(reg('lake_peru', ctry('Peru'), lake * 0.4, COL.peru, 0.6));
   }
   return out;
 };
