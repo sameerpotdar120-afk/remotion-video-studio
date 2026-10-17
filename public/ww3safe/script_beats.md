@@ -1,7 +1,8 @@
-# World War 3 में सबसे safe देश: script v2 (beat by beat)
+# World War 3 में सबसे safe देश: final script (creator's version, fact-checked; beat by beat)
 
-About 195 words, roughly 75 s. Tag: BOTH. v2 changes: the "चौथा" ask moved to the very end only, short spoken
-clauses, and a stronger hook (a contrarian flip rather than a question).
+The creator's FINAL PRO VERSION, written out in Devanagari. Three fact fixes: Fiji "missile idhar aayegi hi nahi"
+softened, New Zealand "uga lega" → "उगा सकता है", Swiss bunkers "ready" → "बनी हुई है". About 225 words, about 87 s.
+The VO lines are in script_hindi.txt; the on-screen plan per beat below still holds.
 
 | Beat | Time | VO | On screen |
 |------|------|----|-----------|
@@ -41,3 +42,9 @@ clauses, and a stronger hook (a contrarian flip rather than a question).
 - **Dropped from the reference:**
   - "Fiji lacks strategically important resources": Fiji mines gold.
   - "almost unlimited supply of seafood" and the self-sufficient farming claim: Fiji imports much of its food.
+
+- **Fiji, "इतना अकेला, कि किसी के निशाने पर आने की वजह ही नहीं बनती":** the creator's line said no missile would come
+  here at all. Long-range missiles can reach anywhere on Earth, so the line now says what is defensible: Fiji has no
+  reason to be a target.
+- **Switzerland, "पहले से बनी हुई है":** not "ready". The spaces exist (110% in 2017), but in 2025 the government set
+  aside 220 million francs to inspect and repair public shelters, and coverage is uneven between cantons.
