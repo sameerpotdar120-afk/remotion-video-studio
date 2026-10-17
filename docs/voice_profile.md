@@ -80,3 +80,10 @@ The channel has a recurring host character: "Null", a masked man (matte black fu
 
 - The 3D-relief / tilted-slab map style "won't work". Default to the Judwa Desh (Twins) style: flat top-down EOX satellite map (no relief, no tilt), the Twins grade (teal shadows + warm highlights soft-light, vignette, dark top/bottom), bold flat region fills with a white top sheen that grow out from the centre, white edge draw-on + running light + outer glow, a small lift (scale + shadow) on landing, boxed name labels on pins, big white/gold numbers, and the restless camera (breathe, drift, punch on hits, long whips with motion blur).
 - Skip props that look cheap (the Siliguri chicken was cut).
+
+## Motion assets made in GPT (creator, Oct 17)
+
+- Analyse each reference micro-frame by frame (every 1–3 frames through each motion) to copy the real easing, timing and motion.
+- Besides the GPT image prompts, deliver a motion asset file (`public/<topic>/motion_assets.md`): for each animated element a self-contained Remotion component + its Composition registration + the exact render command. The creator runs these in ChatGPT's work section (it renders them) to save credits here, and sends back the files.
+- Motion asset spec: 60 fps, transparent background (WebM VP9 with alpha: `--codec=vp9 --pixel-format=yuva420p`, or ProRes 4444 `.mov`), sized to the element, fixed duration, file names `mNN_name.webm`. No external assets inside them unless stated; fonts from Google Fonts only.
+- I still build the map, camera, VO timing, compositing, mix and final render here.
