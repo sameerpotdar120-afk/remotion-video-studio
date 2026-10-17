@@ -3,7 +3,7 @@
     python3 -I tools/build_chile_maps.py <tile_cache> <ne_dir>
 
 Satellite: EOX Sentinel-2 cloudless 2024 (CC BY 4.0, credited on screen), flat Web Mercator plates.
-The Andes band is a mask of land above 1,500 m from AWS Terrain Tiles (terrarium; SRTM and other open data).
+The Andes band is a mask of land above 1,500 m (700 m in the far south) from AWS Terrain Tiles (terrarium; SRTM and other open data).
 Borders: Natural Earth (public domain; India point-of-view edition). Historical shapes (early Chile in 1818, the
 colonial split, Bolivia's lost coast) are cut from modern borders and regions with boxes: approximate.
 """
@@ -90,11 +90,16 @@ def main() -> None:
         geo["plates"][name] = {"bounds": [round(v, 1) for v in b], "w": im.width, "h": im.height}
         print(name, im.size, flush=True)
 
-    # the Andes: land above 1,500 m on the South America plate's grid, as a soft white mask (tinted in code)
+    # the Andes: land above 1,500 m (700 m in the far south) on the South America plate's grid, as a soft white mask (tinted in code)
     t, b = stitch(TERRARIUM, 6, -95.0, -28.0, -58.0, 16.0, cache / "terrarium", "terr")
     a = np.asarray(t).astype(np.float32)
     h = a[..., 0] * 256 + a[..., 1] + a[..., 2] / 256 - 32768
-    m = ndimage.gaussian_filter((h > 1500).astype(np.float32), 1.2)
+    # the southern Andes are lower: the threshold falls from 1,500 m (north of 33°S) to 700 m (south of 44°S)
+    rows = np.linspace(0, 1, h.shape[0])
+    y0, y1 = my(16.0), my(-58.0)
+    lat = np.degrees(2 * np.arctan(np.exp((y0 + (y1 - y0) * rows) / R)) - np.pi / 2)
+    thr = np.interp(-lat, [33, 44], [1500, 700])[:, None]
+    m = ndimage.gaussian_filter((h > thr).astype(np.float32), 1.2)
     m = ndimage.binary_opening(m > 0.5, iterations=2)
     lab, n = ndimage.label(m)
     sizes = ndimage.sum(np.ones_like(h), lab, range(1, n + 1))
