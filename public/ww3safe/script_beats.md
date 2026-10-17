@@ -1,7 +1,7 @@
 # World War 3 में सबसे safe देश: final script (creator's version, fact-checked; beat by beat)
 
 The creator's FINAL PRO VERSION, written out in Devanagari. Three fact fixes: Fiji "missile idhar aayegi hi nahi"
-softened, New Zealand "uga lega" → "उगा सकता है", Swiss bunkers "ready" → "बनी हुई है". About 225 words, about 87 s.
+softened, New Zealand "uga lega" → "उगा सकता है", Swiss bunkers "ready" → "बनी हुई है". About 213 words, about 82 s at 2.6 words a second.
 The VO lines are in script_hindi.txt; the on-screen plan per beat below still holds.
 
 | Beat | Time | VO | On screen |
