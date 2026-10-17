@@ -28,7 +28,9 @@ export const globeAt = (t: number): GState => {
   const d = ramp(t, SC.dive, SC.flat, easeIn);
   const fl = GEO.places_deg.fiji;
   const spinD = spin * (1 - d);
-  return { lon: lon + spinD + (fl[0] - (lon + spinD)) * d, lat: lat + (fl[1] - lat) * d, dist: dist + (1.08 - dist) * d };
+  // a slow breathing push-in, as on the reference globe
+  const br = dist * (1 - 0.045 * Math.sin((t - SC.globeIn) * 0.9) - 0.03 * Math.sin((t - SC.globeIn) * 0.37));
+  return { lon: lon + spinD + (fl[0] - (lon + spinD)) * d, lat: lat + (fl[1] - lat) * d, dist: br + (1.08 - br) * d };
 };
 
 const camFor = (g: GState) => {

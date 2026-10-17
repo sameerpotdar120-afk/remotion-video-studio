@@ -5,7 +5,7 @@ import { Watermark } from '../brand/Watermark';
 import { useMontserrat } from '../darien/Brand';
 import { DURATION_S, NULL_WIN, PLANE, SC, camAt, camMotion, shake } from './cam';
 import { useWWFonts } from './fonts';
-import { Ash, Banner, Comment, Grade, GlobeFx, MapFx, Scenes, Subtitles, Whips, winterAt } from './Fx';
+import { Ash, Banner, Comment, Grade, GlobeFx, MapFx, Scenes, Subtitles, Whips, pushAt, winterAt } from './Fx';
 import { Globe } from './Globe';
 import { MapCanvas, SEA_BG } from './Map';
 import { regionsAt } from './regions';
@@ -83,7 +83,7 @@ export const WW3: React.FC<{ captions?: boolean; res?: number; audio?: string }>
       </svg>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy - 480 * q}px) scale(1.03)` }}>
         {flatOn && (
-          <AbsoluteFill style={{ opacity: t < SC.flat ? 1 - ramp(t, SC.globeIn + 0.15, SC.globeIn + 0.45, linear) : 1, transform: `scale(${flatScale})` }}>
+          <AbsoluteFill style={{ opacity: t < SC.flat ? 1 - ramp(t, SC.globeIn + 0.15, SC.globeIn + 0.45, linear) : 1, transform: `translateX(${pushAt(t)}px) scale(${flatScale})` }}>
             <AbsoluteFill style={{ filter: blur ? 'url(#wwblur)' : undefined }}>
               <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h, transformOrigin: `${PLANE.ox}px ${PLANE.oy}px`, transform: `rotate(${cam.rot}deg)` }}>
                 <div style={{ position: 'absolute', inset: 0, filter: `saturate(${1.2 * (1 - 0.9 * winter)}) contrast(1.12) brightness(${1.03 - 0.3 * winter})` }}><MapCanvas cam={cam} res={res} /></div>

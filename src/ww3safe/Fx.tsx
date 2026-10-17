@@ -65,6 +65,22 @@ export const Label: React.FC<{ t: number; t0: number; t1: number; text: string; 
   );
 };
 
+/** The name written on the shape itself, letters popping in one after another (reference frames 522–530). */
+const MapName: React.FC<{ t: number; t0: number; t1: number; text: string; at: P; c: Cam; size?: number; caps?: boolean }> = ({ t, t0, t1, text, at, c, size = 64, caps }) => {
+  const out = ramp(t, t1, t1 + 0.2, easeIn);
+  if (t < t0 || out >= 1) return null;
+  const [x, y] = toScreen(c, at);
+  const chars = Array.from(text);
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) rotate(${c.rot}deg)`, whiteSpace: 'nowrap', opacity: 1 - out,
+      fontFamily: NUM, fontSize: size, letterSpacing: caps ? 4 : 1, color: '#fff', textShadow: '0 4px 10px rgba(0,0,0,0.6)', ...STROKE(7, '#0b3a12') }}>
+      {chars.map((ch, i) => (
+        <span key={i} style={{ display: 'inline-block', transform: `scale(${clamp01(pop(t, t0 + i * 0.045, 8, 300))})` }}>{ch === ' ' ? '\u00a0' : ch}</span>
+      ))}
+    </div>
+  );
+};
+
 /** Kinetic headline. */
 const Big: React.FC<{ t: number; t0: number; t1: number; text: string; x: number; y: number; size?: number; color?: string; font?: string; rot?: number }> = ({ t, t0, t1, text, x, y, size = 110, color = '#fff', font = HEAD, rot = -3 }) => {
   const a = window4(t, t0, t0 + 0.06, t1 - 0.15, t1);
@@ -136,13 +152,21 @@ const NoSign: React.FC<{ t: number; t0: number; t1: number; x: number; y: number
   );
 };
 
+/** Push-slide into a cutaway: the new shot shoves the map off to the left (reference frames 1209–1218). */
+const PUSH = 0.2;
+const CUTAWAYS = () => [[C.n300 - 0.15, C.aus4 - 0.1], [C.nz5b - 0.15, C.teesra6 - 0.15], [C.thand7 - 0.15, SC.close - 0.1]];
+export const pushAt = (t: number) => {
+  for (const [a, b] of CUTAWAYS()) if (t >= a && t < b) return -1080 * ramp(t, a, a + PUSH, easeOut);
+  return 0;
+};
+
 /** A full-screen still with a slow push and a little parallax drift (the live-footage cutaways of the reference). */
 const Cutaway: React.FC<{ t: number; t0: number; t1: number; src: string; from?: number; to?: number; dx?: number; children?: React.ReactNode }> = ({ t, t0, t1, src, from = 1.04, to = 1.16, dx = 30, children }) => {
   if (t < t0 - 0.01 || t > t1 + 0.01) return null;
   const p = ramp(t, t0, t1, linear);
-  const inn = ramp(t, t0, t0 + 0.2, easeOut);
+  const inn = ramp(t, t0, t0 + PUSH, easeOut);
   return (
-    <AbsoluteFill style={{ overflow: 'hidden', clipPath: `inset(0 0 0 ${(1 - inn) * 100}%)` }}>
+    <AbsoluteFill style={{ overflow: 'hidden', transform: `translateX(${(1 - inn) * 1080}px)`, filter: inn < 1 ? `blur(${(1 - inn) * 14}px)` : undefined }}>
       <Img src={staticFile(`ww3safe/img/${src}.jpg`)} style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, transform: `scale(${lerp(from, to, p)}) translateX(${lerp(-dx, dx, p)}px)`,
         filter: 'saturate(1.12) contrast(1.06)' }} />
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.5) 100%)' }} />
@@ -251,27 +275,37 @@ const GlobeFx: React.FC<{ t: number }> = ({ t }) => {
 
 // ---------------------------------------------------------------- Fiji
 
-/** The dashed line from Fiji to Australia, with "2,700 KM" riding along it. */
+/** The dashed line from Fiji to Australia. "2,700 KM" rides just behind the line's head, rotated to the line, pinned
+ *  to the map (it grows and shrinks with the camera), its letters revealing as the line grows: as in the reference. */
 const DashLine: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const a = window4(t, C.aus4 - 0.05, C.aus4 + 0.1, C.akela4 + 0.5, C.akela4 + 0.9);
   if (a <= 0) return null;
   const A = toScreen(c, pl.fiji), B = toScreen(c, pl.brisbane);
   const f = ramp(t, C.aus4 + 0.1, C.n2700 + 0.3, inOut);
   const hx = lerp(A[0], B[0], f), hy = lerp(A[1], B[1], f);
-  const ang = (Math.atan2(B[1] - A[1], B[0] - A[0]) * 180) / Math.PI + 180;
-  const lab = clamp01(pop(t, C.n2700 - 0.05, 9, 240));
+  const dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1;
+  let ang = (Math.atan2(dy, dx) * 180) / Math.PI;
+  if (ang > 90 || ang < -90) ang += 180;
+  const k = Math.max(0.45, Math.min(2.4, 7.6e6 / c.span));
+  const q = Math.max(0, f - 0.16);
+  const lx = lerp(A[0], B[0], q) + (dy / L) * 58 * k, ly = lerp(A[1], B[1], q) - Math.abs(dx / L) * 58 * k;
   const km = Math.round(lerp(0, 2700, ramp(t, C.n2700 - 0.05, C.n2700 + 0.7, easeOut)) / 10) * 10;
+  const text = t < C.n2700 - 0.05 ? '' : `${km.toLocaleString('en-US')} KM`;
+  const shown = Math.ceil(text.length * ramp(t, C.n2700 - 0.05, C.n2700 + 0.35, linear));
+  const pop1 = clamp01(pop(t, C.n2700 - 0.05, 9, 240));
   return (
     <div style={{ position: 'absolute', inset: 0, opacity: a }}>
-      <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.7))' }}>
-        <line x1={A[0]} y1={A[1]} x2={hx} y2={hy} stroke="#fff" strokeWidth={7} strokeDasharray="26 18" strokeLinecap="round" />
+      <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible', filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.7)) drop-shadow(0 0 6px rgba(255,255,255,0.35))' }}>
+        <line x1={A[0]} y1={A[1]} x2={hx} y2={hy} stroke="#fff" strokeWidth={4 + 3 * Math.min(1.4, k)} strokeDasharray={`${26 * Math.min(1.4, k)} ${18 * Math.min(1.4, k)}`} strokeLinecap="round" />
         <circle cx={A[0]} cy={A[1]} r={11} fill="#fff" />
         {f > 0.98 && <circle cx={B[0]} cy={B[1]} r={11} fill="#fff" />}
       </svg>
-      <div style={{ position: 'absolute', left: (A[0] + hx) / 2, top: (A[1] + hy) / 2 - 56, transform: `translate(-50%,-50%) rotate(${ang}deg) scale(${lab})`, whiteSpace: 'nowrap',
-        fontFamily: NUM, fontStyle: 'italic', fontSize: 92, color: '#fff', letterSpacing: 2, textShadow: SHADOW, ...STROKE(7) }}>
-        {km.toLocaleString('en-US')} KM
-      </div>
+      {shown > 0 && (
+        <div style={{ position: 'absolute', left: lx, top: ly, transform: `translate(-50%,-50%) rotate(${ang}deg) scale(${pop1})`, whiteSpace: 'nowrap',
+          fontFamily: NUM, fontStyle: 'italic', fontSize: 88 * k, color: '#fff', letterSpacing: 2, textShadow: SHADOW, ...STROKE(6 * Math.min(1.5, k)) }}>
+          {text.slice(0, shown)}
+        </div>
+      )}
     </div>
   );
 };
@@ -320,17 +354,16 @@ const Zone: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 
 export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const S = (p: P) => toScreen(c, p);
-  const fj = S(pl.fiji), au = S(pl.australia), nz = S(pl.nz), ic = S(pl.iceland);
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {t < SC.globeIn + 0.5 && <Missiles t={t} c={c} />}
       {/* Fiji */}
-      <Label t={t} t0={C.fiji4 + 0.05} t1={C.aus4 - 0.3} text="FIJI" x={fj[0] + 200} y={fj[1] - 260} color={COL.safe} pin={fj} size={56} />
+      <MapName t={t} t0={C.fiji4 + 0.05} t1={C.aus4 - 0.3} text="Fiji" at={merc(178.0, -17.85)} c={c} size={Math.min(110, 64 * (6.4e5 / c.span) ** 0.6)} />
       <Chip t={t} t0={C.fiji4 - 0.1} t1={C.pacific4 + 0.1} text="पहला" x={540} y={300} color={COL.safe} size={72} />
       <div style={{ position: 'absolute', left: 540, top: 1180, transform: 'translate(-50%,-50%)', fontFamily: NUM, fontSize: 64, letterSpacing: 10, color: '#7ff3ff',
         opacity: window4(t, C.pacific4 + 0.05, C.pacific4 + 0.3, C.n300 - 0.3, C.n300 - 0.1), textShadow: '0 0 18px rgba(0,200,255,0.8), 0 4px 10px rgba(0,0,0,0.6)' }}>PACIFIC OCEAN</div>
       <DashLine t={t} c={c} />
-      <Label t={t} t0={C.aus4 + 0.1} t1={C.akela4 + 0.2} text="AUSTRALIA" x={au[0] - 60} y={au[1] + 260} color={COL.aus} size={46} />
+      <MapName t={t} t0={C.aus4 + 0.15} t1={C.akela4 + 0.2} text="AUSTRALIA" at={merc(147, -24)} c={c} size={52} caps />
       <Alone t={t} c={c} />
       <Big t={t} t0={C.akela4 - 0.05} t1={C.nishane4 - 0.15} text="इतना अकेला!" x={540} y={330} size={110} color={COL.safe} />
       <Chip t={t} t0={C.nishane4 + 0.6} t1={C.ilaka4 - 0.2} text="निशाने की वजह ही नहीं" x={540} y={330} color={COL.war} size={58} />
@@ -339,12 +372,12 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Sticker t={t} t0={C.sandhi4 + 0.2} t1={C.nz5 - 0.3} name="w01_nuke_bomb" x={540} y={760} h={220} rot={-8} />
       <NoSign t={t} t0={C.zone4 - 0.3} t1={C.nz5 - 0.3} x={540} y={760} r={210} />
       {/* New Zealand */}
-      <Label t={t} t0={C.nz5 + 0.2} t1={C.y2023 - 0.2} text="NEW ZEALAND" x={nz[0] - 120} y={nz[1] - 330} color={COL.safe} pin={nz} size={50} />
+      <MapName t={t} t0={C.nz5 + 0.2} t1={C.y2023 - 0.2} text="New Zealand" at={merc(172.3, -42.2)} c={c} size={70} />
       <Chip t={t} t0={C.nz5 - 0.1} t1={C.y1987} text="दूसरा" x={540} y={300} color={COL.safe} size={72} />
       <Counter t={t} t0={C.y1987 - 0.05} t1={C.hathiyar5 - 0.2} to={1987} x={540} y={330} size={170} color={COL.gold} dur={0.7} />
-      <Sticker t={t} t0={C.kanoon5 - 0.05} t1={C.y2023 - 0.2} name="w03_law_scroll" x={300} y={1240} h={380} rot={-6} />
-      <Sticker t={t} t0={C.hathiyar5 - 0.35} t1={C.y2023 - 0.2} name="w01_nuke_bomb" x={760} y={1260} h={170} rot={8} />
-      <NoSign t={t} t0={C.hathiyar5} t1={C.y2023 - 0.2} x={760} y={1260} r={175} />
+      <Sticker t={t} t0={C.kanoon5 - 0.05} t1={C.y2023 - 0.2} name="w03_law_scroll" x={800} y={1430} h={360} rot={6} />
+      <Sticker t={t} t0={C.hathiyar5 - 0.35} t1={C.y2023 - 0.2} name="w01_nuke_bomb" x={290} y={700} h={170} rot={8} />
+      <NoSign t={t} t0={C.hathiyar5} t1={C.y2023 - 0.2} x={290} y={700} r={175} />
       <Chip t={t} t0={C.y2023 - 0.05} t1={C.sardi5 - 0.1} text="2023 की STUDY" x={540} y={330} color={COL.gold} size={64} />
       <Chip t={t} t0={C.sardi5 - 0.05} t1={C.nz5b - 0.2} text="❄ परमाणु सर्दी" x={540} y={330} color={COL.winter} size={72} />
       <Sticker t={t} t0={C.fasle5 - 0.1} t1={C.nz5b - 0.2} name="w04_wheat_bundle" x={290} y={1250} h={380} rot={-14} grey={ramp(t, C.barbaad5, C.barbaad5 + 0.6)} />
@@ -352,7 +385,7 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {/* Iceland */}
       <Chip t={t} t0={C.teesra6 - 0.05} t1={C.iceland6 - 0.1} text="तीसरा" x={540} y={300} color={COL.safe} size={72} />
       <Big t={t} t0={C.ajeeb6 - 0.05} t1={C.iceland6 + 0.2} text="सबसे अजीब नाम…" x={540} y={460} size={96} color={COL.gold} />
-      <Label t={t} t0={C.iceland6 + 0.05} t1={C.uttar6 - 0.3} text="ICELAND" x={ic[0] + 120} y={ic[1] - 300} color={COL.safe} pin={ic} size={56} />
+      <MapName t={t} t0={C.iceland6 + 0.05} t1={C.uttar6 - 0.3} text="Iceland" at={merc(-18.7, 64.9)} c={c} size={110} />
       <Chip t={t} t0={C.uttar6} t1={C.army7 - 0.3} text="⬆ उत्तर में!" x={540} y={640} color={COL.war} size={64} />
       <Sticker t={t} t0={C.army7 - 0.05} t1={C.n19 - 0.2} name="w06_tank" x={540} y={1180} h={300} rot={-3} />
       <NoSign t={t} t0={C.army7 + 0.25} t1={C.n19 - 0.2} x={540} y={1180} r={290} />
@@ -494,9 +527,13 @@ export const Grade: React.FC<{ t: number; frame: number }> = ({ t, frame }) => {
   let flash = 0;
   for (const h of [C.europe1 + 0.5, C.khatra2, C.fiji4, C.zone4, C.iceland6]) flash = Math.max(flash, window4(t, h - 0.02, h, h + 0.04, h + 0.3));
   const pacific = window4(t, C.pacific4, C.pacific4 + 0.3, C.pacific4 + 0.6, C.pacific4 + 1.0);
+  // the map darkens under the sticker beats so the props pop (reference frames 738–800)
+  const dim = Math.max(window4(t, C.sandhi4, C.sandhi4 + 0.3, C.nz5 - 0.4, C.nz5 - 0.1), window4(t, C.kanoon5 - 0.1, C.kanoon5 + 0.3, C.y2023 - 0.3, C.y2023),
+    window4(t, C.army7 - 0.1, C.army7 + 0.3, C.thand7 - 0.4, C.thand7 - 0.15));
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,70,90,0.24), rgba(0,40,60,0.08) 40%, rgba(255,150,60,0.08) 70%, rgba(255,140,40,0.14))', mixBlendMode: 'soft-light' }} />
+      {dim > 0 && <AbsoluteFill style={{ background: '#000', opacity: dim * 0.28 }} />}
       {pacific > 0 && <AbsoluteFill style={{ background: '#1e8fff', opacity: pacific * 0.45, mixBlendMode: 'color-dodge' }} />}
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 52%, rgba(0,0,0,0.55) 100%)' }} />
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.45), rgba(0,0,0,0) 24%, rgba(0,0,0,0) 70%, rgba(0,6,12,0.55))' }} />
