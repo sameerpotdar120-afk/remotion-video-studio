@@ -1,5 +1,7 @@
 # Chile इतना लंबा और पतला क्यों है? Script draft, beat by beat
 
+**Render spec (creator, Oct 17):** 2K 60 fps (1440×2560: composition 1080×1920 at 60 fps, `--scale=1.3333333333333333`, map canvas res 4/3), with satellite plates one zoom finer than the 1080p videos.
+
 About 234 words, roughly 90 s at the creator's 2.6 words a second. Tag: BOTH. The reach comes from the chili gag and the shape; the connect comes from the India comparisons (Kashmir to Kanyakumari, Delhi to Agra) and the send prompt.
 
 The flow and humour follow the reference ("Why Chile Is So Long & So Thin"), but the jokes are rewritten, not translated. The CTA is a send prompt, because the WW3 video closed on a comment question.
