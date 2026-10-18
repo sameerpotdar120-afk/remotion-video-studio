@@ -6,3 +6,4 @@ exports/chile_2k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/ww3safe_2k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/timezones_2k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/timezones_2k60_upload.mp4 filter=lfs diff=lfs merge=lfs -text
+exports/thailand_4k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
