@@ -34,6 +34,7 @@ import { KolkataCover } from './kolkata/Cover';
 import { Siliguri, SILIGURI_DURATION, SILIGURI_DURATION_60 } from './siliguri/Siliguri';
 import { SiliguriCover } from './siliguri/Cover';
 import { WW3, WW3_DURATION_60 } from './ww3safe/WW3';
+import { WW3Cover } from './ww3safe/Cover';
 import { Chile, CHILE_DURATION_60 } from './chile/Chile';
 import { ChileCover } from './chile/Cover';
 import { Tibet2, TIBET2_DURATION, TIBET2_DURATION_60 } from './tibet2/Tibet2';
@@ -74,6 +75,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Siliguri2K60" component={Siliguri} durationInFrames={SILIGURI_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 4 / 3 }} />
       <Composition id="ChileCover" component={ChileCover} durationInFrames={CHILE_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 1 }} />
       <Composition id="WW3Safe60" component={WW3} durationInFrames={WW3_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 1 }} />
+      <Composition id="WW3Cover" component={WW3Cover} durationInFrames={WW3_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 1 }} />
       <Composition id="Chile2K60" component={Chile} durationInFrames={CHILE_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 4 / 3 }} />
       <Composition id="Kolkata60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, cut3d: true, veo: true }} />
       <Composition id="Kolkata4K60" component={Kolkata} durationInFrames={KOLKATA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2 }} />
