@@ -448,10 +448,10 @@ const NepalFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <>
       <Label t={t} t0={C.nepal12 + 0.1} t1={SC.close} text="NEPAL" x={n[0] + 120} y={n[1] - 300} color={COL.nepal} pin={n} size={52} />
-      <Avatar t={t} t0={C.mazedar12 - 0.1} t1={SC.close} name="a06_nepal_friend_body" x={250} y={1230} r={140} ring={COL.nepal}
+      <Avatar t={t} t0={C.mazedar12 - 0.1} t1={SC.close} name="a06_nepal_friend_body" x={250} y={1090} r={135} ring={COL.nepal}
         arm="a06_nepal_friend_arm" armAt={[0.66, 0.7]} armRot={(d) => Math.sin(d * 5) * 5} />
-      <At t0={C.n15_12 - 0.9} t1={SC.close} x={790} y={1180} w={600} h={600} scale={0.55}><M10WallClock h={5} m={30} add={15} arc="#FF4D6D" /></At>
-      <Chip t={t} t0={C.n15_12 + 0.15} t1={SC.close} text="+5:45 😂" x={790} y={1370} color={COL.nepal} size={66} font={NUM} rot={-3} />
+      <At t0={C.n15_12 - 0.9} t1={SC.close} x={790} y={1030} w={600} h={600} scale={0.5}><M10WallClock h={5} m={30} add={15} arc="#FF4D6D" /></At>
+      <Chip t={t} t0={C.n15_12 + 0.15} t1={SC.close} text="+5:45 😂" x={790} y={1200} color={COL.nepal} size={66} font={NUM} rot={-3} />
     </>
   );
 };
