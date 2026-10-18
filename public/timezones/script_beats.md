@@ -1,5 +1,7 @@
 # Time zones टेढ़े क्यों हैं? Script draft, beat by beat
 
+**Shipped by the creator on 18 Oct. Render: 4K 60 fps (2160×3840).**
+
 318 words, about 2:00 at the creator's measured pace of about 2.5 words a second. Tag: BOTH. The reach comes from the crooked-lines question and the Mirzapur gag; the connect comes from India's one clock (Arunachal and Gujarat, Assam's बागान टाइम, Nepal's +5:45) and the two-time-zones question. Close: a comment question (Chile closed on a send prompt).
 
 The flow follows the reference ("Why Do Time Zones Look So Strange?"), but the split-city gag moves from Phoenix to Mirzapur, the city India's own time line runs through, and an India section is added after China.
