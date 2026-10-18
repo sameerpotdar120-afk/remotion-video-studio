@@ -8,7 +8,6 @@ import sizes from '../../public/timezones/img_sizes.json';
 import { M01CircleArrows } from './motion/M01CircleArrows';
 import { M02AlarmClock } from './motion/M02AlarmClock';
 import { M03ClockBubble } from './motion/M03ClockBubble';
-import { M04Steam } from './motion/M04Steam';
 import { M05Question } from './motion/M05Question';
 import { M06Crack } from './motion/M06Crack';
 import { M07RedCross } from './motion/M07RedCross';
@@ -281,13 +280,9 @@ const MirzapurFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         </div>
       )}
       {/* the two lanes: 5 o'clock on the west side, 6 on the east */}
-      <Avatar t={t} t0={C.gali6 - 0.05} t1={SC.borders + 0.1} name="a01_chai_friend_body" x={200} y={1250} r={150} ring={COL.yellow}
-        arm="a01_chai_friend_arm" armAt={[0.7, 0.72]} armRot={(d) => Math.sin(d * 2.2) * 6 - 4}>
-        <div style={{ position: 'absolute', left: 190, top: 40, width: 150, height: 210 }}><At t0={C.gali6} t1={SC.borders + 0.1} x={75} y={105} w={300} h={420} scale={0.5}><M04Steam /></At></div>
-      </Avatar>
+      <Avatar t={t} t0={C.gali6 - 0.05} t1={SC.borders + 0.1} name="a01_chai_friend_body" x={200} y={1250} r={150} ring={COL.yellow} />
       <At t0={C.five6 - 0.1} t1={SC.borders + 0.1} x={250} y={950} w={700} h={560} scale={0.55}><M03ClockBubble h={5} tail="left" /></At>
-      <Avatar t={t} t0={C.bagal6 - 0.05} t1={SC.borders + 0.1} name="a02_confused_friend_body" x={820} y={1250} r={150} ring={COL.cyan}
-        arm="a02_confused_friend_hand" armAt={[0.3, 0.18]} armRot={(d) => Math.sin(d * 7) * 8} />
+      <Avatar t={t} t0={C.bagal6 - 0.05} t1={SC.borders + 0.1} name="a02_confused_friend_body" x={820} y={1250} r={150} ring={COL.cyan} />
       <At t0={C.six6 - 1.25} t1={SC.borders + 0.1} x={790} y={950} w={700} h={560} scale={0.55}><M03ClockBubble h={5} flip tail="right" /></At>
     </>
   );
@@ -448,8 +443,7 @@ const NepalFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <>
       <Label t={t} t0={C.nepal12 + 0.1} t1={SC.close} text="NEPAL" x={n[0] + 120} y={n[1] - 300} color={COL.nepal} pin={n} size={52} />
-      <Avatar t={t} t0={C.mazedar12 - 0.1} t1={SC.close} name="a06_nepal_friend_body" x={250} y={1090} r={135} ring={COL.nepal}
-        arm="a06_nepal_friend_arm" armAt={[0.66, 0.7]} armRot={(d) => Math.sin(d * 5) * 5} />
+      <Avatar t={t} t0={C.mazedar12 - 0.1} t1={SC.close} name="a06_nepal_friend_body" x={250} y={1090} r={135} ring={COL.nepal} />
       <At t0={C.n15_12 - 0.9} t1={SC.close} x={790} y={1030} w={600} h={600} scale={0.5}><M10WallClock h={5} m={30} add={15} arc="#FF4D6D" /></At>
       <Chip t={t} t0={C.n15_12 + 0.15} t1={SC.close} text="+5:45 😂" x={790} y={1200} color={COL.nepal} size={66} font={NUM} rot={-3} />
     </>
