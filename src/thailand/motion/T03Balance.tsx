@@ -5,16 +5,16 @@ import { Paper } from './Paper';
 import { clamp, wobble } from './theme';
 
 // t03_balance (line 7, "जो भी Siam को लेता, उसकी सरहद सीधे दूसरे से जा मिलती"): a brass balance with Britain in the left
-// pan and France in the right, level and calm. Siam is tossed in a high arc into one pan (`into`); on landing the beam tips
+// pan and France in the right, level and calm. Siam is tossed in a high arc into one pan (`into`), landing on frame `land`; on landing the beam tips
 // about 15° with an overshoot and the pans swing on their chains, while the other side looks over, angry.
 // 1080x1920, 60 fps, 240 frames.
 
 const PX = 540, PY = 760, HALF = 360, CH = 380;
 
-export const T03Balance: React.FC<{ bg?: boolean; into?: 'france' | 'britain' }> = ({ bg = true, into = 'france' }) => {
+export const T03Balance: React.FC<{ bg?: boolean; into?: 'france' | 'britain'; land?: number }> = ({ bg = true, into = 'france', land = 74 }) => {
   const f = useCurrentFrame();
   const side = into === 'france' ? 1 : -1;
-  const LAND = 74;
+  const LAND = land;
   const tip = f < LAND ? Math.sin(f / 30) * 1.2 : side * (15 - wobble(f, LAND, 1.6, 3.5) * 15);
   const th = (tip * Math.PI) / 180;
   const ends = [-1, 1].map((k) => [PX + Math.cos(th) * HALF * k, PY + Math.sin(th) * HALF * k] as [number, number]);
@@ -35,7 +35,7 @@ export const T03Balance: React.FC<{ bg?: boolean; into?: 'france' | 'britain' }>
     );
   };
   // Siam's throw: from top centre, a high arc into the receiving pan
-  const t = interpolate(f, [40, LAND], [0, 1], { ...clamp, easing: Easing.in(Easing.quad) });
+  const t = interpolate(f, [LAND - 34, LAND], [0, 1], { ...clamp, easing: Easing.in(Easing.quad) });
   const [tx, ty] = [ends[into === 'france' ? 1 : 0][0], ends[into === 'france' ? 1 : 0][1] + CH - 10];
   const sx = interpolate(t, [0, 1], [PX, tx]), sy = interpolate(t, [0, 1], [-220, ty]) - Math.sin(t * Math.PI) * 260;
   const landed = f >= LAND;
@@ -60,7 +60,7 @@ export const T03Balance: React.FC<{ bg?: boolean; into?: 'france' | 'britain' }>
           <circle cx={PX} cy={PY} r={34} fill="#F2C85A" stroke="#1D1430" strokeWidth={9} />
           <path d={`M ${PX} ${PY - 34} L ${PX - 16} ${PY - 90} L ${PX + 16} ${PY - 90} Z`} fill="#F2C85A" stroke="#1D1430" strokeWidth={8} />
           {/* Siam in flight, spinning, then sitting in the pan */}
-          {f >= 40 && (
+          {f >= LAND - 34 && (
             <g transform={landed ? undefined : `translate(${sx} ${sy}) rotate(${t * 540})`}>
               {landed ? null : <g transform="translate(0 90)"><CountryChar who="siam" size={180} f={f} mood="scared" shadow={false} armL={{ x: -100, y: -120 }} armR={{ x: 100, y: -120 }} /></g>}
             </g>

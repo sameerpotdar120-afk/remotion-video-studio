@@ -17,6 +17,7 @@ export type Pose = {
   nb: number; fb: number; // elbow bend side for each arm (1 or -1; blends through 0 as a straight arm)
   stick: number; // 0..1, the stick (pointer, musket or spear) in the near hand
   stickA: number; // stick angle, degrees (0 = pointing +x, -90 = up)
+  stickLen: number; // pointer length (diplomats; the musket and spear keep their own)
   turn: number; // -1 (looks back, toward -x) .. 1 (full profile toward +x); 0.35 is a natural 3/4
   tilt: number; // head tilt, degrees
   lean: number; // upper body lean, degrees (+ toward +x)
@@ -28,7 +29,7 @@ export type Pose = {
   face: Face;
 };
 
-export const POSE0: Pose = { nx: 30, ny: 230, fx: -20, fy: 230, nb: 1, fb: -1, stick: 0, stickA: 60, turn: 0.35, tilt: 0, lean: 0, squint: 0, brow: 0, cross: 0,
+export const POSE0: Pose = { nx: 30, ny: 230, fx: -20, fy: 230, nb: 1, fb: -1, stick: 0, stickA: 60, stickLen: 360, turn: 0.35, tilt: 0, lean: 0, squint: 0, brow: 0, cross: 0,
   dx: 0, hop: 0, lookX: 0.4, lookY: 0, face: 'smile' };
 
 // blend two poses; the face switches at the midpoint
@@ -77,10 +78,10 @@ const Arm: React.FC<{ s: [number, number]; h: [number, number]; bend: number; L:
   );
 };
 
-const Stick: React.FC<{ h: [number, number]; a: number; k: number; outfit: Outfit }> = ({ h, a, k, outfit }) => {
+const Stick: React.FC<{ h: [number, number]; a: number; k: number; outfit: Outfit; plen: number }> = ({ h, a, k, outfit, plen }) => {
   if (k < 0.01) return null;
   const r = (a * Math.PI) / 180;
-  const len = outfit === 'redcoat' ? 520 : outfit === 'burmese' ? 640 : 360;
+  const len = outfit === 'redcoat' ? 520 : outfit === 'burmese' ? 640 : plen;
   const back = outfit === 'redcoat' ? 200 : outfit === 'burmese' ? 260 : 40;
   const x0 = h[0] - Math.cos(r) * back, y0 = h[1] - Math.sin(r) * back;
   const x1 = h[0] + Math.cos(r) * len * k, y1 = h[1] + Math.sin(r) * len * k;
@@ -288,7 +289,7 @@ export const Chibi: React.FC<ChibiProps> = ({ outfit, pose: p, f, talk = 0, seed
         {body}
         {head}
         {crossed && <Arm s={farS} h={farH} bend={-p.fb} L={L} gloves={gloves} />}
-        <Stick h={nearH} a={p.stickA} k={p.stick} outfit={outfit} />
+        <Stick h={nearH} a={p.stickA} k={p.stick} outfit={outfit} plen={p.stickLen} />
         <Arm s={nearS} h={nearH} bend={p.nb} L={L} gloves={gloves} />
       </g>
     </g>

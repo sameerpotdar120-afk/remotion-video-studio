@@ -21,10 +21,10 @@ const P = (o: Partial<Pose>): Pose => ({ ...POSE0, stick: 1, stickA: 80, nx: 40,
 
 const B = {
   idle: P({ lookX: 0.6, lookY: -0.2 }),
-  map: P({ nx: 200, ny: -250, nb: -1, stickA: -70, tilt: 10, lookX: 0.6, lookY: -0.8, lean: -3 }),
-  glance: P({ nx: 200, ny: -250, nb: -1, stickA: -70, tilt: 4, lookX: 1, lookY: 0, face: 'smirk' }),
+  map: P({ nx: 200, ny: -280, nb: -1, stickA: -76, stickLen: 560, tilt: 10, lookX: 0.6, lookY: -0.8, lean: -3 }),
+  glance: P({ nx: 200, ny: -280, nb: -1, stickA: -76, stickLen: 560, tilt: 4, lookX: 1, lookY: 0, face: 'smirk' }),
   hands: P({ nx: 170, ny: -210, nb: -1, fx: -170, fy: -210, fb: 1, stick: 0.25, stickA: -100, brow: 1, face: 'oh', lookX: 0.8, dx: -60, lean: -8 }),
-  sly: P({ nx: 200, ny: -240, nb: -1, stickA: -62, lean: 7, squint: 0.45, brow: 0.5, face: 'smirk', lookX: 1, dx: -10 }),
+  sly: P({ nx: 200, ny: -270, nb: -1, stickA: -70, stickLen: 540, lean: 7, squint: 0.45, brow: 0.5, face: 'smirk', lookX: 1, dx: -10 }),
   back: P({ nx: 180, ny: -90, nb: -1, stickA: -40, lean: -6, face: 'angry', brow: -0.8, lookX: 1, dx: -30 }),
   offer: P({ nx: 165, ny: 30, stick: 0, fx: -150, fy: 10, fb: 1, tilt: -6, brow: 0.6, face: 'smile', lookX: 1 }),
   shake: P({ nx: 170, ny: 70, stick: 0, tilt: -3, brow: 0.4, face: 'smile', lookX: 1 }),

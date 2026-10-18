@@ -5,16 +5,15 @@ import { clamp } from './theme';
 
 // t13_soldiers (line 4, "तीन जंगों के बाद उसने Burma ले लिया"): chibi British redcoats in a firing line on the left, Burmese
 // soldiers with spears on the right, over the battlefield background (t02_battlefield_bg). The redcoats fire three volleys
-// (muzzle flash, smoke puff, recoil) for the three wars; the Burmese line braces and flinches. Cartoon, no blood.
+// (muzzle flash, smoke puff, recoil; frames in `volleys`) for the three wars; the Burmese line braces and flinches. Cartoon, no blood.
 // Transparent, 1080x1920, 60 fps, 240 frames.
 
-const VOLLEYS = [40, 110, 180];
 const RED: [number, number, number][] = [[90, 1520, 0.3], [240, 1550, 0.32], [140, 1700, 0.37], [300, 1740, 0.39]];
 const BUR: [number, number, number][] = [[800, 1530, 0.3], [960, 1560, 0.32], [760, 1710, 0.37], [930, 1750, 0.39]];
 
-export const T13Soldiers: React.FC = () => {
+export const T13Soldiers: React.FC<{ volleys?: number[] }> = ({ volleys = [40, 110, 180] }) => {
   const f = useCurrentFrame();
-  const since = Math.min(...VOLLEYS.map((v) => (f >= v ? f - v : 999)));
+  const since = Math.min(...volleys.map((v) => (f >= v ? f - v : 999)));
   const recoil = since < 20 ? Math.exp(-since / 5) * 30 : 0;
   const flash = since < 8 ? 1 - since / 8 : 0;
   const aim: Pose = { ...POSE0, stick: 1, stickA: -4, nx: 160, ny: -10, fx: 300, fy: 10, fb: 1, face: 'angry', brow: -0.7, squint: 0.4, lookX: 1, turn: 0.6 };

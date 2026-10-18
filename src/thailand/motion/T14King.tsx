@@ -5,7 +5,7 @@ import { C, clamp, pop, wobble } from './theme';
 
 // t14_king (line 18, "उन्होंने देश को तेज़ी से modern बनाया: army, railway, कानून, सब नया किया"): the King of Siam, drawn
 // with dignity (gold robe, tiered crown, a calm smile), over the throne-room background (t03_throne_room_bg). On each cue
-// he raises a hand and a badge pops above him: army (crossed rifles), railway (a steam locomotive), law (a book under a
+// he raises a hand and a badge pops above him (`intro`, optional, is an earlier knowing gesture with a raised hand): army (crossed rifles), railway (a steam locomotive), law (a book under a
 // balance). Then on "हमला करने का कोई बहाना ही नहीं छोड़ा" a cyan shield closes around him and two push arrows (purple
 // from the left, red from the right) bounce off it. Transparent, 1080x1920, 60 fps, 330 frames.
 
@@ -59,13 +59,14 @@ const Law: React.FC = () => (
   </g>
 );
 
-export const T14King: React.FC<{ cues?: number[]; shield?: number }> = ({ cues = [40, 100, 160], shield = 230 }) => {
+export const T14King: React.FC<{ cues?: number[]; shield?: number; intro?: number }> = ({ cues = [40, 100, 160], shield = 230, intro = -1 }) => {
   const f = useCurrentFrame();
   const base: Pose = { ...POSE0, turn: 0, lookX: 0, face: 'calm', nx: 70, ny: 170, fx: -70, fy: 170, nb: 1, fb: -1 };
   const raise = (side: 'n' | 'f'): Pose => side === 'n'
     ? { ...base, nx: 150, ny: -200, nb: -1, lookX: 0.6, lookY: -0.6, face: 'smile', tilt: 4 }
     : { ...base, fx: -150, fy: -200, fb: 1, lookX: -0.6, lookY: -0.6, face: 'smile', tilt: -4 };
-  const poses: [number, Pose][] = [[0, base], [cues[0], raise('f')], [cues[1], { ...base, lookY: -0.8, face: 'smile', nx: 60, ny: -230, nb: -1, fx: -60, fy: -230, fb: 1 }],
+  const wise: Pose = { ...base, nx: 110, ny: -170, nb: -1, tilt: 6, face: 'smile', lookX: 0.3 };
+  const poses: [number, Pose][] = [[0, base], ...(intro >= 0 ? ([[intro, wise], [intro + 70, base]] as [number, Pose][]) : []), [cues[0], raise('f')], [cues[1], { ...base, lookY: -0.8, face: 'smile', nx: 60, ny: -230, nb: -1, fx: -60, fy: -230, fb: 1 }],
     [cues[2], raise('n')], [shield - 10, { ...base, face: 'calm', nx: 120, ny: 40, fx: -120, fy: 40 }]];
   let p = poses[0][1];
   for (let i = 1; i < poses.length; i++) {
