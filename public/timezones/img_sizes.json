@@ -1,1 +1,58 @@
-{}
+{
+ "a01_chai_friend_arm": [
+  1928,
+  2016
+ ],
+ "a01_chai_friend_body": [
+  1958,
+  2016
+ ],
+ "a02_confused_friend_body": [
+  2016,
+  2014
+ ],
+ "a02_confused_friend_hand": [
+  1065,
+  2016
+ ],
+ "a03_kashgar_sleepy": [
+  2001,
+  2016
+ ],
+ "a04_arunachal_awake": [
+  1970,
+  2016
+ ],
+ "a05_gujarat_sleeping": [
+  2016,
+  1855
+ ],
+ "a06_nepal_friend_arm": [
+  2016,
+  1563
+ ],
+ "a06_nepal_friend_body": [
+  2016,
+  2009
+ ],
+ "a07_tea_garden_bg": [
+  2160,
+  3840
+ ],
+ "a08_tea_bushes_fg": [
+  3016,
+  1257
+ ],
+ "a09_tea_picker": [
+  861,
+  2016
+ ],
+ "a10_mirzapur_clock_tower": [
+  893,
+  2016
+ ],
+ "a11_greenwich_observatory": [
+  1811,
+  2016
+ ]
+}

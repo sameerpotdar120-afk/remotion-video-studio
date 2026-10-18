@@ -126,7 +126,12 @@ def main() -> None:
     by = {}
     for r, s in zip(tz.records(), tz.shapes()):
         by.setdefault(float(r["zone"]), []).append(shape(s.__geo_interface__).buffer(0))
-    geo["zones"] = [{"zone": z, "rings": rings(unary_union(gs), 0.05, 0.01)} for z, gs in sorted(by.items())]
+    # India in its official boundary (India POV) is one zone, UTC+5:30: Natural Earth's zone shapes follow the de facto
+    # lines (PoK inside UTC+5, Aksai Chin inside UTC+8), so India is cut out of every other zone and added whole to +5:30
+    ind = C["India"].buffer(0)
+    zs = {z: unary_union(gs) for z, gs in by.items()}
+    zs = {z: (g.union(ind) if z == 5.5 else g.difference(ind)) for z, g in zs.items()}
+    geo["zones"] = [{"zone": z, "rings": rings(g, 0.05, 0.01)} for z, g in sorted(zs.items())]
     # China's single zone: Beijing time over the whole country (the country shape, India POV borders)
     geo["china_zone"] = rings(C["China"], 0.03, 0.05)
     # the two-zone proposal for India (CSIR-NPL, 2018): IST-II for the east of 89°52'E

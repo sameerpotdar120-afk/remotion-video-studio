@@ -240,7 +240,7 @@ const OffsetsFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     <>
       <Chip t={t} t0={C.poorab3 - 0.05} t1={C.paschim3 - 0.1} text="पूरब ➜ घड़ी आगे" x={720} y={1420} color={COL.cyan} size={58} rot={-2} />
       <Chip t={t} t0={C.paschim3 - 0.05} t1={SC.india - 0.05} text="घड़ी पीछे ⬅ पश्चिम" x={360} y={1420} color={COL.red} size={58} rot={2} />
-      <Label t={t} t0={C.india3 + 0.05} t1={SC.whatif + 0.2} text="INDIA" x={ind[0] - 230} y={ind[1] - 420} color={COL.india} pin={ind} size={50} />
+      <Label t={t} t0={C.india3 + 0.05} t1={SC.whatif + 0.2} text="INDIA" x={ind[0] + 250} y={ind[1] - 380} color={COL.india} pin={ind} size={50} />
       <Big t={t} t0={C.ist3 - 0.05} t1={SC.whatif + 0.3} text="+5:30" x={ind[0] + 150} y={ind[1] + 30} size={190} color={COL.gold} font={NUM} rot={-4} />
       <Chip t={t} t0={C.saadhe3 - 0.05} t1={SC.whatif + 0.3} text="साढ़े 5 घंटे आगे" x={ind[0] + 150} y={ind[1] + 190} color={COL.india} size={52} />
       <At t0={C.kya4 - 0.1} t1={SC.mirzapur + 0.2} x={540} y={1250} w={400} h={520} scale={0.9}><M05Question /></At>
@@ -425,7 +425,7 @@ export const Garden: React.FC<{ t: number }> = ({ t }) => {
   return (
     <AbsoluteFill style={{ overflow: 'hidden', transform: `translateX(${(1 - inn) * 1080 - out * 1080}px)`, filter: inn < 1 || out > 0 ? `blur(${Math.max(1 - inn, out) * 14}px)` : undefined }}>
       {has('a07_tea_garden_bg')
-        ? <Img src={staticFile('timezones/img/a07_tea_garden_bg.png')} style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${lerp(1.04, 1.14, p)}) translateX(${lerp(-20, 20, p)}px)` }} />
+        ? <Img src={staticFile('timezones/img/a07_tea_garden_bg.jpg')} style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${lerp(1.04, 1.14, p)}) translateX(${lerp(-20, 20, p)}px)` }} />
         : <AbsoluteFill style={{ background: 'linear-gradient(180deg, #ffb46b 0%, #ffd9a0 22%, #9fd28b 40%, #3f8f3a 70%, #1f5a24 100%)' }} />}
       <div style={{ position: 'absolute', left: lerp(560, 520, p), top: 760, transform: `translateY(${Math.sin(t * 2) * 5}px)` }}>
         <Pic name="a09_tea_picker" w={420} h={760} style={{ filter: 'drop-shadow(0 20px 26px rgba(0,0,0,0.45))' }} />
