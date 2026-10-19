@@ -1,0 +1,19 @@
+Reference: "Which Country Is Closest to Space? Can Everest Answer" (84.3 s, 720x1280 30 fps). Whisper medium, English; words run together in the raw output.
+
+  0.00  Haveyoueverwonderedwhichcountryisclosesttospace?
+  3.10  Well,itseemssimple,ormaybenot.
+  6.40  Firstly,weneedtofindthehighestpointontheplanet,andobviouslythat'sEverest.
+ 10.72  Atalmost9,000metersabovesealevel,it'strulytheroofoftheworld.
+ 15.26  ThesummitofEverestliesontheborderbetweentwocountries,sothepeakistechnicallysplitinhalf.
+ 20.70  ThesouthernslopebelongstoNepalandthenorthernslopetoChina,soitseemsthatthecountriesclosesttospaceareNepalandChinaatthesametime.
+ 28.42  Butthat'swrong.
+ 30.20  Yousee,ourplanetisnotactuallyround.
+ 32.42  It'sflat.
+ 33.76  Justkidding,buttheEarthreallyisnotasphere.
+ 36.86  It'sageoid.
+ 38.36  Becauseofitsrotationonitsaxis,acentrifugalforceactsontheplanet,stretchingitattheequatorandflatteningitatthepoles.
+ 46.24  Andduetothecomplexterrainandunevenmass,itisn'taperfectellipsoid.
+ 50.64  Here'sanexaggeratedmodelofwhattheEarthactuallylookslike,withitsirregularitiesenlargedhundredsoftimestomakethedistortionsvisibleatthisscale.
+ 59.32  TheEarth'sradiusattheequatoris21kilometersgreaterthanatthepoles,andnowweneedtofindthehighestpointrightontheequator.
+ 66.84  Andtherereallyisone,MountChimborazo,avolcanorisingover6,000metersabovesealevelinEcuador.
+ 73.58  AndifwecomparethedistancefromthecenteroftheEarthtothesummitsofEverestandChimborazo,we'llseethatChimborazoistwokilometersfartherfromthecenter,makingEcuadortheclosestcountrytospace.
