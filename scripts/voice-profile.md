@@ -1,8 +1,9 @@
 # Voice profile (provisional - built from the user's brief + the reference video, no own videos yet)
 
 - Language: HINDI. Natural spoken Hindi narration in Devanagari, like a Hindi documentary storyteller - not Hinglish, not shuddh/bookish.
-  - Everyday Hindi words for concepts: आज़ादी, कर/टैक्स, संसद, फ़ौज, बग़ावत, व्यापारी, जहाज़.
-  - Country/place names in Hindi: अमेरिका, ब्रिटेन, फ़्रांस, लंदन, बोस्टन.
+  - Sentences, grammar and genuinely Hindi words stay Hindi: आज़ादी, फ़ौज, बग़ावत, व्यापारी, जहाज़, सिपाही.
+  - English words used day-to-day stay in ENGLISH script, never transliterated: tax, bill, vote, colonies, company, officer, camp, jury, license, channel, subscribe, Parliament, Congress.
+  - Country/place names in English script: America, Britain, France, London, Boston.
   - People's names and the names of laws/documents stay in English script so ElevenLabs pronounces them right: George Washington, Stamp Act, Declaration of Independence.
   - Years and numbers written as Hindi words: सत्रह सौ तिरसठ, तेरह, तीन सौ बयालीस.
 - Delivered by an AI voice (ElevenLabs): short sentences, no brackets or stage directions inside the VO, no speaker labels.
