@@ -10,7 +10,7 @@ def vo_lines(body):
             on = True; out.append(l[4:]); continue
         if l.startswith('[ON SCREEN') or l.startswith('## '):
             on = False; continue
-        if on and l.strip():
+        if on and l.strip() and l.strip() != '---':
             out.append(l.strip())
     return out
 

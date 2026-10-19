@@ -143,7 +143,7 @@ Customs House के बाहर कुछ British सैनिक खड़े
 
 पाँच लोग मारे गए। उनमें से एक थे Crispus Attucks, African और Native American विरासत वाले एक व्यक्ति, जिन्हें अक्सर इस revolution का पहला शहीद कहा जाता है।
 
-कुछ ही हफ़्तों में Paul Revere ने इस घटना की एक engraving छापी। उसमें British सैनिक लाइन में खड़े होकर, आराम से निहत्थी भीड़ पर गोली चला रहे हैं। असल में घटना इतनी साफ़-सुथरी नहीं थी। लेकिन ये तस्वीर पूरी colonies में फैल गई। ये था अठारहवीं सदी का viral post.
+कुछ ही हफ़्तों में Paul Revere ने इस घटना की एक engraving छापी। उसमें British सैनिक line में खड़े होकर, आराम से निहत्थी भीड़ पर गोली चला रहे हैं। असल में घटना इतनी साफ़-सुथरी नहीं थी। लेकिन ये तस्वीर पूरी colonies में फैल गई। ये था अठारहवीं सदी का viral post.
 
 और यहाँ दो twists हैं।
 
@@ -209,7 +209,7 @@ VO: May ten, seventeen seventy-five. Second Continental Congress. अब एक 
 
 George Washington.
 
-वही Washington, जिसने twenty-one साल पहले उस जंगल में British Empire के लिए गोली चलाई थी। अब वो British Empire के ख़िलाफ़ army लीड करने वाले थे।
+वही Washington, जिसने twenty-one साल पहले उस जंगल में British Empire के लिए गोली चलाई थी। अब वो British Empire के ख़िलाफ़ army lead करने वाले थे।
 
 दो दिन बाद Boston के पास Bunker Hill की लड़ाई हुई। मैदान British ने जीता, लेकिन उनके एक हज़ार से ज़्यादा सैनिक मारे गए या घायल हुए।
 
@@ -257,7 +257,7 @@ VO: तो सवाल का जवाब। seventeen sixty-three में K
 
 किसी एक tax की वजह से नहीं। Tax तो कई बार कम भी हुआ। लड़ाई इस बात की थी, कि फ़ैसला कौन करेगा। और हर बार जब Britain ने कहा, फ़ैसला हम करेंगे, ये झगड़ालू colonies एक-दूसरे के और क़रीब आ गईं। जो काम seventeen fifty-four में Benjamin Franklin का साँप नहीं कर पाया, वो Britain ने ख़ुद कर दिया।
 
-## BEAT 20 — Close (14:36–14:54)
+## BEAT 20 — Close (14:36–14:53)
 [ON SCREEN: Parchment map, British red vs American blue, mini flags pop across the coast. Title: "American Revolutionary War". Teaser icons: Saratoga, France's flag, Yorktown — each with a "?" lock. End card with subscribe button + Part 2 thumbnail slot.]
 
 VO: लेकिन आज़ादी लिखना आसान था। उसे जीतना नहीं। दुनिया की सबसे ताक़तवर Navy के ख़िलाफ़ एक नई-नवेली army कैसे टिकी, और France ने इसमें क्यों कूदने का फ़ैसला किया, वो कहानी Part two में।
