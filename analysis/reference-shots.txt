@@ -1,0 +1,30 @@
+shots 29
+  0.00- 39.40s 1182f zoom  -25.7%  pan x  -592 y   -56px  holds  29%  avg change  2.2%
+ 39.40- 50.17s  323f zoom   -5.0%  pan x   +68 y   -52px  holds  20%  avg change  1.7%
+ 50.17- 51.70s   46f zoom   -5.0%  pan x  +128 y   -72px  holds  47%  avg change  3.6%
+ 51.70- 54.03s   70f zoom   +0.0%  pan x  +192 y    +0px  holds  86%  avg change  2.8%
+ 54.03- 55.53s   45f zoom   +0.0%  pan x    +0 y    +0px  holds  84%  avg change  0.9%
+ 55.53- 56.43s   27f zoom   +0.0%  pan x    +0 y    +0px  holds  88%  avg change  0.2%
+ 56.43- 59.70s   98f zoom  +30.5%  pan x   -28 y    -4px  holds  34%  avg change  5.9%
+ 59.70- 70.67s  329f zoom  -23.2%  pan x  -720 y  +108px  holds   5%  avg change  3.9%
+ 70.67- 72.90s   67f zoom  -12.9%  pan x   -44 y    -8px  holds   0%  avg change  4.2%
+ 72.90- 74.43s   46f zoom   +0.0%  pan x    +8 y    -4px  holds   0%  avg change  4.6%
+ 74.43- 74.60s    5f zoom   +0.0%  pan x  -812 y    +0px  holds   0%  avg change 59.3%
+ 74.60- 81.40s  204f zoom   +0.0%  pan x    +4 y    +0px  holds  47%  avg change  3.8%
+ 81.40- 81.57s    5f zoom   +5.0%  pan x  +876 y   -40px  holds   0%  avg change 63.5%
+ 81.57- 84.90s  100f zoom  +43.9%  pan x   +52 y   -40px  holds  60%  avg change  5.3%
+ 84.90- 94.70s  294f zoom   -0.0%  pan x  -152 y  -400px  holds  13%  avg change  4.1%
+ 94.70- 97.53s   85f zoom   +0.0%  pan x  -532 y   +64px  holds  29%  avg change  8.3%
+ 97.53- 97.70s    5f zoom   +0.0%  pan x  -332 y   +76px  holds   0%  avg change 47.5%
+ 97.70-102.37s  140f zoom   +0.0%  pan x   -64 y   +28px  holds  35%  avg change  2.3%
+102.37-104.47s   63f zoom  +33.4%  pan x    -4 y    -4px  holds  27%  avg change  9.1%
+104.47-117.87s  402f zoom +195.0%  pan x   -40 y   -80px  holds  17%  avg change  3.5%
+117.87-126.43s  257f zoom   +0.0%  pan x    +0 y    +0px  holds  56%  avg change  0.8%
+126.43-127.47s   31f zoom   +0.0%  pan x    +0 y    +0px  holds 100%  avg change  0.0%
+127.47-136.30s  265f zoom  +62.1%  pan x  -140 y  -108px  holds  16%  avg change  3.6%
+136.30-150.80s  435f zoom  -51.4%  pan x -1092 y  +216px  holds  17%  avg change  2.8%
+150.80-158.47s  230f zoom  -15.9%  pan x  -644 y  +120px  holds   4%  avg change  5.8%
+158.47-159.70s   37f zoom   +0.0%  pan x  -500 y    +0px  holds   6%  avg change 15.1%
+159.70-160.83s   34f zoom  +12.7%  pan x  -144 y    +4px  holds  45%  avg change  9.7%
+160.83-162.83s   60f zoom  +25.9%  pan x  +160 y   +24px  holds  66%  avg change  8.1%
+162.83-168.73s  177f zoom   +0.0%  pan x  +716 y   +12px  holds   0%  avg change  0.8%
