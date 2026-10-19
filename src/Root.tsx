@@ -3,7 +3,7 @@ import { Composition } from 'remotion';
 import { MainComposition } from './Video';
 import { FPS, H, W } from './lib/constants';
 import { loadFonts } from './lib/fonts';
-import { DemoBritain, DemoMapHook, DemoVolley } from './scenes/Demos';
+import { DemoBritain, DemoMap3D, DemoMapHook, DemoVolley } from './scenes/Demos';
 import { GrandUnion, UnionFlag1707 } from './lib/fx/flags';
 
 loadFonts();
@@ -14,6 +14,7 @@ export const RemotionRoot: React.FC = () => {
       {/* 4K 60 fps long-form (16:9) */}
       <Composition id="Demo-MapHook" component={DemoMapHook} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Britain" component={DemoBritain} durationInFrames={360} fps={FPS} width={W} height={H} />
+      <Composition id="Demo-Map3D" component={DemoMap3D} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Volley" component={DemoVolley} durationInFrames={300} fps={FPS} width={W} height={H} />
       {/* Export flags to PNG once for FlagFill:
           npx remotion still src/index.ts Flag-GrandUnion public/assets/flags/grand_union_1775.png */}

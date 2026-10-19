@@ -17,8 +17,9 @@ GPT assets from `docs/ASSET_PROMPTS.md` with the same file names.
 npm install
 npm install @remotion/paths@4.0.523 @remotion/noise@4.0.523 @remotion/transitions@4.0.523 \
   @remotion/motion-blur@4.0.523 @remotion/shapes@4.0.523 @remotion/fonts@4.0.523 \
+  @remotion/three@4.0.523 three@0.178.0 @react-three/fiber@9.3.0 \
   d3-geo@3.1.1 topojson-client@3.1.0
-npm install -D @types/d3-geo @types/topojson-client @types/geojson
+npm install -D @types/d3-geo @types/topojson-client @types/geojson @types/three@0.178.1
 npx remotion studio                      # preview
 ```
 
@@ -31,6 +32,8 @@ All `@remotion/*` packages MUST be the same version as `remotion` (4.0.523 here)
 npx remotion render src/index.ts Demo-MapHook out/maphook.mp4
 # master for colour grading (10-bit ProRes 422 HQ)
 npx remotion render src/index.ts Demo-MapHook out/maphook.mov --codec=prores --prores-profile=hq
+# REAL 3D scenes (Map3D) need WebGL: --gl=angle on a GPU machine, --gl=swangle on CPU-only
+npx remotion render src/index.ts Demo-Map3D out/map3d.mp4 --gl=angle
 # quick preview at 1080p
 npx remotion render src/index.ts Demo-MapHook out/preview.mp4 --scale=0.5
 ```
@@ -111,11 +114,27 @@ across the frame. Useful presets:
 
 ---
 
+## 3b. The 3D layer — why this is not "flat AI slop"
+
+The reference mixes three depths; we match and beat each one:
+
+| Depth | Reference | Ours |
+|---|---|---|
+| **True 3D** | 3D-rendered props (crown, stamp block, eraser) | `Map3D` (`src/lib/three/Map3D.tsx`): real extruded 3D colonies that rise one by one with spring overshoot, real lighting and soft shadows, an orbiting/tilting camera. Plus STYLE C 3D-rendered props from the asset doc. |
+| **2.5D** | photo plates with slow push-ins | `ParallaxPlate`: plate + foreground layer moving at different speeds, characters in between, depth-of-field blur; `Paper3D`: documents/prints floating with real perspective tilt, moving sheen and shifting shadow; `ContactShadow` under every character on a plate; `MapStage` `tilt` for 3D terrain. |
+| **2D** | cel-shaded chibi cut-outs | `Puppet` + `Face`: same look, but every character blinks, talks, glares, raises arms, holds props and reacts on any frame. |
+
+Rules that keep it engaging (from the frame analysis): something new every 1.5–3 s, a style or depth
+switch on every narrative turn, the camera never fully still, every pop/stamp has its own SFX, and the
+two serious beats (Lexington black hold, Monticello) get NO gags and NO SFX hits.
+
+---
+
 ## 4. Scene recipes for our VO (in order)
 
 Cues are relative to the start of each scene. Replace them with the frames from your VO timestamps.
 
-1. **Hook** (`satellite` → parchment): camera World → Eastern NA (`ease.out`, 70 f) · `ColonyFill` start 30 ·
+1. **Hook** (`Map3D` opening: top view → 42° tilt while the 13 colonies RISE in 3D; then cut to the 2D `satellite` MapStage) · camera World → Eastern NA (`ease.out`, 70 f) · `ColonyFill` start 30 ·
    `NeonOutline` (all colonies) at fill end · `FlagFill` (href = `assets/flags/grand_union_1775.png`, exported from the `Flag-GrandUnion` composition; seed = Philadelphia) · `TimelineRuler`
    1775/**1776**/1777 → rewind to 1762/**1763**/1764 (+ `rewind_tape.wav`) · `LineWipe` to parchment.
 2. **13 colonies**: `RegionEyes` per colony (stagger 3, mood `angry`, look ±1 = bickering) · pop

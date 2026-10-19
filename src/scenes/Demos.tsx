@@ -11,6 +11,7 @@ import { Finish, Grade, ImpactPuff, MuzzleSmoke } from '../lib/fx/particles';
 import { MapCharacter, greatBritain1763 } from '../lib/character/MapCharacter';
 import { Puppet } from '../lib/character/Puppet';
 import { RIGS } from '../lib/character/rigs';
+import { Map3D } from '../lib/three/Map3D';
 
 /**
  * DEMO 1 — the hook map beat: push-in, colonies fill N→S (white flash → blue), neon outline,
@@ -181,3 +182,29 @@ export const DemoVolley: React.FC = () => {
 };
 
 export const colonyD = colonyPath;
+
+/**
+ * DEMO 4 — REAL 3D map: colonies rise as extruded blocks with spring overshoot and shadows,
+ * camera tilts from top-down into a dramatic oblique and slowly orbits.
+ * Render: npx remotion render src/index.ts Demo-Map3D out/map3d.mp4 --gl=angle   (or --gl=swangle on CPU)
+ */
+export const DemoMap3D: React.FC = () => (
+  <AbsoluteFill>
+    <Grade>
+      <Map3D
+        width={W}
+        heightPx={H}
+        riseStart={30}
+        camera={[
+          { frame: 0, lon: -76, lat: 38.5, dist: 70, tilt: 0, yaw: 0 },
+          { frame: 150, lon: -77, lat: 37.5, dist: 38, tilt: 42, yaw: -12 },
+          { frame: 420, lon: -76.5, lat: 38.5, dist: 30, tilt: 50, yaw: 8 },
+        ]}
+      />
+    </Grade>
+    <AbsoluteFill>
+      <MapTitle x={W / 2} y={H * 0.12} text="The Thirteen Colonies" date="1775" start={250} size={150} />
+    </AbsoluteFill>
+    <Finish />
+  </AbsoluteFill>
+);

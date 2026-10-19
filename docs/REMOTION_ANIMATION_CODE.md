@@ -17,8 +17,9 @@ GPT assets from `docs/ASSET_PROMPTS.md` with the same file names.
 npm install
 npm install @remotion/paths@4.0.523 @remotion/noise@4.0.523 @remotion/transitions@4.0.523 \
   @remotion/motion-blur@4.0.523 @remotion/shapes@4.0.523 @remotion/fonts@4.0.523 \
+  @remotion/three@4.0.523 three@0.178.0 @react-three/fiber@9.3.0 \
   d3-geo@3.1.1 topojson-client@3.1.0
-npm install -D @types/d3-geo @types/topojson-client @types/geojson
+npm install -D @types/d3-geo @types/topojson-client @types/geojson @types/three@0.178.1
 npx remotion studio                      # preview
 ```
 
@@ -31,6 +32,8 @@ All `@remotion/*` packages MUST be the same version as `remotion` (4.0.523 here)
 npx remotion render src/index.ts Demo-MapHook out/maphook.mp4
 # master for colour grading (10-bit ProRes 422 HQ)
 npx remotion render src/index.ts Demo-MapHook out/maphook.mov --codec=prores --prores-profile=hq
+# REAL 3D scenes (Map3D) need WebGL: --gl=angle on a GPU machine, --gl=swangle on CPU-only
+npx remotion render src/index.ts Demo-Map3D out/map3d.mp4 --gl=angle
 # quick preview at 1080p
 npx remotion render src/index.ts Demo-MapHook out/preview.mp4 --scale=0.5
 ```
@@ -111,11 +114,27 @@ across the frame. Useful presets:
 
 ---
 
+## 3b. The 3D layer — why this is not "flat AI slop"
+
+The reference mixes three depths; we match and beat each one:
+
+| Depth | Reference | Ours |
+|---|---|---|
+| **True 3D** | 3D-rendered props (crown, stamp block, eraser) | `Map3D` (`src/lib/three/Map3D.tsx`): real extruded 3D colonies that rise one by one with spring overshoot, real lighting and soft shadows, an orbiting/tilting camera. Plus STYLE C 3D-rendered props from the asset doc. |
+| **2.5D** | photo plates with slow push-ins | `ParallaxPlate`: plate + foreground layer moving at different speeds, characters in between, depth-of-field blur; `Paper3D`: documents/prints floating with real perspective tilt, moving sheen and shifting shadow; `ContactShadow` under every character on a plate; `MapStage` `tilt` for 3D terrain. |
+| **2D** | cel-shaded chibi cut-outs | `Puppet` + `Face`: same look, but every character blinks, talks, glares, raises arms, holds props and reacts on any frame. |
+
+Rules that keep it engaging (from the frame analysis): something new every 1.5–3 s, a style or depth
+switch on every narrative turn, the camera never fully still, every pop/stamp has its own SFX, and the
+two serious beats (Lexington black hold, Monticello) get NO gags and NO SFX hits.
+
+---
+
 ## 4. Scene recipes for our VO (in order)
 
 Cues are relative to the start of each scene. Replace them with the frames from your VO timestamps.
 
-1. **Hook** (`satellite` → parchment): camera World → Eastern NA (`ease.out`, 70 f) · `ColonyFill` start 30 ·
+1. **Hook** (`Map3D` opening: top view → 42° tilt while the 13 colonies RISE in 3D; then cut to the 2D `satellite` MapStage) · camera World → Eastern NA (`ease.out`, 70 f) · `ColonyFill` start 30 ·
    `NeonOutline` (all colonies) at fill end · `FlagFill` (href = `assets/flags/grand_union_1775.png`, exported from the `Flag-GrandUnion` composition; seed = Philadelphia) · `TimelineRuler`
    1775/**1776**/1777 → rewind to 1762/**1763**/1764 (+ `rewind_tape.wav`) · `LineWipe` to parchment.
 2. **13 colonies**: `RegionEyes` per colony (stagger 3, mood `angry`, look ±1 = bickering) · pop
@@ -237,7 +256,7 @@ import { Composition } from 'remotion';
 import { MainComposition } from './Video';
 import { FPS, H, W } from './lib/constants';
 import { loadFonts } from './lib/fonts';
-import { DemoBritain, DemoMapHook, DemoVolley } from './scenes/Demos';
+import { DemoBritain, DemoMap3D, DemoMapHook, DemoVolley } from './scenes/Demos';
 import { GrandUnion, UnionFlag1707 } from './lib/fx/flags';
 
 loadFonts();
@@ -248,6 +267,7 @@ export const RemotionRoot: React.FC = () => {
       {/* 4K 60 fps long-form (16:9) */}
       <Composition id="Demo-MapHook" component={DemoMapHook} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Britain" component={DemoBritain} durationInFrames={360} fps={FPS} width={W} height={H} />
+      <Composition id="Demo-Map3D" component={DemoMap3D} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Volley" component={DemoVolley} durationInFrames={300} fps={FPS} width={W} height={H} />
       {/* Export flags to PNG once for FlagFill:
           npx remotion still src/index.ts Flag-GrandUnion public/assets/flags/grand_union_1775.png */}
@@ -1949,7 +1969,354 @@ export const BourbonFrance: React.FC<{ width: number }> = ({ width }) => (
 );
 ```
 
-### 7.17 `src/lib/character/Face.tsx`
+### 7.17 `src/lib/fx/depth.tsx`
+
+```tsx
+import React from 'react';
+import { AbsoluteFill, Img, useCurrentFrame } from 'remotion';
+import { H, T, W } from '../constants';
+import { ease, wobble } from '../easing';
+
+/**
+ * 2.5D depth tools — this is what makes flat assets feel 3D like the reference:
+ * parallax between background layers, depth-of-field blur, contact shadows under feet,
+ * and real CSS-3D rotation (with moving light) on paper props.
+ */
+
+export type PlateKey = { frame: number; x: number; y: number; zoom: number }; // x/y = pan in px at depth 1
+
+/**
+ * ParallaxPlate — one background split into layers (far sky → mid buildings → near floor).
+ * A camera move shifts near layers more than far layers = depth. `blur` on far layers = depth of field.
+ * Generate the layers with the "LAYERED PLATE" prompts in docs/ASSET_PROMPTS.md §7.2.
+ */
+export const ParallaxPlate: React.FC<{
+  layers: { src: string; depth: number; blur?: number }[]; // depth 0 = infinitely far, 1 = foreground
+  camera: PlateKey[];
+  children?: React.ReactNode; // characters go between layers: pass them here, rendered at depth 0.8
+  charactersDepth?: number;
+}> = ({ layers, camera, children, charactersDepth = 0.8 }) => {
+  const frame = useCurrentFrame();
+  let k = camera[0];
+  let x = k.x;
+  let y = k.y;
+  let zoom = k.zoom;
+  for (let i = 1; i < camera.length; i++) {
+    const b = camera[i];
+    const a = camera[i - 1];
+    if (frame >= a.frame) {
+      const t = ease.inOut(Math.min(1, (frame - a.frame) / Math.max(1, b.frame - a.frame)));
+      x = a.x + (b.x - a.x) * t;
+      y = a.y + (b.y - a.y) * t;
+      zoom = a.zoom + (b.zoom - a.zoom) * t;
+      k = b;
+    }
+  }
+  const last = camera[camera.length - 1];
+  if (frame > last.frame) zoom *= 1 + T.driftPerSec * ((frame - last.frame) / 60); // never stops
+  const layerStyle = (depth: number, blur = 0): React.CSSProperties => {
+    const z = 1 + (zoom - 1) * (0.35 + depth * 0.65);
+    return {
+      position: 'absolute',
+      inset: 0,
+      transform: `translate(${x * depth}px, ${y * depth}px) scale(${z * (1.04 + depth * 0.04)})`,
+      transformOrigin: '50% 60%',
+      filter: blur ? `blur(${blur}px)` : undefined,
+    };
+  };
+  const sorted = [...layers].sort((a, b) => a.depth - b.depth);
+  const front = sorted.filter((l) => l.depth > charactersDepth);
+  const back = sorted.filter((l) => l.depth <= charactersDepth);
+  return (
+    <AbsoluteFill style={{ overflow: 'hidden' }}>
+      {back.map((l) => (
+        <Img key={l.src} src={l.src} style={{ ...layerStyle(l.depth, l.blur), width: W, height: H, objectFit: 'cover' }} />
+      ))}
+      <div style={layerStyle(charactersDepth)}>{children}</div>
+      {front.map((l) => (
+        <Img key={l.src} src={l.src} style={{ ...layerStyle(l.depth, l.blur), width: W, height: H, objectFit: 'cover' }} />
+      ))}
+    </AbsoluteFill>
+  );
+};
+
+/** Soft contact shadow under a character's feet (x, y = feet). Grounds cut-outs on photo plates. */
+export const ContactShadow: React.FC<{ x: number; y: number; width: number; opacity?: number }> = ({ x, y, width, opacity = 0.38 }) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: x - width / 2,
+      top: y - width * 0.06,
+      width,
+      height: width * 0.12,
+      borderRadius: '50%',
+      background: `radial-gradient(ellipse at center, rgba(20,12,6,${opacity}) 0%, rgba(20,12,6,0) 70%)`,
+      filter: 'blur(6px)',
+    }}
+  />
+);
+
+/**
+ * Paper3D — a document/print that floats in real 3D: perspective tilt that slowly swings,
+ * a moving specular sheen and a soft shadow that shifts with the tilt
+ * (the reference's Revere engraving / Declaration shots).
+ */
+export const Paper3D: React.FC<{
+  src: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  start: number;
+  baseTilt?: [number, number, number]; // rotateX, rotateY, rotateZ in degrees
+  swing?: number; // degrees of slow swing
+}> = ({ src, x, y, w, h, start, baseTilt = [8, -14, -4], swing = 5 }) => {
+  const frame = useCurrentFrame();
+  if (frame < start) return null;
+  const t = frame - start;
+  const rx = baseTilt[0] + wobble('p3x', frame, swing, 0.015);
+  const ry = baseTilt[1] + wobble('p3y', frame, swing, 0.012);
+  const rz = baseTilt[2] + wobble('p3z', frame, swing * 0.4, 0.01);
+  const enter = Math.min(1, t / 14);
+  const sheen = 50 + ry * 3;
+  return (
+    <div style={{ position: 'absolute', left: x - w / 2, top: y - h / 2, width: w, height: h, perspective: 2600 }}>
+      <div
+        style={{
+          position: 'absolute',
+          inset: 0,
+          transform: `translateZ(${(1 - ease.out(enter)) * -900}px) rotateX(${rx}deg) rotateY(${ry + (1 - enter) * 60}deg) rotateZ(${rz}deg)`,
+          transformStyle: 'preserve-3d',
+          boxShadow: `${-ry * 2.4}px ${18 + rx * 2}px 60px rgba(0,0,0,0.45)`,
+        }}
+      >
+        <Img src={src} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            background: `linear-gradient(115deg, rgba(255,255,255,0) ${sheen - 18}%, rgba(255,255,255,0.22) ${sheen}%, rgba(255,255,255,0) ${sheen + 18}%)`,
+            mixBlendMode: 'screen',
+          }}
+        />
+      </div>
+    </div>
+  );
+};
+```
+
+### 7.18 `src/lib/three/Map3D.tsx`
+
+```tsx
+import React, { useMemo } from 'react';
+import { ThreeCanvas } from '@remotion/three';
+import { useThree } from '@react-three/fiber';
+import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import * as THREE from 'three';
+import type { Feature, Geometry, MultiPolygon, Polygon, Position } from 'geojson';
+import { C, T } from '../constants';
+import { ease } from '../easing';
+import { colonies, land, COLONY_IDS } from '../map/data';
+
+/**
+ * REAL 3D map (Three.js inside Remotion). Same lon/lat data as the 2D map, so it lines up 1:1.
+ * World units: 1 unit = 1 degree of latitude; longitude is scaled by cos(lat0) so shapes are not stretched.
+ *
+ *  - land: thin extruded slab (parchment colour), receives shadows
+ *  - colonies: extruded blocks that RISE one by one (N→S stagger) with a spring overshoot,
+ *    flash white → colony blue, cast soft shadows on the land
+ *  - ocean: large plane, slightly glossy
+ *  - camera: keyframes in lon/lat + distance + tilt + yaw, eased; never fully stops (drift)
+ *
+ * Render with:  --gl=angle   (GPU)   or   --gl=swangle   (CPU-only machines / cloud)
+ */
+
+export type Cam3DKey = {
+  frame: number;
+  lon: number;
+  lat: number;
+  dist: number; // distance from target in world units (≈ degrees). 40 = eastern NA, 8 = New England
+  tilt: number; // degrees from straight-down (0 = top view, 55 = dramatic oblique)
+  yaw?: number; // degrees around the vertical axis
+};
+
+const ORIGIN = { lon: -77, lat: 38 };
+const KX = Math.cos((ORIGIN.lat * Math.PI) / 180);
+const toXY = (lon: number, lat: number): [number, number] => [(lon - ORIGIN.lon) * KX, lat - ORIGIN.lat];
+
+const ringToPath = (ring: Position[], path: THREE.Path) => {
+  ring.forEach(([lon, lat], i) => {
+    const [x, y] = toXY(lon, lat);
+    if (i === 0) path.moveTo(x, y);
+    else path.lineTo(x, y);
+  });
+};
+
+const polygonsOf = (g: Geometry): Position[][][] =>
+  g.type === 'Polygon' ? [(g as Polygon).coordinates] : g.type === 'MultiPolygon' ? (g as MultiPolygon).coordinates : [];
+
+const shapesFrom = (g: Geometry, bbox?: [number, number, number, number]) => {
+  const shapes: THREE.Shape[] = [];
+  for (const poly of polygonsOf(g)) {
+    const [lon0, lat0] = poly[0][0];
+    if (bbox && (lon0 < bbox[0] - 30 || lon0 > bbox[2] + 30 || lat0 < bbox[1] - 20 || lat0 > bbox[3] + 20)) continue;
+    const s = new THREE.Shape();
+    ringToPath(poly[0], s);
+    for (const hole of poly.slice(1)) {
+      const h = new THREE.Path();
+      ringToPath(hole, h);
+      s.holes.push(h);
+    }
+    shapes.push(s);
+  }
+  return shapes;
+};
+
+const camAt = (keys: Cam3DKey[], frame: number) => {
+  if (frame <= keys[0].frame) return { yaw: 0, ...keys[0] };
+  for (let i = 1; i < keys.length; i++) {
+    const a = keys[i - 1];
+    const b = keys[i];
+    if (frame <= b.frame) {
+      const t = ease.inOut((frame - a.frame) / Math.max(1, b.frame - a.frame));
+      const l = (x: number, y: number) => x + (y - x) * t;
+      return {
+        lon: l(a.lon, b.lon),
+        lat: l(a.lat, b.lat),
+        dist: Math.exp(l(Math.log(a.dist), Math.log(b.dist))),
+        tilt: l(a.tilt, b.tilt),
+        yaw: l(a.yaw ?? 0, b.yaw ?? 0),
+      };
+    }
+  }
+  const last = keys[keys.length - 1];
+  const held = (frame - last.frame) / 60;
+  return { yaw: 0, ...last, dist: last.dist / (1 + T.driftPerSec * held) }; // the camera never stops
+};
+
+const CameraRig: React.FC<{ keys: Cam3DKey[] }> = ({ keys }) => {
+  const frame = useCurrentFrame();
+  const { camera } = useThree();
+  const c = camAt(keys, frame);
+  const [tx, ty] = toXY(c.lon, c.lat);
+  const tilt = (c.tilt * Math.PI) / 180;
+  const yaw = ((c.yaw ?? 0) * Math.PI) / 180;
+  // orbit: start above the target, lean back by `tilt` toward the south, rotate by `yaw`
+  const back = Math.sin(tilt) * c.dist;
+  camera.position.set(tx + Math.sin(yaw) * back, ty - Math.cos(yaw) * back, Math.cos(tilt) * c.dist);
+  camera.up.set(0, 0, 1);
+  camera.lookAt(tx, ty, 0);
+  camera.updateProjectionMatrix();
+  return null;
+};
+
+const Colony: React.FC<{ feature: Feature<Geometry>; index: number; start: number; height: number; color: string }> = ({
+  feature,
+  index,
+  start,
+  height,
+  color,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const geom = useMemo(() => {
+    const g = new THREE.ExtrudeGeometry(shapesFrom(feature.geometry), {
+      depth: 1,
+      bevelEnabled: true,
+      bevelThickness: 0.04,
+      bevelSize: 0.03,
+      bevelSegments: 2,
+      curveSegments: 1,
+    });
+    return g;
+  }, [feature]);
+  const edges = useMemo(() => new THREE.EdgesGeometry(geom, 40), [geom]);
+  const s = start + index * T.fillPerState;
+  const rise = spring({ frame: frame - s, fps, config: { damping: 10, stiffness: 160, mass: 0.7 } }); // overshoot
+  const flash = Math.min(1, Math.max(0, (frame - s - 6) / (T.fillPerState * 1.4)));
+  // ±4% lightness per colony so neighbours read as separate states (like the reference's borders)
+  const tint = new THREE.Color(color).offsetHSL(0, 0, (index % 3) * 0.04 - 0.04);
+  const col = new THREE.Color('#F2F7FF').lerp(tint, flash);
+  if (frame < s) return null;
+  return (
+    <mesh geometry={geom} scale={[1, 1, Math.max(0.001, rise * height)]} castShadow receiveShadow>
+      <meshStandardMaterial color={col} roughness={0.55} metalness={0.05} />
+      <lineSegments geometry={edges}>
+        <lineBasicMaterial color="#FFFFFF" transparent opacity={0.75} />
+      </lineSegments>
+    </mesh>
+  );
+};
+
+export const Map3D: React.FC<{
+  camera: Cam3DKey[];
+  riseStart?: number;
+  height?: number; // extrude height of colonies in world units (0.35 ≈ subtle, 0.8 = bold)
+  colonyColor?: string;
+  landColor?: string;
+  seaColor?: string;
+  width: number;
+  heightPx: number;
+}> = ({
+  camera,
+  riseStart = 20,
+  height = 0.45,
+  colonyColor = C.colonyBlue,
+  landColor = C.parchLand,
+  seaColor = C.parchSea,
+  width,
+  heightPx,
+}) => {
+  const landGeom = useMemo(() => {
+    const feats = (land.features as Feature<Geometry>[]).flatMap((f) => shapesFrom(f.geometry, [-100, 20, -55, 55]));
+    return new THREE.ExtrudeGeometry(feats, { depth: 0.06, bevelEnabled: false, curveSegments: 1 });
+  }, []);
+  const ordered = useMemo(
+    () => COLONY_IDS.map((id) => colonies.features.find((f) => f.properties?.id === id) as Feature<Geometry>),
+    [],
+  );
+  return (
+    <ThreeCanvas
+      width={width}
+      height={heightPx}
+      shadows
+      camera={{ fov: 32, near: 0.1, far: 1000, position: [0, -20, 40] }}
+      gl={{ antialias: true, preserveDrawingBuffer: true }}
+      style={{ backgroundColor: seaColor }}
+    >
+      <CameraRig keys={camera} />
+      <ambientLight intensity={0.55} />
+      <hemisphereLight args={['#fff6e6', '#3d5a5c', 0.35]} />
+      <directionalLight
+        position={[-25, 30, 45]}
+        intensity={1.6}
+        castShadow
+        shadow-mapSize-width={4096}
+        shadow-mapSize-height={4096}
+        shadow-camera-left={-40}
+        shadow-camera-right={40}
+        shadow-camera-top={40}
+        shadow-camera-bottom={-40}
+        shadow-bias={-0.0004}
+      />
+      <mesh position={[0, 0, -0.02]} receiveShadow>
+        <planeGeometry args={[400, 300]} />
+        <meshStandardMaterial color={seaColor} roughness={0.35} metalness={0.1} />
+      </mesh>
+      <mesh geometry={landGeom} receiveShadow>
+        <meshStandardMaterial color={landColor} roughness={0.9} />
+      </mesh>
+      <group position={[0, 0, 0.06]}>
+        {ordered.map((f, i) => (
+          <Colony key={f.properties?.id} feature={f} index={i} start={riseStart} height={height} color={colonyColor} />
+        ))}
+      </group>
+    </ThreeCanvas>
+  );
+};
+```
+
+### 7.19 `src/lib/character/Face.tsx`
 
 ```tsx
 import React from 'react';
@@ -2038,7 +2405,7 @@ export const moodAt = (frame: number, moods: [number, Mood][], fallback: Mood = 
 };
 ```
 
-### 7.18 `src/lib/character/Puppet.tsx`
+### 7.20 `src/lib/character/Puppet.tsx`
 
 ```tsx
 import React from 'react';
@@ -2271,7 +2638,7 @@ export const hop = (frame: number, start: number, period = 20, height = 18) =>
   frame < start ? 0 : -Math.abs(Math.sin(loop(frame - start, period) * Math.PI)) * height;
 ```
 
-### 7.19 `src/lib/character/MapCharacter.tsx`
+### 7.21 `src/lib/character/MapCharacter.tsx`
 
 ```tsx
 import React, { useMemo } from 'react';
@@ -2429,7 +2796,7 @@ export const MapCharacter: React.FC<{
 };
 ```
 
-### 7.20 `src/lib/character/rigs.ts`
+### 7.22 `src/lib/character/rigs.ts`
 
 ```ts
 import { staticFile } from 'remotion';
@@ -2481,7 +2848,7 @@ export const RIGS = {
 } satisfies Record<string, Rig>;
 ```
 
-### 7.21 `src/scenes/Demos.tsx`
+### 7.23 `src/scenes/Demos.tsx`
 
 ```tsx
 import React, { useMemo } from 'react';
@@ -2497,6 +2864,7 @@ import { Finish, Grade, ImpactPuff, MuzzleSmoke } from '../lib/fx/particles';
 import { MapCharacter, greatBritain1763 } from '../lib/character/MapCharacter';
 import { Puppet } from '../lib/character/Puppet';
 import { RIGS } from '../lib/character/rigs';
+import { Map3D } from '../lib/three/Map3D';
 
 /**
  * DEMO 1 — the hook map beat: push-in, colonies fill N→S (white flash → blue), neon outline,
@@ -2667,9 +3035,35 @@ export const DemoVolley: React.FC = () => {
 };
 
 export const colonyD = colonyPath;
+
+/**
+ * DEMO 4 — REAL 3D map: colonies rise as extruded blocks with spring overshoot and shadows,
+ * camera tilts from top-down into a dramatic oblique and slowly orbits.
+ * Render: npx remotion render src/index.ts Demo-Map3D out/map3d.mp4 --gl=angle   (or --gl=swangle on CPU)
+ */
+export const DemoMap3D: React.FC = () => (
+  <AbsoluteFill>
+    <Grade>
+      <Map3D
+        width={W}
+        heightPx={H}
+        riseStart={30}
+        camera={[
+          { frame: 0, lon: -76, lat: 38.5, dist: 70, tilt: 0, yaw: 0 },
+          { frame: 150, lon: -77, lat: 37.5, dist: 38, tilt: 42, yaw: -12 },
+          { frame: 420, lon: -76.5, lat: 38.5, dist: 30, tilt: 50, yaw: 8 },
+        ]}
+      />
+    </Grade>
+    <AbsoluteFill>
+      <MapTitle x={W / 2} y={H * 0.12} text="The Thirteen Colonies" date="1775" start={250} size={150} />
+    </AbsoluteFill>
+    <Finish />
+  </AbsoluteFill>
+);
 ```
 
-### 7.22 `scripts/build_colonies.mjs`
+### 7.24 `scripts/build_colonies.mjs`
 
 ```js
 // Builds public/maps/*.json from public-domain data:
