@@ -13,16 +13,19 @@ import { C, clamp, pop } from './theme';
 const MSG: [string, string, string][] = [['England', 'North की तरफ़ बढ़ रहा हूँ ⚔️', '#E04040'], ['France', 'Truce करें? 🙏', '#5A7BFF'], ['England', 'Nope 🙂', '#E04040']];
 
 
-export const H09Game: React.FC<{ chat?: number }> = ({ chat = 200 }) => {
+export const H09Game: React.FC<{ chat?: number; speed?: number }> = ({ chat = 200, speed = 1 }) => {
   useAnton();
-  const f = useCurrentFrame();
+  const f0 = useCurrentFrame();
+  const f = f0;
+  // the chat runs `speed` times faster once it opens
+  const fc = f0 < chat ? f0 : chat + (f0 - chat) * speed;
   const bars: [string, number, number, string][] = [['STABILITY', 0.82, 0.12, '#E05A3A'], ['ARMY', 0.7, 0.3, '#E0B03A'], ['MORALE', 0.6, 0.2, '#5AD06A']];
   const panel = pop(f, 0, 16, 1.4);
-  const cw = pop(f, chat, chat + 16, 1.5);
-  const typed = Math.floor(interpolate(f, [chat + 150, chat + 186], [0, 4], clamp));
+  const cw = pop(fc, chat, chat + 16, 1.5);
+  const typed = Math.floor(interpolate(fc, [chat + 150, chat + 186], [0, 4], clamp));
   const gg = 'GG 😞'.slice(0, typed === 0 ? 0 : typed >= 4 ? 5 : typed);
-  const click = f > chat + 210;
-  const cur = { x: interpolate(f, [chat + 186, chat + 206], [700, 905], clamp), y: interpolate(f, [chat + 186, chat + 206], [1420, 1342], clamp) };
+  const click = fc > chat + 210;
+  const cur = { x: interpolate(fc, [chat + 186, chat + 206], [700, 905], clamp), y: interpolate(fc, [chat + 186, chat + 206], [1420, 1342], clamp) };
   return (
     <AbsoluteFill style={{ fontFamily: UI }}>
       {/* top bar */}
@@ -64,18 +67,18 @@ export const H09Game: React.FC<{ chat?: number }> = ({ chat = 200 }) => {
       {cw > 0.01 && (
         <div style={{ position: 'absolute', left: 90, top: 980, width: 900, transform: `scale(${cw})`, transformOrigin: '20% 100%', background: 'rgba(24,18,12,0.94)', border: '6px solid #8A6A3A', borderRadius: 22, padding: 28 }}>
           {MSG.map(([who, msg, col], i) => (
-            <div key={i} style={{ fontSize: 44, color: '#F3E6C8', marginBottom: 10, opacity: f > chat + 30 + i * 40 ? 1 : 0, fontWeight: 700 }}>
+            <div key={i} style={{ fontSize: 44, color: '#F3E6C8', marginBottom: 10, opacity: fc > chat + 30 + i * 40 ? 1 : 0, fontWeight: 700 }}>
               <span style={{ color: col, fontStyle: 'italic', fontWeight: 800 }}>{who}:</span> {msg}
             </div>
           ))}
           <div style={{ display: 'flex', gap: 16, marginTop: 18 }}>
-            <div style={{ flex: 1, height: 74, borderRadius: 12, background: '#120D08', border: '3px solid #5A4428', color: '#fff', fontSize: 44, padding: '6px 20px', fontWeight: 800 }}>{gg}{typed > 0 && typed < 4 && Math.floor(f / 15) % 2 ? '|' : ''}</div>
+            <div style={{ flex: 1, height: 74, borderRadius: 12, background: '#120D08', border: '3px solid #5A4428', color: '#fff', fontSize: 44, padding: '6px 20px', fontWeight: 800 }}>{gg}{typed > 0 && typed < 4 && Math.floor(fc / 15) % 2 ? '|' : ''}</div>
             <div style={{ width: 170, height: 74, borderRadius: 12, background: click ? '#5A4428' : '#8A6A3A', color: '#F3E6C8', fontSize: 38, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transform: `scale(${click && f < chat + 222 ? 0.92 : 1})` }}>SEND</div>
+              transform: `scale(${click && fc < chat + 222 ? 0.92 : 1})` }}>SEND</div>
           </div>
         </div>
       )}
-      {cw > 0.5 && f > chat + 180 && (
+      {cw > 0.5 && fc > chat + 180 && (
         <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0 }}>
           <path d={`M ${cur.x} ${cur.y} l 0 56 l 14 -14 l 12 26 l 10 -5 l -12 -25 l 20 0 Z`} fill="#fff" stroke={C.ink} strokeWidth={4} strokeLinejoin="round" />
         </svg>

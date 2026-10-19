@@ -6,7 +6,7 @@ import { C, clamp } from './theme';
 // h01_duel (line 1, "116 साल तक दो देश लड़ते रहे"; the reference's 1.3–8.6 s): the English knight (St George) and the
 // French knight (fleur-de-lis) duel on the Channel coast. Alternate sword swings at about 4 Hz, a lunge on every fourth
 // swing, a bob, a clash spark at each contact. With `swoop` (a frame), armoured Joan flies in from the bottom-left on
-// her banner with a glow and knocks both knights flying (the reference's 8.73–8.93 s). Transparent, 1080×1080, 60 fps.
+// her banner with a glow and knocks both knights flying (the reference's 8.73–8.93 s); from `worry` she looks worried. Transparent, 1080×1080, 60 fps.
 
 const SW = 15; // frames per swing
 const swing = (f: number, off: number) => {
@@ -14,7 +14,7 @@ const swing = (f: number, off: number) => {
   return t < 0.35 ? interpolate(t, [0, 0.35], [0, 1], { easing: Easing.in(Easing.quad) }) : interpolate(t, [0.35, 1], [1, 0], { easing: Easing.out(Easing.quad) });
 };
 
-export const H01Duel: React.FC<{ swoop?: number }> = ({ swoop = -1 }) => {
+export const H01Duel: React.FC<{ swoop?: number; worry?: number }> = ({ swoop = -1, worry = -1 }) => {
   const f = useCurrentFrame();
   const se = swing(f, 0), sf = swing(f, SW / 2);
   const lunge = (k: number) => (Math.floor((f + k) / SW) % 4 === 3 ? Math.sin((((f + k) % SW) / SW) * Math.PI) * 40 : 0);
@@ -41,7 +41,7 @@ export const H01Duel: React.FC<{ swoop?: number }> = ({ swoop = -1 }) => {
           <g>
             <circle cx={jx} cy={jy - 300} r={260} fill="#FFF6D8" opacity={0.75} filter="url(#d1g)" />
             <g transform={`translate(${jx} ${jy}) scale(0.62) rotate(${(1 - js) * -20})`}>
-              <Plush who="joanArmor" pose={{ ...PP0, mouth: 'grin', arms: 0, brow: -0.3 }} f={f} banner={1} seed="j" />
+              <Plush who="joanArmor" pose={worry >= 0 && f >= worry ? { ...PP0, mouth: 'worried', brow: 0.8, sweat: ((f - worry) % 90) / 90, look: 0.6 } : { ...PP0, mouth: 'grin', arms: 0, brow: -0.3 }} f={f} banner={1} seed="j" />
             </g>
           </g>
         )}
