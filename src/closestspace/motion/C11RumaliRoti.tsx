@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Easing, interpolate, random, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Easing, Img, interpolate, random, useCurrentFrame } from 'remotion';
 import { PP0, Plush } from './Plush';
 import { C, clamp, ramp } from './theme';
 
@@ -7,7 +7,7 @@ import { C, clamp, ramp } from './theme';
 // bulge. A plush cook spins a thin roti over his head on his fingertips; as it spins faster it stretches wider and
 // thinner, with speed lines and a little flour dust. Transparent, 1080×1400, 60 fps, 300 frames.
 const SPOTS = Array.from({ length: 22 }, (_, i) => [random(`rx${i}`) * 2 - 1, random(`ry${i}`) * 2 - 1, 6 + random(`rr${i}`) * 12]);
-export const C11RumaliRoti: React.FC = () => {
+export const C11RumaliRoti: React.FC<{ img?: { src: string; w: number; h: number } }> = ({ img }) => {
   const f = useCurrentFrame();
   const sp = ramp(f, 0, 200, Easing.in(Easing.quad));
   const ang = f * (4 + 26 * sp);
@@ -31,8 +31,15 @@ export const C11RumaliRoti: React.FC = () => {
             stroke="#fff" strokeWidth={10} fill="none" strokeLinecap="round" opacity={0.25 + 0.6 * sp} />;
         })}
         <ellipse cx={540} cy={cy + 10} rx={rx} ry={ry} fill="#000" opacity={0.12} />
-        <ellipse cx={540} cy={cy} rx={rx} ry={ry} fill="url(#roti)" stroke="#B88A50" strokeWidth={5} opacity={0.96} />
-        <g clipPath="url(#rotiClip)">
+        {img && (
+          <foreignObject x={540 - rx * 1.08} y={cy - ((rx * 2.16) / 2.2) * (1 - 0.25 * sp) / 2} width={rx * 2.16} height={((rx * 2.16) / 2.2) * (1 - 0.25 * sp)}>
+            <div style={{ width: '100%', height: '100%', transform: `rotate(${Math.sin(ang / 40) * 3}deg) scaleX(${1 + 0.03 * Math.sin(ang / 9)})` }}>
+              <Img src={img.src} style={{ width: '100%', height: '100%' }} />
+            </div>
+          </foreignObject>
+        )}
+        {!img && <ellipse cx={540} cy={cy} rx={rx} ry={ry} fill="url(#roti)" stroke="#B88A50" strokeWidth={5} opacity={0.96} />}
+        <g clipPath="url(#rotiClip)" opacity={img ? 0 : 1}>
           <g transform={`translate(540 ${cy}) scale(${rx / 200} ${ry / 200}) rotate(${ang})`}>
             {SPOTS.map(([x, y, r], i) => (x * x + y * y < 0.9 ? <circle key={i} cx={x * 170} cy={y * 170} r={r * 2.2} fill="#B9803F" opacity={0.45} /> : null))}
           </g>

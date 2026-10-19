@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Easing, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Easing, Img, useCurrentFrame } from 'remotion';
 import { NUM, useFonts } from './font';
 import { PP0, Plush } from './Plush';
 import { C, pop, ramp } from './theme';
@@ -22,8 +22,8 @@ const tape = (x0: number, y0: number, x1: number, y1: number, t: number, f: numb
     </g>
   );
 };
-export const C15TapeMeasure: React.FC<{ r?: number; aA?: number; aB?: number; textA?: string; textB?: string; diff?: string }> = ({
-  r = 400, aA = -55, aB = -125, textA = '6,382 km', textB = '6,384 km', diff = '+2 km',
+export const C15TapeMeasure: React.FC<{ r?: number; aA?: number; aB?: number; textA?: string; textB?: string; diff?: string; caseImg?: { src: string; w: number; h: number } }> = ({
+  r = 400, aA = -55, aB = -125, textA = '6,382 km', textB = '6,384 km', diff = '+2 km', caseImg,
 }) => {
   useFonts();
   const f = useCurrentFrame();
@@ -55,7 +55,7 @@ export const C15TapeMeasure: React.FC<{ r?: number; aA?: number; aB?: number; te
         {tape(cx, cy, A[0], A[1], tA, f)}
         {tape(cx, cy, B[0], B[1], tB, f)}
         {/* the tape-measure case at the centre */}
-        <g transform={`translate(${cx} ${cy}) scale(${box})`}>
+        <g transform={`translate(${cx} ${cy}) scale(${box})`} opacity={caseImg ? 0 : 1}>
           <rect x={-70} y={-62} width={140} height={124} rx={36} fill="#FFC83D" stroke={C.ink} strokeWidth={7} />
           <circle r={36} fill="#2A2E38" stroke={C.ink} strokeWidth={5} />
           <circle r={14} fill="#C9D1DA" />
@@ -64,6 +64,10 @@ export const C15TapeMeasure: React.FC<{ r?: number; aA?: number; aB?: number; te
         <g transform={`translate(${A[0] + Math.cos((aA * Math.PI) / 180) * 40} ${A[1] + Math.sin((aA * Math.PI) / 180) * 40}) scale(0.16)`}><Plush who="climberA" f={f} pose={climberPose(cheer, 'a')} /></g>
         <g transform={`translate(${B[0] + Math.cos((aB * Math.PI) / 180) * 40} ${B[1] + Math.sin((aB * Math.PI) / 180) * 40}) scale(0.16)`}><Plush who="climberB" f={f} pose={climberPose(cheer, 'b')} /></g>
       </svg>
+      {caseImg && (
+        <div style={{ position: 'absolute', left: cx - 95, top: cy - (95 * caseImg.h) / caseImg.w, width: 190, height: (190 * caseImg.h) / caseImg.w, transform: `scale(${box})`,
+          filter: 'drop-shadow(0 10px 14px rgba(0,0,0,0.5))' }}><Img src={caseImg.src} style={{ width: '100%', height: '100%' }} /></div>
+      )}
       {[[A, lA, textA, 'rgba(61,139,255,0.92)', 1], [B, lB, textB, 'rgba(255,59,59,0.92)', -1]].map(([p, s, t, col, side], i) => (
         (s as number) > 0 ? (
           <div key={i} style={{ position: 'absolute', left: (cx + (p as number[])[0]) / 2 + (side as number) * 70, top: (cy + (p as number[])[1]) / 2 - 10, transform: `translate(-50%, -50%) scale(${s})`,

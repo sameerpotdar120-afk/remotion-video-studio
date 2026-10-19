@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from 'remotion';
 import { C, clamp } from './theme';
 
 // c08_flat_earth ("वो चपटी है। हाहा, मज़ाक कर रहा हूँ।"; the reference's 32.4–34.5 s): a cartoon flat-earth disc
@@ -13,11 +13,22 @@ const CONT = [
   'M -160 90 C -110 80 -80 120 -100 170 C -120 210 -170 190 -175 150 C -178 120 -180 100 -160 90 Z',
   'M 220 120 C 260 110 290 140 270 170 C 250 190 210 180 210 150 Z',
 ];
-export const C08FlatEarth: React.FC<{ out?: number }> = ({ out = 90 }) => {
+export const C08FlatEarth: React.FC<{ out?: number; img?: { src: string; w: number; h: number } }> = ({ out = 90, img }) => {
   const f = useCurrentFrame();
   const x = interpolate(f, [0, 22, out, out + 22], [1500, 540, 540, -500], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const settle = f > 18 && f < out ? Math.exp(-(f - 18) / 20) * Math.sin((f - 18) / 4) * 6 : 0;
   const spin = f * 0.6;
+  if (img) {
+    const w = 900, h = (w * img.h) / img.w;
+    return (
+      <AbsoluteFill>
+        <div style={{ position: 'absolute', left: x - w / 2, top: 960 - h * 0.45 + Math.sin(f / 20) * 8, width: w, height: h, transform: `rotate(${settle}deg)`,
+          filter: 'drop-shadow(0 30px 30px rgba(0,0,0,0.5))' }}>
+          <Img src={img.src} style={{ width: w, height: h }} />
+        </div>
+      </AbsoluteFill>
+    );
+  }
   return (
     <AbsoluteFill>
       <svg width={1080} height={1920}>

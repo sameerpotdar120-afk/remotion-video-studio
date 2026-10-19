@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from 'remotion';
 import { C, clamp, ramp } from './theme';
 
 // c03_magnifier ("सबसे पहले ढूँढते हैं धरती की सबसे ऊँची जगह", "तो अब ढूँढते हैं equator के पास का सबसे ऊँचा पहाड़";
@@ -8,8 +8,10 @@ import { C, clamp, ramp } from './theme';
 // to cover the whole screen (the dive through the lens). 1080×1920, 60 fps. Pass the scene as `children` (the same
 // node is drawn twice: plain, and magnified inside the lens); `path` is [frame, x, y] keys for the lens centre.
 type Key = [number, number, number];
+/** An image of the glass instead of the drawn one: its size and the lens centre and radius in its pixels. */
+export type GlassImg = { src: string; w: number; h: number; cx: number; cy: number; r: number };
 const DEF_PATH: Key[] = [[0, 1250, 1500], [30, 700, 980], [70, 420, 820], [110, 700, 700], [150, 760, 780]];
-export const C03Magnifier: React.FC<{ path?: Key[]; fill?: number; zoom?: number; children?: React.ReactNode }> = ({ path = DEF_PATH, fill = 200, zoom = 1.7, children }) => {
+export const C03Magnifier: React.FC<{ path?: Key[]; fill?: number; zoom?: number; glass?: GlassImg; children?: React.ReactNode }> = ({ path = DEF_PATH, fill = 200, zoom = 1.7, glass, children }) => {
   const f = useCurrentFrame();
   const fr = path.map((k) => k[0]);
   const ease = { ...clamp, easing: Easing.inOut(Easing.cubic) };
@@ -29,7 +31,16 @@ export const C03Magnifier: React.FC<{ path?: Key[]; fill?: number; zoom?: number
         <AbsoluteFill style={{ transform: `scale(${z})`, transformOrigin: `${cx}px ${cy}px` }}>{scene}</AbsoluteFill>
         <AbsoluteFill style={{ background: `radial-gradient(circle at ${cx - R * 0.35}px ${cy - R * 0.4}px, rgba(255,255,255,0.28), rgba(255,255,255,0) ${R * 0.6}px)` }} />
       </AbsoluteFill>
-      <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: 1 - g }}>
+      {glass && (() => {
+        const k = (R * 1.04) / glass.r;
+        return (
+          <div style={{ position: 'absolute', left: cx - glass.cx * k, top: cy - glass.cy * k, width: glass.w * k, height: glass.h * k, opacity: 1 - g,
+            transform: `rotate(${tilt}deg)`, transformOrigin: `${glass.cx * k}px ${glass.cy * k}px`, filter: 'drop-shadow(0 18px 24px rgba(0,0,0,0.45))' }}>
+            <Img src={glass.src} style={{ width: '100%', height: '100%' }} />
+          </div>
+        );
+      })()}
+      <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: glass ? 0 : 1 - g }}>
         <defs>
           <linearGradient id="chrome" x1="0" y1="0" x2="1" y2="1">
             <stop offset="0" stopColor="#FFFFFF" /><stop offset="0.3" stopColor="#B9C2CC" /><stop offset="0.55" stopColor="#F2F5F8" /><stop offset="0.8" stopColor="#7C8691" /><stop offset="1" stopColor="#DDE3EA" />
