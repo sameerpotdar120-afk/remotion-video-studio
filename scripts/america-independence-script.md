@@ -31,7 +31,7 @@ seventeen fifty-four में Benjamin Franklin ने इन्हें ज�
 
 और colonies का जवाब?
 
-"Colonies: नहीं, थैंक यू।"
+"Colonies: नहीं, thank you।"
 
 तो seventeen fifty-four में ये लोग एक-दूसरे के साथ भी नहीं थे। Britain के ख़िलाफ़ होना तो बहुत दूर की बात थी।
 
@@ -55,7 +55,7 @@ May twenty-eight, seventeen fifty-four. एक twenty-two साल का Virgi
 
 VO: ये war seventeen sixty-three तक चला। और Britain जीत गया। Treaty of Paris में France ने Canada और Mississippi river के पूर्व की लगभग सारी ज़मीन Britain को दे दी, और Spain ने Florida.
 
-"Britain: Easy. Ab पूरा North America हमारा है।"
+"Britain: Easy. अब पूरा North America हमारा है।"
 
 बस एक छोटी सी problem थी। जीतने में पैसा बहुत लगा था। इस war में Britain का national debt लगभग double हो गया।
 
@@ -76,7 +76,7 @@ VO: Bill से पहले आया एक दूसरा झटका। wa
 
 अब सोचिए। colonists ने इसी ज़मीन के लिए war लड़ी थी। और जीतने के बाद उन्हें बोला गया, उधर मत जाना।
 
-"Colonist: मतलब war हमने लड़ी, और ज़मीन पर बोर्ड लगा है, No Entry?"
+"Colonist: मतलब war हमने लड़ी, और ज़मीन पर board लगा है, No Entry?"
 
 सच ये है कि ये line ठीक से लागू भी नहीं हो पाई, लोग फिर भी पश्चिम जाते रहे। लेकिन एक बात colonies के दिमाग में बैठ गई। फ़ैसले London में होंगे, और भुगतना यहाँ पड़ेगा।
 
@@ -237,7 +237,7 @@ VO: July two, seventeen seventy-six. Congress में vote हुआ, कि c
 
 John Adams इतने excited थे, कि उन्होंने अपनी wife Abigail को लिखा, कि America हमेशा July two को celebrate करेगा।
 
-Adams sahab, date दो दिन से miss हो गई।
+Adams साहब, date दो दिन से miss हो गई।
 
 क्योंकि July four को Congress ने वो document अपनाया, जिसे दुनिया जानती है। The Declaration of Independence. इसका ज़्यादातर हिस्सा लिखा था thirty-three साल के Thomas Jefferson ने। और ज़्यादातर delegates ने इस पर sign किया August two को।
 
