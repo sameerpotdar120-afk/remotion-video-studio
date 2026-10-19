@@ -5,6 +5,8 @@ import { FPS, H, W } from './lib/constants';
 import { loadFonts } from './lib/fonts';
 import { DemoBritain, DemoMap3D, DemoMapHook, DemoVolley } from './scenes/Demos';
 import { GrandUnion, UnionFlag1707 } from './lib/fx/flags';
+import { Animatic } from './scenes/Animatic';
+import { TOTAL_FRAMES } from './vo/cues';
 
 loadFonts();
 
@@ -12,6 +14,7 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       {/* 4K 60 fps long-form (16:9) */}
+      <Composition id="Full-Animatic" component={Animatic} durationInFrames={TOTAL_FRAMES} fps={FPS} width={W} height={H} />
       <Composition id="Demo-MapHook" component={DemoMapHook} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Britain" component={DemoBritain} durationInFrames={360} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Map3D" component={DemoMap3D} durationInFrames={480} fps={FPS} width={W} height={H} />

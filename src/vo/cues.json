@@ -1,0 +1,1327 @@
+{
+ "fps": 60,
+ "totalFrames": 29520,
+ "scenes": [
+  {
+   "id": "S01_hook",
+   "title": "Hook — loved the King, then took up guns",
+   "style": "Map3D → satellite",
+   "events": [
+    {
+     "phrase": "आपको बताया गया",
+     "action": "3D map: top view of North America, colonies start rising one by one (Map3D riseStart)",
+     "frame": 0,
+     "sec": 0.0,
+     "wordIndex": 0
+    },
+    {
+     "phrase": "आज़ादी के लिए",
+     "action": "Grand Union flag cloth sweeps over the colonies (FlagFill) + fireworks",
+     "frame": 112,
+     "sec": 1.876,
+     "wordIndex": 6
+    },
+    {
+     "phrase": "सत्रह सौ तिरसठ में यही",
+     "action": "TimelineRuler REWINDS 1776 → 1763 (rewind_tape.wav), flag erased",
+     "frame": 256,
+     "sec": 4.273,
+     "wordIndex": 12
+    },
+    {
+     "phrase": "राजा से प्यार",
+     "action": "Britain map-character pops in, golden crown DropIn, colonies get heart-eyes (RegionEyes mood smile)",
+     "frame": 399,
+     "sec": 6.656,
+     "wordIndex": 19
+    },
+    {
+     "phrase": "तेरह साल",
+     "action": "Timeline ticks 1763 → 1776 fast",
+     "frame": 548,
+     "sec": 9.142,
+     "wordIndex": 26
+    },
+    {
+     "phrase": "बंदूक उठा ली",
+     "action": "Colonies RegionEyes switch to angry; musket_militia PopIn on the coast",
+     "frame": 783,
+     "sec": 13.064,
+     "wordIndex": 39
+    },
+    {
+     "phrase": "जान की बाज़ी",
+     "action": "Camera punch-in + Shake; heartbeat_low.wav",
+     "frame": 860,
+     "sec": 14.341,
+     "wordIndex": 43
+    }
+   ],
+   "from": 0,
+   "to": 962
+  },
+  {
+   "id": "S02_turn",
+   "title": "What this video will show",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "आज हम इस पूरी कहानी",
+     "action": "LineWipe satellite → parchment",
+     "frame": 962,
+     "sec": 16.047,
+     "wordIndex": 48
+    },
+    {
+     "phrase": "एक जंगल में चली एक गोली",
+     "action": "Dotted route DrawLine starts at Jumonville Glen",
+     "frame": 1157,
+     "sec": 19.291,
+     "wordIndex": 57
+    },
+    {
+     "phrase": "चार July सत्रह सौ छिहत्तर",
+     "action": "Route reaches Philadelphia, MapPin \"4 July 1776\"",
+     "frame": 1310,
+     "sec": 21.841,
+     "wordIndex": 65
+    },
+    {
+     "phrase": "हर बार problem को solve",
+     "action": "Icons pop along the route: crown, stamp, teacup, musket, quill (stagger 8)",
+     "frame": 1575,
+     "sec": 26.253,
+     "wordIndex": 76
+    },
+    {
+     "phrase": "problem और बड़ी हो गई",
+     "action": "Each icon scales up bigger (problem grows) + whoosh",
+     "frame": 1793,
+     "sec": 29.896,
+     "wordIndex": 86
+    }
+   ],
+   "from": 962,
+   "to": 1909
+  },
+  {
+   "id": "S03_colonies",
+   "title": "The 13 colonies",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "शुरुआत करते हैं इन तेरह colonies",
+     "action": "Camera to Eastern NA; ColonyFill N→S (14 f per state)",
+     "frame": 1909,
+     "sec": 31.82,
+     "wordIndex": 91
+    },
+    {
+     "phrase": "Atlantic के किनारे",
+     "action": "NeonOutline on the whole coastal strip",
+     "frame": 2089,
+     "sec": 34.817,
+     "wordIndex": 98
+    },
+    {
+     "phrase": "New Hampshire से Georgia",
+     "action": "Labels New Hampshire (top) and Georgia (bottom) PopIn",
+     "frame": 2282,
+     "sec": 38.04,
+     "wordIndex": 106
+    },
+    {
+     "phrase": "पच्चीस लाख",
+     "action": "Big counter MapTitle \"25,00,000\" type-on",
+     "frame": 2551,
+     "sec": 42.529,
+     "wordIndex": 117
+    },
+    {
+     "phrase": "पाँच लाख अश्वेत",
+     "action": "Second counter \"5,00,000\" in a different colour",
+     "frame": 2787,
+     "sec": 46.456,
+     "wordIndex": 126
+    },
+    {
+     "phrase": "ये number याद रखना",
+     "action": "Counter pinned to the top-right corner (it returns at the end)",
+     "frame": 3002,
+     "sec": 50.047,
+     "wordIndex": 135
+    },
+    {
+     "phrase": "ये एक देश थे ही नहीं",
+     "action": "RegionEyes on every colony, bickering (look ±1, mood angry)",
+     "frame": 3349,
+     "sec": 55.826,
+     "wordIndex": 151
+    },
+    {
+     "phrase": "अपना पैसा",
+     "action": "Different coin icons pop on 3 colonies",
+     "frame": 3583,
+     "sec": 59.725,
+     "wordIndex": 162
+    },
+    {
+     "phrase": "आपस में ही उलझते",
+     "action": "Two colonies push each other (Shake + small slides)",
+     "frame": 3757,
+     "sec": 62.63,
+     "wordIndex": 169
+    },
+    {
+     "phrase": "Benjamin Franklin",
+     "action": "franklin puppet slides in from left",
+     "frame": 3952,
+     "sec": 65.878,
+     "wordIndex": 179
+    },
+    {
+     "phrase": "Join, or Die",
+     "action": "Paper3D: pd_join_or_die_1754 floats in",
+     "frame": 4471,
+     "sec": 74.519,
+     "wordIndex": 201
+    },
+    {
+     "phrase": "एक हो जाओ",
+     "action": "Snake pieces flash one by one over the colonies",
+     "frame": 4620,
+     "sec": 77.015,
+     "wordIndex": 205
+    },
+    {
+     "phrase": "नहीं, शुक्रिया",
+     "action": "StampSlam stamp_rejected on the cartoon",
+     "frame": 4835,
+     "sec": 80.599,
+     "wordIndex": 214
+    },
+    {
+     "phrase": "Britain के ख़िलाफ़ क्या खड़े होते",
+     "action": "Colonies turn their backs (eyes look away)",
+     "frame": 5137,
+     "sec": 85.626,
+     "wordIndex": 228
+    }
+   ],
+   "from": 1909,
+   "to": 5333
+  },
+  {
+   "id": "S04_first_shot",
+   "title": "Jumonville Glen 1754 → world war",
+   "style": "parchment 3D-tilt → forest plate → world map",
+   "events": [
+    {
+     "phrase": "अट्ठाईस May",
+     "action": "Camera to Western PA with tilt 25 + hillshade; MapPin \"Jumonville Glen / 28 May 1754\"",
+     "frame": 5333,
+     "sec": 88.887,
+     "wordIndex": 237
+    },
+    {
+     "phrase": "Ohio नदी",
+     "action": "Ohio River path glows (DrawLine blue)",
+     "frame": 5603,
+     "sec": 93.395,
+     "wordIndex": 247
+    },
+    {
+     "phrase": "Britain और France, दोनों का दावा",
+     "action": "Red and blue claim areas pulse over the Ohio country",
+     "frame": 5693,
+     "sec": 94.885,
+     "wordIndex": 252
+    },
+    {
+     "phrase": "बाईस साल का एक लड़का",
+     "action": "ZoomBlur into bg_forest_ohio_1754_dawn (ParallaxPlate); washingtonYoung puppet",
+     "frame": 5870,
+     "sec": 97.842,
+     "wordIndex": 259
+    },
+    {
+     "phrase": "French camp पर हमला",
+     "action": "Musket volley + MuzzleSmoke + Shake (musket_single.wav ×3)",
+     "frame": 6155,
+     "sec": 102.592,
+     "wordIndex": 272
+    },
+    {
+     "phrase": "पंद्रह minute",
+     "action": "clock_15min icon PopIn",
+     "frame": 6309,
+     "sec": 105.156,
+     "wordIndex": 279
+    },
+    {
+     "phrase": "Jumonville मारा जाता है",
+     "action": "French officer puppet fallAt",
+     "frame": 6467,
+     "sec": 107.786,
+     "wordIndex": 286
+    },
+    {
+     "phrase": "George Washington.",
+     "action": "MapTitle \"George Washington\" + ArrowLabel to the puppet (beat of silence)",
+     "frame": 6665,
+     "sec": 111.088,
+     "wordIndex": 295
+    },
+    {
+     "phrase": "British की तरफ़ से",
+     "action": "Union Flag 1707 PopIn beside Washington",
+     "frame": 6926,
+     "sec": 115.443,
+     "wordIndex": 304
+    },
+    {
+     "phrase": "World War बन गई",
+     "action": "Smash-cut to world map; fire spreads from the pin (Territory fills)",
+     "frame": 7122,
+     "sec": 118.71,
+     "wordIndex": 316
+    },
+    {
+     "phrase": "Europe",
+     "action": "Europe pulses",
+     "frame": 7229,
+     "sec": 120.491,
+     "wordIndex": 320
+    },
+    {
+     "phrase": "Caribbean",
+     "action": "Caribbean pulses",
+     "frame": 7326,
+     "sec": 122.101,
+     "wordIndex": 322
+    },
+    {
+     "phrase": "हमारे भारत तक",
+     "action": "India pulses + camera nudge",
+     "frame": 7382,
+     "sec": 123.044,
+     "wordIndex": 324
+    },
+    {
+     "phrase": "Seven Years' War",
+     "action": "MapTitle \"Seven Years' War\" / (1756–1763) slam",
+     "frame": 7526,
+     "sec": 125.44,
+     "wordIndex": 331
+    }
+   ],
+   "from": 5333,
+   "to": 7620
+  },
+  {
+   "id": "S05_debt",
+   "title": "Britain wins, Britain is broke",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "Britain जीत गया",
+     "action": "Britain map-character, crown, mood smug",
+     "frame": 7620,
+     "sec": 127.005,
+     "wordIndex": 334
+    },
+    {
+     "phrase": "Treaty of Paris",
+     "action": "Paper3D doc_treaty_of_paris_1763",
+     "frame": 7771,
+     "sec": 129.526,
+     "wordIndex": 341
+    },
+    {
+     "phrase": "France ने Canada",
+     "action": "Territory: Canada smash-fill red",
+     "frame": 7860,
+     "sec": 131.0,
+     "wordIndex": 345
+    },
+    {
+     "phrase": "छोटी सी दिक़्क़त",
+     "action": "Britain mood worried",
+     "frame": 8076,
+     "sec": 134.617,
+     "wordIndex": 354
+    },
+    {
+     "phrase": "बहुत महँगी",
+     "action": "Coins drain out of Britain",
+     "frame": 8183,
+     "sec": 136.397,
+     "wordIndex": 360
+    },
+    {
+     "phrase": "क़र्ज़ लगभग दोगुना",
+     "action": "StampSlam stamp_debt WITH wooden handle wind-up (stamp_slam.wav)",
+     "frame": 8343,
+     "sec": 139.056,
+     "wordIndex": 366
+    },
+    {
+     "phrase": "ये bill भरेगा कौन",
+     "action": "Britain eye-darts (look −1/1), mood thinking",
+     "frame": 8561,
+     "sec": 142.691,
+     "wordIndex": 376
+    },
+    {
+     "phrase": "जवाब था, colonies",
+     "action": "Britain slides across Atlantic (slideTravel) and glove-points at the colonies; ArrowBob",
+     "frame": 8665,
+     "sec": 144.425,
+     "wordIndex": 380
+    }
+   ],
+   "from": 7620,
+   "to": 8906
+  },
+  {
+   "id": "S06_proclamation",
+   "title": "The 1763 line on the mountains",
+   "style": "parchment + 3D terrain tilt",
+   "events": [
+    {
+     "phrase": "Native American क़बीलों",
+     "action": "Western frontier flashes; small smoke puffs",
+     "frame": 8906,
+     "sec": 148.447,
+     "wordIndex": 390
+    },
+    {
+     "phrase": "सात October",
+     "action": "MapPin-style date card \"7 October 1763\"",
+     "frame": 9156,
+     "sec": 152.604,
+     "wordIndex": 401
+    },
+    {
+     "phrase": "Appalachian पहाड़ों",
+     "action": "Camera tilts 28° over hillshade Appalachians",
+     "frame": 9382,
+     "sec": 156.381,
+     "wordIndex": 410
+    },
+    {
+     "phrase": "एक line खींच दी गई",
+     "action": "DrawLine Proclamation Line (dashed red)",
+     "frame": 9467,
+     "sec": 157.788,
+     "wordIndex": 413
+    },
+    {
+     "phrase": "कोई नई बस्ती नहीं",
+     "action": "West side shades grey + NeonIcon red X",
+     "frame": 9635,
+     "sec": 160.598,
+     "wordIndex": 421
+    },
+    {
+     "phrase": "जिस ज़मीन के लिए जंग लड़ी",
+     "action": "Settler puppets walk to the line",
+     "frame": 9803,
+     "sec": 163.384,
+     "wordIndex": 427
+    },
+    {
+     "phrase": "उधर जाना मना है",
+     "action": "Settlers bump into the line and bounce back (comic)",
+     "frame": 10014,
+     "sec": 166.911,
+     "wordIndex": 438
+    }
+   ],
+   "from": 8906,
+   "to": 10111
+  },
+  {
+   "id": "S07_sugar",
+   "title": "Sugar Act 1764",
+   "style": "parchment → satellite",
+   "events": [
+    {
+     "phrase": "फिर आया Sugar Act",
+     "action": "Britain pulls doc_sugar_act_1764 → ZoomPunch",
+     "frame": 10111,
+     "sec": 168.519,
+     "wordIndex": 442
+    },
+    {
+     "phrase": "tax बढ़ाया नहीं, घटाया",
+     "action": "Price tag \"6d\" PopIn",
+     "frame": 10390,
+     "sec": 173.171,
+     "wordIndex": 454
+    },
+    {
+     "phrase": "छह pence से सीधा तीन pence",
+     "action": "StrikeThrough 6d → \"3d\" pops",
+     "frame": 10537,
+     "sec": 175.63,
+     "wordIndex": 459
+    },
+    {
+     "phrase": "सब smuggling",
+     "action": "Small ships sneak along the coast (smuggling)",
+     "frame": 10827,
+     "sec": 180.458,
+     "wordIndex": 473
+    },
+    {
+     "phrase": "Navy सख़्ती से वसूली",
+     "action": "British navy ship icons circle the coast",
+     "frame": 10941,
+     "sec": 182.355,
+     "wordIndex": 478
+    },
+    {
+     "phrase": "jury ही नहीं",
+     "action": "Courtroom icon + NeonIcon red X on \"jury\"",
+     "frame": 11237,
+     "sec": 187.292,
+     "wordIndex": 492
+    },
+    {
+     "phrase": "जेब तक पहुँच गया",
+     "action": "Glove reaches across the Atlantic into a colony pocket (gag)",
+     "frame": 11539,
+     "sec": 192.327,
+     "wordIndex": 507
+    }
+   ],
+   "from": 10111,
+   "to": 11690
+  },
+  {
+   "id": "S08_stamp",
+   "title": "Stamp Act 1765",
+   "style": "plates (fast cuts) → map",
+   "events": [
+    {
+     "phrase": "असली बवाल",
+     "action": "ZoomPunch doc_stamp_act_1765",
+     "frame": 11690,
+     "sec": 194.843,
+     "wordIndex": 514
+    },
+    {
+     "phrase": "अख़बार",
+     "action": "CUT bg_print_shop_1765 + StampSlam taxed",
+     "frame": 11926,
+     "sec": 198.773,
+     "wordIndex": 521
+    },
+    {
+     "phrase": "contract",
+     "action": "CUT bg_lawyer_office_1765 + StampSlam taxed",
+     "frame": 11980,
+     "sec": 199.668,
+     "wordIndex": 522
+    },
+    {
+     "phrase": "license",
+     "action": "CUT bg_courtroom_1765 + StampSlam taxed",
+     "frame": 12030,
+     "sec": 200.501,
+     "wordIndex": 523
+    },
+    {
+     "phrase": "ताश के पत्तों",
+     "action": "CUT bg_tavern_1765 + StampSlam taxed on the cards",
+     "frame": 12135,
+     "sec": 202.263,
+     "wordIndex": 527
+    },
+    {
+     "phrase": "ये हर किसी को चुभा",
+     "action": "Colonist flips the card table (Fling table + cards, wood_crash_cards.wav)",
+     "frame": 12257,
+     "sec": 204.288,
+     "wordIndex": 533
+    },
+    {
+     "phrase": "पुतला एक पेड़ पर",
+     "action": "bg_liberty_tree_1765, effigy swings",
+     "frame": 12492,
+     "sec": 208.214,
+     "wordIndex": 545
+    },
+    {
+     "phrase": "Liberty Tree",
+     "action": "MapTitle \"Liberty Tree\"",
+     "frame": 12770,
+     "sec": 212.848,
+     "wordIndex": 559
+    },
+    {
+     "phrase": "नौ colonies",
+     "action": "Map: 9 colonies light up one by one",
+     "frame": 12897,
+     "sec": 214.958,
+     "wordIndex": 564
+    },
+    {
+     "phrase": "New York में एक साथ मिले",
+     "action": "Delegates converge on New York; MapPin \"Stamp Act Congress / October 1765\"",
+     "frame": 12978,
+     "sec": 216.315,
+     "wordIndex": 568
+    },
+    {
+     "phrase": "No taxation without representation",
+     "action": "Big serif slogan + NeonIcon Parliament X and coins ✓",
+     "frame": 13313,
+     "sec": 221.897,
+     "wordIndex": 581
+    }
+   ],
+   "from": 11690,
+   "to": 13485
+  },
+  {
+   "id": "S09_repeal",
+   "title": "Repeal + Declaratory Act",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "Boycott हुआ",
+     "action": "Crates stack up at London docks (boycott)",
+     "frame": 13485,
+     "sec": 224.755,
+     "wordIndex": 585
+    },
+    {
+     "phrase": "अठारह March",
+     "action": "Date card \"18 March 1766\"",
+     "frame": 13565,
+     "sec": 226.087,
+     "wordIndex": 588
+    },
+    {
+     "phrase": "वापस ले लिया गया",
+     "action": "PaperTear on the Stamp Act",
+     "frame": 13751,
+     "sec": 229.19,
+     "wordIndex": 596
+    },
+    {
+     "phrase": "एक और क़ानून आया",
+     "action": "Britain smirks",
+     "frame": 13887,
+     "sec": 231.455,
+     "wordIndex": 603
+    },
+    {
+     "phrase": "Declaratory Act",
+     "action": "Paper3D doc_declaratory_act_1766",
+     "frame": 13988,
+     "sec": 233.144,
+     "wordIndex": 607
+    },
+    {
+     "phrase": "in all cases whatsoever",
+     "action": "Highlighter on the phrase",
+     "frame": 14297,
+     "sec": 238.293,
+     "wordIndex": 618
+    }
+   ],
+   "from": 13485,
+   "to": 14698
+  },
+  {
+   "id": "S10_townshend",
+   "title": "Townshend Acts + troops",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "Townshend Acts",
+     "action": "doc_townshend_list slides in",
+     "frame": 14698,
+     "sec": 244.981,
+     "wordIndex": 636
+    },
+    {
+     "phrase": "काँच",
+     "action": "Glass row: TAXED pops",
+     "frame": 14830,
+     "sec": 247.182,
+     "wordIndex": 638
+    },
+    {
+     "phrase": "paint",
+     "action": "Paint row: TAXED pops",
+     "frame": 14873,
+     "sec": 247.884,
+     "wordIndex": 639
+    },
+    {
+     "phrase": "काग़ज़",
+     "action": "Paper row: TAXED pops",
+     "frame": 14897,
+     "sec": 248.299,
+     "wordIndex": 640
+    },
+    {
+     "phrase": "और चाय पर tax",
+     "action": "Tea row: TAXED pops",
+     "frame": 14924,
+     "sec": 248.747,
+     "wordIndex": 641
+    },
+    {
+     "phrase": "फिर से ग़ुस्सा",
+     "action": "Colonies glare",
+     "frame": 15005,
+     "sec": 250.087,
+     "wordIndex": 645
+    },
+    {
+     "phrase": "Boston में अपनी फ़ौज",
+     "action": "Redcoat squad SlideIn onto Boston",
+     "frame": 15204,
+     "sec": 253.409,
+     "wordIndex": 655
+    }
+   ],
+   "from": 14698,
+   "to": 15355
+  },
+  {
+   "id": "S11_massacre",
+   "title": "Boston Massacre 1770",
+   "style": "map → King Street plate",
+   "events": [
+    {
+     "phrase": "पाँच March",
+     "action": "IrisBlob → MapPin \"Boston / 5 March 1770\"",
+     "frame": 15355,
+     "sec": 255.926,
+     "wordIndex": 661
+    },
+    {
+     "phrase": "ठंडी रात",
+     "action": "ZoomBlurIn to bg_king_street_boston_1770_night (ParallaxPlate, snow)",
+     "frame": 15555,
+     "sec": 259.252,
+     "wordIndex": 669
+    },
+    {
+     "phrase": "धक्का-मुक्की",
+     "action": "Crowd vs redcoats, crowd talk loop (crowd_angry_loop.wav)",
+     "frame": 15705,
+     "sec": 261.762,
+     "wordIndex": 675
+    },
+    {
+     "phrase": "बर्फ़ के गोले",
+     "action": "Fling snowball + ImpactPuff on a soldier",
+     "frame": 15771,
+     "sec": 262.854,
+     "wordIndex": 676
+    },
+    {
+     "phrase": "गोली चल गई",
+     "action": "Staggered musket raise → volley, MuzzleSmoke, Shake (musket_volley.wav)",
+     "frame": 15901,
+     "sec": 265.027,
+     "wordIndex": 681
+    },
+    {
+     "phrase": "पाँच लोग मारे गए",
+     "action": "Five candles light one by one; music drops",
+     "frame": 15972,
+     "sec": 266.214,
+     "wordIndex": 684
+    },
+    {
+     "phrase": "Crispus Attucks",
+     "action": "attucks puppet, respectful hold, name card",
+     "frame": 16120,
+     "sec": 268.676,
+     "wordIndex": 692
+    },
+    {
+     "phrase": "पहला शहीद",
+     "action": "Slow push-in, no SFX",
+     "frame": 16309,
+     "sec": 271.818,
+     "wordIndex": 699
+    },
+    {
+     "phrase": "Paul Revere ने इसकी एक तस्वीर",
+     "action": "Paper3D pd_revere_bloody_massacre_1770 spins in",
+     "frame": 16424,
+     "sec": 273.734,
+     "wordIndex": 704
+    },
+    {
+     "phrase": "असल घटना इतनी सीधी नहीं",
+     "action": "Split: engraving vs chaotic scene",
+     "frame": 16812,
+     "sec": 280.204,
+     "wordIndex": 723
+    },
+    {
+     "phrase": "viral post",
+     "action": "Like/share icons burst from the engraving (gag)",
+     "frame": 17200,
+     "sec": 286.681,
+     "wordIndex": 741
+    }
+   ],
+   "from": 15355,
+   "to": 17487
+  },
+  {
+   "id": "S12_adams",
+   "title": "John Adams defends the soldiers",
+   "style": "courtroom plate",
+   "events": [
+    {
+     "phrase": "John Adams ने लड़ा",
+     "action": "bg_courtroom_1765, johnAdams puppet talking",
+     "frame": 17487,
+     "sec": 291.458,
+     "wordIndex": 752
+    },
+    {
+     "phrase": "दूसरे President",
+     "action": "Small portrait card \"2nd President\"",
+     "frame": 17651,
+     "sec": 294.2,
+     "wordIndex": 761
+    },
+    {
+     "phrase": "बरी हो गए",
+     "action": "Soldier puppets mood smile, gavel tap",
+     "frame": 17832,
+     "sec": 297.215,
+     "wordIndex": 767
+    }
+   ],
+   "from": 17487,
+   "to": 18006
+  },
+  {
+   "id": "S13_tea",
+   "title": "Tea Act → Boston Tea Party",
+   "style": "parchment → wharf plate",
+   "events": [
+    {
+     "phrase": "Tea Act",
+     "action": "doc_townshend_list again: strike Glass, Paint, Paper; MarkerLoop on Tea",
+     "frame": 18006,
+     "sec": 300.101,
+     "wordIndex": 775
+    },
+    {
+     "phrase": "East India Company",
+     "action": "Camera swings to India; Bengal pulses",
+     "frame": 18059,
+     "sec": 300.993,
+     "wordIndex": 777
+    },
+    {
+     "phrase": "चाय बिक नहीं रही",
+     "action": "Tea chests pile up in a warehouse icon",
+     "frame": 18351,
+     "sec": 305.866,
+     "wordIndex": 792
+    },
+    {
+     "phrase": "चाय सस्ती भी हो गई",
+     "action": "Price tag drops",
+     "frame": 18653,
+     "sec": 310.885,
+     "wordIndex": 807
+    },
+    {
+     "phrase": "उसूल की है",
+     "action": "Colonist crosses arms (mood smug)",
+     "frame": 18948,
+     "sec": 315.81,
+     "wordIndex": 820
+    },
+    {
+     "phrase": "सोलह December",
+     "action": "Date card \"16 December 1773\" → wharf plate (night)",
+     "frame": 19019,
+     "sec": 316.992,
+     "wordIndex": 823
+    },
+    {
+     "phrase": "भेस बदलकर",
+     "action": "teaPartyDisguised ×3 pop in",
+     "frame": 19232,
+     "sec": 320.543,
+     "wordIndex": 832
+    },
+    {
+     "phrase": "तीन जहाज़ों पर चढ़े",
+     "action": "Puppets hop up the gangplank",
+     "frame": 19282,
+     "sec": 321.374,
+     "wordIndex": 834
+    },
+    {
+     "phrase": "Dartmouth",
+     "action": "Ship label Dartmouth",
+     "frame": 19391,
+     "sec": 323.196,
+     "wordIndex": 838
+    },
+    {
+     "phrase": "Eleanor",
+     "action": "Ship label Eleanor",
+     "frame": 19449,
+     "sec": 324.15,
+     "wordIndex": 839
+    },
+    {
+     "phrase": "Beaver",
+     "action": "Ship label Beaver",
+     "frame": 19501,
+     "sec": 325.033,
+     "wordIndex": 841
+    },
+    {
+     "phrase": "तीन सौ बयालीस पेटियाँ",
+     "action": "Counter to 342 while tea_chest Flings into the water (splash ×N)",
+     "frame": 19590,
+     "sec": 326.505,
+     "wordIndex": 845
+    },
+    {
+     "phrase": "समुद्र में फेंक दीं",
+     "action": "Title \"Boston Tea Party / 16 December 1773\"",
+     "frame": 19698,
+     "sec": 328.315,
+     "wordIndex": 850
+    }
+   ],
+   "from": 18006,
+   "to": 19806
+  },
+  {
+   "id": "S14_intolerable",
+   "title": "Intolerable Acts + First Congress",
+   "style": "flat map → satellite",
+   "events": [
+    {
+     "phrase": "Britain भड़क गया",
+     "action": "Britain slides in furious (rage shake)",
+     "frame": 19806,
+     "sec": 330.101,
+     "wordIndex": 854
+    },
+    {
+     "phrase": "Intolerable Acts",
+     "action": "Paper3D doc_intolerable_acts",
+     "frame": 19898,
+     "sec": 331.648,
+     "wordIndex": 857
+    },
+    {
+     "phrase": "Boston का port बंद",
+     "action": "StampSlam stamp_closed on Boston harbour",
+     "frame": 19997,
+     "sec": 333.295,
+     "wordIndex": 860
+    },
+    {
+     "phrase": "पाँच September",
+     "action": "Date card \"5 September 1774\"",
+     "frame": 20145,
+     "sec": 335.766,
+     "wordIndex": 866
+    },
+    {
+     "phrase": "First Continental Congress",
+     "action": "ColonyFill orange for 12 colonies (Georgia stays blue); MapTitle",
+     "frame": 20364,
+     "sec": 339.406,
+     "wordIndex": 874
+    },
+    {
+     "phrase": "छप्पन delegates",
+     "action": "Counter 56 + delegate chibis converge on Philadelphia",
+     "frame": 20575,
+     "sec": 342.931,
+     "wordIndex": 880
+    }
+   ],
+   "from": 19806,
+   "to": 20649
+  },
+  {
+   "id": "S15_lexington",
+   "title": "Lexington & Concord 1775",
+   "style": "night map → Lexington plate → black",
+   "events": [
+    {
+     "phrase": "अठारह April",
+     "action": "Night map, lantern_pair PopIn on Boston (church_bell.wav)",
+     "frame": 20649,
+     "sec": 344.158,
+     "wordIndex": 882
+    },
+    {
+     "phrase": "Concord में रखे हथियार",
+     "action": "Route Boston → Concord draws",
+     "frame": 20876,
+     "sec": 347.934,
+     "wordIndex": 891
+    },
+    {
+     "phrase": "Paul Revere घोड़े पर",
+     "action": "paul_revere_on_horse rides along the route (horse_gallop.wav)",
+     "frame": 21046,
+     "sec": 350.783,
+     "wordIndex": 898
+    },
+    {
+     "phrase": "myth भी तोड़ दो",
+     "action": "Myth card \"The British are coming!\" PopIn",
+     "frame": 21230,
+     "sec": 353.839,
+     "wordIndex": 907
+    },
+    {
+     "phrase": "अंग्रेज़ ही मानते थे",
+     "action": "NeonIcon red X over the myth card",
+     "frame": 21566,
+     "sec": 359.437,
+     "wordIndex": 926
+    },
+    {
+     "phrase": "उन्नीस April की सुबह",
+     "action": "Dawn plate bg_lexington_green_1775_dawn, militia vs redcoats, long hold",
+     "frame": 21680,
+     "sec": 361.343,
+     "wordIndex": 930
+    },
+    {
+     "phrase": "एक गोली चली",
+     "action": "ONE MuzzleSmoke + Shake (musket_single.wav), music cuts",
+     "frame": 21869,
+     "sec": 364.494,
+     "wordIndex": 937
+    },
+    {
+     "phrase": "आज तक कोई नहीं जानता",
+     "action": "Question mark fades over the smoke",
+     "frame": 22001,
+     "sec": 366.685,
+     "wordIndex": 942
+    },
+    {
+     "phrase": "आठ लोग मारे गए",
+     "action": "Eight markers fade in",
+     "frame": 22151,
+     "sec": 369.191,
+     "wordIndex": 949
+    },
+    {
+     "phrase": "The shot heard round the world",
+     "action": "WordReveal quote, then BlackHold 62 f",
+     "frame": 22386,
+     "sec": 373.11,
+     "wordIndex": 961
+    }
+   ],
+   "from": 20649,
+   "to": 22533
+  },
+  {
+   "id": "S16_washington",
+   "title": "Second Congress, Washington, Bunker Hill, Olive Branch",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "लौटने का रास्ता बंद",
+     "action": "Map back, slow push",
+     "frame": 22533,
+     "sec": 375.555,
+     "wordIndex": 968
+    },
+    {
+     "phrase": "Second Continental Congress",
+     "action": "MapTitle \"Second Continental Congress / 10 May 1775\"",
+     "frame": 22778,
+     "sec": 379.646,
+     "wordIndex": 981
+    },
+    {
+     "phrase": "पंद्रह June",
+     "action": "continental puppets cascade across the colonies",
+     "frame": 22939,
+     "sec": 382.327,
+     "wordIndex": 986
+    },
+    {
+     "phrase": "सेनापति बना दिया गया",
+     "action": "washington (1775) puppet + ArrowLabel \"George Washington\"",
+     "frame": 23085,
+     "sec": 384.757,
+     "wordIndex": 994
+    },
+    {
+     "phrase": "इक्कीस साल पहले",
+     "action": "Flash-back inset: young Washington from S04",
+     "frame": 23202,
+     "sec": 386.703,
+     "wordIndex": 999
+    },
+    {
+     "phrase": "Bunker Hill",
+     "action": "bg_breeds_hill_1775 plate, many MuzzleSmoke",
+     "frame": 23401,
+     "sec": 390.02,
+     "wordIndex": 1008
+    },
+    {
+     "phrase": "एक हज़ार से ज़्यादा",
+     "action": "Counter \"1,000+ killed or wounded\"",
+     "frame": 23578,
+     "sec": 392.967,
+     "wordIndex": 1017
+    },
+    {
+     "phrase": "Olive Branch Petition",
+     "action": "Washington holds doc_olive_branch_scroll (\"Truce?\")",
+     "frame": 24010,
+     "sec": 400.171,
+     "wordIndex": 1037
+    },
+    {
+     "phrase": "राजा ने उसे पढ़ा तक नहीं",
+     "action": "Camera follows the scroll across the Atlantic; king_george_iii tears it (PaperTear)",
+     "frame": 24108,
+     "sec": 401.805,
+     "wordIndex": 1040
+    }
+   ],
+   "from": 22533,
+   "to": 24244
+  },
+  {
+   "id": "S17_common_sense",
+   "title": "Common Sense 1776",
+   "style": "print-shop plate → map",
+   "events": [
+    {
+     "phrase": "दस January",
+     "action": "Date card \"10 January 1776\"",
+     "frame": 24244,
+     "sec": 404.077,
+     "wordIndex": 1046
+    },
+    {
+     "phrase": "Common Sense",
+     "action": "Paper3D pd_common_sense_titlepage_1776",
+     "frame": 24473,
+     "sec": 407.891,
+     "wordIndex": 1056
+    },
+    {
+     "phrase": "छोटा सा द्वीप",
+     "action": "Map: tiny Britain vs huge continent (scale comparison)",
+     "frame": 24658,
+     "sec": 410.974,
+     "wordIndex": 1063
+    },
+    {
+     "phrase": "और आग लग गई",
+     "action": "Copies Fling across the colonies; colonies glow",
+     "frame": 24929,
+     "sec": 415.495,
+     "wordIndex": 1074
+    }
+   ],
+   "from": 24244,
+   "to": 24998
+  },
+  {
+   "id": "S18_july",
+   "title": "July 2 vote, July 4 Declaration",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "दो July",
+     "action": "TimelineRuler Jul 1 / Jul 2 / Jul 3",
+     "frame": 24998,
+     "sec": 416.645,
+     "wordIndex": 1078
+    },
+    {
+     "phrase": "बारह colonies ने हाँ",
+     "action": "ballot_raised_fist pops on 12 colonies (New York none)",
+     "frame": 25179,
+     "sec": 419.651,
+     "wordIndex": 1087
+    },
+    {
+     "phrase": "John Adams ने अपनी पत्नी",
+     "action": "johnAdams puppet writing (quill_scratch.wav)",
+     "frame": 25301,
+     "sec": 421.698,
+     "wordIndex": 1092
+    },
+    {
+     "phrase": "दो July को जश्न",
+     "action": "Speech-bubble \"2 July!\"",
+     "frame": 25468,
+     "sec": 424.472,
+     "wordIndex": 1101
+    },
+    {
+     "phrase": "दो दिन से चूक गए",
+     "action": "Timeline slides to Jul 4 (gag: Adams shrugs)",
+     "frame": 25690,
+     "sec": 428.175,
+     "wordIndex": 1110
+    },
+    {
+     "phrase": "Declaration of Independence",
+     "action": "FlagFill Grand Union again (callback), DropIn declaration",
+     "frame": 25849,
+     "sec": 430.832,
+     "wordIndex": 1119
+    },
+    {
+     "phrase": "तैंतीस साल के Thomas Jefferson",
+     "action": "jefferson puppet peeks from behind the document",
+     "frame": 26038,
+     "sec": 433.982,
+     "wordIndex": 1126
+    },
+    {
+     "phrase": "All men are created equal",
+     "action": "ZoomBlurIn to pd_declaration_engrossed macro; Highlighter (29 chars)",
+     "frame": 26267,
+     "sec": 437.787,
+     "wordIndex": 1135
+    }
+   ],
+   "from": 24998,
+   "to": 26572
+  },
+  {
+   "id": "S19_monticello",
+   "title": "The twist — Monticello",
+   "style": "porch plate → wide",
+   "events": [
+    {
+     "phrase": "उसी वक़्त",
+     "action": "Whip to bg_monticello_porch_1776: martha + patsy",
+     "frame": 26572,
+     "sec": 442.873,
+     "wordIndex": 1147
+    },
+    {
+     "phrase": "दो सौ लोग ग़ुलाम",
+     "action": "Slow pull-back to bg_monticello_1776 with enslaved puppets; music drops, NO gag",
+     "frame": 26731,
+     "sec": 445.52,
+     "wordIndex": 1154
+    },
+    {
+     "phrase": "पाँच लाख लोगों",
+     "action": "The pinned counter from S03 returns: \"5,00,000\"",
+     "frame": 26862,
+     "sec": 447.707,
+     "wordIndex": 1161
+    },
+    {
+     "phrase": "बहुत दूर था",
+     "action": "Hold 200 f",
+     "frame": 27141,
+     "sec": 452.35,
+     "wordIndex": 1176
+    }
+   ],
+   "from": 26572,
+   "to": 27228
+  },
+  {
+   "id": "S20_payoff_close",
+   "title": "Answer + Part 2",
+   "style": "parchment",
+   "events": [
+    {
+     "phrase": "तो सत्रह सौ तिरसठ में",
+     "action": "Recap: icons for every law pop along a timeline (20 f apart)",
+     "frame": 27228,
+     "sec": 453.805,
+     "wordIndex": 1179
+    },
+    {
+     "phrase": "किसी एक tax से नहीं",
+     "action": "Icons fade; one word \"फ़ैसला\" in the centre",
+     "frame": 27544,
+     "sec": 459.076,
+     "wordIndex": 1195
+    },
+    {
+     "phrase": "फ़ैसला कौन करेगा",
+     "action": "Crown vs colonies tug-of-war",
+     "frame": 27754,
+     "sec": 462.576,
+     "wordIndex": 1206
+    },
+    {
+     "phrase": "और क़रीब आ गईं",
+     "action": "Colonies slide together, NeonOutline as one shape",
+     "frame": 28180,
+     "sec": 469.67,
+     "wordIndex": 1225
+    },
+    {
+     "phrase": "Franklin का साँप",
+     "action": "Join, or Die snake pieces snap together into one",
+     "frame": 28296,
+     "sec": 471.615,
+     "wordIndex": 1231
+    },
+    {
+     "phrase": "जीतना नहीं",
+     "action": "War map: red vs blue, mini flags pop",
+     "frame": 28709,
+     "sec": 478.495,
+     "wordIndex": 1249
+    },
+    {
+     "phrase": "France इस जंग में",
+     "action": "Bourbon flag pops over France",
+     "frame": 29057,
+     "sec": 484.298,
+     "wordIndex": 1264
+    },
+    {
+     "phrase": "अगले part में",
+     "action": "Part 2 teaser card",
+     "frame": 29202,
+     "sec": 486.711,
+     "wordIndex": 1272
+    },
+    {
+     "phrase": "subscribe कर लो",
+     "action": "Subscribe button + end card",
+     "frame": 29397,
+     "sec": 489.961,
+     "wordIndex": 1283
+    }
+   ],
+   "from": 27228,
+   "to": 29520
+  }
+ ]
+}

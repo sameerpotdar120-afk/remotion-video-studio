@@ -7,7 +7,7 @@ files = [
     'src/lib/map/geo.ts', 'src/lib/map/data.ts', 'src/lib/map/MapStage.tsx', 'src/lib/map/layers.tsx',
     'src/lib/fx/motion.tsx', 'src/lib/fx/transitions.tsx', 'src/lib/fx/text.tsx', 'src/lib/fx/particles.tsx', 'src/lib/fx/flags.tsx', 'src/lib/fx/depth.tsx', 'src/lib/three/Map3D.tsx',
     'src/lib/character/Face.tsx', 'src/lib/character/Puppet.tsx', 'src/lib/character/MapCharacter.tsx', 'src/lib/character/rigs.ts',
-    'src/scenes/Demos.tsx', 'scripts/build_colonies.mjs',
+    'src/vo/cues.ts', 'src/scenes/Animatic.tsx', 'src/scenes/Demos.tsx', 'scripts/build_colonies.mjs',
 ]
 out = [(root / 'docs/_code_doc_header.md').read_text()]
 for i, f in enumerate(files, 1):

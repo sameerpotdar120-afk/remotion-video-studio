@@ -92,10 +92,18 @@ the option for the whole film in minutes.
 </AbsoluteFill>
 ```
 
-**Syncing to the VO:** export the ElevenLabs audio with word timestamps (ElevenLabs "with timestamps"
-output, or run Whisper on the WAV). Cue frame = word start time (s) × 60. Every `start`, `at`,
-`hits` and `talk` value in a scene comes from that list, so stamps land on the exact word,
-like the reference.
+**Syncing to the VO (DONE for this video):** the ElevenLabs VO was aligned word-by-word
+(`scripts/vo/align_vo.py`: pause detection + Whisper number anchors + dynamic programming over the exact
+script). Result: `scripts/vo/vo_timeline.json` (1,286 words with start/end) → `src/vo/cues.json`
+(20 scenes, 163 cues) → `docs/VO_CUE_SHEET.md`. Scenes read cues by phrase, never by hand-typed numbers:
+
+```tsx
+const c = scene('S11_massacre');            // from src/vo/cues.ts
+<Sequence from={c.from} durationInFrames={c.duration}>
+  <StampSlam start={c.at('बर्फ़ के गोले')} … />
+</Sequence>
+```
+`Full-Animatic` plays the real VO with every scene/cue on its frame — preview it in Studio.
 
 **Map camera:** `{ frame, lon, lat, span }`, where `span` is the degrees of longitude visible
 across the frame. Useful presets:

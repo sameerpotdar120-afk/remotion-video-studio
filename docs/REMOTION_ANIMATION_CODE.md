@@ -92,10 +92,18 @@ the option for the whole film in minutes.
 </AbsoluteFill>
 ```
 
-**Syncing to the VO:** export the ElevenLabs audio with word timestamps (ElevenLabs "with timestamps"
-output, or run Whisper on the WAV). Cue frame = word start time (s) × 60. Every `start`, `at`,
-`hits` and `talk` value in a scene comes from that list, so stamps land on the exact word,
-like the reference.
+**Syncing to the VO (DONE for this video):** the ElevenLabs VO was aligned word-by-word
+(`scripts/vo/align_vo.py`: pause detection + Whisper number anchors + dynamic programming over the exact
+script). Result: `scripts/vo/vo_timeline.json` (1,286 words with start/end) → `src/vo/cues.json`
+(20 scenes, 163 cues) → `docs/VO_CUE_SHEET.md`. Scenes read cues by phrase, never by hand-typed numbers:
+
+```tsx
+const c = scene('S11_massacre');            // from src/vo/cues.ts
+<Sequence from={c.from} durationInFrames={c.duration}>
+  <StampSlam start={c.at('बर्फ़ के गोले')} … />
+</Sequence>
+```
+`Full-Animatic` plays the real VO with every scene/cue on its frame — preview it in Studio.
 
 **Map camera:** `{ frame, lon, lat, span }`, where `span` is the degrees of longitude visible
 across the frame. Useful presets:
@@ -258,6 +266,8 @@ import { FPS, H, W } from './lib/constants';
 import { loadFonts } from './lib/fonts';
 import { DemoBritain, DemoMap3D, DemoMapHook, DemoVolley } from './scenes/Demos';
 import { GrandUnion, UnionFlag1707 } from './lib/fx/flags';
+import { Animatic } from './scenes/Animatic';
+import { TOTAL_FRAMES } from './vo/cues';
 
 loadFonts();
 
@@ -265,6 +275,7 @@ export const RemotionRoot: React.FC = () => {
   return (
     <>
       {/* 4K 60 fps long-form (16:9) */}
+      <Composition id="Full-Animatic" component={Animatic} durationInFrames={TOTAL_FRAMES} fps={FPS} width={W} height={H} />
       <Composition id="Demo-MapHook" component={DemoMapHook} durationInFrames={480} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Britain" component={DemoBritain} durationInFrames={360} fps={FPS} width={W} height={H} />
       <Composition id="Demo-Map3D" component={DemoMap3D} durationInFrames={480} fps={FPS} width={W} height={H} />
@@ -2848,7 +2859,88 @@ export const RIGS = {
 } satisfies Record<string, Rig>;
 ```
 
-### 7.23 `src/scenes/Demos.tsx`
+### 7.23 `src/vo/cues.ts`
+
+```ts
+import cuesJson from './cues.json';
+
+/**
+ * Typed access to the VO cue sheet (src/vo/cues.json, built by scripts/vo/build_cues.py from the
+ * aligned ElevenLabs VO). Scenes NEVER hard-code timings: they ask for the frame of a phrase.
+ *
+ *   const c = scene('S11_massacre');
+ *   <Sequence from={c.from} durationInFrames={c.duration}> … start={c.at('गोली चल गई')} …
+ */
+export type CueEvent = { phrase: string; action: string; frame: number; sec: number; wordIndex: number };
+export type SceneCues = { id: string; title: string; style: string; from: number; to: number; events: CueEvent[] };
+
+const data = cuesJson as { fps: number; totalFrames: number; scenes: SceneCues[] };
+export const TOTAL_FRAMES = data.totalFrames;
+export const SCENES = data.scenes;
+
+export const scene = (id: string) => {
+  const s = SCENES.find((x) => x.id === id);
+  if (!s) throw new Error(`Unknown scene ${id}`);
+  return {
+    ...s,
+    duration: s.to - s.from,
+    /** LOCAL frame (inside the scene's <Sequence>) of the cue whose phrase matches. */
+    at: (phrase: string) => {
+      const e = s.events.find((x) => x.phrase === phrase);
+      if (!e) throw new Error(`Cue "${phrase}" not in ${id}`);
+      return e.frame - s.from;
+    },
+  };
+};
+```
+
+### 7.24 `src/scenes/Animatic.tsx`
+
+```tsx
+import React from 'react';
+import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from 'remotion';
+import { C, FONTS, H, W } from '../lib/constants';
+import { SCENES } from '../vo/cues';
+
+/**
+ * Full-length ANIMATIC: the real VO + every scene on its exact frames + each cue flashing as it fires.
+ * Use it to check sync in Remotion Studio before assets exist; real scenes replace each <Sequence> body.
+ */
+const SceneCard: React.FC<{ idx: number }> = ({ idx }) => {
+  const s = SCENES[idx];
+  const frame = useCurrentFrame(); // local to the scene
+  const active = [...s.events].reverse().find((e) => frame >= e.frame - s.from);
+  return (
+    <AbsoluteFill style={{ background: idx % 2 ? '#1E2B33' : '#26343D', color: '#fff', padding: 160, fontFamily: FONTS.serif }}>
+      <div style={{ fontSize: 70, color: C.dateYellow }}>{s.id}</div>
+      <div style={{ fontSize: 120, fontWeight: 700, marginTop: 20 }}>{s.title}</div>
+      <div style={{ fontSize: 56, opacity: 0.7, marginTop: 12 }}>{s.style}</div>
+      {active && (
+        <div style={{ position: 'absolute', left: 160, right: 160, bottom: 220 }}>
+          <div style={{ fontFamily: FONTS.hindi, fontSize: 110, color: C.dateYellow }}>“{active.phrase}”</div>
+          <div style={{ fontSize: 64, marginTop: 24, lineHeight: 1.25 }}>{active.action}</div>
+        </div>
+      )}
+      <div style={{ position: 'absolute', right: 160, top: 160, fontSize: 60, opacity: 0.6 }}>
+        f {s.from + frame} · {((s.from + frame) / 60).toFixed(2)} s
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+export const Animatic: React.FC = () => (
+  <AbsoluteFill style={{ width: W, height: H }}>
+    <Audio src={staticFile('assets/vo/vo_master.mp3')} />
+    {SCENES.map((s, i) => (
+      <Sequence key={s.id} from={s.from} durationInFrames={s.to - s.from} name={s.id}>
+        <SceneCard idx={i} />
+      </Sequence>
+    ))}
+  </AbsoluteFill>
+);
+```
+
+### 7.25 `src/scenes/Demos.tsx`
 
 ```tsx
 import React, { useMemo } from 'react';
@@ -3063,7 +3155,7 @@ export const DemoMap3D: React.FC = () => (
 );
 ```
 
-### 7.24 `scripts/build_colonies.mjs`
+### 7.26 `scripts/build_colonies.mjs`
 
 ```js
 // Builds public/maps/*.json from public-domain data:
