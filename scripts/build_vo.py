@@ -26,6 +26,6 @@ for i in range(1, len(parts), 4):
     out.append(f"{title} ({fmt(cur)}–{fmt(cur + secs)})"); out.append(body); cur += secs
 open(p, 'w').write(''.join(out))
 txt = '\n\n'.join(re.sub(r'^"[^"\s:]+(?: [^"\s:]+)?: ', '"', l) for l in allvo)
-open(p.replace('-script.md', '-elevenlabs.txt'), 'w').write(txt + '\n')
+open(p.replace('-script', '').replace('.md', '-elevenlabs.txt'), 'w').write(txt + '\n')
 w = len(re.findall(r'\S+', txt))
 print(f"VO words {w}  runtime @150wpm {fmt(cur)}  @135wpm {fmt(w / 135 * 60)}")
