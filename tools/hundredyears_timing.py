@@ -176,7 +176,7 @@ def main() -> None:
             caps.append([round(start, 3), " ".join(chunk)])
             chunk = []
     out = {"source": "voiceover" if len(sys.argv) > 1 else "estimate", "duration": round(end + 0.7, 2), "cues": cues, "caps": caps}
-    (ROOT / "src" / "thailand" / "edit" / "timing.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
+    (ROOT / "src" / "hundredyears" / "edit" / "timing.json").write_text(json.dumps(out, ensure_ascii=False, indent=1))
     print(out["source"], "duration", out["duration"], "cues", len(cues), "caps", len(caps))
     print(cues)
 
