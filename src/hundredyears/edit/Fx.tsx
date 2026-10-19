@@ -213,7 +213,7 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Callout t={t} t0={C.rouen11 - 0.1} t1={CUT.square[0] + 0.1} text="Rouen" sub="1431" pin={rou} dx={-220} dy={-180} rot={-12} />
       {/* line 12–13 after the burn: banners, the saint, 1453, the card, the poll */}
       <At t0={BURN[0] + 0.6} t1={DURATION_S} x={mid[0]} y={mid[1]} w={1080} h={1920} scale={0.9}><H21Banners flee={rel(C.n1453_12 - 0.4, BURN[0] + 0.6)} /></At>
-      <At t0={C.ummeed12 - 0.5} t1={DURATION_S} x={mid[0] + 40} y={mid[1] - 60} w={900} h={1300} ay={1} scale={0.5}><H22Saint halo={rel(C.saint13, C.ummeed12 - 0.5)} /></At>
+      <At t0={C.ummeed12 - 0.5} t1={DURATION_S} x={mid[0] + 40} y={mid[1] + 40} w={900} h={1300} ay={1} scale={0.45}><H22Saint halo={rel(C.saint13, C.ummeed12 - 0.5)} /></At>
       <Big t={t} t0={C.n1453_12 - 0.05} t1={C.church13} text={<><span style={{ color: COL.gold }}>Hundred Years' War</span><br />1337–1453</>} x={540} y={420} size={92} font={NUM} rot={-3} />
       <Chip t={t} t0={C.church13 + 0.1} t1={C.n500_13 + 0.2} text="1431 🔥" x={540} y={330} color="#FF7A3A" size={70} font={NUM} rot={-3} />
       <Chip t={t} t0={C.n500_13 + 0.2} t1={DURATION_S} text="1920 ✨ SAINT" x={540} y={330} color={COL.gold} size={70} font={NUM} rot={-3} />
