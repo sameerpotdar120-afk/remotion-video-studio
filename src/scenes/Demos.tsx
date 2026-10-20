@@ -188,9 +188,9 @@ export const colonyD = colonyPath;
  * camera tilts from top-down into a dramatic oblique and slowly orbits.
  * Render: npx remotion render src/index.ts Demo-Map3D out/map3d.mp4 --gl=angle   (or --gl=swangle on CPU)
  */
-export const DemoMap3D: React.FC<{ look?: 'classic' | 'parchment' | 'relief' | 'flat' }> = ({ look = 'classic' }) => (
+export const DemoMap3D: React.FC<{ look?: 'classic' | 'parchment' | 'relief' | 'flat'; graded?: boolean }> = ({ look = 'classic', graded = true }) => (
   <AbsoluteFill>
-    <Grade>
+    <Grade look={look === 'classic' || !graded ? undefined : look} contrast={look !== 'classic' && !graded ? 1 : undefined} saturate={look !== 'classic' && !graded ? 1 : undefined}>
       <Map3D
         width={W}
         heightPx={H}

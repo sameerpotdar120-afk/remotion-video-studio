@@ -182,12 +182,104 @@ export const Finish: React.FC<{ grain?: number; vignette?: number; warmth?: numb
 };
 
 /** Grade wrapper: apply to the scene content (NOT to <Finish/>). */
-export const Grade: React.FC<{ children: React.ReactNode; contrast?: number; saturate?: number; brightness?: number }> = ({
-  children,
-  contrast = 1.06,
-  saturate = 1.08,
-  brightness = 1.0,
-}) => <AbsoluteFill style={{ filter: `contrast(${contrast}) saturate(${saturate}) brightness(${brightness})` }}>{children}</AbsoluteFill>;
+export type GradeLook = 'satellite' | 'parchment' | 'relief' | 'flat' | 'night';
+
+/**
+ * Per-look grade (docs/PROMPTS_REMOTION_MISSING.md R4.3). The parchment/relief maps are already baked to the
+ * reference's measured saturation and contrast, so their presets stay neutral there and only add texture.
+ *   split: 0..1 strength of the teal-shadow / warm-highlight curve · vignette: corner darkening
+ *   paper: multiply strength of the paper-grain tile over everything (maps, characters, titles)
+ */
+// `burn` = edge darkening colour: parchment looks burn to warm sepia (aged paper), not black (camera vignette)
+const LOOK_GRADE: Record<
+  GradeLook,
+  { contrast: number; saturate: number; brightness: number; split: number; vignette: number; burn: string; paper: number }
+> = {
+  parchment: { contrast: 1.04, saturate: 1.15, brightness: 1.0, split: 0.7, vignette: 0.1, burn: '110,72,30', paper: 0.18 },
+  relief: { contrast: 1.04, saturate: 1.12, brightness: 1.0, split: 0.7, vignette: 0.1, burn: '110,72,30', paper: 0.18 },
+  flat: { contrast: 1.05, saturate: 1.0, brightness: 1.0, split: 0.4, vignette: 0.09, burn: '0,0,0', paper: 0 },
+  satellite: { contrast: 1.1, saturate: 1.18, brightness: 1.0, split: 0.6, vignette: 0.15, burn: '0,0,0', paper: 0 },
+  night: { contrast: 1.05, saturate: 0.8, brightness: 0.45, split: 1.0, vignette: 0.3, burn: '0,0,0', paper: 0 },
+};
+
+/** Teal shadows / warm highlights as per-channel curves; strength 0 = identity. */
+const splitTables = (k: number) => {
+  const curve = (lo: number, hi: number) => [0, 0.25 + lo * k, 0.5, 0.75 + hi * k, 1].map((v) => Math.min(1, Math.max(0, v)).toFixed(4)).join(' ');
+  return { r: curve(-0.03, 0.025), g: curve(-0.005, 0.005), b: curve(0.03, -0.03) };
+};
+
+export const Grade: React.FC<{
+  children: React.ReactNode;
+  contrast?: number;
+  saturate?: number;
+  brightness?: number;
+  /** omit for the original filter-only grade (S01/S02 render unchanged) */
+  look?: GradeLook;
+  /** memorial beats (S11 deaths, S19 Monticello): desaturate and warm over 40 frames */
+  mood?: 'normal' | 'memorial';
+  grain?: number;
+}> = ({ children, contrast, saturate, brightness, look, mood = 'normal', grain = 0.03 }) => {
+  const frame = useCurrentFrame();
+  if (!look) {
+    return (
+      <AbsoluteFill style={{ filter: `contrast(${contrast ?? 1.06}) saturate(${saturate ?? 1.08}) brightness(${brightness ?? 1.0})` }}>
+        {children}
+      </AbsoluteFill>
+    );
+  }
+  const p = LOOK_GRADE[look];
+  const mem = mood === 'memorial' ? ramp(frame, 0, 40, ease.inOut) : 0;
+  const id = `grade-${look}`;
+  const t = splitTables(p.split);
+  const filter = [
+    `url(#${id})`,
+    `contrast(${contrast ?? p.contrast})`,
+    `saturate(${(saturate ?? p.saturate) * (1 - 0.25 * mem)})`,
+    `brightness(${brightness ?? p.brightness})`,
+  ].join(' ');
+  return (
+    <AbsoluteFill>
+      <svg width={0} height={0} style={{ position: 'absolute' }}>
+        <filter id={id} colorInterpolationFilters="sRGB">
+          <feComponentTransfer>
+            <feFuncR type="table" tableValues={t.r} />
+            <feFuncG type="table" tableValues={t.g} />
+            <feFuncB type="table" tableValues={t.b} />
+          </feComponentTransfer>
+        </filter>
+        <filter id={`${id}-grain`} x="0" y="0" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={frame % 997} stitchTiles="stitch" />
+          <feColorMatrix type="saturate" values="0" />
+        </filter>
+      </svg>
+      <AbsoluteFill style={{ filter }}>{children}</AbsoluteFill>
+      {p.paper > 0 && (
+        <AbsoluteFill
+          style={{
+            backgroundImage: `url(${staticFile('assets/textures/paper_grain_tile.jpg')})`,
+            backgroundSize: '1024px 1024px',
+            mixBlendMode: 'multiply',
+            opacity: p.paper,
+          }}
+        />
+      )}
+      {mem > 0 && <AbsoluteFill style={{ background: '#FFB070', mixBlendMode: 'soft-light', opacity: 0.18 * mem }} />}
+      {p.vignette > 0 && (
+        <AbsoluteFill
+          style={{
+            background: `radial-gradient(ellipse 75% 75% at 50% 50%, rgba(${p.burn},0) 55%, rgba(${p.burn},${(p.vignette * 1.9).toFixed(3)}) 100%)`,
+            mixBlendMode: 'multiply',
+          }}
+        />
+      )}
+      {grain > 0 && (
+        <svg width={W} height={H} style={{ position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity: grain * 6 }}>
+          <rect width="100%" height="100%" filter={`url(#${id}-grain)`} />
+        </svg>
+      )}
+    </AbsoluteFill>
+  );
+};
 
 /** One-shot SFX at a frame. Files live in public/assets/sfx (see the asset doc for sources). */
 export const Sfx: React.FC<{ at: number; file: string; volume?: number }> = ({ at, file, volume = 0.9 }) => (
