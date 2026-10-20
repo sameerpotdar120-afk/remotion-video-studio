@@ -29,6 +29,7 @@ export type HeldProp = {
   pivot: [number, number]; // fraction of the prop image where the hand grips
   angle: { at: number; deg: number; dur?: number }[]; // keyframes (musket: -80 shouldered → 0 aimed)
   recoilAt?: number[]; // frames where it kicks back (gun fire)
+  aspect?: number; // image width / height. GPT props are square 2048² canvases (default 1)
 };
 
 export const Puppet: React.FC<{
@@ -168,7 +169,8 @@ export const Puppet: React.FC<{
       const t = frame - r;
       return t >= 0 && t < 8 ? acc + (1 - t / 8) * 16 : acc;
     }, 0);
-    const ph = prop.w * 0.25;
+    // image height from its real proportions: assuming 4:1 put a square musket PNG ~0.4×w below the hand
+    const ph = prop.w / (prop.aspect ?? 1);
     return (
       <Img
         src={prop.src}

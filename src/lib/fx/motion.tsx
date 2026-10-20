@@ -69,7 +69,7 @@ export const StampSlam: React.FC<
           ...abs(p),
           transform: `translate(${shake}px, ${-shake / 2}px) rotate(${p.rotate ?? -8}deg) scale(${s * out})`,
           opacity: interpolate(t, [0, 2], [0.6, 1], clamp) * out,
-          mixBlendMode: 'multiply',
+          objectFit: 'contain', // the box is wide (e.g. 900×360); never squash the stamp art
         }}
       />,
     );

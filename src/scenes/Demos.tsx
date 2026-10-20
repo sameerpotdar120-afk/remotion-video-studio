@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
-import { AbsoluteFill, staticFile } from 'remotion';
+import { AbsoluteFill, staticFile, useCurrentFrame } from 'remotion';
+import type { Feature, Geometry } from 'geojson';
 import { C, H, T, W } from '../lib/constants';
 import { MapStage } from '../lib/map/MapStage';
 import { ColonyFill, DrawLine, MapPin, NeonOutline, RegionEyes, colonyPath } from '../lib/map/layers';
 import { COLONY_IDS, PLACES, PROCLAMATION_LINE, colonies } from '../lib/map/data';
-import { centroidLonLat, pathGen } from '../lib/map/geo';
+import { centroidLonLat, featurePath, pathGen } from '../lib/map/geo';
+import { ease, ramp } from '../lib/easing';
 import { MapTitle, TimelineRuler } from '../lib/fx/text';
 import { ArrowBob, PopIn, Shake, StampSlam, ZoomPunch } from '../lib/fx/motion';
 import { Finish, Grade, ImpactPuff, MuzzleSmoke } from '../lib/fx/particles';
@@ -58,7 +60,7 @@ export const DemoMapHook: React.FC = () => {
                 ]}
                 exit={290}
               />
-              <MapTitle x={W * 0.22} y={H * 0.82} text="Proclamation Line" date="7 October 1763" start={380} mode="type" size={120} align="left" />
+              <MapTitle x={W * 0.6} y={H * 0.84} text="Proclamation Line" date="7 October 1763" start={380} mode="type" size={120} align="left" />
             </>
           }
         />
@@ -72,12 +74,19 @@ export const DemoMapHook: React.FC = () => {
  * DEMO 2 — Britain as a character: slides across the Atlantic, points with the glove,
  * pulls out the Sugar Act (pop + wobble), DEBT stamp slams, zoom-punch onto the paper.
  */
+/** Paint a country's own map shape as sea while it is out walking as a MapCharacter (never two Britains). */
+const HomeHidden: React.FC<{ feature: Feature<Geometry>; start: number }> = ({ feature, start }) => {
+  const frame = useCurrentFrame();
+  const d = useMemo(() => featurePath(feature), [feature]);
+  return <path d={d} fill={C.parchSea} stroke={C.parchSea} strokeWidth={6} opacity={ramp(frame, start, 8, ease.out)} />;
+};
+
 export const DemoBritain: React.FC = () => {
   const gb = useMemo(() => greatBritain1763(), []);
   return (
     <AbsoluteFill>
       <Shake hits={[70]}>
-        <ZoomPunch start={290} to={2.6} focus={[1500, 980]}>
+        <ZoomPunch start={290} to={2.2} focus={[2050, 1100]}>
           <Grade>
             <MapStage
               style="parchment"
@@ -85,7 +94,12 @@ export const DemoBritain: React.FC = () => {
                 { frame: 0, lon: -40, lat: 44, span: 80 },
                 { frame: 330, lon: -42, lat: 44, span: 74 },
               ]}
-              world={<ColonyFill start={0} per={0} color={C.parchColony} />}
+              world={
+                <>
+                  <ColonyFill start={0} per={0} color={C.parchColony} />
+                  <HomeHidden feature={gb} start={10} />
+                </>
+              }
               overlay={
                 <>
                   <MapCharacter
