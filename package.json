@@ -8,15 +8,31 @@
     "render": "remotion render src/index.ts MainComposition out/video.mp4"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.3.0",
     "@remotion/cli": "4.0.523",
+    "@remotion/fonts": "^4.0.523",
+    "@remotion/google-fonts": "^4.0.523",
     "@remotion/media-utils": "4.0.523",
-    "remotion": "4.0.523",
+    "@remotion/motion-blur": "^4.0.523",
+    "@remotion/noise": "^4.0.523",
+    "@remotion/paths": "^4.0.523",
+    "@remotion/shapes": "^4.0.523",
+    "@remotion/three": "^4.0.523",
+    "@remotion/transitions": "^4.0.523",
+    "d3-geo": "^3.1.1",
     "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react-dom": "19.1.0",
+    "remotion": "4.0.523",
+    "three": "^0.178.0",
+    "topojson-client": "^3.1.0"
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.1",
+    "@types/geojson": "^7946.0.16",
     "@types/react": "19.1.8",
     "@types/react-dom": "19.1.6",
+    "@types/three": "^0.178.1",
+    "@types/topojson-client": "^3.1.5",
     "typescript": "5.9.2"
   }
 }
