@@ -1,14 +1,15 @@
 import sys, json, math, os, numpy as np, cv2
 D, OUT = sys.argv[1], sys.argv[2]
 # vertical exaggeration per region (wide views need more to read as relief at 4K)
-VE   = dict(world=18, atlantic=10, europe=8, india=8, eastcoast=5, appalachians=3, massachusetts=2.2)
-DESP = dict(world=None, atlantic=2500, europe=1500, india=1500, eastcoast=600, appalachians=600, massachusetts=250)
+VE   = dict(na3d=7, world=18, atlantic=10, europe=8, india=8, eastcoast=5, appalachians=3, massachusetts=2.2)
+DESP = dict(na3d=1500, world=None, atlantic=2500, europe=1500, india=1500, eastcoast=600, appalachians=600, massachusetts=250)
 CLAMP= dict(massachusetts=(-320, 700))      # Gulf of Maine edge ~ -250 m; Mt Wachusett 611 m is inside the crop
 LAKES = None
+LAKE_MAX_RANK = 6   # Great Lakes 0, Champlain 3, Finger Lakes 4, Lake George 6; drops ~560 minor lakes
 index = {}
-for nm in ["world","atlantic","europe","india","eastcoast","appalachians","massachusetts"]:
+for nm in (sys.argv[5:] or ["world","atlantic","europe","india","eastcoast","appalachians","massachusetts"]):
     m = json.load(open(f"{D}/{nm}_meta.json")); e = np.load(f"{D}/{nm}_elev.npy").astype(np.float32)
-    LAKES = sys.argv[3] if nm in ("eastcoast", "appalachians", "massachusetts", "atlantic") else sys.argv[4]
+    LAKES = sys.argv[3] if nm in ("eastcoast", "appalachians", "massachusetts", "atlantic", "na3d") else sys.argv[4]
     fixed = 0
     if DESP[nm]:
         med = cv2.medianBlur(e, 5); bad = np.abs(e - med) > DESP[nm]; fixed = int(bad.sum()); e[bad] = med[bad]
@@ -19,6 +20,7 @@ for nm in ["world","atlantic","europe","india","eastcoast","appalachians","massa
     # --- water bodies: natural lakes sit ABOVE sea level, so burn Natural Earth lake polygons in ---
     lakes = np.zeros((H, W), np.uint8)
     for f in json.load(open(LAKES))['features']:
+        if (f['properties'].get('scalerank') or 0) > LAKE_MAX_RANK: continue   # keep the map clean like the reference
         g = f['geometry']; polys = [g['coordinates']] if g['type'] == 'Polygon' else g['coordinates']
         for poly in polys:
             rings = [np.array([[(x - m['west']) * ppd, (m['north'] - y) * ppd] for x, y in r], np.float32) for r in poly]
@@ -70,4 +72,5 @@ for nm in ["world","atlantic","europe","india","eastcoast","appalachians","massa
                      verticalExaggerationInHillshade=VE[nm], spikesRepaired=fixed,
                      elevRange=[round(float(e.min())), round(float(e.max()))])
     print(f"{nm:14} {W}x{H}  spikes fixed {fixed:5d}  elev {e.min():8.0f}..{e.max():6.0f} m  land {land.mean()*100:4.1f}%  lakes {lake.mean()*100:4.2f}%  heightmap white = {hmax:.0f} m", flush=True)
-json.dump(index, open(f"{OUT}/regions.json", "w"), indent=1)
+prev = json.load(open(f"{OUT}/regions.json")) if os.path.exists(f"{OUT}/regions.json") else {}
+prev.update(index); json.dump(prev, open(f"{OUT}/regions.json", "w"), indent=1)

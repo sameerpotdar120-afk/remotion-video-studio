@@ -23,6 +23,7 @@ the projection `src/lib/map/geo.ts` uses. Pixel → lon/lat: `lon = west + (x + 
 | `eastcoast` | −86, 28, −64, 48 | 3960×3600 | 180 | the 13 colonies (most map shots) |
 | `appalachians` | −86, 33, −72, 45 | 3360×2880 | 240 | S04 Ohio country tilt, S06 Proclamation Line |
 | `massachusetts` | −72, 41.8, −69.8, 43 | 3840×2095 | 1745.5 | S15 Lexington / Concord / Revere route |
+| `na3d` | −110, 15, −40, 62 | 5600×3760 | 80 | everything the 3D colonies camera sees (`Map3D` terrain) |
 
 Per region:
 
@@ -30,7 +31,8 @@ Per region:
 |---|---|---|
 | `hillshade_<r>.jpg` | Shaded relief, land only | Light from 315° at 40° + fill from 270°. **Flat ground = 204 (0.8)**, so `mix-blend-mode: multiply` darkens shadows and leaves flat land and ocean untouched. Vertical exaggeration per region in `regions.json`. |
 | `oceandepth_<r>.jpg` | Ocean depth | 255 at the coast and on land, falling with √(depth/4000 m) to 0 in the deep ocean. Lakes = 215. This gives the light **continental shelf** band the reference's satellite ocean has. |
-| `landmask_<r>.png` | Land = 255, water = 0 | Lakes are water. Specks below ~0.012°² are removed. |
+| `landmask_<r>.png` | Land = 255, water = 0 | Lakes are water: only Natural Earth lakes of **scalerank ≤ 6** (Great Lakes, Champlain, Finger Lakes, Lake George…), which drops ~560 minor lakes that cluttered the map. Specks below ~0.012°² are removed. |
+| `look_<look>_<r>.jpg` | Baked colour texture per map look (parchment, relief, flat) | `scripts/maps/bake_looks.py`: measured reference colours, relief, ink coast edge, the project's parchment paper grain. Calibrated by measuring renders. |
 | `height_<r>.png` | Heightmap for 3D displacement | `round(sqrt(elev / metresAtWhite) * 255)`, sea and lakes = 0. `metresAtWhite` is in `regions.json`. ≤ 2048 px wide (enough for a displaced mesh). |
 
 Also in `public/maps/`:

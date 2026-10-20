@@ -1,12 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ThreeCanvas } from '@remotion/three';
 import { useThree } from '@react-three/fiber';
-import { spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import { cancelRender, continueRender, delayRender, spring, useCurrentFrame, useVideoConfig } from 'remotion';
 import * as THREE from 'three';
 import type { Feature, Geometry, MultiPolygon, Polygon, Position } from 'geojson';
 import { C, T } from '../constants';
 import { ease } from '../easing';
 import { colonies, land, COLONY_IDS } from '../map/data';
+import { region, type MapLook, type RasterRegion } from '../map/rasters';
 
 /**
  * REAL 3D map (Three.js inside Remotion). Same lon/lat data as the 2D map, so it lines up 1:1.
@@ -159,6 +160,77 @@ const Colony: React.FC<{ feature: Feature<Geometry>; index: number; start: numbe
   );
 };
 
+/**
+ * Map looks (docs/PROMPTS_REMOTION_MISSING.md R4). Colours are the reference's measured on-screen colours;
+ * the land/sea texture is baked from real terrain by scripts/maps/bake_looks.py.
+ */
+// light levels calibrated by measuring renders against the reference (out/ k-means): screen values are
+// gamma-encoded, so a 1.28× brighter result needs ≈1.7× light
+const LOOKS: Record<MapLook, { colony: string; sea: string; haze: string; ambient: number; hemi: number; key: number }> = {
+  // colony input '#467C9A' renders as the measured target C.lookParchColony (#49738A): the warm sky light greys it
+  parchment: { colony: '#467C9A', sea: C.lookParchSea, haze: C.hazeParch, ambient: 1.05, hemi: 0.6, key: 2.1 },
+  relief: { colony: '#467C9A', sea: C.lookParchSea, haze: C.hazeParch, ambient: 0.98, hemi: 0.6, key: 2.3 },
+  flat: { colony: '#3A8CD0', sea: C.lookFlatSea, haze: C.hazeFlat, ambient: 1.1, hemi: 0.6, key: 1.95 },
+};
+
+/** Load a texture once. The caller holds the render until three.js has actually drawn with it. */
+const useTexture = (src: string, color: boolean) => {
+  const [tex, setTex] = useState<THREE.Texture | null>(null);
+  useEffect(() => {
+    new THREE.TextureLoader().load(
+      src,
+      (t) => {
+        t.colorSpace = color ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+        t.anisotropy = 8;
+        setTex(t);
+      },
+      undefined,
+      (e) => cancelRender(e),
+    );
+  }, [src, color]);
+  return tex;
+};
+
+/** Real terrain: the look texture draped on a mesh displaced by the heightmap (same lon/lat grid as everything else). */
+const Terrain: React.FC<{ area: RasterRegion; look: MapLook; relief: number }> = ({ area, look, relief }) => {
+  const r = region(area);
+  // hold the frame until the textured mesh has been rendered once — releasing on load alone let
+  // Remotion capture the frame before React/three had drawn the terrain
+  const [handle] = useState(() => delayRender(`terrain ${area} ${look}`));
+  const released = useRef(false);
+  const map = useTexture(r.look(look), true);
+  const disp = useTexture(r.height, false);
+  const { gl, scene, camera } = useThree();
+  // Remotion drives three frame by frame, so nothing redraws on its own after the textures arrive:
+  // once the textured mesh is committed to the scene, draw it explicitly, then release the frame.
+  useEffect(() => {
+    if (!map || !disp || released.current) return;
+    released.current = true;
+    gl.render(scene, camera);
+    requestAnimationFrame(() => continueRender(handle));
+  }, [map, disp, gl, scene, camera, handle]);
+  const geom = useMemo(() => {
+    const [x0, y0] = toXY(r.west, r.south);
+    const [x1, y1] = toXY(r.east, r.north);
+    const g = new THREE.PlaneGeometry(x1 - x0, y1 - y0, 640, 430);
+    g.translate((x0 + x1) / 2, (y0 + y1) / 2, 0);
+    return g;
+  }, [r.west, r.south, r.east, r.north]);
+  if (!map || !disp) return null;
+  return (
+    <mesh geometry={geom} receiveShadow>
+      <meshStandardMaterial map={map} displacementMap={disp} displacementScale={relief} roughness={0.95} metalness={0} />
+    </mesh>
+  );
+};
+
+/** Distance haze, scaled to the current camera distance so it reads the same at every zoom. */
+const Haze: React.FC<{ keys: Cam3DKey[]; color: string }> = ({ keys, color }) => {
+  const frame = useCurrentFrame();
+  const { dist } = camAt(keys, frame);
+  return <fog attach="fog" args={[color, dist * 0.95, dist * 3.2]} />;
+};
+
 export const Map3D: React.FC<{
   camera: Cam3DKey[];
   riseStart?: number;
@@ -166,18 +238,29 @@ export const Map3D: React.FC<{
   colonyColor?: string;
   landColor?: string;
   seaColor?: string;
+  /** 'classic' = the original flat-colour slab (S01). Other looks drape real terrain. */
+  look?: MapLook | 'classic';
+  terrain?: RasterRegion;
+  /** terrain displacement in world units at the highest point (1 unit = 1° of latitude) */
+  relief?: number;
   width: number;
   heightPx: number;
 }> = ({
   camera,
   riseStart = 20,
   height = 0.45,
-  colonyColor = C.colonyBlue,
+  colonyColor,
   landColor = C.parchLand,
-  seaColor = C.parchSea,
+  seaColor,
+  look = 'classic',
+  terrain = 'na3d',
+  relief = 0.22,
   width,
   heightPx,
 }) => {
+  const L = look === 'classic' ? null : LOOKS[look];
+  const sea = seaColor ?? L?.sea ?? C.parchSea;
+  const colony = colonyColor ?? L?.colony ?? C.colonyBlue;
   const landGeom = useMemo(() => {
     const feats = (land.features as Feature<Geometry>[]).flatMap((f) => shapesFrom(f.geometry, [-100, 20, -55, 55]));
     return new THREE.ExtrudeGeometry(feats, { depth: 0.06, bevelEnabled: false, curveSegments: 1 });
@@ -191,16 +274,18 @@ export const Map3D: React.FC<{
       width={width}
       height={heightPx}
       shadows
+      flat={L !== null} // no tone mapping on the new looks: the baked colours reach the screen as measured
       camera={{ fov: FOV3D, near: 0.1, far: 1000, position: [0, -20, 40] }}
       gl={{ antialias: true, preserveDrawingBuffer: true }}
-      style={{ backgroundColor: seaColor }}
+      style={{ backgroundColor: sea }}
     >
       <CameraRig keys={camera} />
-      <ambientLight intensity={0.55} />
-      <hemisphereLight args={['#fff6e6', '#3d5a5c', 0.35]} />
+      {L && <Haze keys={camera} color={L.haze} />}
+      <ambientLight intensity={L?.ambient ?? 0.55} />
+      <hemisphereLight args={['#fff6e6', '#3d5a5c', L?.hemi ?? 0.35]} />
       <directionalLight
         position={[-25, 30, 45]}
-        intensity={1.6}
+        intensity={L?.key ?? 1.6}
         castShadow
         shadow-mapSize-width={4096}
         shadow-mapSize-height={4096}
@@ -210,16 +295,29 @@ export const Map3D: React.FC<{
         shadow-camera-bottom={-40}
         shadow-bias={-0.0004}
       />
-      <mesh position={[0, 0, -0.02]} receiveShadow>
-        <planeGeometry args={[400, 300]} />
-        <meshStandardMaterial color={seaColor} roughness={0.35} metalness={0.1} />
-      </mesh>
-      <mesh geometry={landGeom} receiveShadow>
-        <meshStandardMaterial color={landColor} roughness={0.9} />
-      </mesh>
+      {L ? (
+        <>
+          {/* matte sea beyond the terrain raster (a glossy sea caused the hotspot over the Gulf) */}
+          <mesh position={[0, 0, -0.03]} receiveShadow>
+            <planeGeometry args={[400, 300]} />
+            <meshStandardMaterial color={sea} roughness={1} metalness={0} />
+          </mesh>
+          <Terrain area={terrain} look={look as MapLook} relief={relief} />
+        </>
+      ) : (
+        <>
+          <mesh position={[0, 0, -0.02]} receiveShadow>
+            <planeGeometry args={[400, 300]} />
+            <meshStandardMaterial color={sea} roughness={0.35} metalness={0.1} />
+          </mesh>
+          <mesh geometry={landGeom} receiveShadow>
+            <meshStandardMaterial color={landColor} roughness={0.9} />
+          </mesh>
+        </>
+      )}
       <group position={[0, 0, 0.06]}>
         {ordered.map((f, i) => (
-          <Colony key={f.properties?.id} feature={f} index={i} start={riseStart} height={height} color={colonyColor} />
+          <Colony key={f.properties?.id} feature={f} index={i} start={riseStart} height={height} color={colony} />
         ))}
       </group>
     </ThreeCanvas>

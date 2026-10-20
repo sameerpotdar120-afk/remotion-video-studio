@@ -9,6 +9,7 @@ REGIONS={
  "eastcoast": ( -86, 28,  -64, 48, 8, 180),
  "appalachians":(-86,33,  -72, 45, 9, 240),
  "massachusetts":(-72,41.8,-69.8,43.0,12,1745.5),  # 3840 px wide
+ "na3d":      (-110, 15,  -40, 62, 7,  80),      # everything the 3D colonies camera can see
  "europe":    ( -12, 34,   32, 62, 6,  60),
  "india":     (  66,  6,   98, 36, 6,  60),
 }

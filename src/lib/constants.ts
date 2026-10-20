@@ -64,6 +64,12 @@ export const C = {
   // flat political style
   flatLand: '#3D86C6',
   flatSea: '#1B2B38',
+  // terrain map looks (Map3D look=...): the reference's measured ON-SCREEN colours (k-means, 10 frames)
+  lookParchColony: '#49738A',
+  lookParchSea: '#5E8488',
+  lookFlatSea: '#122834',
+  hazeParch: '#CFC3A1',
+  hazeFlat: '#1B3A52',
   // UI
   dateYellow: '#FFD84A',
   highlighter: 'rgba(255, 222, 0, 0.78)',
