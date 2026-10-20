@@ -171,15 +171,13 @@ export const MapStage: React.FC<{
   );
 };
 
-/** Paper texture + vignette laid over the parchment style (screen space, so grain never scales). */
+/** Paper texture laid over the parchment style (screen space, so grain never scales). No vignette: the reference's
+ *  parchment frames measure flat to the corners (corner/centre luminance 1.01). */
 export const ParchmentPaper: React.FC = () => (
   <AbsoluteFill style={{ pointerEvents: 'none' }}>
     <Img
       src={staticFile('assets/textures/parchment_paper_4k.jpg')}
       style={{ width: W, height: H, mixBlendMode: 'multiply', opacity: 0.55 }}
-    />
-    <AbsoluteFill
-      style={{ background: 'radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(60,35,10,0.35) 100%)' }}
     />
   </AbsoluteFill>
 );

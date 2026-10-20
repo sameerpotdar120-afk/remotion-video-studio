@@ -54,8 +54,10 @@ const SNAKE: string[][] = [
 // eyes on every colony; small colonies get small eyes so they stay inside their shape
 // reference f300: an eye pair is ~6% of the frame width when the colonies fill ~45% of it
 const EYE_SIZE: Record<string, number> = {
-  'rhode-island': 60, delaware: 60, connecticut: 78, 'new-jersey': 84, 'new-hampshire': 90, maryland: 90,
+  'rhode-island': 40, delaware: 40, connecticut: 56, 'new-jersey': 62, 'new-hampshire': 64, maryland: 66,
+  massachusetts: 80,
 };
+const EYE_DEFAULT = 100;
 // centroids that fall outside the visible body of the colony (or on the sea) — nudged by hand
 const EYE_AT: Record<string, [number, number]> = {
   'new-york': [-75.4, 42.7],
@@ -211,7 +213,7 @@ export const S03Colonies: React.FC = () => {
                     const [lon, lat] = eyeAt(k);
                     return (
                       <div key={k} style={{ opacity: eyesOut }}>
-                        <RegionEyes lon={lon} lat={lat} start={notCountryAt + i * 3} size={EYE_SIZE[k] ?? 130} look={look(i)} mood={eyesMood(k)} />
+                        <RegionEyes lon={lon} lat={lat} start={notCountryAt + i * 3} size={EYE_SIZE[k] ?? EYE_DEFAULT} look={look(i)} mood={eyesMood(k)} />
                       </div>
                     );
                   })}

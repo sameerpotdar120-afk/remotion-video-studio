@@ -195,8 +195,8 @@ const LOOK_GRADE: Record<
   GradeLook,
   { contrast: number; saturate: number; brightness: number; split: number; vignette: number; burn: string; paper: number }
 > = {
-  parchment: { contrast: 1.04, saturate: 1.15, brightness: 1.0, split: 0.7, vignette: 0.1, burn: '110,72,30', paper: 0.18 },
-  relief: { contrast: 1.04, saturate: 1.12, brightness: 1.0, split: 0.7, vignette: 0.1, burn: '110,72,30', paper: 0.18 },
+  parchment: { contrast: 1.04, saturate: 1.15, brightness: 1.0, split: 0.7, vignette: 0, burn: '110,72,30', paper: 0.18 },
+  relief: { contrast: 1.04, saturate: 1.12, brightness: 1.0, split: 0.7, vignette: 0, burn: '110,72,30', paper: 0.18 },
   flat: { contrast: 1.05, saturate: 1.0, brightness: 1.0, split: 0.4, vignette: 0.09, burn: '0,0,0', paper: 0 },
   satellite: { contrast: 1.1, saturate: 1.18, brightness: 1.0, split: 0.6, vignette: 0.15, burn: '0,0,0', paper: 0 },
   night: { contrast: 1.05, saturate: 0.8, brightness: 0.45, split: 1.0, vignette: 0.3, burn: '0,0,0', paper: 0 },
