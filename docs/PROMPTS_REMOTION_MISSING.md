@@ -1,19 +1,24 @@
 # Remotion prompts — missing assets, map style & colour grade
 
-Everything here is built **in Remotion** (in ChatGPT's Remotion environment, as with the first batch), plus the
-**downloads** that Remotion needs and that must never be AI-generated. GPT images are in
-`docs/PROMPTS_GPT_MISSING.md`.
+**Who does what:** ChatGPT (images, and Remotion stills) is used **only to generate assets**. The maps, the map
+style and grade, the code fixes, and all sourcing of map data, SFX and music are done by Claude in this repo from
+copyright-free sources. GPT images are in `docs/PROMPTS_GPT_MISSING.md`.
 
-| # | What | Output |
-|---|---|---|
-| R0 | Ground rules: which code to give ChatGPT | — |
-| R1 | Bourbon France flag (currently a plain white rectangle) | `flags/bourbon_france.png` + fixed component |
-| R2 | White block arrow (the GPT one lost its fill) | `ArrowBlock` component + `icons/arrow_white_block.png` |
-| R3 | Neon icons on black → screen blend | fixed `NeonIcon` |
-| **R4** | **Map style = the reference's four looks, kept in 3D, with a full colour grade** | look presets, `Grade` v2, `Map3D` v2 |
-| R5 | Fixes the demo renders exposed | code fixes |
-| R6 | Re-render the four demos as the acceptance test | 4 MP4s |
-| D1–D4 | Downloads: Blue Marble, public-domain scans, hillshade, 10m coastlines | files in `public/` |
+| # | What | Who | Output |
+|---|---|---|---|
+| R0 | Ground rules: which code to give ChatGPT | **ChatGPT** | — |
+| R1 | Bourbon France flag (currently a plain white rectangle) | **ChatGPT** | `flags/bourbon_france.png` |
+| R2 | White block arrow (the GPT one lost its fill) | **ChatGPT** | `icons/arrow_white_block.png` |
+| R3 | Neon icons on black → screen blend | Claude (repo) | fixed `NeonIcon` |
+| **R4** | **Map style = the reference's four looks, kept in 3D, with a full colour grade** | **Claude (repo)** | look presets, `Grade` v2, `Map3D` v2 |
+| R5 | Fixes the demo renders exposed | Claude (repo) | code fixes |
+| R6 | Re-render the four demos as the acceptance test | Claude (repo) | 4 MP4s |
+| D1–D4 | Map data, public-domain scans, hillshade, 10m coastlines | Claude (repo) | files in `public/` |
+
+> **Paste only R0, R1 and R2 into ChatGPT.** From R3 on, this file is the spec Claude builds against. Map data status:
+> terrain, hillshade, ocean depth, heightmaps, lakes, rivers and 10m coastlines are **done** (`public/assets/maps_raster/`,
+> `public/maps/`, see `SOURCES.md`). Blue Marble satellite imagery and the public-domain scans are **blocked by the
+> environment's network policy** until the hosts are allowed.
 
 ---
 
@@ -85,6 +90,10 @@ so the PNG name keeps working. Show me the arrow on parchment AND on the satelli
 ```
 
 ---
+
+---
+
+# ▼ From here on: Claude builds this in the repo — do NOT paste into ChatGPT
 
 ## R3. Neon icons — make the black-background PNGs work
 
@@ -312,7 +321,16 @@ Send them over and I'll check them frame by frame again, against the reference m
 
 ---
 
-# Downloads — NOT generated, NOT made in Remotion
+# Downloads — NOT generated, NOT made in Remotion (Claude sources these)
+
+| Item | Status |
+|---|---|
+| Terrain: hillshade, ocean depth, heightmaps, land masks (7 regions) | **Done.** AWS Terrain Tiles → `public/assets/maps_raster/` |
+| Natural Earth rivers, lakes, 10m land/countries | **Done** → `public/maps/` |
+| NASA Blue Marble (D1) | **Blocked:** `eoimages.gsfc.nasa.gov` is not allowed by the environment's network policy |
+| Public-domain scans (D2) | **Blocked:** `www.loc.gov`, `tile.loc.gov`, `www.archives.gov` |
+
+The D1–D4 steps below are kept as the reference for how each item is made.
 
 ## D1. NASA Blue Marble (public domain) — the satellite look
 

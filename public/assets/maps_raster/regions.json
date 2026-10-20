@@ -1,0 +1,156 @@
+{
+ "world": {
+  "west": -180,
+  "south": -60,
+  "east": 180,
+  "north": 75,
+  "width": 3840,
+  "height": 1440,
+  "pxPerDegree": 10.667,
+  "heightmap": {
+   "file": "height_world.png",
+   "width": 2048,
+   "height": 768,
+   "metresAtWhite": 5379.1,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 18,
+  "spikesRepaired": 0,
+  "elevRange": [
+   -10325,
+   6571
+  ]
+ },
+ "atlantic": {
+  "west": -82,
+  "south": 25,
+  "east": 5,
+  "north": 62,
+  "width": 5220,
+  "height": 2220,
+  "pxPerDegree": 60,
+  "heightmap": {
+   "file": "height_atlantic.png",
+   "width": 2048,
+   "height": 870,
+   "metresAtWhite": 2481.9,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 10,
+  "spikesRepaired": 0,
+  "elevRange": [
+   -6946,
+   3848
+  ]
+ },
+ "europe": {
+  "west": -12,
+  "south": 34,
+  "east": 32,
+  "north": 62,
+  "width": 2640,
+  "height": 1680,
+  "pxPerDegree": 60,
+  "heightmap": {
+   "file": "height_europe.png",
+   "width": 2048,
+   "height": 1303,
+   "metresAtWhite": 2677.1,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 8,
+  "spikesRepaired": 4,
+  "elevRange": [
+   -5283,
+   4021
+  ]
+ },
+ "india": {
+  "west": 66,
+  "south": 6,
+  "east": 98,
+  "north": 36,
+  "width": 1920,
+  "height": 1800,
+  "pxPerDegree": 60,
+  "heightmap": {
+   "file": "height_india.png",
+   "width": 1920,
+   "height": 1800,
+   "metresAtWhite": 6070.7,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 8,
+  "spikesRepaired": 1,
+  "elevRange": [
+   -5246,
+   8068
+  ]
+ },
+ "eastcoast": {
+  "west": -86,
+  "south": 28,
+  "east": -64,
+  "north": 48,
+  "width": 3960,
+  "height": 3600,
+  "pxPerDegree": 180,
+  "heightmap": {
+   "file": "height_eastcoast.png",
+   "width": 2048,
+   "height": 1861,
+   "metresAtWhite": 1287.2,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 5,
+  "spikesRepaired": 50,
+  "elevRange": [
+   -5695,
+   1948
+  ]
+ },
+ "appalachians": {
+  "west": -86,
+  "south": 33,
+  "east": -72,
+  "north": 45,
+  "width": 3360,
+  "height": 2880,
+  "pxPerDegree": 240,
+  "heightmap": {
+   "file": "height_appalachians.png",
+   "width": 2048,
+   "height": 1755,
+   "metresAtWhite": 1364.7,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 3,
+  "spikesRepaired": 26,
+  "elevRange": [
+   -5359,
+   1997
+  ]
+ },
+ "massachusetts": {
+  "west": -72,
+  "south": 41.8,
+  "east": -69.8,
+  "north": 43.0,
+  "width": 3840,
+  "height": 2095,
+  "pxPerDegree": 1745.5,
+  "heightmap": {
+   "file": "height_massachusetts.png",
+   "width": 2048,
+   "height": 1117,
+   "metresAtWhite": 503.7,
+   "encoding": "sqrt(elev/metresAtWhite)*255, sea=0"
+  },
+  "verticalExaggerationInHillshade": 2.2,
+  "spikesRepaired": 67,
+  "elevRange": [
+   -237,
+   696
+  ]
+ }
+}
