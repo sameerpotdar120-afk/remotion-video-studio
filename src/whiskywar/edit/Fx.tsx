@@ -236,7 +236,7 @@ export const PaperScene: React.FC<{ t: number }> = ({ t }) => {
         <div style={{ position: 'absolute', inset: 0, transform: `scale(${push}) rotate(${-1 + 2 * ramp(t, p.t0, p.t1)}deg)` }}>
           <Paper />
           <Sequence from={rel(C.whisky2 - 0.1, p.t0)} layout="none">
-            <div style={{ position: 'absolute', left: 0, top: 560, width: 1080, height: 400 }}><W03Highlight w={820} h={120} tilt={-6} /></div>
+            <div style={{ position: 'absolute', left: 0, top: 470, width: 1080, height: 400 }}><W03Highlight w={820} h={120} tilt={-6} /></div>
           </Sequence>
         </div>
       </W04BurnReveal>

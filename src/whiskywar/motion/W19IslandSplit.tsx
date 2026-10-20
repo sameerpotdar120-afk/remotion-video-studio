@@ -31,7 +31,21 @@ export const W19IslandSplit: React.FC<{ img?: { src: string; w: number; h: numbe
             <path d={outline} fill="url(#rockS)" stroke="#E6EEF2" strokeWidth={10} />
           </svg>
         )}
-        <svg width={1000} height={560} style={{ position: 'absolute', inset: 0, mixBlendMode: 'multiply', opacity: paint }}>
+        {img && (
+          // with the model image, its own alpha is the mask, so the flags follow the real coastline
+          <div style={{ position: 'absolute', inset: 0, mixBlendMode: 'multiply', opacity: paint, WebkitMaskImage: `url(${img.src})`, maskImage: `url(${img.src})`,
+            WebkitMaskSize: 'contain', maskSize: 'contain', WebkitMaskRepeat: 'no-repeat', maskRepeat: 'no-repeat', WebkitMaskPosition: 'center', maskPosition: 'center' }}>
+            <svg width={1000} height={560}>
+              <defs>
+                <clipPath id="isEi"><path d={`${ridge} L 1000 560 L 1000 0 Z`} /></clipPath>
+                <clipPath id="isWi"><path d={`${ridge} L 0 560 L 0 0 Z`} /></clipPath>
+              </defs>
+              <g clipPath="url(#isEi)"><g transform="translate(380 0)"><DenmarkFlag w={740} h={560} f={f} wave={0.6} uid="isdki" /></g></g>
+              <g clipPath="url(#isWi)"><g transform="translate(-120 0)"><CanadaFlag w={740} h={560} f={f} wave={0.6} uid="iscai" /></g></g>
+            </svg>
+          </div>
+        )}
+        <svg width={1000} height={560} style={{ position: 'absolute', inset: 0, mixBlendMode: 'multiply', opacity: img ? 0 : paint }}>
           <defs>
             <clipPath id="isC"><path d={outline} /></clipPath>
             <clipPath id="isE"><path d={`${ridge} L 1000 560 L 1000 0 Z`} /></clipPath>

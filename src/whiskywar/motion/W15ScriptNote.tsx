@@ -32,7 +32,7 @@ export const W15ScriptNote: React.FC<{ text?: string; sub?: string; sign?: [numb
           {[60, 100, 140, 180].map((yy) => <path key={yy} d={`M 30 ${yy} H 770`} stroke="#D2C29E" strokeWidth={2} opacity={0.5} />)}
           <path d={`M 120 ${sub ? 128 : 160} q 140 26 280 0 t 280 0`} stroke={C.noteInk} strokeWidth={5} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={`${flo} 1`} />
         </svg>
-        <div style={{ position: 'absolute', left: 0, right: 0, top: sub ? 38 : 70, textAlign: 'center', fontFamily: SCRIPT, fontWeight: 700, fontSize: 70, color: C.noteInk, whiteSpace: 'nowrap' }}>
+        <div style={{ position: 'absolute', left: 0, right: 0, top: sub ? 38 : 70, textAlign: 'center', fontFamily: SCRIPT, fontWeight: 700, fontSize: Math.min(70, 1500 / Math.max(1, chars.length)), color: C.noteInk, whiteSpace: 'nowrap' }}>
           {chars.slice(0, n).join('')}
         </div>
         {sub && <div style={{ position: 'absolute', left: 0, right: 0, top: 148, textAlign: 'center', fontFamily: SCRIPT, fontSize: 48, color: C.noteInk, opacity: ramp(f, 100, 120) }}>{sub}</div>}

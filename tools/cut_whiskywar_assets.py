@@ -3,7 +3,7 @@
     python3 -I tools/cut_whiskywar_assets.py <folder with the PNGs>
 
 The two 9:16 backgrounds (the beach, the newspaper) become 2160×3840 JPEGs; every prop and person (on white) is keyed
-to a transparent PNG, cropped and capped at 2000 px; Tom Høyem's face is cropped into a square for the round portrait.
+to a transparent PNG (or keeps the alpha it comes with), cropped and capped at 2000 px; Tom Høyem's face is cropped into a square for the round portrait.
 Missing files are skipped, so it can run again as more images arrive. Writes public/whiskywar/img/ and
 public/whiskywar/img_sizes.json.
 """
@@ -37,7 +37,16 @@ def main() -> None:
     for name in PROPS:
         f = src / f"{name}.png"
         if f.exists():
-            im, _ = key(Image.open(f))
+            raw = Image.open(f)
+            if raw.mode == "RGBA" and raw.getchannel("A").getextrema()[0] < 10:
+                # already cut out: keep its alpha, drop the faint haze, crop and cap
+                a = raw.getchannel("A").point(lambda v: 0 if v < 24 else v)
+                raw.putalpha(a)
+                im = raw.crop(raw.getbbox())
+                if im.width > 2000:
+                    im = im.resize((2000, round(im.height * 2000 / im.width)), Image.LANCZOS)
+            else:
+                im, _ = key(raw)
             im.save(OUT / f"{name}.png", optimize=True)
             sizes[name] = {"w": im.width, "h": im.height}
             if name == "wk04_tom_hoyem":
