@@ -6,6 +6,7 @@ import { Animatic } from '../scenes/Animatic';
 import { Bgm, Vo } from './fx';
 import { S01Hook } from './S01Hook';
 import { S02Turn } from './S02Turn';
+import { S03Colonies } from './S03Colonies';
 
 /**
  * FINAL 4K60 cut. Each scene is a <Sequence> on its exact VO frames; finished scenes replace the
@@ -15,6 +16,7 @@ import { S02Turn } from './S02Turn';
 const BUILT: Record<string, { comp: React.FC; tail?: number }> = {
   S01_hook: { comp: S01Hook, tail: 30 }, // stays under S02's 30-frame wipe
   S02_turn: { comp: S02Turn },
+  S03_colonies: { comp: S03Colonies },
 };
 
 export const Final: React.FC = () => (

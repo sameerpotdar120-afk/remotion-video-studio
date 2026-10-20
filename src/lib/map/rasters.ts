@@ -23,3 +23,16 @@ export const region = (r: RasterRegion) => {
     metresAtWhite: g.heightmap.metresAtWhite,
   };
 };
+
+/**
+ * Real relief multiplied onto a 2D map (MapStage `above`). Uses relief_<r>.jpg: the hillshade rescaled so
+ * flat ground and sea are pure white — multiplying darkens ONLY shaded slopes and leaves calibrated colours alone.
+ */
+export const reliefRaster = (r: RasterRegion, opacity = 0.55) => {
+  const g = region(r);
+  return {
+    src: staticFile(`assets/maps_raster/relief_${r}.jpg`),
+    west: g.west, south: g.south, east: g.east, north: g.north,
+    style: { mixBlendMode: 'multiply' as const, opacity },
+  };
+};

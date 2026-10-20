@@ -72,7 +72,7 @@ export const C = {
   // 2D MapStage parchment base colours, pre-compensated for the paper multiply + brown edge so the
   // rendered result lands on the reference's measured #5E8488 sea / #A19573 land
   stageParchSea: '#608AA5',
-  stageParchLand: '#BCB8A6',
+  stageParchLand: '#A5A292', // calibrated at frame centre (S03 f3030): renders #A19573-ish
   hazeFlat: '#1B3A52',
   // UI
   dateYellow: '#FFD84A',

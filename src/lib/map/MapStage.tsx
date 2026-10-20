@@ -74,9 +74,11 @@ export const MapStage: React.FC<{
   camera: CamKey[];
   style: MapStyle;
   rasters?: Raster[];
+  /** rasters drawn ABOVE the land (e.g. hillshade relief, multiplied) — Img, so the render waits for them */
+  above?: Raster[];
   world?: React.ReactNode; // SVG elements in world px
   overlay?: React.ReactNode; // HTML/SVG in screen px
-}> = ({ camera, style, rasters = [], world, overlay }) => {
+}> = ({ camera, style, rasters = [], above = [], world, overlay }) => {
   const frame = useCurrentFrame();
   const cam = cameraAt(camera, frame);
   const scale = W / (cam.span * PX_PER_DEG);
@@ -109,7 +111,9 @@ export const MapStage: React.FC<{
     <Ctx.Provider value={ctx}>
       <AbsoluteFill style={{ backgroundColor: bg, overflow: 'hidden', perspective: 3200 }}>
         <AbsoluteFill
-          style={{ transformOrigin: '50% 50%', transform: `rotateX(${cam.tilt}deg) rotate(${cam.rotate}deg)` }}
+          // the sea colour is painted INSIDE this (isolated, transformed) group too: multiply-blended `above`
+          // rasters need it as their backdrop, or over water they show as a grey veil
+          style={{ backgroundColor: bg, transformOrigin: '50% 50%', transform: `rotateX(${cam.tilt}deg) rotate(${cam.rotate}deg)` }}
         >
           {rasters.map((r) => {
             const [x0, y0] = project(r.west, r.north);
@@ -141,6 +145,24 @@ export const MapStage: React.FC<{
             )}
             {world}
           </svg>
+          {above.map((r) => {
+            const [x0, y0] = project(r.west, r.north);
+            const [x1, y1] = project(r.east, r.south);
+            return (
+              <Img
+                key={r.src}
+                src={r.src}
+                style={{
+                  position: 'absolute',
+                  left: x0 * scale + tx,
+                  top: y0 * scale + ty,
+                  width: (x1 - x0) * scale,
+                  height: (y1 - y0) * scale,
+                  ...r.style,
+                }}
+              />
+            );
+          })}
         </AbsoluteFill>
         {style === 'parchment' && <ParchmentPaper />}
         <AbsoluteFill>{overlay}</AbsoluteFill>
