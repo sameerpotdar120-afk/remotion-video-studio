@@ -3,6 +3,7 @@ import coloniesJson from '../../../public/maps/colonies-1775.json';
 import vermontJson from '../../../public/maps/vermont-disputed.json';
 import landJson from '../../../public/maps/land-50m.geo.json';
 import countriesJson from '../../../public/maps/countries-50m.geo.json';
+import riversJson from '../../../public/maps/rivers-na-10m.json';
 
 /**
  * Sources (all public domain):
@@ -17,6 +18,8 @@ export const colonies = coloniesJson as unknown as FeatureCollection;
 export const vermont = vermontJson as unknown as Feature<Geometry>;
 export const land = landJson as unknown as FeatureCollection;
 export const countries = countriesJson as unknown as FeatureCollection;
+/** Natural Earth 10m rivers, North America (canals and reservoirs removed). */
+export const rivers = riversJson as unknown as FeatureCollection;
 
 export const COLONY_IDS = colonies.features
   .slice()
