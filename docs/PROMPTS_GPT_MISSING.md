@@ -1,3 +1,5 @@
+> **Superseded by `docs/PROMPTS_IMAGES_v2.md`**, which is matched to the reference frame by frame (peg-doll characters, reference arrow, neon on black). Kept for history.
+
 # GPT image prompts — missing assets only
 
 Everything here goes into **ChatGPT image generation**. Every block is self-contained: the style header is already pasted

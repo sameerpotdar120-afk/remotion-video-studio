@@ -1,3 +1,5 @@
+> **Superseded by `docs/PROMPTS_REMOTION_v2.md`**, which is matched to the reference frame by frame (peg-doll characters, reference arrow, neon on black). Kept for history.
+
 # Remotion prompts — missing assets, map style & colour grade
 
 **Who does what:** ChatGPT (images, and Remotion stills) is used **only to generate assets**. The maps, the map
