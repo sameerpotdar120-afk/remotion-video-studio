@@ -11,7 +11,7 @@ import GEN from './rigs.generated.json';
  */
 // Measured by scripts/prep_assets.py (alpha-cropped: feet = bottom edge; face = blank skin area).
 const r = (file: string, over: Partial<Rig> = {}): Rig => {
-  const g = (GEN as Record<string, Pick<Rig, 'aspect' | 'face' | 'shoulderL' | 'shoulderR'>>)[file];
+  const g = (GEN as unknown as Record<string, Pick<Rig, 'aspect' | 'face' | 'shoulderL' | 'shoulderR'>>)[file];
   return {
     src: staticFile(`assets/chars/${file}`),
     aspect: g?.aspect ?? 1,
