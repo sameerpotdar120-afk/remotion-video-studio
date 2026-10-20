@@ -1,0 +1,171 @@
+You are generating image assets for an animated history YouTube video ("How America Became Independent", 1754-1776). Below is the complete list. Work through it IN ORDER, ONE IMAGE AT A TIME, using your image generation tool. After each image, give it the exact file name listed, then go straight on to the next one unless I say stop. If an item says "attach", I will upload that reference image in the chat; use it as the style reference.
+
+GLOBAL RULES (apply to every image)
+- Transparent background PNG, EXCEPT the neon icons (pure black background) and the backgrounds (full scene).
+- Characters, props, icons: square 1024x1024 unless a size is given. Backgrounds: wide 1536x1024.
+- After removing the background, every WHITE part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+
+======================================================================
+STYLE P (the character style, used by every character below)
+======================================================================
+2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate 1760s-1770s clothing drawn ONTO the body shape with fine detail: coat lapels and brass buttons that follow the body's curve, waistcoats, lace cravats, cuffs, sashes, belts. Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair and wigs drawn with fine strands. Tricorne hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+Every character below = STYLE P + the CHARACTER line. Use the style reference sheet (image 1) as the strict style reference for all of them.
+
+======================================================================
+1. _style_reference_sheet.png  (MAKE THIS FIRST, wide 1536x1024)
+======================================================================
+STYLE P (peg doll): a character model sheet on a plain light-grey background showing FIVE peg-doll characters standing in a row at the same scale: a colonial townsman in a brown coat, tan waistcoat and black tricorne; a British redcoat soldier of 1770 with white cross-belts and a black tricorne with white lace; a gentleman in a white powdered wig and dark-blue coat; a woman in a long pale-blue 1770s gown with a white cap; a small child. Every figure is one rounded capsule: very large round head (45% of the height) directly on the collar, no neck, smooth body widening slightly to a flat rounded bottom, NO LEGS, NO FEET, NO ARMS, NO HANDS. All faces completely blank (no eyes, no mouth, no brows, no nose). Soft painterly shading, light from the top left, subtle paper grain, thin-to-medium dark-brown outline.
+>> Show me this one and WAIT for my OK before continuing.
+
+======================================================================
+CHARACTERS (29) - STYLE P, 1024x1024, transparent
+======================================================================
+2. colonist_brown_coat.png - CHARACTER: a Boston townsman of 1765: brown wool frock coat with brass buttons, tan waistcoat, white linen neck stock, black tricorne hat, natural brown hair tied in a short queue.
+
+3. colonist_bearded.png - CHARACTER: a stout Boston dock-worker of 1770 with a full brown beard and moustache around the blank face: dark-brown coat open over a rust waistcoat, red neckerchief, knitted brown wool cap.
+
+4. colonist_young_waistcoat.png - CHARACTER: a young apprentice of 1770: no coat, mustard-yellow waistcoat over a white shirt, brown work apron straps (suspenders) over the shoulders, no hat, messy light-brown hair.
+
+5. merchant_green_coat.png - CHARACTER: a prosperous colonial merchant: dark-green silk coat with brass buttons, cream embroidered waistcoat, lace cravat, white powdered bob wig, no hat.
+
+6. printer_apron.png - CHARACTER: a colonial newspaper printer of 1765: leather work apron with an ink smudge over a white shirt and brown waistcoat, cloth cap, rolled-up look.
+
+7. stamp_clerk.png - CHARACTER: a British stamp distributor clerk of 1765: dark-grey coat, black waistcoat, white neck stock, white powdered wig, small round spectacles pushed HIGH UP onto the forehead above the face (NOT over the face).
+
+8. judge_white_wig.png - CHARACTER: a 1760s colonial judge: long white full-bottomed powdered wig falling to the shoulders, black judicial robe covering the whole body, white bands at the neck.
+
+9. crispus_attucks.png - CHARACTER: Crispus Attucks, Boston 1770: a tall, strong, dignified man of African and Native American descent, rich brown skin (#8A5A3C), short dark hair, a sailor's navy wool pea-jacket over a white shirt, grey knitted cap. Heroic and respectful, no caricature.
+
+10. tea_party_disguised_colonist.png - CHARACTER: a Boston colonist on the night of 16 December 1773 in a hasty disguise: an old striped wool blanket wrapped around the body like a cloak, a smudge of black soot across the forehead, black tricorne, a small hatchet tucked in the belt. NO feathers, NO headdress, NO Native costume.
+
+11. crowd_boston_back_heads.png (wide 1536x1024) - STYLE P peg-doll townspeople seen FROM BEHIND: a row of 12 figures packed shoulder to shoulder as a foreground layer, showing the backs of very large round heads (some bald, some with hair tied in a queue, some with tricornes and caps) on rounded capsule bodies with coats, waistcoat backs and suspender straps. NO legs, NO arms. Soft painterly shading, thin dark-brown outline, transparent background.
+
+12. redcoat_soldier.png - CHARACTER: a British private of the 29th Regiment of Foot, Boston 1770: red wool coat with YELLOW facings (lapels and cuffs), white lace buttonhole loops, white waistcoat with a lace jabot, white leather cross-belts, black tricorne with white lace edging, powdered hair with side curls. NO musket.
+
+13. redcoat_officer.png - CHARACTER: a British officer of 1770 (Captain Preston style): fine scarlet coat with yellow facings and gold lace, crimson silk sash around the waist, gilt gorget at the throat, black tricorne with gold lace, powdered hair. NO sword.
+
+14. militia_minuteman.png - CHARACTER: a Massachusetts militiaman of April 1775 in civilian farm clothes, NO uniform: brown homespun coat, grey waistcoat, linen shirt, a powder horn on a strap across the chest, brown slouch felt hat. NO musket.
+
+15. continental_soldier.png - CHARACTER: a Continental Army soldier of 1775: a fringed linen hunting shirt in light brown, a cartridge-box strap and canteen strap across the chest, black cocked hat. NO musket.
+
+16. french_officer_1754.png - CHARACTER: Ensign Jumonville, a French colonial officer of the Troupes de la Marine, May 1754: greyish-white justaucorps coat with BLUE cuffs and lining (NOT red), blue waistcoat, small gilt gorget at the throat, black tricorne with gold edging, white powdered hair tied back. NO weapon.
+
+17. washington_1754_virginia_officer.png - CHARACTER: George Washington aged 22 in 1754, a Virginia provincial officer: dark-blue coat with red facings, red waistcoat, gilt gorget at the throat, black tricorne with gold edge, his OWN reddish-brown hair tied back, NO wig. Young and slim, NOT the famous old portrait.
+
+18. washington_1775_general.png - CHARACTER: General George Washington in 1775: dark-blue coat with buff (tan) facings, gold epaulettes and brass buttons, buff waistcoat, light-blue sash across the chest, powdered greyish hair with side rolls tied with a black ribbon, NO hat.
+
+19. benjamin_franklin.png - CHARACTER: Benjamin Franklin in 1754, aged 48: plump, plain brown suit (coat and waistcoat), long grey hair at the sides with a bald top, NO spectacles on the face. NOT the 1776 fur cap.
+
+20. thomas_jefferson.png - CHARACTER: Thomas Jefferson in 1776, aged 33: tall and thin, RED-ORANGE natural hair loosely tied back, dark-green coat, red waistcoat, white neck cloth, a white quill pen tucked into the coat lapel.
+
+21. john_adams.png - CHARACTER: John Adams in 1770, aged 34, a Boston lawyer: short and stocky, black lawyer's coat, white neck bands, white powdered wig with side curls.
+
+22. paul_revere.png - CHARACTER: Paul Revere in 1775, a Boston silversmith: dark-brown riding coat, buff waistcoat, black tricorne, his own dark hair tied back.
+
+23. paul_revere_on_horse.png (wide 1536x1024) - Paul Revere as a STYLE P peg doll (very large round head, no neck, rounded capsule body, NO arms, NO hands, BLANK face, dark-brown riding coat, black tricorne) sitting upright in the saddle of a brown horse galloping to the LEFT, side view. The horse is a chibi horse (big head, short legs stretched in mid-gallop, flowing mane and tail); the rider's rounded body sits into the saddle with no legs showing. Soft painterly shading, thin dark-brown outline, transparent background.
+
+24. thomas_paine.png - CHARACTER: Thomas Paine in 1776, aged 38: plain black coat, simple white neck cloth, his own dark hair tied back, a rolled pamphlet tucked against the body at the side.
+
+25. king_george_iii.png - CHARACTER: King George III in 1770, aged 32, a YOUNG king: scarlet and gold coat, wide blue Garter sash across the chest with a silver star badge, ermine-trimmed red robe over the shoulders falling to the bottom of the body, white powdered wig, a small golden crown on the head.
+
+26. lord_north.png - CHARACTER: Lord North, British Prime Minister in 1770, aged 37: heavy-set, dark-blue coat, blue Garter sash with a silver star, white powdered wig.
+
+27. martha_jefferson.png - CHARACTER: Martha Wayles Jefferson in 1776: a young woman in a long pale slate-blue silk gown that falls to the bottom of the body, white lace fichu over the shoulders, brown hair up under a white linen cap. Gentle and dignified.
+
+28. patsy_jefferson_child.png - STYLE P with CHILD proportions (head even larger, about 55% of the height). CHARACTER: Martha "Patsy" Jefferson aged 3 in 1776: a small girl in a simple white muslin dress with a pink sash, light-red hair.
+
+29. enslaved_worker_man.png - CHARACTER: an enslaved field worker at a Virginia plantation in 1776, portrayed with dignity and humanity: dark-brown skin (#6B4430), short dark hair, a coarse undyed linen shirt, a straw hat. Respectful, no caricature, no exaggerated features.
+
+30. enslaved_worker_woman.png - CHARACTER: an enslaved woman working at a Virginia plantation house in 1776, portrayed with dignity: brown skin (#7A4E36), a plain blue-checked linen dress to the bottom of the body, white apron, a cloth head wrap. Respectful, no caricature.
+
+======================================================================
+STAMPS (attach: stamp_taxed.png + stamp_debt.png) - wide 1536x1024, transparent
+======================================================================
+31. stamp_rejected.png - Match the attached rubber-stamp images exactly in style: a red rubber-stamp ink impression reading "REJECTED" in heavy condensed capital letters inside a rounded-rectangle border, grungy uneven ink with gaps and speckles, rotation 0 degrees, colour #C81E2B, transparent background.
+
+32. stamp_closed.png - Same as above but reading "CLOSED".
+
+33. (optional) stamp_limited.png - Same as above but reading "LIMITED".
+
+======================================================================
+FLAT ICONS (style reference: the style sheet) - 1024x1024, transparent, no text
+======================================================================
+34. clock_15min.png - A simple cartoon 18th-century brass pocket watch seen from the front, white face with NO numbers, one quarter of the dial (12 to 3 o'clock) filled with a translucent red wedge, two hands at 12 and 3, thin dark-brown outline, soft painterly shading, centred.
+
+35. warehouse_icon.png - A tiny illustrated 18th-century London riverside brick warehouse used as a map icon: three storeys, a wooden crane hoist on the top floor, wooden tea chests stacked high at the open door, 3/4 top-down view, thin dark-brown outline, soft painterly shading, centred, no signs.
+
+36. courthouse_icon.png - A tiny illustrated colonial courthouse used as a map icon: small red-brick building with a white columned portico, triangular pediment and a small cupola, 3/4 top-down view, thin dark-brown outline, soft painterly shading, centred, no flags.
+
+======================================================================
+NEON ICONS - on PURE BLACK #000000 (NOT transparent), 1024x1024
+======================================================================
+37. neon_parliament_x.png - A glowing neon sign icon on a PURE BLACK background (#000000): a circle made of one bright pink-red neon tube; inside it the silhouette of the Palace of Westminster with its clock tower drawn as glowing pink-white neon; a big bold WHITE neon X across the whole icon with a strong red glow. Strong realistic neon bloom spilling outward, no wall, no bricks, no reflections, nothing else, centred.
+
+38. neon_coins_check.png - A glowing neon sign icon on a PURE BLACK background (#000000): a circle made of one bright green neon tube; inside it the outline of a small stack of coins drawn as glowing white neon; a big bold WHITE neon check mark with a strong green glow across the lower right. Strong realistic neon bloom spilling outward, nothing else, centred.
+
+39. (optional) neon_crown.png - Same neon style on pure black: a gold neon ring with a gold neon crown outline inside.
+
+======================================================================
+PROPS (attach: tea_chest.png + crown_gold.png; match their semi-realistic rendering) - 1024x1024, transparent
+======================================================================
+40. coin_british_shilling.png - A single silver British shilling of King George III, 1760s, crowned shield on the face, slight 3/4 tilt showing the edge, soft realistic shading with one bright highlight, centred, NO readable lettering.
+
+41. coin_spanish_dollar.png - A single Spanish silver dollar ("piece of eight") of the 1760s: two crowned pillars either side of a crowned shield, slight 3/4 tilt showing the edge, soft realistic shading, centred, NO readable lettering.
+
+42. colonial_paper_note.png - A small 1760s colonial paper banknote: cream paper, ornate engraved border, a small round seal, a few lines of tiny illegible print, one folded corner, slight tilt, centred, NO readable words or numbers.
+
+43. card_table_round.png - A round dark-wood 18th-century tavern card table on a single turned pedestal with three curved feet, 3/4 view from slightly above, empty top, centred.
+
+44. effigy_hanging.png (portrait 1024x1536) - A crude straw-stuffed effigy dummy hanging from a rope, Boston 1765: an old grey coat stuffed with straw, straw poking from the cuffs and collar, a stuffed sack-cloth head with a BLANK face, and a single old leather boot hanging beside it on its own short string. The rope rises from the top of the head straight to the top edge of the canvas. Folk-art prop, comic and NOT gruesome, no blood.
+
+45. candle_lit.png - A single white wax candle in a simple round brass candleholder with a small ring handle, lit, a small calm warm flame, a little melted wax on the side, 3/4 view from slightly above, filling 80% of the frame, NO contact shadow.
+
+46. gavel_wood.png - A dark polished wooden judge's gavel lying on a round wooden sounding block, 3/4 view from slightly above, filling 80% of the frame, NO contact shadow.
+
+47. pamphlet_folded.png - A small printed pamphlet of 1776 with a stitched spine, plain cream paper cover with a thin printed border and lines of tiny illegible print, slightly open, slight tilt, centred, NO readable title.
+
+48. rope_tug.png (wide 1536x1024) - A thick twisted hemp rope, perfectly HORIZONTAL, straight and taut, frayed at both ends, a long thin object filling the width.
+
+49. ship_navy_warship.png (wide 1536x1024) - An 18th-century Royal Navy frigate in toy-like proportions (slightly fat hull, short masts), side view facing LEFT, three masts with furled white sails, a black and yellow-ochre striped hull with a row of gun ports and small cannon muzzles. NO FLAG anywhere on the ship.
+
+======================================================================
+BACKGROUNDS - photoreal matte paintings, wide 1536x1024, full scene (not transparent)
+Shared rules for all: photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters anywhere, no modern objects.
+======================================================================
+50. bg_lawyer_office_1765.png - 1765 Boston, natural soft late-afternoon light. A small colonial lawyer's office: tall dark-wood bookshelves of leather-bound law books (no letters on the spines), a writing desk by a sash window with loose papers, a quill and an inkwell, a brass candlestick, wide-plank wooden floor.
+
+51. bg_courtroom_1765.png - 1760s Massachusetts, daylight. A colonial courtroom: a raised judge's bench of dark wood at the back centre, a carved wooden balustrade in front of it, tall arched windows with daylight, grey-green panelled walls, a plain wooden witness box on the left, an empty jury bench on the right, open wooden floor.
+
+52. bg_tavern_1765.png - 1765 Boston, warm candle-lit interior. A colonial tavern: dark-red walls, a long wooden bar with pewter mugs, stacked barrels, a stone fireplace glowing on the right, candles in wall sconces, low ceiling beams, a window at the back. The lower third is EMPTY wooden floor: NO table and NO chairs in the foreground centre.
+
+53. bg_liberty_tree_1765.png - August 1765 Boston, grey overcast light. A huge old elm on a Boston street corner: a thick gnarled trunk on the left third, ONE strong, clearly visible horizontal branch reaching out over the street at about 35% of the image height with empty sky beneath it, colonial brick and white clapboard houses around, open cobbled street in the lower third.
+
+54. bg_lexington_green_1775_dawn.png - 19 April 1775 New England, early dawn, low ground mist. Lexington Common: a wide open grassy green, a plain two-storey wooden meetinghouse with a small belfry at the far centre, a few farmhouses and bare early-spring trees at the edges, pale pink and grey sky. Buildings stay in the 15% to 55% height band; the whole lower half is open flat grass.
+
+55. bg_breeds_hill_1775.png - 17 June 1775 Charlestown, Massachusetts, hazy summer afternoon. The top of Breed's Hill: a hastily dug earthen redoubt (raw brown dirt walls about chest high) on a grassy hilltop, long grass and a split-rail fence down the slope, grey smoke rising from burning Charlestown below on the right, Boston harbour and distant ship masts on the horizon.
+
+56. bg_monticello_porch_1776.png - 1776 Virginia, warm summer evening light. The brick porch of Thomas Jefferson's FIRST Monticello: a plain red-brick wall with a simple white-painted doorway and dark-green shutters behind, a small round wooden tea table on the centre-left with a white porcelain tea set, a wicker baby cradle beside it, green Virginia hills beyond the rail, open herringbone brick floor. NO dome, NO grand columned portico.
+
+57. bg_monticello_1776.png - 1776 Virginia, warm summer evening light. Monticello as it stood in 1776, the FIRST unfinished version of Jefferson's house on a mountaintop: a modest two-storey red-brick house with a simple portico, NO dome, small outbuildings and a row of plain wooden cabins to one side, fields of tobacco and wheat on the slopes, piedmont hills fading into haze. House in the 15% to 55% height band; the whole lower half is open fields and a dirt path.
+
+58. (optional, attach bg_king_street_boston_1770_night.png) bg_king_street_boston_1770_night_fg.png - Using the attached image, output ONLY the nearest foreground elements (the snow banks and the first rows of cobblestones in the bottom 30% of the frame) on a fully transparent background. Same lighting, perspective and resolution.
+
+59. (optional, attach bg_forest_ohio_1754_dawn.png) bg_forest_ohio_1754_dawn_fg.png - Using the attached image, output ONLY the nearest foreground elements (the ferns, rocks and the fallen log) on a fully transparent background. Same lighting, perspective and resolution.
+
+======================================================================
+DOCUMENTS (attach: doc_stamp_act_1765.png)
+======================================================================
+60. doc_olive_branch_scroll.png (portrait 1024x1536) - Match the attached document in paper, ageing and rendering. A photorealistic aged 18th-century parchment SCROLL rolled open (rolled ends at top and bottom, not a flat sheet), cream-yellow paper with foxing and darker edges, facing the camera, transparent background around the scroll. In the centre the single word "Truce?" handwritten LARGE in brown ink in an elegant 18th-century hand, with a small green olive sprig drawn beneath it. NO coat of arms, NO crown, NO "GR" cypher, NO wax seal. Nothing else written.
+
+61. (optional) doc_sugar_act_1764.png (portrait 1024x1536) - Match the attached document exactly in layout, paper, ageing, typography and decoration: royal coat of arms at the top, a large blackletter heading, paragraphs of small italic script, a red wax seal with ribbon at the bottom right, transparent background around the paper. The heading reads exactly "Sugar Act 1764." Body text illegible.
+
+======================================================================
+CHECK EVERY IMAGE BEFORE MOVING ON
+======================================================================
+- Characters: NO legs, feet, shoes, arms or hands. Head about half the height, no neck. Face completely blank, nothing painted over it.
+- 29th Foot redcoat: yellow facings. Washington 1754: no wig. Jefferson: red hair. French officer: blue cuffs. Tea Party: no feathers.
+- Spelling: REJECTED, CLOSED, LIMITED, "Truce?", "Sugar Act 1764."
+- Backgrounds: no people, no readable text. Tavern: no table. Monticello: no dome. Warship: no flag.
+- Neon icons on pure black.

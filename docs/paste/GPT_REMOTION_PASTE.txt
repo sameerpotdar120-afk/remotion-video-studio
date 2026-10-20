@@ -1,0 +1,27 @@
+I need two still images rendered with Remotion. Each one is a self-contained, one-frame composition: no other project code is needed. Please create the project, render both stills, and give me both PNGs to download.
+
+======================================================================
+R1. bourbon_france.png (French royal flag, 1770s)
+======================================================================
+Create a minimal Remotion 4.0.523 project with ONE composition, id "Flag-Bourbon", width 3600, height 2400, fps 30, durationInFrames 1, transparent background. It renders an SVG (viewBox 0 0 3 2, filling the frame) of the French royal Bourbon flag of the 1770s:
+- field: off-white #FBFBF5, with a very thin #BBBBBB edge line (0.01)
+- gold fleurs-de-lis #D4AF37 with a thin #8A6A12 outline (stroke 0.006), sown in a staggered grid: 5 columns x 3 rows, alternate rows offset by half a column, each fleur about 0.28 tall
+- draw ONE fleur-de-lis as a <path> inside <defs> (the classic heraldic lily: a tall central petal, two outward-curling side petals, a horizontal band across the middle, three short stems below) and place every copy with <use>
+- no shading, no wind, no pole, no text
+Render it with:
+  npx remotion still src/index.ts Flag-Bourbon bourbon_france.png --image-format=png
+Show me the PNG at full size and at 200 px wide.
+Check: the gold lilies are clearly visible even at 200 px. NO blue field (a blue field with three lilies is the royal arms, not the flag).
+
+======================================================================
+R2. arrow_white_block.png (solid white block arrow)
+======================================================================
+Create a minimal Remotion 4.0.523 project with ONE composition, id "Icon-Arrow", width 2048, height 1024, fps 30, durationInFrames 1, transparent background. It renders an SVG block arrow pointing RIGHT, centred, filling about 84% of the width:
+- shaft: a rectangle, height 36% of the canvas height, starting at 8% of the width
+- head: a triangle, full height 82% of the canvas height, its base 56% of the way along, its tip at 92% of the width
+- shaft and head merged into ONE path; corners rounded with a 2% radius
+- fill: solid opaque white #FFFFFF. NO outline, NO stroke
+- a soft drop shadow under it: offset (0, 2.5% of the height), blur 3% of the height, colour rgba(0,0,0,0.35), applied with an SVG feDropShadow filter
+Render it with:
+  npx remotion still src/index.ts Icon-Arrow arrow_white_block.png --image-format=png
+Show me the PNG on a checkerboard so I can confirm the white fill is OPAQUE.
