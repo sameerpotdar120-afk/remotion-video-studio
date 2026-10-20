@@ -4,7 +4,8 @@ import { MainComposition } from './Video';
 import { FPS, H, W } from './lib/constants';
 import { loadFonts } from './lib/fonts';
 import { DemoBritain, DemoMap3D, DemoMapHook, DemoVolley } from './scenes/Demos';
-import { GrandUnion, UnionFlag1707 } from './lib/fx/flags';
+import { BourbonFrance, GrandUnion, UnionFlag1707 } from './lib/fx/flags';
+import { ArrowBlock } from './lib/fx/arrow';
 import { Animatic } from './scenes/Animatic';
 import { PreviewHook } from './scenes/PreviewHook';
 import { TOTAL_FRAMES } from './vo/cues';
@@ -27,6 +28,8 @@ export const RemotionRoot: React.FC = () => {
           npx remotion still src/index.ts Flag-GrandUnion public/assets/flags/grand_union_1775.png */}
       <Composition id="Flag-GrandUnion" component={() => <GrandUnion width={3800} />} durationInFrames={1} fps={FPS} width={3800} height={2000} />
       <Composition id="Flag-Union1707" component={() => <UnionFlag1707 width={3800} />} durationInFrames={1} fps={FPS} width={3800} height={1900} />
+      <Composition id="Flag-Bourbon" component={() => <BourbonFrance width={3600} />} durationInFrames={1} fps={30} width={3600} height={2400} />
+      <Composition id="Icon-Arrow" component={() => <ArrowBlock width={2048} height={1024} />} durationInFrames={1} fps={30} width={2048} height={1024} />
       {/* original vertical starter */}
       <Composition
         id="MainComposition"
