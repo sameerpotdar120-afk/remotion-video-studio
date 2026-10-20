@@ -6,11 +6,15 @@ import { clamp, wobble } from './theme';
 // sticker (thick white outline and a soft drop shadow, like the reference's photo stickers) is thrown in from `from`
 // with a spin, lands at its spot with a squash and a damped wobble, then sways gently. Transparent, 1080×1920, 60 fps.
 // Pass the cutout as `children` (an <Img> of a prop), sized `w`×`h`, landing centre `at`; `land` = frames to land.
-export const Sticker: React.FC<{ children: React.ReactNode; outline?: number }> = ({ children, outline = 10 }) => (
-  <div style={{ width: '100%', height: '100%', filter: `drop-shadow(0 0 0 #fff) ${Array.from({ length: 8 }, (_, i) => `drop-shadow(${(Math.cos((i * Math.PI) / 4) * outline / 2).toFixed(1)}px ${(Math.sin((i * Math.PI) / 4) * outline / 2).toFixed(1)}px 0 #fff)`).join(' ')} drop-shadow(0 14px 14px rgba(0,0,0,0.45))` }}>
-    {children}
-  </div>
-);
+export const Sticker: React.FC<{ children: React.ReactNode; outline?: number }> = ({ children, outline = 10 }) => {
+  // four diagonal hard shadows make the white rim (cheap at 4K; the eight-way version cost ~4× the render time)
+  const o = (outline * 0.6).toFixed(1);
+  return (
+    <div style={{ width: '100%', height: '100%', filter: `drop-shadow(${o}px ${o}px 0 #fff) drop-shadow(-${o}px -${o}px 0 #fff) drop-shadow(${o}px -${o}px 0 #fff) drop-shadow(-${o}px ${o}px 0 #fff) drop-shadow(0 14px 12px rgba(0,0,0,0.45))` }}>
+      {children}
+    </div>
+  );
+};
 export const W13Sticker: React.FC<{ children?: React.ReactNode; w?: number; h?: number; at?: [number, number]; from?: [number, number]; spin?: number; land?: number; rest?: number }> = ({
   children, w = 260, h = 520, at = [420, 1320], from = [-300, 200], spin = -260, land = 14, rest = -8,
 }) => {
