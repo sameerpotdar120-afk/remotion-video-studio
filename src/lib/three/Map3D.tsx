@@ -84,9 +84,8 @@ const camAt = (keys: Cam3DKey[], frame: number) => {
   return { yaw: 0, ...last, dist: last.dist / (1 + T.driftPerSec * held) }; // the camera never stops
 };
 
-const CameraRig: React.FC<{ keys: Cam3DKey[] }> = ({ keys }) => {
-  const frame = useCurrentFrame();
-  const { camera } = useThree();
+/** Place a three.js camera exactly as the map camera sits at `frame`. */
+const poseCamera = (camera: THREE.Camera, keys: Cam3DKey[], frame: number) => {
   const c = camAt(keys, frame);
   const [tx, ty] = toXY(c.lon, c.lat);
   const tilt = (c.tilt * Math.PI) / 180;
@@ -96,8 +95,30 @@ const CameraRig: React.FC<{ keys: Cam3DKey[] }> = ({ keys }) => {
   camera.position.set(tx + Math.sin(yaw) * back, ty - Math.cos(yaw) * back, Math.cos(tilt) * c.dist);
   camera.up.set(0, 0, 1);
   camera.lookAt(tx, ty, 0);
-  camera.updateProjectionMatrix();
+};
+
+const CameraRig: React.FC<{ keys: Cam3DKey[] }> = ({ keys }) => {
+  const frame = useCurrentFrame();
+  const { camera } = useThree();
+  poseCamera(camera, keys, frame);
+  (camera as THREE.PerspectiveCamera).updateProjectionMatrix();
   return null;
+};
+
+export const FOV3D = 32;
+const probe = new THREE.PerspectiveCamera(FOV3D, 16 / 9, 0.1, 1000);
+/**
+ * lon/lat (+ height above the land in world units) → screen px for the SAME camera keys.
+ * Lets 2D overlays (eyes, hearts, muskets, labels) sit exactly on the 3D colonies.
+ */
+export const screenOf3D = (keys: Cam3DKey[], frame: number, lon: number, lat: number, z: number, w: number, h: number): [number, number] => {
+  probe.aspect = w / h;
+  poseCamera(probe, keys, frame);
+  probe.updateMatrixWorld();
+  probe.updateProjectionMatrix();
+  const [x, y] = toXY(lon, lat);
+  const v = new THREE.Vector3(x, y, z).project(probe);
+  return [((v.x + 1) / 2) * w, ((1 - v.y) / 2) * h];
 };
 
 const Colony: React.FC<{ feature: Feature<Geometry>; index: number; start: number; height: number; color: string }> = ({
@@ -170,7 +191,7 @@ export const Map3D: React.FC<{
       width={width}
       height={heightPx}
       shadows
-      camera={{ fov: 32, near: 0.1, far: 1000, position: [0, -20, 40] }}
+      camera={{ fov: FOV3D, near: 0.1, far: 1000, position: [0, -20, 40] }}
       gl={{ antialias: true, preserveDrawingBuffer: true }}
       style={{ backgroundColor: seaColor }}
     >

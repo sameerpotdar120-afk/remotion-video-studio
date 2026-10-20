@@ -83,4 +83,6 @@ export const FONTS = {
   sans: '"Anton", "Impact", sans-serif',
   hand: '"Kalam", cursive', // handwritten notes / labels (supports Devanagari)
   hindi: '"Tiro Devanagari Hindi", "Noto Serif Devanagari", serif',
+  display: '"Rozha One", "Tiro Devanagari Hindi", serif', // big Hindi titles
+  label: '"Hind", "Kalam", sans-serif', // bold Hindi/English labels
 } as const;

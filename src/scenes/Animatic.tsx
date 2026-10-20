@@ -29,9 +29,9 @@ const SceneCard: React.FC<{ idx: number }> = ({ idx }) => {
   );
 };
 
-export const Animatic: React.FC = () => (
+export const Animatic: React.FC<{ silent?: boolean }> = ({ silent }) => (
   <AbsoluteFill style={{ width: W, height: H }}>
-    <Audio src={staticFile('assets/vo/vo_master.mp3')} />
+    {!silent && <Audio src={staticFile('assets/vo/vo_master.mp3')} />}
     {SCENES.map((s, i) => (
       <Sequence key={s.id} from={s.from} durationInFrames={s.to - s.from} name={s.id}>
         <SceneCard idx={i} />
