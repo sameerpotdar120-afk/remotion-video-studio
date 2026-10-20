@@ -89,9 +89,9 @@ export const MapCharacter: React.FC<{
   const t = g && prev ? ramp(frame, g.at, 8, ease.out) : 1;
   const angle = g ? (prev ? prev.angle + (g.angle - prev.angle) * t : g.angle) : 0;
   const reach = g ? (prev ? prev.reach + (g.reach - prev.reach) * t : g.reach * ramp(frame, g.at, 8, ease.out)) : 0;
-  const sx = w * 0.18;
-  const sy = height * 0.55;
-  const len = height * 0.55 * reach;
+  const sx = w * 0.2;
+  const sy = height * 0.47;
+  const len = height * 0.22 * reach; // reference arm ≈ 0.2 × island height at full reach
   const a = (angle * Math.PI) / 180;
   const pump = g?.pose === 'point' ? Math.sin(loop(frame, T.gestureCycle) * Math.PI * 2) * 10 : 0;
   const hx = sx + Math.cos(a) * (len + pump);
@@ -121,30 +121,36 @@ export const MapCharacter: React.FC<{
           />
         )}
       </svg>
-      {g && reach > 0.02 && (
-        <Img
-          src={staticFile(`assets/props/glove_${g.pose}.png`)}
-          style={{
-            position: 'absolute',
-            left: hx - height * 0.09,
-            top: hy - height * 0.09,
-            width: height * 0.18,
-            transform: `rotate(${angle + 180}deg) scaleY(-1)`,
-          }}
-        />
-      )}
       {holding && frame >= holding.from && (holding.to === undefined || frame < holding.to) && (
+        // held against the body: the paper's right edge sits in the glove, overlapping the coast (ref f1420, f4170)
         <Img
           src={holding.src}
           style={{
             position: 'absolute',
-            left: hx - holding.w * 0.9,
-            top: hy - holding.w * 0.7,
+            left: hx - holding.w * 0.82,
+            top: hy - holding.w * 0.5,
             width: holding.w,
             transform: `scale(${popScale(frame, holding.from)}) rotate(${-6 + Math.sin(frame / 18) * 2}deg)`,
           }}
         />
       )}
+      {g && reach > 0.02 && (() => {
+        // glove PNGs point RIGHT with the cuff on the left; mirror when pointing into the left half
+        const gs = height * 0.32; // square canvas; the visible glove is ~60% of it
+        const left = Math.cos(a) < 0;
+        return (
+          <Img
+            src={staticFile(`assets/props/glove_${g.pose}.png`)}
+            style={{
+              position: 'absolute',
+              left: hx - gs / 2,
+              top: hy - gs / 2,
+              width: gs,
+              transform: left ? `rotate(${angle - 180}deg) scaleX(-1)` : `rotate(${angle}deg)`,
+            }}
+          />
+        );
+      })()}
       <div style={{ position: 'absolute', left: face.x * w - (face.w * w) / 2, top: face.y * height - (face.w * w) / 2 }}>
         <Face size={face.w * w} mood={mood} look={lk} talk={talk} style="googly" />
       </div>

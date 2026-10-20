@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { AbsoluteFill, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Img, staticFile, useCurrentFrame } from 'remotion';
 import type { Feature, Geometry } from 'geojson';
 import { C, H, T, W } from '../lib/constants';
 import { MapStage } from '../lib/map/MapStage';
@@ -11,7 +11,7 @@ import { MapTitle, TimelineRuler } from '../lib/fx/text';
 import { ArrowBob, PopIn, Shake, StampSlam, ZoomPunch } from '../lib/fx/motion';
 import { Finish, Grade, ImpactPuff, MuzzleSmoke } from '../lib/fx/particles';
 import { MapCharacter, greatBritain1763 } from '../lib/character/MapCharacter';
-import { Puppet } from '../lib/character/Puppet';
+import { Puppet, musketMount, mountTip } from '../lib/character/Puppet';
 import { RIGS } from '../lib/character/rigs';
 import { Map3D } from '../lib/three/Map3D';
 
@@ -78,7 +78,7 @@ export const DemoMapHook: React.FC = () => {
 const HomeHidden: React.FC<{ feature: Feature<Geometry>; start: number }> = ({ feature, start }) => {
   const frame = useCurrentFrame();
   const d = useMemo(() => featurePath(feature), [feature]);
-  return <path d={d} fill={C.parchSea} stroke={C.parchSea} strokeWidth={6} opacity={ramp(frame, start, 8, ease.out)} />;
+  return <path d={d} fill={C.stageParchSea} stroke={C.stageParchSea} strokeWidth={6} opacity={ramp(frame, start, 8, ease.out)} />;
 };
 
 export const DemoBritain: React.FC = () => {
@@ -104,20 +104,21 @@ export const DemoBritain: React.FC = () => {
                 <>
                   <MapCharacter
                     feature={gb}
-                    height={900}
+                    height={1250}
                     start={10}
                     path={[
                       { at: 0, x: 3300, y: 900 },
-                      { at: 100, x: 2100, y: 1000 },
+                      { at: 100, x: 2250, y: 1080 },
                     ]}
                     moods={[[0, 'smug'], [70, 'shocked'], [100, 'smile'], [230, 'grin']]}
                     look={[[0, 0], [120, -1]]}
                     talk={[[130, 200]]}
                     glove={[
-                      { at: 130, pose: 'point', angle: 190, reach: 0.9 },
-                      { at: 220, pose: 'hold', angle: 200, reach: 0.7 },
+                      { at: 110, pose: 'open', angle: 205, reach: 0.75 },
+                      { at: 150, pose: 'point', angle: 186, reach: 1 },
+                      { at: 220, pose: 'hold', angle: 178, reach: 0.55 },
                     ]}
-                    holding={{ src: staticFile('assets/docs/doc_sugar_act_1764.png'), w: 340, from: 222 }}
+                    holding={{ src: staticFile('assets/docs/doc_sugar_act_1764.png'), w: 620, from: 222 }}
                   />
                   <StampSlam
                     x={3000}
@@ -141,52 +142,51 @@ export const DemoBritain: React.FC = () => {
 };
 
 /**
- * DEMO 3 — Boston Massacre volley: snowball hits the front soldier, muskets rise with an
- * 8-frame stagger, recoil + muzzle smoke, screen shake. Characters are cut-out puppets.
+ * DEMO 3 — Boston Massacre volley, staged like the reference (f2300–2440 @30): a CLOSE-UP of three redcoats
+ * in depth on the King Street plate, heads ~1/3 of the frame, cropped at the thighs. No arms are drawn: each
+ * musket rests across the chest (muzzle up past the hat), swings up like a lever, and presents under the chin,
+ * staggered 8 f per soldier. Snowball hit → angry brows → volley, smoke, shake.
  */
 export const DemoVolley: React.FC = () => {
-  const soldiers = [0, 1, 2];
+  const frame = useCurrentFrame();
   const fire = 200;
+  const musket = staticFile('assets/props/musket_brown_bess.png');
+  const rig = RIGS.redcoat;
+  // drawn back → front; the front-left soldier is largest and on top, as in the reference
+  // depth like ref f2300: middle soldier smaller and HIGHER (further away), front pair large and overlapping it
+  const squad = [
+    { x: 2050, y: 2035, height: 2050, raise: 128 }, // back, middle
+    { x: 2900, y: 2595, height: 2450, raise: 136 }, // front right
+    { x: 1150, y: 2600, height: 2640, raise: 120 }, // front left: largest, raises first
+  ];
+  const mounts = squad.map((p, i) => musketMount(rig, p.raise, musket, { recoilAt: [fire + i * 3] }));
   return (
-    <AbsoluteFill style={{ background: 'linear-gradient(#9AA3AD, #C9CED3 55%, #7D7F82)' }}>
+    <AbsoluteFill style={{ background: '#0E1622' }}>
       <Shake hits={[fire]} amp={22}>
         <Grade>
           <AbsoluteFill>
-            {soldiers.map((i) => (
+            <Img
+              src={staticFile('assets/bg/bg_king_street_boston_1770_night.jpg')}
+              style={{ width: W, height: H, objectFit: 'cover', filter: 'blur(9px) brightness(0.92)', transform: 'scale(1.08)' }}
+            />
+            {squad.map((p, i) => (
               <Puppet
                 key={i}
-                rig={RIGS.redcoat}
-                x={1500 + i * 520}
-                y={2050 - i * 40}
-                height={1500 - i * 60}
+                rig={rig}
+                x={p.x}
+                y={p.y}
+                height={p.height}
                 flip
                 seed={`s${i}`}
-                moods={[[0, 'neutral'], [70, i === 0 ? 'shocked' : 'neutral'], [110, 'angry']]}
-                armR={[{ at: 0, angle: 80, reach: 0.55 }, { at: 120 + i * T.musketOffset, angle: 10, reach: 0.75, dur: T.musketRaise }]}
-                prop={{
-                  src: staticFile('assets/props/musket_brown_bess.png'),
-                  hand: 'R',
-                  w: 1100,
-                  pivot: [0.72, 0.5],
-                  angle: [
-                    { at: 0, deg: -78 },
-                    { at: 120 + i * T.musketOffset, deg: 0, dur: T.musketRaise },
-                  ],
-                  recoilAt: [fire + i * 2],
-                }}
+                moods={[[0, 'neutral'], [70, i === 2 ? 'shocked' : 'neutral'], [p.raise - 12, 'angry']]}
+                mount={mounts[i]}
               />
             ))}
-            {soldiers.map((i) => {
-              // muzzle = hand position (mirrored right shoulder + arm) minus the musket length left of the grip
-              const h = 1500 - i * 60;
-              const left = 1500 + i * 520 - h / 2;
-              const hand: [number, number] = [left + (1 - 0.64) * h - Math.cos((10 * Math.PI) / 180) * h * 0.42 * 0.75, 2050 - i * 40 - h + 0.52 * h + Math.sin((10 * Math.PI) / 180) * h * 0.42 * 0.75];
-              return <MuzzleSmoke key={`m${i}`} x={hand[0] - 1100 * 0.72} y={hand[1]} start={fire + i * 2} size={260} />;
+            {squad.map((p, i) => {
+              const [mx, my] = mountTip(mounts[i], fire + i * 3, { ...p, flip: true, aspect: rig.aspect });
+              return <MuzzleSmoke key={`m${i}`} x={mx} y={my} start={fire + i * 3} size={300} />;
             })}
-            <ImpactPuff x={1500} y={900} start={70} />
-            <PopIn x={600} y={1500} w={900} h={900} start={20}>
-              <Puppet rig={RIGS.colonist} x={450} y={900} height={900} talk={[[20, 60]]} moods={[[0, 'angry']]} seed="c" armR={[{ at: 20, angle: -60, reach: 0.8 }]} />
-            </PopIn>
+            <ImpactPuff x={1180} y={360} start={70} />
           </AbsoluteFill>
         </Grade>
       </Shake>

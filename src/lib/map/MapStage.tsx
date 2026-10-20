@@ -101,7 +101,7 @@ export const MapStage: React.FC<{
   );
 
   const landPath = useMemo(() => featurePath(land as never), []);
-  const bg = style === 'satellite' ? '#0B2A44' : style === 'parchment' ? C.parchSea : C.flatSea;
+  const bg = style === 'satellite' ? '#0B2A44' : style === 'parchment' ? C.stageParchSea : C.flatSea;
   // Only the visible window is rasterised: the SVG is screen-sized and the camera is a viewBox.
   const viewBox = `${-tx / scale} ${-ty / scale} ${W / scale} ${H / scale}`;
 
@@ -137,7 +137,7 @@ export const MapStage: React.FC<{
             style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}
           >
             {style !== 'satellite' && (
-              <path d={landPath} fill={style === 'parchment' ? C.parchLand : C.flatLand} stroke="none" />
+              <path d={landPath} fill={style === 'parchment' ? C.stageParchLand : C.flatLand} stroke="none" />
             )}
             {world}
           </svg>

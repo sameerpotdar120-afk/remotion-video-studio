@@ -32,6 +32,73 @@ export type HeldProp = {
   aspect?: number; // image width / height. GPT props are square 2048² canvases (default 1)
 };
 
+/**
+ * Body-mounted prop (reference volley, f2300–2440 @30): NO arms are drawn — the musket sits on the body.
+ * Keys are in the puppet box, in the direction the character FACES (+x before any flip):
+ *   x, y = where the prop's pivot sits (fractions of the box) · deg = prop direction (0 = facing direction,
+ *   negative = up). The image is mirrored when needed so the muzzle always points the facing way.
+ */
+export type MountKey = { at: number; x: number; y: number; deg: number; dur?: number };
+export type BodyProp = {
+  src: string;
+  len: number; // canvas width as a fraction of the puppet BOX WIDTH
+  aspect?: number; // image width / height (GPT props: square = 1)
+  pivot: [number, number]; // pivot in the image AFTER mirroring (musket: the lock)
+  mirror?: boolean; // musket PNGs point LEFT; puppets face +x inside their box, so mirror them
+  keys: MountKey[];
+  recoilAt?: number[];
+};
+
+/**
+ * Reference musket handling for a rig: "port arms" (lock at the chest, muzzle up and back past the hat)
+ * → lever swing → "present" (lock under the chin, barrel level, slight dip). Raise 16–20 f @60.
+ */
+export const musketMount = (rig: Rig, raiseAt: number, src: string, opts: { dur?: number; recoilAt?: number[] } = {}): BodyProp => {
+  const faceH = rig.face.w * rig.aspect; // face diameter as a fraction of box height
+  const chin = rig.face.y + faceH * 0.46;
+  return {
+    src,
+    len: 1.35, // ref: musket ≈ 1.9 head widths
+    pivot: [0.33, 0.5], // the lock: thickest point of musket_brown_bess.png at x 0.67, mirrored
+    mirror: true,
+    keys: [
+      { at: 0, x: rig.face.x - 0.04, y: chin + 0.2, deg: -112 }, // ref f2300: 22° off vertical, muzzle up and back
+      { at: raiseAt, x: rig.face.x + 0.05, y: chin + 0.015, deg: 3, dur: opts.dur ?? T.musketRaise + 6 },
+    ],
+    recoilAt: opts.recoilAt,
+  };
+};
+
+/** Where a body-mounted prop's far end (e.g. the muzzle) is on screen — for smoke and flashes. */
+export const mountTip = (
+  m: BodyProp,
+  frame: number,
+  p: { x: number; y: number; height: number; flip?: boolean; aspect: number },
+  tip = 0.97,
+): [number, number] => {
+  const k = mountAt(m, frame);
+  const w = p.height * p.aspect;
+  const L = m.len * w;
+  const a = (k.deg * Math.PI) / 180;
+  const bx = k.x * w + Math.cos(a) * L * (tip - m.pivot[0]);
+  const by = k.y * p.height + Math.sin(a) * L * (tip - m.pivot[0]);
+  return [p.x - w / 2 + (p.flip ? w - bx : bx), p.y - p.height + by];
+};
+
+const mountAt = (m: BodyProp, frame: number) => {
+  let cur = { x: m.keys[0].x, y: m.keys[0].y, deg: m.keys[0].deg };
+  for (let i = 1; i < m.keys.length; i++) {
+    const k = m.keys[i];
+    const prev = m.keys[i - 1];
+    if (frame < k.at) break;
+    const t = interpolate(frame - k.at, [0, k.dur ?? T.musketRaise], [0, 1], { ...clamp, easing: ease.out });
+    // small overshoot past the target angle, then settle (ref f2373–2380 @30)
+    const over = t < 1 ? Math.sin(t * Math.PI) * 5 * Math.sign(k.deg - prev.deg) : 0;
+    cur = { x: prev.x + (k.x - prev.x) * t, y: prev.y + (k.y - prev.y) * t, deg: prev.deg + (k.deg - prev.deg) * t + over };
+  }
+  return cur;
+};
+
 export const Puppet: React.FC<{
   rig: Rig;
   x: number;
@@ -44,9 +111,10 @@ export const Puppet: React.FC<{
   talk?: Talk;
   armL?: ArmPose[]; // omit = arm hidden (reference default)
   armR?: ArmPose[];
-  handStyle?: 'skin' | 'glove';
+  handStyle?: 'none' | 'skin' | 'glove'; // reference humans: bare line arms, no hand shape
   gloveSrc?: string; // white cartoon glove PNG (map characters)
   prop?: HeldProp;
+  mount?: BodyProp;
   idle?: number; // idle bob amplitude px
   seed?: string;
   fallAt?: number; // tips over 90° (casualty) — ref f3697–3704 @30
@@ -62,9 +130,10 @@ export const Puppet: React.FC<{
   talk = [],
   armL,
   armR,
-  handStyle = 'skin',
+  handStyle = 'none',
   gloveSrc = '',
   prop,
+  mount,
   idle = 4,
   seed = 'p',
   fallAt,
@@ -116,7 +185,7 @@ export const Puppet: React.FC<{
     <path key={i} d={g.d} fill="none" stroke={C.ink} strokeWidth={height * 0.012} strokeLinecap="round" />
   ));
   const hands = arms.map((g, i) =>
-    handStyle === 'glove' ? (
+    handStyle === 'none' ? null : handStyle === 'glove' ? (
       <Img
         key={i}
         src={gloveSrc}
@@ -186,6 +255,36 @@ export const Puppet: React.FC<{
     );
   };
 
+  const mountNode = () => {
+    if (!mount) return null;
+    const k = mountAt(mount, frame);
+    const L = mount.len * w;
+    const ih = L / (mount.aspect ?? 1);
+    const recoil = (mount.recoilAt ?? []).reduce((acc, r) => {
+      const t = frame - r;
+      return t >= 0 && t < 8 ? acc + (1 - t / 8) * height * 0.012 : acc;
+    }, 0);
+    const a = (k.deg * Math.PI) / 180;
+    const px = k.x * w - Math.cos(a) * recoil;
+    const py = k.y * height - Math.sin(a) * recoil;
+    // rotate about the pivot (outer); mirror about the image centre (inner) so the pivot stays put
+    return (
+      <div
+        style={{
+          position: 'absolute',
+          left: px - L * mount.pivot[0],
+          top: py - ih * mount.pivot[1],
+          width: L,
+          height: ih,
+          transformOrigin: `${mount.pivot[0] * 100}% ${mount.pivot[1] * 100}%`,
+          transform: `rotate(${k.deg}deg)`,
+        }}
+      >
+        <Img src={mount.src} style={{ width: '100%', height: '100%', transform: mount.mirror ? 'scaleX(-1)' : undefined }} />
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -214,6 +313,7 @@ export const Puppet: React.FC<{
       </svg>
       {hands}
       {propNode()}
+      {mountNode()}
     </div>
   );
 };
