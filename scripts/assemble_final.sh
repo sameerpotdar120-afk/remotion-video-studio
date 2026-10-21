@@ -26,10 +26,10 @@ for i in 00 09; do
   git update-ref -d "refs/remotes/origin/render/4k-chunk-$i"; git gc -q --prune=now 2>/dev/null
 done
 
-# 2 · the segments from the 16 resumable workers
-for w in $(seq -w 1 16); do
-  git fetch -q origin "render/4k-v2-w$w" 2>/dev/null || continue
-  git archive "origin/render/4k-v2-w$w" renders/4k-v2 2>/dev/null | tar -x -C "$W/seg" --strip-components=2 2>/dev/null
+# 2 · the segments from the resumable workers (w01…w16, plus any helper branch such as w03c)
+for br in $(git ls-remote origin 'refs/heads/render/4k-v2-w*' | awk '{print $2}' | sed 's#refs/heads/##'); do
+  git fetch -q origin "$br" 2>/dev/null || continue
+  git archive "origin/$br" renders/4k-v2 2>/dev/null | tar -x -C "$W/seg" --strip-components=2 2>/dev/null
 done
 
 # 3 · audio
