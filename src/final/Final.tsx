@@ -10,6 +10,7 @@ import { S03Colonies } from './S03Colonies';
 import { S04FirstShot } from './S04FirstShot';
 import { S05Debt } from './S05Debt';
 import { S06Proclamation } from './S06Proclamation';
+import { S07Sugar } from './S07Sugar';
 
 /**
  * FINAL 4K60 cut. Each scene is a <Sequence> on its exact VO frames; finished scenes replace the
@@ -23,6 +24,7 @@ const BUILT: Record<string, { comp: React.FC; tail?: number }> = {
   S04_first_shot: { comp: S04FirstShot },
   S05_debt: { comp: S05Debt },
   S06_proclamation: { comp: S06Proclamation },
+  S07_sugar: { comp: S07Sugar },
 };
 
 export const Final: React.FC = () => (

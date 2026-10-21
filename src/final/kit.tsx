@@ -221,3 +221,45 @@ export const Bubble: React.FC<{ x: number; y: number; text: string; start: numbe
 
 export { serif };
 export const CENTER = { x: W / 2, y: H / 2 };
+
+/** Punch-in sandwich on a screen point: ease in → hold → punch back out (ref §2.2). */
+export const Punch: React.FC<{ start: number; end: number; to: number; focus: [number, number]; dur?: number; children: React.ReactNode }> = ({
+  start, end, to, focus, dur = 12, children,
+}) => {
+  const frame = useCurrentFrame();
+  const tin = ramp(frame, start, dur, ease.inOut);
+  const tout = ramp(frame, end, dur, ease.inOut);
+  const t = tin * (1 - tout);
+  const s = 1 + (to - 1) * t;
+  const blur = (tin > 0 && tin < 1) || (tout > 0 && tout < 1) ? 6 : 0;
+  return (
+    <AbsoluteFill style={{ transformOrigin: `${focus[0]}px ${focus[1]}px`, transform: `translate(${(W / 2 - focus[0]) * t}px, ${(H / 2 - focus[1]) * t}px) scale(${s})`, filter: blur ? `blur(${blur}px)` : undefined }}>
+      {children}
+    </AbsoluteFill>
+  );
+};
+
+/** A small ship icon sailing along lon/lat waypoints (map screen layer), bobbing. */
+export const MapShip: React.FC<{ route: [number, number][]; start: number; dur: number; src: string; w: number; loop?: boolean; flipWhenWest?: boolean; exit?: number }> = ({
+  route, start, dur, src, w, loop = false, flipWhenWest = true, exit,
+}) => {
+  const frame = useCurrentFrame();
+  const { toScreen } = useMap();
+  if (frame < start) return null;
+  const out = exit !== undefined ? 1 - ramp(frame, exit, 8, ease.in) : 1;
+  if (out <= 0) return null;
+  let p = (frame - start) / dur;
+  p = loop ? p % 1 : Math.min(1, p);
+  const seg = p * (route.length - 1);
+  const i = Math.min(route.length - 2, Math.floor(seg));
+  const f = seg - i;
+  const [a, b] = [toScreen(...route[i]), toScreen(...route[i + 1])];
+  const x = a[0] + (b[0] - a[0]) * f;
+  const y = a[1] + (b[1] - a[1]) * f + Math.sin(frame / 7) * 6;
+  const west = b[0] < a[0];
+  // ship PNGs face LEFT
+  return (
+    <Img src={staticFile(`assets/props/${src}`)} style={{ position: 'absolute', left: x - w / 2, top: y - w * 0.4, width: w,
+      transform: `scaleX(${flipWhenWest && !west ? -1 : 1}) rotate(${Math.sin(frame / 11) * 3}deg) scale(${popScale(frame, start) * out})` }} />
+  );
+};
