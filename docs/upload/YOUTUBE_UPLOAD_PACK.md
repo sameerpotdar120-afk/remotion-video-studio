@@ -58,7 +58,7 @@ Primary documents (public domain): Proclamation of 1763, Sugar Act 1764, Stamp A
 Books: Middlekauff, The Glorious Cause · Anderson, Crucible of War · Fischer, Paul Revere's Ride · Zobel, The Boston Massacre · Maier, American Scripture · Wood, The American Revolution
 Reference: Monticello · Mount Vernon · National Park Service · American Battlefield Trust · Journal of the American Revolution
 Note: Emerson's "shot heard round the world" refers to Concord's North Bridge; Paine's 100,000-copy figure is his own estimate.
-Full fact-by-fact bibliography: https://claude.ai/artifact/PzMNS7wXL6sNoBY8qYhBSj
+Full fact-by-fact bibliography: https://github.com/sameerpotdar120-afk/remotion-video-studio/blob/ccr-b793949a-9xc6cy/docs/upload/BIBLIOGRAPHY.md
 
 🗺️ MAPS & DATA
 Boundaries: U.S. Census Bureau (public domain) · Made with Natural Earth (public domain)
