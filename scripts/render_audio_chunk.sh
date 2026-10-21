@@ -12,7 +12,7 @@ CHROME=/opt/pw-browsers/chromium_headless_shell-1194/chrome-linux/headless_shell
 # the project config sets --crf, which audio codecs reject: use a minimal config for this pass
 printf "import { Config } from '@remotion/cli/config';\nConfig.setOverwriteOutput(true);\n" > /tmp/audio.config.ts
 mkdir -p renders/audio
-npx remotion render src/index.ts Final-4K renders/audio/chunk_$id.wav --codec=wav --frames=$a-$b --scale=0.05 --concurrency=4 \
+npx remotion render src/index.ts Final-4K renders/audio/chunk_$id.wav --codec=wav --frames=$a-$b --scale=0.05 --concurrency=4 --timeout=240000 \
   --config=/tmp/audio.config.ts --gl=swangle --browser-executable="$CHROME"
 git checkout -B render/audio-v2-chunk-$id
 git add -f renders/audio/chunk_$id.wav
