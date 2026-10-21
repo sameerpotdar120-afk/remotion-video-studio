@@ -39,6 +39,16 @@ for i in $(seq -f %02g 0 9); do
     git archive FETCH_HEAD "renders/audio/chunk_$i.wav" | tar -x -C "$W" --strip-components=2 && echo "GOT audio $i"
 done
 
+# 3b · chunk 01 was too slow for one 2-hour job, so it is rendered in halves (scripts/render_audio_range.sh):
+#      frames 2952–4427 on render/audio-v2-part-01a, 4428–5903 locally; each trimmed to exactly 1476 frames of audio
+if [ ! -s "$W/chunk_01.wav" ] && [ -s renders/audio/part_4428.wav ] && git fetch -q origin render/audio-v2-part-01a 2>/dev/null; then
+  git archive FETCH_HEAD renders/audio/part_2952.wav | tar -x -C "$W" --strip-components=2
+  half=$((1476 * 48000 / 60))
+  ffmpeg -v error -y -i "$W/part_2952.wav" -i renders/audio/part_4428.wav \
+    -filter_complex "[0:a]atrim=end_sample=$half[a];[1:a]atrim=end_sample=$half[b];[a][b]concat=n=2:v=0:a=1" \
+    -c:a pcm_s16le "$W/chunk_01.tmp.wav" && mv "$W/chunk_01.tmp.wav" "$W/chunk_01.wav" && echo "JOINED audio 01 halves"
+fi
+
 # 4 · coverage check: every frame exactly once
 : > "$W/video.txt"; frames=0; missing=""
 add() { local n; n=$(ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of default=nk=1:nw=1 "$1"); echo "file '$(basename "$1")'" >> "$W/video.txt"; frames=$((frames + n)); }
