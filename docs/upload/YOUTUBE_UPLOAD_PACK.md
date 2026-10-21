@@ -58,7 +58,7 @@ Primary documents (public domain): Proclamation of 1763, Sugar Act 1764, Stamp A
 Books: Middlekauff, The Glorious Cause · Anderson, Crucible of War · Fischer, Paul Revere's Ride · Zobel, The Boston Massacre · Maier, American Scripture · Wood, The American Revolution
 Reference: Monticello · Mount Vernon · National Park Service · American Battlefield Trust · Journal of the American Revolution
 Note: Emerson's "shot heard round the world" refers to Concord's North Bridge; Paine's 100,000-copy figure is his own estimate.
-Full fact-by-fact bibliography: https://github.com/sameerpotdar120-afk/remotion-video-studio/blob/ccr-b793949a-9xc6cy/docs/upload/BIBLIOGRAPHY.md
+📌 Har fact ka source (timestamp ke saath): pinned comment mein.
 
 🗺️ MAPS & DATA
 Boundaries: U.S. Census Bureau (public domain) · Made with Natural Earth (public domain)
@@ -75,6 +75,40 @@ Terrain: AWS Terrain Tiles (Mapzen/Tilezen) — United States 3DEP (formerly NED
 
 ```
 america azad kaise hua, america ki azadi, american revolution in hindi, american independence in hindi, अमेरिका की आज़ादी, अमेरिकी क्रांति, 13 colonies in hindi, boston tea party in hindi, declaration of independence hindi, 4 july 1776, george washington hindi, east india company tea, seven years war hindi, history in hindi, map explainer hindi
+```
+
+## 4b. Pinned comment (post it yourself after upload, then Pin it)
+
+```
+📌 SOURCES — video के हर fact का source (timestamp के साथ)
+
+0:45 1775 तक ~25 लाख लोग, ~5 लाख अश्वेत (ज़्यादातर ग़ुलाम) — Facing South; Thirteen Colonies population estimates
+1:05 "Join, or Die" cartoon, Pennsylvania Gazette, 9 May 1754 — Library of Congress
+1:29 Jumonville Glen, 28 May 1754, ~15 minute की लड़ाई, Washington 22 साल के — National Park Service; Mount Vernon; American Battlefield Trust
+2:07 Treaty of Paris, 10 Feb 1763: France ने Canada सौंपा — Avalon Project (Yale)
+2:12 Britain का क़र्ज़ ~£75m से ~£133m (लगभग दोगुना) — Our American Revolution
+2:28 Royal Proclamation, 7 Oct 1763 — Avalon Project (Yale)
+2:48 Sugar Act 1764: molasses duty 6d → 3d; बिना jury वाली अदालतें — Macmillan, The American Promise
+3:15 Stamp Act 1765; Andrew Oliver का पुतला, Liberty Tree (14 Aug 1765); Stamp Act Congress, 9 colonies — Avalon Project; Constitution Center; History.com
+3:45 Stamp Act repeal + Declaratory Act, 18 March 1766, "in all cases whatsoever" — Avalon Project (Yale)
+4:05 Townshend Acts 1767 (glass, lead, paint, paper, tea); Boston में फ़ौज, 1 Oct 1768 — American Battlefield Trust; ushistory.org
+4:16 Boston Massacre, 5 March 1770, 5 मारे गए, Crispus Attucks; Revere की engraving — PBS American Experience; Library of Congress
+4:51 John Adams ने बचाव किया: Captain Preston (अलग trial) और 8 में से 6 soldiers बरी — PBS; Zobel, The Boston Massacre
+5:15 Boston Tea Party, 16 Dec 1773: Dartmouth, Eleanor, Beaver; 342 पेटियाँ — Nantucket Historical Association; Labaree, The Boston Tea Party
+5:30 First Continental Congress, 5 Sep 1774: 12 colonies, 56 delegates — National Archives
+5:44 Revere ने "The British are coming" नहीं चिल्लाया — Fischer, Paul Revere's Ride; PolitiFact
+6:00 Lexington, 19 April 1775: militia के 8 लोग मारे गए, पहली गोली किसने चलाई, पता नहीं — American Battlefield Trust
+6:08 Correction: Emerson की line "The shot heard round the world" (Concord Hymn, 1837) असल में Concord के North Bridge के बारे में है, Lexington के नहीं।
+6:16 Second Continental Congress 10 May 1775; Washington सेनापति 15 June 1775 — National Park Service
+6:25 Bunker Hill: British के 226 मारे गए, 828 घायल — Battle of Bunker Hill records
+6:35 राजा ने Olive Branch Petition (5 July 1775) पढ़ी तक नहीं — American Battlefield Trust
+6:44 Common Sense, 10 Jan 1776. Note: "1,00,000+ copies" Paine का अपना दावा है; historians इस पर सहमत नहीं — Journal of the American Revolution
+6:57 2 July 1776 vote: 12 हाँ, New York ने vote नहीं दिया — Lee Resolution records
+7:05 John Adams का Abigail को letter, 3 July 1776 — Founders Online (National Archives)
+7:12 Declaration of Independence, 4 July 1776; Jefferson 33 साल के — National Archives
+7:23 Jefferson के पास 1774 में 187 ग़ुलाम (Farm Book), ज़िंदगी भर में 600+ — Monticello (Thomas Jefferson Foundation)
+
+Books: Middlekauff, The Glorious Cause · Anderson, Crucible of War · Fischer, Paul Revere's Ride · Zobel, The Boston Massacre · Labaree, The Boston Tea Party · Maier, American Scripture · Wood, The American Revolution · Taylor, American Revolutions · Raphael, Founding Myths
 ```
 
 ## 5. Query test
