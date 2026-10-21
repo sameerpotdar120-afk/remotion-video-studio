@@ -17,6 +17,8 @@ import { S10Townshend } from './S10Townshend';
 import { S11Massacre } from './S11Massacre';
 import { S12Adams } from './S12Adams';
 import { S13Tea } from './S13Tea';
+import { S14Intolerable } from './S14Intolerable';
+import { S15Lexington } from './S15Lexington';
 
 /**
  * FINAL 4K60 cut. Each scene is a <Sequence> on its exact VO frames; finished scenes replace the
@@ -37,6 +39,8 @@ const BUILT: Record<string, { comp: React.FC; tail?: number }> = {
   S11_massacre: { comp: S11Massacre },
   S12_adams: { comp: S12Adams },
   S13_tea: { comp: S13Tea },
+  S14_intolerable: { comp: S14Intolerable },
+  S15_lexington: { comp: S15Lexington },
 };
 
 export const Final: React.FC = () => (
