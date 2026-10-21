@@ -19,7 +19,7 @@ for i in 00 09; do
   [ -s "$enc" ] && continue
   git fetch -q origin "render/4k-chunk-$i" 2>/dev/null || continue
   rm -f "$W"/chunk_$i.mp4*
-  git archive "origin/render/4k-chunk-$i" "renders/4k/chunk_$i" | tar -x -C "$W" --strip-components=3
+  git archive FETCH_HEAD "renders/4k/chunk_$i" | tar -x -C "$W" --strip-components=3
   cat "$W"/chunk_$i.mp4.part_* > "$W/chunk_$i.mp4" && rm "$W"/chunk_$i.mp4.part_*
   ffmpeg -v error -y -i "$W/chunk_$i.mp4" $ENC "$enc.tmp.mp4" && mv "$enc.tmp.mp4" "$enc" && echo "ENCODED edge chunk $i"
   rm -f "$W/chunk_$i.mp4"
@@ -29,19 +29,19 @@ done
 # 2 · the segments from the resumable workers (w01…w16, plus any helper branch such as w03c)
 for br in $(git ls-remote origin 'refs/heads/render/4k-v2-w*' | awk '{print $2}' | sed 's#refs/heads/##'); do
   git fetch -q origin "$br" 2>/dev/null || continue
-  git archive "origin/$br" renders/4k-v2 2>/dev/null | tar -x -C "$W/seg" --strip-components=2 2>/dev/null
+  git archive FETCH_HEAD renders/4k-v2 2>/dev/null | tar -x -C "$W/seg" --strip-components=2 2>/dev/null
 done
 
 # 3 · audio
-for i in $(seq -w 0 9); do
+for i in $(seq -f %02g 0 9); do
   [ -s "$W/chunk_$i.wav" ] && continue
   git fetch -q origin "render/audio-v2-chunk-$i" 2>/dev/null && \
-    git archive "origin/render/audio-v2-chunk-$i" "renders/audio/chunk_$i.wav" | tar -x -C "$W" --strip-components=2 && echo "GOT audio $i"
+    git archive FETCH_HEAD "renders/audio/chunk_$i.wav" | tar -x -C "$W" --strip-components=2 && echo "GOT audio $i"
 done
 
 # 4 · coverage check: every frame exactly once
 : > "$W/video.txt"; frames=0; missing=""
-add() { local n; n=$(ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of csv=p=0 "$1"); echo "file '$(basename "$1")'" >> "$W/video.txt"; frames=$((frames + n)); }
+add() { local n; n=$(ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of default=nk=1:nw=1 "$1"); echo "file '$(basename "$1")'" >> "$W/video.txt"; frames=$((frames + n)); }
 if [ -s "$W/enc_00.mp4" ]; then add "$W/enc_00.mp4"; else missing="$missing chunk00"; fi
 for ((a = 2952; a <= 26567; a += 240)); do
   s=$(printf "%s/seg/seg_%05d.mp4" "$W" $a)
@@ -53,7 +53,7 @@ echo "VIDEO frames $frames/$TOTAL · audio $wavs/10 · missing:${missing:- none}
 [ -z "$missing" ] && [ "$frames" -eq "$TOTAL" ] && [ "$wavs" -eq 10 ] || exit 0
 
 # 5 · final mux
-: > "$W/audio.txt"; for i in $(seq -w 0 9); do echo "file 'chunk_$i.wav'" >> "$W/audio.txt"; done
+: > "$W/audio.txt"; for i in $(seq -f %02g 0 9); do echo "file 'chunk_$i.wav'" >> "$W/audio.txt"; done
 ffmpeg -v error -y -f concat -safe 0 -i "$W/audio.txt" -c:a pcm_s16le "$W/audio_full.wav"
 ffmpeg -v error -y -f concat -safe 0 -i "$W/video.txt" -i "$W/audio_full.wav" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k \
   -movflags +faststart out/final/America_Azaad_Kaise_Hua_4K60.mp4
