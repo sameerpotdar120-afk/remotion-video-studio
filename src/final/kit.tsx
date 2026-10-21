@@ -263,3 +263,44 @@ export const MapShip: React.FC<{ route: [number, number][]; start: number; dur: 
       transform: `scaleX(${flipWhenWest && !west ? -1 : 1}) rotate(${Math.sin(frame / 11) * 3}deg) scale(${popScale(frame, start) * out})` }} />
   );
 };
+
+/** Card-style object that swings in on Y (like Paper3D, but for any children). x/y = centre. */
+export const Tilted: React.FC<{ start: number; x: number; y: number; scale?: number; exit?: number; children: React.ReactNode }> = ({ start, x, y, scale = 1, exit, children }) => {
+  const frame = useCurrentFrame();
+  if (frame < start) return null;
+  const t = ramp(frame, start, 16, ease.out);
+  const out = exit !== undefined ? 1 - ramp(frame, exit, 10, ease.in) : 1;
+  if (out <= 0) return null;
+  const sway = Math.sin(frame / 40) * 2;
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, perspective: 2600 }}>
+      <div style={{ transform: `translate(-50%, -50%) rotateY(${(1 - t) * 70 - 8 + sway}deg) rotateX(4deg) rotateZ(-2deg) scale(${(0.6 + 0.4 * t) * scale * (0.9 + 0.1 * out)})`, opacity: t * out }}>{children}</div>
+    </div>
+  );
+};
+
+/** Typeset title page of Paine's Common Sense (1776 text, public domain), on aged paper. */
+export const CommonSensePage: React.FC<{ w: number }> = ({ w }) => {
+  const f = (k: number, extra: React.CSSProperties = {}): React.CSSProperties => ({ fontFamily: FONTS.serif, fontSize: w * k, color: '#2A1A0E', textAlign: 'center', lineHeight: 1.15, ...extra });
+  return (
+    <div style={{ width: w, height: w * 1.45, background: 'radial-gradient(ellipse at 50% 45%, #F2E4C2 0%, #E3CFA0 75%, #C9AE78 100%)', padding: w * 0.08, boxSizing: 'border-box',
+      boxShadow: '0 40px 80px rgba(0,0,0,0.55)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: w * 0.028 }}>
+      <div style={f(0.12, { fontWeight: 700, letterSpacing: w * 0.006 })}>COMMON SENSE;</div>
+      <div style={f(0.035, { fontStyle: 'italic' })}>ADDRESSED TO THE</div>
+      <div style={f(0.06, { fontWeight: 700 })}>INHABITANTS</div>
+      <div style={f(0.035)}>OF</div>
+      <div style={f(0.075, { fontWeight: 700 })}>AMERICA,</div>
+      <div style={f(0.03, { fontStyle: 'italic', maxWidth: w * 0.75 })}>On the following interesting SUBJECTS.</div>
+      <div style={{ width: w * 0.6, borderTop: `${w * 0.004}px solid #2A1A0E` }} />
+      <div style={f(0.03, { maxWidth: w * 0.78, textAlign: 'left' })}>
+        I. Of the Origin and Design of Government in general.<br />II. Of Monarchy and Hereditary Succession.<br />III. Thoughts on the present State of American Affairs.<br />IV. Of the present Ability of America.
+      </div>
+      <div style={{ width: w * 0.6, borderTop: `${w * 0.004}px solid #2A1A0E` }} />
+      <div style={f(0.032, { fontStyle: 'italic' })}>Written by an ENGLISHMAN.</div>
+      <div style={{ flex: 1 }} />
+      <div style={f(0.04, { fontWeight: 700 })}>PHILADELPHIA;</div>
+      <div style={f(0.028)}>Printed, and Sold, by R. BELL, in Third-Street.</div>
+      <div style={f(0.04, { fontWeight: 700, letterSpacing: w * 0.004 })}>MDCCLXXVI.</div>
+    </div>
+  );
+};
