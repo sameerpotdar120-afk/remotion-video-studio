@@ -17,6 +17,6 @@ npx remotion render src/index.ts Final-4K "$out" --frames=$a-$b --muted --crf=18
 split -b 95m -d -a 2 "$out" "$out.part_" && rm "$out"
 git checkout -B render/4k-chunk-$id
 git add -f renders/4k/chunk_$id
-git commit -m "4K render chunk $id (frames $a-$b)"
+git commit -m "4K render chunk $id (frames $a-$b)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 for t in 1 2 3 4; do git push -u origin render/4k-chunk-$id && break; sleep $((2 ** t)); done
 echo "PUSHED chunk $id"
