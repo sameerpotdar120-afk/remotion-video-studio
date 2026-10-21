@@ -50,6 +50,7 @@
 "docs/doc_sugar_act_1764.png",
 "docs/doc_townshend_list.png",
 "docs/doc_treaty_of_paris_1763.png",
+"docs/pd_join_or_die_1754.png",
 "flags/bourbon_france.png",
 "flags/grand_union_1775.png",
 "flags/union_flag_1707.png",
@@ -184,6 +185,7 @@
 "sfx/whoosh_down.wav",
 "sfx/whoosh_fast.wav",
 "sfx/whoosh_soft.wav",
+"textures/grain_tile.png",
 "textures/paper_grain_tile.jpg",
 "textures/parchment_paper_4k.jpg",
 "vo/vo_master.mp3"
