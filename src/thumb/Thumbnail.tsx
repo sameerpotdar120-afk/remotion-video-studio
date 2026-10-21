@@ -41,7 +41,31 @@ const Year: React.FC<{ text: string; x: number; color: string }> = ({ text, x, c
   </div>
 );
 
-export const Thumbnail: React.FC = () => (
+/** Hook line in a black banner across the seam (Hindi, ≤ 3 words, never the title's words). */
+const Banner: React.FC<{ text: string }> = ({ text }) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: '50%',
+      top: 1500,
+      transform: 'translateX(-50%) rotate(-3deg)',
+      padding: '40px 110px 60px',
+      background: '#15110d',
+      border: '14px solid #FFD23F',
+      borderRadius: 40,
+      fontFamily: FONTS.display,
+      fontSize: 300,
+      lineHeight: 1.15,
+      color: '#FFD23F',
+      whiteSpace: 'nowrap',
+      boxShadow: '0 30px 60px rgba(0,0,0,0.55)',
+    }}
+  >
+    {text}
+  </div>
+);
+
+export const Thumbnail: React.FC<{ banner?: string }> = ({ banner = '' }) => (
   <AbsoluteFill style={{ background: '#1a120c', overflow: 'hidden' }}>
     {/* left half: warm, loyal 1763 — right half: smoke and fire, 1776; the seam is a slash */}
     <AbsoluteFill style={{ background: 'radial-gradient(circle at 25% 60%, #FFE3A3 0%, #F1B24A 38%, #B86B1E 100%)', clipPath: 'polygon(0 0, 54% 0, 46% 100%, 0 100%)' }} />
@@ -66,6 +90,7 @@ export const Thumbnail: React.FC = () => (
     <svg viewBox="0 0 120 80" style={{ position: 'absolute', left: 1620, top: 250, width: 600, height: 400, filter: 'drop-shadow(0 18px 0 rgba(0,0,0,0.45))' }}>
       <path d="M4 26 H70 V6 L116 40 L70 74 V54 H4 Z" fill="#fff" stroke="#15110d" strokeWidth="6" strokeLinejoin="round" />
     </svg>
+    {banner && <Banner text={banner} />}
   </AbsoluteFill>
 );
 

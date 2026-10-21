@@ -19,9 +19,13 @@ Backups:
 
 ## 2. Thumbnail
 
-Text: **1763 → 1776** (the title never says these years, so title and thumbnail don't repeat each other).
-Left half, warm gold: a grinning colonist with the royal crown and hearts. Right half, red: the same kind of man, now a furious militiaman with a musket and a tea chest.
-Source: `src/thumb/Thumbnail.tsx` (composition `Thumb-4K`).
+Main: `docs/upload/thumbnail_1280x720.jpg` — **1763 → 1776** + banner **"प्यार से जंग तक"**
+Test version: `docs/upload/thumbnail_B_1280x720.jpg` — same picture, banner **"राजा से नफ़रत?"**
+
+Left half, warm gold: a grinning colonist with the royal crown and hearts. Right half, red: a furious militiaman with a musket.
+The banner never repeats the title's words, so title + thumbnail together say more.
+Upload both with YouTube Studio's **Test & compare** (Thumbnail → Test & compare) and let YouTube pick the winner by watch time.
+Source: `src/thumb/Thumbnail.tsx` (composition `Thumb-4K`, prop `banner`).
 
 ## 3. Description (copy everything in the box)
 
