@@ -204,13 +204,13 @@ const Forest: React.FC<{ len: number; volleyAt: number; clockAt: number; deathAt
       </ParallaxPlate>
       <AbsoluteFill>
         <HindiTitle x={W * 0.3} y={H * 0.16} text="22 साल" start={20} exit={volleyAt - 20} size={160} />
-        <PopIn start={clockAt} exit={deathAt - 6} x={W * 0.62 - 230} y={H * 0.1} w={460} h={460}>
+        <PopIn start={clockAt} exit={deathAt - 6} x={W * 0.62} y={H * 0.16} w={460} h={460}>
           <AssetImg path="icons/clock_15min.png" w={460} h={460} />
         </PopIn>
         <HindiTitle x={W * 0.62} y={H * 0.36} text="15 minute" start={clockAt + 6} exit={deathAt - 6} size={130} />
         <MapTitle x={W * 0.56} y={H * 0.12} text="George Washington" date="1754" start={nameAt} size={150} exit={len - 30} />
         <ArrowLabel x={W * 0.56} y={H * 0.12} text="" to={[W * 0.36, H * 0.3]} start={nameAt + 6} />
-        <PopIn start={flagAt} x={W * 0.05} y={H * 0.2} w={700} h={350} rotate={-4} exit={len - 20}>
+        <PopIn start={flagAt} x={W * 0.05 + 350} y={H * 0.2 + 175} w={700} h={350} rotate={-4} exit={len - 20}>
           <div style={{ width: 700, height: 350, boxShadow: '0 18px 40px rgba(0,0,0,0.45)' }}>
             <UnionFlag1707 width={700} />
           </div>
