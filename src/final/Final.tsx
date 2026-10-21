@@ -21,6 +21,9 @@ import { S14Intolerable } from './S14Intolerable';
 import { S15Lexington } from './S15Lexington';
 import { S16Washington } from './S16Washington';
 import { S17CommonSense } from './S17CommonSense';
+import { S18July } from './S18July';
+import { S19Monticello } from './S19Monticello';
+import { S20Payoff } from './S20Payoff';
 
 /**
  * FINAL 4K60 cut. Each scene is a <Sequence> on its exact VO frames; finished scenes replace the
@@ -45,15 +48,21 @@ const BUILT: Record<string, { comp: React.FC; tail?: number }> = {
   S15_lexington: { comp: S15Lexington },
   S16_washington: { comp: S16Washington },
   S17_common_sense: { comp: S17CommonSense },
+  S18_july: { comp: S18July },
+  S19_monticello: { comp: S19Monticello },
+  S20_payoff_close: { comp: S20Payoff },
 };
 
 export const Final: React.FC = () => (
   <AbsoluteFill style={{ background: '#000' }}>
-    <Sequence name="animatic (unbuilt scenes)" layout="none">
-      <AbsoluteFill>
-        <Animatic silent />
-      </AbsoluteFill>
-    </Sequence>
+    {/* the animatic only fills scenes that are not built yet (all 20 are built: it no longer renders) */}
+    {SCENES.some((s) => !BUILT[s.id]) && (
+      <Sequence name="animatic (unbuilt scenes)" layout="none">
+        <AbsoluteFill>
+          <Animatic silent />
+        </AbsoluteFill>
+      </Sequence>
+    )}
     {SCENES.map((s) => {
       const b = BUILT[s.id];
       if (!b) return null;
