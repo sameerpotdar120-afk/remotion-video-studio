@@ -155,12 +155,12 @@ export const PaperTear: React.FC<{ x: number; y: number; w: number; h: number; s
 
 /**
  * Studio finish: gentle S-curve via contrast/saturation, warm highlights, vignette and
- * animated film grain (feTurbulence seeded per frame, rendered at 1/2 res then upscaled).
+ * animated film grain (a baked noise tile, re-offset every frame: feTurbulence at 4K cost seconds per frame).
  * For a real LUT, render ProRes and grade in DaVinci, or ffmpeg -vf lut3d=file.cube (see docs).
  */
 export const Finish: React.FC<{ grain?: number; vignette?: number; warmth?: number }> = ({
   grain = 0.06,
-  vignette = 0.32,
+  vignette = 0.12, // the reference's parchment frames are flat to the corners (corner/centre 1.01)
   warmth = 0.06,
 }) => {
   const frame = useCurrentFrame();
@@ -170,13 +170,15 @@ export const Finish: React.FC<{ grain?: number; vignette?: number; warmth?: numb
       <AbsoluteFill
         style={{ background: `radial-gradient(ellipse at 50% 48%, rgba(0,0,0,0) 58%, rgba(0,0,0,${vignette}) 100%)` }}
       />
-      <svg width={W} height={H} style={{ position: 'absolute', inset: 0, opacity: grain, mixBlendMode: 'overlay' }}>
-        <filter id="grain">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={1} seed={frame % 97} />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
-        <rect width={W / 2} height={H / 2} filter="url(#grain)" transform="scale(2)" />
-      </svg>
+      <AbsoluteFill
+        style={{
+          backgroundImage: `url(${staticFile('assets/textures/grain_tile.png')})`,
+          backgroundSize: '1024px 1024px', // tile shown at 2× = the old half-res grain
+          backgroundPosition: `${Math.floor(random(`fx${frame}`) * 1024)}px ${Math.floor(random(`fy${frame}`) * 1024)}px`,
+          mixBlendMode: 'overlay',
+          opacity: grain,
+        }}
+      />
     </AbsoluteFill>
   );
 };
@@ -247,10 +249,6 @@ export const Grade: React.FC<{
             <feFuncB type="table" tableValues={t.b} />
           </feComponentTransfer>
         </filter>
-        <filter id={`${id}-grain`} x="0" y="0" width="100%" height="100%">
-          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves={2} seed={frame % 997} stitchTiles="stitch" />
-          <feColorMatrix type="saturate" values="0" />
-        </filter>
       </svg>
       <AbsoluteFill style={{ filter }}>{children}</AbsoluteFill>
       {p.paper > 0 && (
@@ -273,9 +271,16 @@ export const Grade: React.FC<{
         />
       )}
       {grain > 0 && (
-        <svg width={W} height={H} style={{ position: 'absolute', inset: 0, mixBlendMode: 'overlay', opacity: grain * 6 }}>
-          <rect width="100%" height="100%" filter={`url(#${id}-grain)`} />
-        </svg>
+        // pre-baked noise tile shifted every frame: same look as feTurbulence, a fraction of the render cost at 4K
+        <AbsoluteFill
+          style={{
+            backgroundImage: `url(${staticFile('assets/textures/grain_tile.png')})`,
+            backgroundSize: '512px 512px',
+            backgroundPosition: `${Math.floor(random(`gx${frame}`) * 512)}px ${Math.floor(random(`gy${frame}`) * 512)}px`,
+            mixBlendMode: 'overlay',
+            opacity: grain * 6,
+          }}
+        />
       )}
     </AbsoluteFill>
   );
