@@ -287,8 +287,12 @@ export const Grade: React.FC<{
 };
 
 /** One-shot SFX at a frame. Files live in public/assets/sfx (see the asset doc for sources). */
+// Global SFX trim (−7 dB): the SFX files peak at −1 dBFS like the VO, so even at 0.3–0.6 a hit landed only
+// 4–10 dB under the voice. With this trim every SFX peaks ≥ 11 dB under the VO peaks: the VO always leads.
+const SFX_GAIN = 0.45;
+
 export const Sfx: React.FC<{ at: number; file: string; volume?: number }> = ({ at, file, volume = 0.9 }) => (
   <Sequence from={at} layout="none">
-    <Audio src={staticFile(`assets/sfx/${file}`)} volume={volume} />
+    <Audio src={staticFile(`assets/sfx/${file}`)} volume={volume * SFX_GAIN} />
   </Sequence>
 );
