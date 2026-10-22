@@ -18,7 +18,12 @@ export const U06FillDevelop: React.FC<{ d?: string; color?: string; delay?: numb
   return (
     <AbsoluteFill>
       <svg width={1080} height={1080} style={{ transform: `scale(${s})`, transformOrigin: '50% 50%' }}>
-        <path d={d} fill={col} opacity={a * op} style={{ mixBlendMode: dev > 0.6 ? 'multiply' : 'normal' }} stroke="rgba(255,255,255,0.5)" strokeWidth={2} />
+        <defs>
+          <clipPath id="fdc"><path d={d} /></clipPath>
+          <linearGradient id="fdl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#fff" stopOpacity={0} /><stop offset="0.5" stopColor="#fff" stopOpacity={0.35} /><stop offset="1" stopColor="#fff" stopOpacity={0} /></linearGradient>
+        </defs>
+        <path d={d} fill={col} opacity={a * op} style={{ mixBlendMode: dev > 0.6 ? 'multiply' : 'normal' }} stroke={`rgba(255,255,255,${0.35 + 0.25 * Math.sin(f / 9)})`} strokeWidth={3} />
+        <g clipPath="url(#fdc)"><rect x={-400 + ((f - 20) * 14) % 1900} y={0} width={300} height={1080} fill="url(#fdl)" transform="skewX(-20)" opacity={f > 20 ? 1 : 0} /></g>
       </svg>
     </AbsoluteFill>
   );

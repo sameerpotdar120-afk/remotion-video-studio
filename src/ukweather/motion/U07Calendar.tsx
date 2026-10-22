@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, Img, interpolate, useCurrentFrame } from 'remotion';
 import { NUM, UI, useFonts } from './font';
-import { C, clamp, pop, ramp, TypeOn, wobble } from './theme';
+import { C, clamp, idle, mblur, pop, ramp, TypeOn, wobble } from './theme';
 
 // u07_calendar (line 3, "साल के 250 से ज़्यादा दिन बारिश"; the reference's 14.1–17.7 s): a tear-off calendar pad flies in
 // from the right and lands with a tilt; a page flips every 3 frames (each flip a page lifting from the top binding and
@@ -18,6 +18,8 @@ export const U07Calendar: React.FC<{ pad?: string; page?: string; start?: number
   const flipping = f >= start && f < end;
   const wob = flipping ? Math.sin(((f - start) / 3) * Math.PI) * 8 : wobble(f, end, 2.5, 4) * 6;
   const W = 280, H = 330;
+  const [ix, iy, ir] = idle(f, 3);
+  const v = f < 12 ? (1 - inn) * 60 : f > end + 10 && f < end + 28 ? 14 : 0;
   const drawnPad = (num: string | null) => (
     <svg width={W} height={H} viewBox="0 0 280 330">
       <rect x={6} y={30} width={268} height={294} rx={18} fill="#FFFFFF" stroke="#C9CDD3" strokeWidth={4} />
@@ -31,7 +33,7 @@ export const U07Calendar: React.FC<{ pad?: string; page?: string; start?: number
   const flipK = flipping ? ((f - start) % 3) / 3 : 0;
   return (
     <AbsoluteFill>
-      <div style={{ position: 'absolute', left: x - W / 2, top: 350 - H / 2, width: W, height: H, transform: `rotate(${-6 + wob}deg)`, filter: 'drop-shadow(0 14px 16px rgba(0,0,0,0.45))' }}>
+      <div style={{ position: 'absolute', left: x - W / 2 + ix, top: 350 - H / 2 + iy, width: W, height: H, transform: `rotate(${-6 + wob + ir}deg)`, filter: [mblur(v), 'drop-shadow(0 14px 16px rgba(0,0,0,0.45))'].filter(Boolean).join(' ') }}>
         {pad ? <Img src={pad} style={{ width: W, height: H, objectFit: 'contain' }} /> : drawnPad(f >= end ? '250' : null)}
         {pad && f >= end && <div style={{ position: 'absolute', left: 0, right: 0, top: 120, textAlign: 'center', fontFamily: NUM, fontSize: 120, color: '#D8262B' }}>250</div>}
         {flipping && (
@@ -41,7 +43,7 @@ export const U07Calendar: React.FC<{ pad?: string; page?: string; start?: number
         )}
       </div>
       {f >= end + 22 && (
-        <div style={{ position: 'absolute', left: x + W / 2 + 10, top: 310, fontFamily: UI, fontWeight: 800, fontSize: 66, color: C.yellow, whiteSpace: 'nowrap', transform: 'rotate(-6deg)',
+        <div style={{ position: 'absolute', left: x + W / 2 + 10 + ix, top: 310 + iy + Math.sin(f / 17) * 4, fontFamily: UI, fontWeight: 800, fontSize: 66, color: C.yellow, whiteSpace: 'nowrap', transform: 'rotate(-6deg)',
           textShadow: '0 4px 0 rgba(0,0,0,0.35), 0 0 18px rgba(0,0,0,0.4)' }}><TypeOn text={text} f={f} at={end + 22} step={2} /></div>
       )}
       <div style={{ display: 'none' }}>{pop(f, 0, 1)}</div>

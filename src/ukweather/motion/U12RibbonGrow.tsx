@@ -15,9 +15,10 @@ export const U12RibbonGrow: React.FC<{ paths?: string[]; w?: number[] }> = ({ pa
         {paths.map((d, i) => {
           const k = ramp(f, i * 4, i * 4 + 26, Easing.out(Easing.cubic));
           return (
-            <g key={i} style={{ mixBlendMode: 'multiply' }}>
-              <path d={d} stroke="#9A3A1C" strokeWidth={w[i] ?? 70} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={`${k} 1`} opacity={0.85} />
+            <g key={i}>
+              <path d={d} stroke="#B5481F" strokeWidth={w[i] ?? 70} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={`${k} 1`} opacity={0.72} />
               <path d={d} stroke="#E0784A" strokeWidth={6} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray={`${k} 1`} opacity={0.9} />
+              {k > 0.99 && <path d={d} stroke="#FFD2A8" strokeWidth={10} fill="none" strokeLinecap="round" pathLength={1} strokeDasharray="0.12 1" strokeDashoffset={-(((f + i * 13) % 60) / 60) * 1.1} opacity={0.8} />}
             </g>
           );
         })}

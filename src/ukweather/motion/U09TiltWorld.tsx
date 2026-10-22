@@ -15,7 +15,7 @@ export const U09TiltWorld: React.FC<{ children?: React.ReactNode; tags?: [number
   const map = children ?? <AbsoluteFill style={{ background: 'linear-gradient(180deg, #0F3F55, #1A6B5A 45%, #C8A86A 55%, #0F3F55)' }} />;
   return (
     <AbsoluteFill style={{ background: '#0A1A2E', perspective: 1400 }}>
-      <AbsoluteFill style={{ transform: `rotateX(${tilt}deg) scale(${sc})`, transformOrigin: '50% 58%' }}>
+      <AbsoluteFill style={{ transform: `rotateX(${tilt}deg) rotateZ(${Math.sin(f / 60) * 1.5}deg) scale(${sc * (1 + 0.02 * Math.sin(f / 45))}) translateX(${Math.sin(f / 50) * 20}px)`, transformOrigin: '50% 58%' }}>
         {map}
         <AbsoluteFill style={{ borderTop: `${Math.round(tilt / 8)}px solid rgba(255,255,255,0.85)` }} />
         <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
@@ -24,7 +24,7 @@ export const U09TiltWorld: React.FC<{ children?: React.ReactNode; tags?: [number
             const s = pop(f, t0, t0 + 8, 2.4) * (1 - interpolate(f, [back - 6, back], [0, 1], clamp));
             if (s <= 0) return null;
             return (
-              <g key={i} transform={`translate(${x} ${y}) scale(${s})`}>
+              <g key={i} transform={`translate(${x} ${y + Math.sin(f / 15 + i) * 4}) scale(${s})`}>
                 <path d="M 0 0 V -26" stroke="#fff" strokeWidth={2} />
                 <circle r={4} fill="#fff" />
                 <text y={-32} textAnchor="middle" fontFamily="'Montserrat', sans-serif" fontWeight={700} fontSize={18} fill="#fff" stroke="#000" strokeWidth={4} paintOrder="stroke">{l}</text>

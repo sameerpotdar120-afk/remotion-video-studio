@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, interpolate, random, useCurrentFrame } from 'remotion';
 import { P0, Pose, Tourist } from './Tourist';
-import { clamp, ramp } from './theme';
+import { clamp, idle, ramp } from './theme';
 
 // u02_weather_montage (line 2, "सुबह तेज़ बारिश, दोपहर में घना कोहरा, शाम को निकलती हुई धूप, और उसके 10 मिनट बाद ओले";
 // the reference's 4.2–9.7 s): one full-screen weather per word, with the tourist reacting. Frames: `rain`, `fog`, `sun`,
@@ -30,6 +30,9 @@ export const FogLayer: React.FC<{ f: number; a: number }> = ({ f, a }) => (
 );
 export const SunLayer: React.FC<{ a: number; f: number }> = ({ a, f }) => (
   <AbsoluteFill style={{ opacity: a }}>
+    <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, mixBlendMode: 'screen', opacity: 0.5 }}>
+      <g transform={`translate(990 115) rotate(${f * 0.4})`}>{Array.from({ length: 12 }, (_, i) => <path key={i} d="M 0 0 L 1500 -70 L 1500 70 Z" fill="#FFF3B0" opacity={0.18 + 0.1 * Math.sin(f / 10 + i)} transform={`rotate(${i * 30})`} />)}</g>
+    </svg>
     <AbsoluteFill style={{ background: 'rgba(255,200,40,0.28)', mixBlendMode: 'overlay' }} />
     <AbsoluteFill style={{ background: `radial-gradient(circle at 92% 6%, #ffffff 0, #FFF7C0 ${7 + Math.sin(f / 9)}%, rgba(255,214,80,0.55) 22%, rgba(255,200,40,0) 52%)`, mixBlendMode: 'screen' }} />
   </AbsoluteFill>
@@ -60,6 +63,8 @@ export const U02WeatherMontage: React.FC<{ rain?: number; fog?: number; sun?: nu
     : f >= fog ? { ...P0, outfit: 'coat', umbrella: 'open', open: 1, mouth: 'worried', brow: 0.6, tilt: Math.sin(f / 10) * 8 }
     : { ...P0, outfit: 'coat', umbrella: 'open', open: 1, mouth: 'frown', brow: 0.5, shiver: 0.6 };
   const swap = (k: number) => 1 - 0.12 * Math.max(0, 1 - Math.abs(f - k) / 6);
+  const [ix, iy, ir] = idle(f, 2, 0.9);
+  const breathe = 1 + 0.025 * Math.sin(f / 12);
   return (
     <AbsoluteFill>
       <AbsoluteFill style={{ background: 'rgba(40,90,140,0.35)', mixBlendMode: 'multiply', opacity: Math.max(aR, aH) }} />
@@ -67,7 +72,11 @@ export const U02WeatherMontage: React.FC<{ rain?: number; fog?: number; sun?: nu
       <SunLayer a={aS} f={f} />
       <RainLayer f={f} a={aR} />
       <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
-        <g transform={`translate(540 1150) scale(${0.62 * swap(fog) * swap(sun) * swap(hail)})`}><Tourist f={f} pose={pose} /></g>
+        <g transform={`translate(${540 + ix} ${1150 + iy}) rotate(${ir}) scale(${0.62 * swap(fog) * swap(sun) * swap(hail) * breathe})`}><Tourist f={f} pose={{ ...pose, arm: pose.arm + Math.sin(f / 9) * 5, tilt: pose.tilt + Math.sin(f / 21) * 4 }} /></g>
+        {aR > 0.05 && Array.from({ length: 10 }, (_, i) => {
+          const t = ((f + i * 7) % 24) / 24;
+          return <ellipse key={i} cx={540 + ix + (i - 4.5) * 34} cy={1150 + iy - 0.62 * 560 + t * 12} rx={6 + 14 * t} ry={3 + 5 * t} fill="none" stroke="#E8F4FF" strokeWidth={3} opacity={aR * (1 - t)} />;
+        })}
       </svg>
       <FogLayer f={f} a={aF} />
       <HailLayer f={f} a={aH} />

@@ -18,6 +18,7 @@ import { U15FlyAtCamera } from './U15FlyAtCamera';
 import { U16WindCurls } from './U16WindCurls';
 import { U17AirTag } from './U17AirTag';
 import { U18SendUmbrella } from './U18SendUmbrella';
+import { REEL_FRAMES, U99Reel } from './U99Reel';
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -39,5 +40,6 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="u16-wind-curls" component={U16WindCurls} width={1080} height={1920} fps={60} durationInFrames={180} />
     <Composition id="u17-air-tag" component={U17AirTag} width={600} height={300} fps={60} durationInFrames={90} />
     <Composition id="u18-send-umbrella" component={U18SendUmbrella} width={600} height={700} fps={60} durationInFrames={120} />
+    <Composition id="u99-reel" component={U99Reel} width={1080} height={1920} fps={60} durationInFrames={REEL_FRAMES} />
   </>
 );

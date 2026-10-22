@@ -13,7 +13,7 @@ export const U15FlyAtCamera: React.FC<{ text?: string; fly?: number }> = ({ text
   const a = 1 - interpolate(f, [fly + 22, fly + 30], [0, 1], clamp);
   return (
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: a }}>
-      <div style={{ transform: `rotate(-4deg) scale(${z})`, fontFamily: UI, fontWeight: 800, fontSize: 120, color: '#fff', whiteSpace: 'nowrap', textShadow: '0 6px 0 rgba(0,0,0,0.35), 0 0 30px rgba(0,30,60,0.6)' }}>
+      <div style={{ transform: `rotate(${-4 + Math.sin(f / 30)}deg) scale(${z * (1 + 0.003 * Math.min(f, fly))})`, filter: z > 1.5 ? `blur(${Math.min(12, (z - 1) * 0.8).toFixed(1)}px)` : undefined, fontFamily: UI, fontWeight: 800, fontSize: 120, color: '#fff', whiteSpace: 'nowrap', textShadow: '0 6px 0 rgba(0,0,0,0.35), 0 0 30px rgba(0,30,60,0.6)' }}>
         <TypeOn text={text} f={f} step={3} />
       </div>
     </AbsoluteFill>

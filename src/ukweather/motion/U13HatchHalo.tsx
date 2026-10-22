@@ -1,7 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from 'remotion';
 import { UI, useFonts } from './font';
-import { clamp, graphemes, TypeOn } from './theme';
+import { clamp, graphemes, idle, TypeOn } from './theme';
 
 // u13_hatch_halo (line 7, "क्योंकि ये मौसम की जंग का मैदान है"; the reference's 37.4–40.6 s): fat light-blue diagonal
 // stripes sweep the whole frame (6 frames), condense into a hatched rounded blob with a bright rim that contracts onto
@@ -15,14 +15,14 @@ export const U13HatchHalo: React.FC<{ title?: string[]; rx?: number; ry?: number
   const R = (r: number) => r * (3.2 - 2.2 * k);
   const pts = Array.from({ length: 72 }, (_, i) => {
     const a = (i / 72) * Math.PI * 2;
-    const w = 1 + 0.06 * Math.sin(a * 3 + 0.7) + 0.04 * Math.sin(a * 2 + f / 40);
+    const w = (1 + 0.06 * Math.sin(a * 3 + 0.7 + f / 60) + 0.04 * Math.sin(a * 2 + f / 40)) * (1 + 0.015 * Math.sin(f / 15));
     return `${540 + Math.cos(a) * R(rx) * w},${540 + Math.sin(a) * R(ry) * w}`;
   }).join(' L ');
   return (
     <AbsoluteFill>
       <svg width={1080} height={1080}>
         <defs>
-          <pattern id="hatch" width={18} height={18} patternUnits="userSpaceOnUse" patternTransform="rotate(-40)"><rect width={18} height={18} fill="rgba(120,200,255,0.28)" /><rect width={5} height={18} fill="rgba(230,248,255,0.75)" /></pattern>
+          <pattern id="hatch" width={18} height={18} patternUnits="userSpaceOnUse" patternTransform={`rotate(-40) translate(${(f * 0.6) % 18} 0)`}><rect width={18} height={18} fill="rgba(120,200,255,0.28)" /><rect width={5} height={18} fill="rgba(230,248,255,0.75)" /></pattern>
           <pattern id="fat" width={120} height={120} patternUnits="userSpaceOnUse" patternTransform="rotate(-40)"><rect width={44} height={120} fill="rgba(140,215,255,0.6)" /></pattern>
           <clipPath id="blob"><path d={`M ${pts} Z`} /></clipPath>
         </defs>
@@ -30,11 +30,11 @@ export const U13HatchHalo: React.FC<{ title?: string[]; rx?: number; ry?: number
         <g transform={`rotate(${tilt} 540 540)`} opacity={k}>
           <path d={`M ${pts} Z`} fill="rgba(60,150,230,0.35)" />
           <rect width={1080} height={1080} fill="url(#hatch)" clipPath="url(#blob)" />
-          <path d={`M ${pts} Z`} fill="none" stroke="#DFF5FF" strokeWidth={8} style={{ filter: 'drop-shadow(0 0 10px #8FD6FF)' }} />
+          <path d={`M ${pts} Z`} fill="none" stroke="#DFF5FF" strokeWidth={8 + 2 * Math.sin(f / 7)} style={{ filter: `drop-shadow(0 0 ${10 + 6 * Math.sin(f / 7)}px #8FD6FF)` }} />
         </g>
       </svg>
       {f >= 26 && (
-        <div style={{ position: 'absolute', left: 0, right: 0, top: 420, textAlign: 'center', transform: 'rotate(-4deg)', fontFamily: UI, fontWeight: 800, color: '#fff', lineHeight: 1.02,
+        <div style={{ position: 'absolute', left: idle(f, 5)[0], right: 0, top: 420 + idle(f, 5)[1], textAlign: 'center', transform: `rotate(${-4 + idle(f, 5)[2]}deg)`, fontFamily: UI, fontWeight: 800, color: '#fff', lineHeight: 1.02,
           textShadow: '0 5px 0 rgba(0,0,0,0.35), 0 0 22px rgba(0,60,120,0.6)' }}>
           <div style={{ fontSize: 76 }}><TypeOn text={title[0]} f={f} at={26} step={2} /></div>
           <div style={{ fontSize: 104 }}><TypeOn text={title[1]} f={f} at={26 + graphemes(title[0]).length * 2} step={2} /></div>

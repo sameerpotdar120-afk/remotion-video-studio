@@ -2,7 +2,7 @@
 
 18 components in `src/ukweather/motion/` (entry `src/ukweather/motion/index.ts`), each rendered and checked here. All 60 fps on a transparent background. Fonts: Anton and Baloo 2 (Google Fonts, OFL) from `public/ukweather/fonts/`. The chibi tourist and his umbrella (four states: closed, opening, open, inside out) are drawn in code in `Tourist.tsx`; Hindi titles type in by grapheme so matras stay on their letters. Nothing is copied from the reference.
 
-Each component copies a move measured frame by frame in the reference (see `reference_analysis.md`, "Motion detail at 30 fps").
+Each component copies a move measured frame by frame in the reference (see `reference_analysis.md`, "Motion detail at 30 fps"). Nothing holds still, After Effects style: every element has an idle float (mixed sines, so it never visibly loops) once it lands, fast moves get motion blur from their speed, landings overshoot and settle, and textures keep living (hatch scrolling, glows pulsing, light sweeps, hand-drawn boil on the ellipse). `u99-reel` plays all 18 in a row; a half-resolution preview is `exports/ukweather_motion_preview.mp4`.
 
 **Render one** (4K detail, transparent WebM):
 ```

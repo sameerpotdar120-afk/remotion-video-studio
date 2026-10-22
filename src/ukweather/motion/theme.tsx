@@ -25,6 +25,14 @@ export const ramp = (f: number, a: number, b: number, ease: (t: number) => numbe
 export const pop = (f: number, a: number, b: number, k = 1.8) => ramp(f, a, b, Easing.out(Easing.back(k)));
 export const inOut = Easing.inOut(Easing.cubic);
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+/** Motion blur for a moving layer: blur in px from its speed (px/frame), like After Effects' motion blur. */
+export const mblur = (v: number, k = 0.18, max = 10) => { const b = Math.min(max, Math.abs(v) * k); return b > 0.4 ? `blur(${b.toFixed(1)}px)` : undefined; };
+/** A slow idle float: a mix of sines so it never loops visibly. Returns [dx, dy, rot]. */
+export const idle = (f: number, seed = 0, amp = 1): [number, number, number] => [
+  amp * (6 * Math.sin(f / 37 + seed) + 3 * Math.sin(f / 17 + seed * 2)),
+  amp * (5 * Math.sin(f / 29 + seed * 1.3) + 2 * Math.sin(f / 13 + seed)),
+  amp * (1.2 * Math.sin(f / 41 + seed) + 0.5 * Math.sin(f / 19 + seed * 3)),
+];
 export const wobble = (f: number, a: number, hz = 2.2, decay = 4) => {
   if (f < a) return 0;
   const t = (f - a) / 60;

@@ -19,7 +19,7 @@ export const U10GiantWord: React.FC<{ text?: string; y?: number; out?: number }>
       <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: band }}>
         {[0, 1, 2, 3].map((i) => <path key={i} d={`M -100 ${y - 300 + i * 170 + Math.sin(f / 20 + i) * 20} C 300 ${y - 420 + i * 170} 700 ${y - 160 + i * 170} 1180 ${y - 320 + i * 170}`} stroke="#fff" strokeWidth={3} fill="none" opacity={0.55} />)}
       </svg>
-      <div style={{ position: 'absolute', left: 540 + (1 - k) * -900, top: y, transform: `translate(-50%,-50%) scale(${3.4 - 2.4 * k})`, fontFamily: UI, fontWeight: 800, fontSize: 130,
+      <div style={{ position: 'absolute', left: 540 + (1 - k) * -900, top: y, transform: `translate(-50%,-50%) translate(${Math.sin(f / 40) * 12}px, ${Math.sin(f / 31) * 6}px) rotate(${Math.sin(f / 50) * 1.2}deg) scale(${(3.4 - 2.4 * k) * (1 + 0.02 * Math.sin(f / 16))})`, filter: k < 0.9 ? `blur(${((1 - k) * 8).toFixed(1)}px)` : undefined, fontFamily: UI, fontWeight: 800, fontSize: 130,
         color: `rgb(${Math.round(150 + 105 * k)},${Math.round(220 + 35 * k)},255)`, whiteSpace: 'nowrap', letterSpacing: 4, textShadow: '0 0 24px rgba(255,80,120,0.7), 0 6px 0 rgba(0,0,0,0.3)' }}>{text}</div>
     </AbsoluteFill>
   );

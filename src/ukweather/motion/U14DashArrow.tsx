@@ -34,7 +34,8 @@ export const DashArrows: React.FC<{ f: number; arrows: Arrow[] }> = ({ f, arrows
       const tail = Math.max(0, k - 0.0);
       const pts = Array.from({ length: n + 1 }, (_, j) => bez(a.p, (j / n) * tail * 0.96));
       const d = pts.map(([x, y], j) => `${j ? 'L' : 'M'} ${x.toFixed(1)} ${y.toFixed(1)}`).join(' ');
-      const [hx, hy] = bez(a.p, k), [bx, by] = bez(a.p, Math.max(0, k - 0.03));
+      const breath = k >= 1 ? 0.012 * Math.sin(f / 9 + i) : 0;
+      const [hx, hy] = bez(a.p, Math.min(1, k + breath)), [bx, by] = bez(a.p, Math.max(0, k - 0.03));
       const ang = (Math.atan2(hy - by, hx - bx) * 180) / Math.PI;
       const fork = a.fork ?? 0;
       return (
@@ -52,7 +53,7 @@ export const DashArrows: React.FC<{ f: number; arrows: Arrow[] }> = ({ f, arrows
                 );
               })}
             </g>
-          ) : <Head x={hx} y={hy} ang={ang} s={w * 1.9} color={a.color} />}
+          ) : <Head x={hx} y={hy} ang={ang} s={w * 1.9 * (1 + (k >= 1 ? 0.06 * Math.sin(f / 6 + i) : 0))} color={a.color} />}
         </g>
       );
     })}
