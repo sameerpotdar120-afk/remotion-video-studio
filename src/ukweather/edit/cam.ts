@@ -15,7 +15,7 @@ type Plate = { bounds: [number, number, number, number]; w: number; h: number };
 type Rings = P[][];
 export const GEO = raw as unknown as {
   plates: Record<string, Plate>; places: Record<string, P>; places_deg: Record<string, P>;
-  gb: Rings; uk: Rings; ireland: Rings; colombia: Rings; wetter: [string, number, number, number][];
+  gb: Rings; uk: Rings; india: Rings; ireland: Rings; colombia: Rings; wetter: [string, number, number, number][];
 };
 
 const T = timing as unknown as { duration: number; cues: Record<string, number>; caps: [number, string][] };
@@ -32,7 +32,7 @@ export const PLANE = { w: 2600, h: 3200, ox: 1300, oy: 1600 };
 export const SC = {
   fog: C.par1 - 0.15,
   flight: [C.socho2 - 0.1, C.london2 + 0.15] as const,
-  tourist: C.london2 + 0.1,
+  tourist: C.london2 + 0.35,
   montage: [C.subah2 - 0.15, C.hawa2 - 0.05] as const,
   wind: [C.hawa2 - 0.05, C.scotland3 - 0.2] as const,
   tilt: [C.duniya5 - 0.25, C.pehle5 - 0.1] as const,
@@ -51,29 +51,32 @@ export const NULL_WIN = () => [
 const ll = merc;
 export const PL = {
   europe: ll(2, 50), isles: ll(-3.5, 54.6), england: ll(-1.6, 52.6), mid: ll(30, 40), scot: ll(-4.5, 56.8),
+  india: ll(80, 22), london: ll(-0.13, 51.51), mumbai: ll(72.88, 19.08),
   colombia: ll(-73.5, 4.2), samerica: ll(-70, 0), atlantic: ll(-40, 38), world: ll(10, 10),
 };
 const off = (p: P, dx: number, dy: number): P => [p[0] + dx, p[1] + dy];
 
 /** Map camera keys (Mercator metres; span = screen height in metres), anchored to words of the voiceover. */
 const keys = (): Key[] => [
-  // line 1: Europe, the push into Britain (the reference's ease-in push with a slight roll)
-  { t: 0, at: off(PL.europe, 0, -6e5), span: 7.5e6, rot: -3 },
-  { t: C.britain1 - 0.1, at: PL.isles, span: 2.4e6, rot: 2, e: easeIn },
+  // line 1: India (the official map), then the whip-pan out and across into Britain
+  { t: 0, at: off(PL.india, 0, -2e5), span: 6.4e6, rot: -2 },
+  { t: C.bharosa1 + 0.4, at: PL.india, span: 5.4e6, rot: 1, e: linear },
+  { t: C.par1 + 0.05, at: ll(40, 40), span: 2.3e7, rot: 0, e: inOut },
+  { t: C.britain1 + 0.5, at: PL.isles, span: 2.6e6, rot: 2, e: easeOut },
   { t: SC.flight[0], at: off(PL.isles, 0, -1e5), span: 2.2e6, rot: 0, e: linear },
-  // line 2: Mumbai → London on the world map, then the dive into England
-  { t: SC.flight[0] + 0.001, at: ll(36, 36), span: 1.4e7, rot: 0, cut: true },
-  { t: C.london2 - 0.3, at: ll(10, 46), span: 9e6, rot: 0, e: inOut },
-  { t: SC.tourist, at: PL.england, span: 9.0e5, rot: 0, e: easeIn },
-  { t: SC.wind[1], at: off(PL.england, 0, 2e4), span: 7.5e5, rot: 1, e: linear },
+  // line 2: Mumbai → London on the route map, then the dive onto London
+  { t: SC.flight[0] + 0.001, at: ll(54, 30), span: 2.1e7, rot: 0, cut: true },
+  { t: C.mumbai2 + 0.2, at: ll(50, 32), span: 2.0e7, rot: 0, e: linear },
+  { t: C.london2 - 0.15, at: ll(12, 46), span: 1.6e7, rot: 0, e: inOut },
+  { t: C.london2 + 0.5, at: off(PL.london, 0, 9e4), span: 9.0e5, rot: 0, e: inOut },
+  { t: SC.wind[1], at: off(PL.london, 0, 1.1e5), span: 7.8e5, rot: 1, e: linear },
   // line 3: out to the islands, the calendar over Scotland, the ellipse
   { t: C.scotland3 + 0.4, at: PL.isles, span: 2.6e6, rot: 0, e: inOut },
-  { t: C.dekh3, at: off(PL.isles, 0, -2e5), span: 3.0e6, rot: 0, e: inOut },
-  { t: C.geeli3 + 0.3, at: off(PL.isles, 2e5, -1.4e6), span: 6.0e6, rot: 0, e: inOut },
-  { t: SC.tilt[0], at: off(PL.isles, 2e5, -1.6e6), span: 6.5e6, rot: 0, e: linear },
+  { t: C.dekh3, at: off(PL.isles, 0, -2e5), span: 4.2e6, rot: 0, e: inOut },
+  { t: SC.tilt[0], at: off(PL.isles, 0, -2.4e5), span: 3.9e6, rot: 0, e: linear },
   // line 5: the world (tilted), then Colombia
-  { t: SC.tilt[0] + 0.001, at: PL.world, span: 3.6e7, rot: 0, cut: true },
-  { t: SC.tilt[1], at: PL.world, span: 3.4e7, rot: 0, e: linear },
+  { t: SC.tilt[0] + 0.001, at: ll(30, 8), span: 4.6e7, rot: 0, cut: true },
+  { t: SC.tilt[1], at: ll(24, 10), span: 4.3e7, rot: 0, e: linear },
   { t: SC.tilt[1] + 0.001, at: off(PL.samerica, 0, 5e5), span: 9.0e6, rot: 0, cut: true },
   { t: C.colombia5 + 0.3, at: PL.colombia, span: 4.0e6, rot: 0, e: inOut },
   { t: C.pacific5 - 0.2, at: off(PL.colombia, -6e5, -1e5), span: 4.4e6, rot: 0, e: inOut },

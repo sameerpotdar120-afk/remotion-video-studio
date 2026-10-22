@@ -11,10 +11,12 @@ const mk = (name: string, feather: number, full: number, none: number): Plate =>
 // Atlantic and South America z6, the British Isles and Colombia z8, England z9.
 const GEOS = [
   mk('world', 0.0, 1e9, 2e9),
+  mk('route', 0.02, 9000, 16000),
   mk('atlantic', 0.02, 6000, 12000),
   mk('samerica', 0.02, 6000, 12000),
   mk('isles', 0.03, 1500, 3000),
   mk('colombia', 0.03, 1500, 3000),
+  mk('india', 0.03, 2500, 5000),
   mk('england', 0.03, 600, 1200),
 ];
 export type Look = 'geo';
@@ -93,7 +95,7 @@ const fade = (mpp: number, full: number, none: number) => Math.min(1, Math.max(0
 
 /** Paints the coarse-to-fine plate stack for a camera into a context already set to plane coordinates.
  *  The coarsest is skipped once a finer plate fully covers the screen. */
-export const paintPlates = (ctx: CanvasRenderingContext2D, srcs: Source[], cam: Cam, res: number, PLATES: Plate[] = SAT) => {
+export const paintPlates = (ctx: CanvasRenderingContext2D, srcs: Source[], cam: Cam, res: number, PLATES: Plate[] = GEOS) => {
   const mpp = cam.span / 1920 / res;
   const a = PLATES.map((p, i) => (i === 0 ? 1 : fade(mpp, p.full, p.none)));
   let start = 0;
@@ -102,7 +104,7 @@ export const paintPlates = (ctx: CanvasRenderingContext2D, srcs: Source[], cam: 
 };
 
 /** The loaded plates (shared by the map and the 3D cut-outs). */
-export const usePlates = (label: string, PLATES: Plate[] = SAT) => {
+export const usePlates = (label: string, PLATES: Plate[] = GEOS) => {
   const [srcs, setSrcs] = useState<Source[] | null>(null);
   const [handle] = useState(() => delayRender(label));
   useEffect(() => {
@@ -126,7 +128,7 @@ const StackCanvas: React.FC<{ cam: Cam; res?: number; look?: Look }> = ({ cam, r
   const vintage = true; // the plates are already graded: no sea lift
   const ref = useRef<HTMLCanvasElement>(null);
   const stack = STACK[look];
-  const srcs = usePlates(`wk ${look}`, stack);
+  const srcs = usePlates(`uk ${look}`, stack);
 
   useLayoutEffect(() => {
     const cv = ref.current;

@@ -34,6 +34,8 @@ CAP = 8192
 TERRARIUM = "https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
     ("world", 4, 3, -180.0, 179.99, -62.0, 78.0),
+    ("route", 5, 3, -15.0, 85.0, 0.0, 62.0),
+    ("india", 7, 5, 60.0, 100.0, 3.0, 38.0),
     ("atlantic", 6, 4, -100.0, 40.0, -5.0, 72.0),
     ("isles", 8, 6, -14.0, 6.0, 48.0, 61.5),
     ("england", 9, 8, -6.5, 2.5, 50.0, 55.8),
@@ -130,6 +132,7 @@ def main() -> None:
     gb = max(uk.geoms, key=lambda g: g.area) if hasattr(uk, "geoms") else uk
     geo["gb"] = rings(gb, 0.003, 0.0)
     geo["uk"] = rings(uk, 0.003, 0.0005)
+    geo["india"] = rings(C["India"], 0.01, 0.003)
     geo["ireland"] = rings(C["Ireland"], 0.003, 0.0005)
     geo["colombia"] = rings(C["Colombia"].intersection(box(-82, -5, -66, 14)), 0.005, 0.002)
     geo["places"] = {k: [round(mx(a), 1), round(my(b), 1)] for k, (a, b) in PLACES.items()}

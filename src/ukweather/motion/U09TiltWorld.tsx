@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Easing, interpolate, random, useCurrentFrame } from 'remotion';
 import { clamp, pop } from './theme';
+import { UI, useFonts } from './font';
 
 // u09_tilt_world (line 5, "दुनिया के 70 से ज़्यादा देशों में…"; the reference's 24.6–29.2 s): the flat world map tilts
 // back into a sheet in space (rotateX 0 → 52°, a thin white edge along the top, the map scaled to fit), then dozens of
@@ -9,6 +10,7 @@ import { clamp, pop } from './theme';
 // 1080×1920, 60 fps.
 const DEMO_TAGS: [number, number, string][] = Array.from({ length: 40 }, (_, i) => [80 + random(`tx${i}`) * 920, 820 + random(`ty${i}`) * 360, `देश ${i + 1}`]);
 export const U09TiltWorld: React.FC<{ children?: React.ReactNode; tags?: [number, number, string][]; back?: number }> = ({ children, tags = DEMO_TAGS, back = 200 }) => {
+  useFonts();
   const f = useCurrentFrame();
   const tilt = interpolate(f, [0, 30, back, back + 24], [0, 52, 52, 0], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const sc = interpolate(tilt, [0, 52], [1, 1.25]);
@@ -27,7 +29,7 @@ export const U09TiltWorld: React.FC<{ children?: React.ReactNode; tags?: [number
               <g key={i} transform={`translate(${x} ${y + Math.sin(f / 15 + i) * 4}) scale(${s})`}>
                 <path d="M 0 0 V -26" stroke="#fff" strokeWidth={2} />
                 <circle r={4} fill="#fff" />
-                <text y={-32} textAnchor="middle" fontFamily="'Montserrat', sans-serif" fontWeight={700} fontSize={18} fill="#fff" stroke="#000" strokeWidth={4} paintOrder="stroke">{l}</text>
+                <text y={-32} textAnchor="middle" fontFamily={UI} fontWeight={700} fontSize={18} fill="#fff" stroke="#000" strokeWidth={4} paintOrder="stroke">{l}</text>
               </g>
             );
           })}
