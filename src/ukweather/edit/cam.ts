@@ -15,7 +15,7 @@ type Plate = { bounds: [number, number, number, number]; w: number; h: number };
 type Rings = P[][];
 export const GEO = raw as unknown as {
   plates: Record<string, Plate>; places: Record<string, P>; places_deg: Record<string, P>;
-  gb: Rings; uk: Rings; india: Rings; ireland: Rings; colombia: Rings; wetter: [string, number, number, number][];
+  gb: Rings; uk: Rings; india: Rings; scotland: Rings; london: Rings; europe: Rings; ireland: Rings; colombia: Rings; wetter: [string, number, number, number][];
 };
 
 const T = timing as unknown as { duration: number; cues: Record<string, number>; caps: [number, string][] };

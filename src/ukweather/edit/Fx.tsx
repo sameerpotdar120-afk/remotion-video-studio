@@ -110,16 +110,50 @@ export const Subtitles: React.FC<{ t: number; top: number }> = ({ t, top }) => {
   );
 };
 
-/** The grade: teal shadows and warm highlights, a vignette, darker edges, grain. */
-const GRAIN = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='256' height='256' filter='url(%23n)'/></svg>")`;
-export const Grade: React.FC<{ frame: number }> = ({ frame }) => (
-  <AbsoluteFill style={{ pointerEvents: 'none' }}>
-    <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,70,90,0.18), rgba(0,40,60,0.05) 40%, rgba(255,150,60,0.06) 70%, rgba(255,140,40,0.12))', mixBlendMode: 'soft-light' }} />
-    <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 58%, rgba(0,0,0,0.36) 100%)' }} />
-    <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.24), rgba(0,0,0,0) 18%, rgba(0,0,0,0) 76%, rgba(0,6,12,0.38))' }} />
-    <AbsoluteFill style={{ opacity: 0.05, mixBlendMode: 'overlay', backgroundImage: GRAIN, backgroundSize: '256px 256px', backgroundPosition: `${(frame * 73) % 256}px ${(frame * 151) % 256}px` }} />
-  </AbsoluteFill>
-);
+/** The grade, built like a Lumetri pass (no grain: studio-clean): the map gets an S-curve and vibrance in its own filter
+ *  (see UKWeather), then here a teal split-tone into the shadows, warm highlights, a slow-moving warm light leak that
+ *  never stops drifting, a vignette and darker top and bottom edges. */
+export const Grade: React.FC<{ frame: number }> = ({ frame }) => {
+  const t = frame / FPS;
+  const lx = 50 + 38 * Math.sin(t * 0.23 + 1.1), ly = 30 + 22 * Math.sin(t * 0.17 + 0.4);
+  const leak = 0.55 + 0.25 * Math.sin(t * 0.7) + 0.1 * Math.sin(t * 2.3);
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none' }}>
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,92,118,0.34), rgba(0,70,96,0.18) 45%, rgba(0,60,90,0.3))', mixBlendMode: 'soft-light' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 42%, rgba(255,176,96,0.2), rgba(255,140,60,0) 62%)', mixBlendMode: 'overlay' }} />
+      <AbsoluteFill style={{ background: `radial-gradient(circle at ${lx}% ${ly}%, rgba(255,196,128,0.32), rgba(255,140,70,0.08) 26%, rgba(255,120,60,0) 46%)`, mixBlendMode: 'screen', opacity: leak }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 56%, rgba(0,4,12,0.42) 100%)' }} />
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.26), rgba(0,0,0,0) 18%, rgba(0,0,0,0) 76%, rgba(0,6,12,0.4))' }} />
+    </AbsoluteFill>
+  );
+};
+/** The map's CSS grade: an S-curve (contrast), vibrance and a touch of lift, Lumetri's "Creative" basics. */
+export const MAP_GRADE = 'contrast(1.12) saturate(1.2) brightness(1.03)';
+
+/** Two parallax layers of soft cloud drifting over the map, each with its shadow on the ground, so the map is never
+ *  still even when the camera nearly is. */
+const CLOUDS = staticFile('ukweather/fx/clouds.png');
+export const Clouds: React.FC<{ t: number; a?: number }> = ({ t, a = 1 }) => {
+  if (a <= 0.01) return null;
+  const L = [
+    { size: 1500, vx: 26, vy: 7, o: 0.16, sh: 0.13, off: 0 },
+    { size: 2300, vx: 15, vy: -4, o: 0.11, sh: 0.09, off: 700 },
+  ];
+  return (
+    <AbsoluteFill style={{ pointerEvents: 'none', opacity: a }}>
+      {L.map((l, i) => {
+        const x = l.off + t * l.vx, y = l.off * 0.6 + t * l.vy;
+        const base: React.CSSProperties = { position: 'absolute', inset: -200, backgroundImage: `url(${CLOUDS})`, backgroundSize: `${l.size}px ${l.size}px` };
+        return (
+          <React.Fragment key={i}>
+            <div style={{ ...base, backgroundPosition: `${x + 46}px ${y + 70}px`, filter: 'brightness(0) blur(14px)', opacity: l.sh }} />
+            <div style={{ ...base, backgroundPosition: `${x}px ${y}px`, opacity: l.o }} />
+          </React.Fragment>
+        );
+      })}
+    </AbsoluteFill>
+  );
+};
 
 /** A white flash on each hard cut (the reference's 2-frame flash with a soft tail). */
 export const Flashes: React.FC<{ t: number }> = ({ t }) => {
@@ -338,6 +372,11 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       })()}
       <Bars t={t} t0={C.n3240_5 + 0.7} t1={C.wajah5 + 0.1} />
       <At t0={C.garm5 - 0.1} t1={C.pacific5 + 0.2} x={540} y={960} w={1080} h={1920}><U10GiantWord text="गर्म मौसम" y={1300} out={f60(C.pacific5 - C.garm5 - 0.15)} /></At>
+      {t >= C.pacific5 - 0.2 && t < C.toh6 + 0.3 && (
+        <div style={{ position: 'absolute', left: pac[0] - 520, top: pac[1] - 700, width: 900, height: 1400, borderRadius: '50%', mixBlendMode: 'screen', pointerEvents: 'none',
+          opacity: window4(t, C.pacific5 - 0.2, C.pacific5 + 0.3, C.toh6 - 0.3, C.toh6 + 0.3) * (0.75 + 0.25 * Math.sin(t * 3.1)),
+          background: 'radial-gradient(ellipse, rgba(80,220,255,0.42), rgba(40,160,255,0.16) 45%, rgba(0,120,255,0) 70%)', transform: `scale(${1 + 0.05 * Math.sin(t * 1.7)})` }} />
+      )}
       <At t0={C.pacific5 - 0.05} t1={C.toh6} x={Math.max(330, pac[0] + 60)} y={pac[1] + 200} w={800} h={400} scale={0.8}><U11GlowLabel a="Pacific" b="Ocean" /></At>
       {t >= C.pacific5 + 0.2 && t < C.toh6 && (() => {
         const p0 = S(c, -84, 1), p1 = S(c, -80.5, 2.5), p2 = S(c, -78.5, 3.5), p3 = S(c, -76.8, 4.6);
@@ -370,8 +409,11 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 };
 
 /** The close: the send button with the umbrella for the friend, over the top half. */
-export const Close: React.FC<{ t: number }> = ({ t }) => (
-  <At t0={C.video11 - 0.1} t1={DURATION_S + 1} x={540} y={470} w={600} h={700} scale={0.95}><U18SendUmbrella launch={f60(C.chhata11 + 0.4 - C.video11 + 0.1)} /></At>
+export const Close: React.FC<{ t: number; c: Cam }> = ({ t, c }) => (
+  <>
+  <div style={{ position: 'absolute', inset: 0, transform: 'translateY(-480px)' }}><Pin t={t} t0={C.london11 - 0.05} t1={DURATION_S + 1} c={c} at={[-0.13, 51.51]} text="LONDON" color="#9FD8FF" size={48} /></div>
+  <At t0={C.video11 - 0.1} t1={DURATION_S + 1} x={300} y={480} w={600} h={700} scale={0.8}><U18SendUmbrella launch={f60(C.chhata11 + 0.4 - C.video11 + 0.1)} /></At>
+  </>
 );
 
 /** The tilt's country tags: the 73 countries wetter than the UK (World Bank), at their screen positions. */

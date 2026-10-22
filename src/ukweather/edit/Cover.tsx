@@ -6,6 +6,7 @@ import { MapCanvas } from './Map';
 import { Shapes } from './Shapes';
 import { GEO } from './cam';
 import { RainLayer } from '../motion/U02WeatherMontage';
+import { Clouds, Grade, MAP_GRADE } from './Fx';
 import { P0, Tourist } from '../motion/Tourist';
 
 /**
@@ -20,12 +21,14 @@ export const UkCover: React.FC<{ text?: boolean; res?: number }> = ({ text = tru
   const big: React.CSSProperties = { fontFamily: HEAD, fontWeight: 800, lineHeight: 1.06, WebkitTextStroke: '12px #000', paintOrder: 'stroke fill', textShadow: '0 10px 30px rgba(0,0,0,0.6)' };
   return (
     <AbsoluteFill style={{ background: '#0A1A2E', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h }}>
+      <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h, filter: MAP_GRADE }}>
         <MapCanvas cam={cam} res={res} />
         <Shapes c={cam} t={10} regions={[{ key: 'cv', rings: GEO.uk, a: 1, color: '#2F7FE0', phase: 0, sat: 0.62, edge: '#BFE2FF' }]} starts={{}} />
       </div>
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,20,0.7), rgba(0,0,0,0) 34%, rgba(0,0,0,0) 62%, rgba(0,8,20,0.55))' }} />
       <AbsoluteFill style={{ background: 'rgba(30,60,110,0.25)', mixBlendMode: 'multiply' }} />
+      <Clouds t={12} />
+      <Grade frame={300} />
       <RainLayer f={37} a={0.75} n={140} angle={18} />
       <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
         {[[26, '#5FB4FF', 0.35], [12, '#CFE8FF', 0.8], [5, '#FFFFFF', 1]].map(([w, c, o]) => (

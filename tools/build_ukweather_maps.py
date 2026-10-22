@@ -22,6 +22,7 @@ import numpy as np
 import shapefile
 from PIL import Image, ImageFilter
 from shapely.geometry import box, shape
+from shapely.ops import unary_union
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_thailand_maps import mx, my, rings, stitch  # noqa: E402
@@ -132,7 +133,17 @@ def main() -> None:
     gb = max(uk.geoms, key=lambda g: g.area) if hasattr(uk, "geoms") else uk
     geo["gb"] = rings(gb, 0.003, 0.0)
     geo["uk"] = rings(uk, 0.003, 0.0005)
-    geo["india"] = rings(C["India"], 0.01, 0.003)
+    geo["india"] = rings(C["India"], 0.004, 0.002)
+    # the places named in the VO, for their highlight fills: Scotland and Greater London (admin-1), mainland Europe
+    a1 = shapefile.Reader(glob.glob(str(ne / "ne_10m_admin_1_states_provinces_lakes" / "*.shp"))[0])
+    gbr = [(r, shape(s.__geo_interface__).buffer(0)) for r, s in zip(a1.records(), a1.shapes()) if r["adm0_a3"] == "GBR"]
+    geo["scotland"] = rings(unary_union([g for r, g in gbr if r["geonunit"] == "Scotland"]).buffer(0.002), 0.003, 0.0005)
+    geo["london"] = rings(unary_union([g for r, g in gbr if r["region"] == "Greater London"]).buffer(0.001), 0.001, 0.0)
+    eu = ["France", "Belgium", "Netherlands", "Luxembourg", "Germany", "Denmark", "Switzerland", "Austria", "Poland", "Czechia", "Norway", "Sweden", "Spain", "Portugal", "Italy"]
+    geo["europe"] = rings(unary_union([C[n] for n in eu if n in C]).intersection(box(-10, 36, 25, 71)), 0.02, 0.01)
+    missing = [n for n in eu if n not in C]
+    if missing:
+        print("missing", missing)
     geo["ireland"] = rings(C["Ireland"], 0.003, 0.0005)
     geo["colombia"] = rings(C["Colombia"].intersection(box(-82, -5, -66, 14)), 0.005, 0.002)
     geo["places"] = {k: [round(mx(a), 1), round(my(b), 1)] for k, (a, b) in PLACES.items()}

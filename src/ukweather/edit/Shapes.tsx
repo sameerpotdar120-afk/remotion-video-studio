@@ -32,6 +32,8 @@ const Shape: React.FC<{ c: Cam; r: Region; t: number; t0: number; fk: number }> 
   const [ax, ay] = project(c, b.cx, b.cy);
   const tf = `translate(${ax},${ay}) scale(${1 + 0.04 * lift}) translate(${-ax},${-ay})`;
   const id = `uk_${r.key}`;
+  const span = Math.max(400, b.d * s);
+  const sweepX = ax - span * 0.8 + (((t * 0.32 + r.phase) % 1.25) / 1.25) * span * 1.6;
   return (
     <g style={{ opacity: Math.min(1, r.a * 2) }}>
       <defs>
@@ -41,8 +43,20 @@ const Shape: React.FC<{ c: Cam; r: Region; t: number; t0: number; fk: number }> 
       </defs>
       {lift > 0.01 && <path d={d} transform={`${tf} translate(${10 * lift},${18 * lift})`} fill="#000" fillOpacity={0.35 * lift} style={{ filter: 'blur(10px)' }} />}
       <g transform={tf} mask={`url(#${id}m)`}>
-        <path d={d} fill={r.color} fillOpacity={(r.sat ?? 0.88) * fk} />
-        {r.edge && <path d={d} fill="none" stroke={r.edge} strokeWidth={5} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 10px ${r.edge})` }} />}
+        <path d={d} fill={r.color} fillOpacity={(r.sat ?? 0.88) * fk * (1 + 0.07 * Math.sin(t * 2.1 + r.phase * 6))} />
+        {/* the living fill: a soft light band sweeps across, and the glow edge breathes */}
+        <clipPath id={`${id}c`}><path d={d} /></clipPath>
+        <g clipPath={`url(#${id}c)`}>
+          <rect x={sweepX - 260} y={-2000} width={520} height={7200} fill={`url(#${id}g)`} transform={`rotate(-22 ${sweepX} ${ay})`} />
+        </g>
+        <defs>
+          <linearGradient id={`${id}g`} x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0" stopColor="#fff" stopOpacity={0} />
+            <stop offset="0.5" stopColor="#fff" stopOpacity={0.22 * fk} />
+            <stop offset="1" stopColor="#fff" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        {r.edge && <path d={d} fill="none" stroke={r.edge} strokeWidth={4.5 + 1.5 * Math.sin(t * 3 + r.phase * 5)} strokeLinejoin="round" style={{ filter: `drop-shadow(0 0 ${(9 + 5 * Math.sin(t * 2.4 + r.phase * 4)).toFixed(1)}px ${r.edge})` }} />}
       </g>
     </g>
   );

@@ -5,7 +5,7 @@ import { Watermark } from '../../brand/Watermark';
 import { useMontserrat } from '../../darien/Brand';
 import { useTZFonts } from '../../timezones/fonts';
 import { DURATION_S, NULL_WIN, PLANE, SC, camAt, camMotion, inTilt, shake } from './cam';
-import { Close, Flashes, Grade, MapFx, Subtitles, TiltCounter, UKTag, useFonts, wetterTags } from './Fx';
+import { Close, Clouds, Flashes, Grade, MAP_GRADE, MapFx, Subtitles, TiltCounter, UKTag, useFonts, wetterTags } from './Fx';
 import { MapCanvas } from './Map';
 import { LAND, regionsAt } from './regions';
 import { Shapes } from './Shapes';
@@ -62,7 +62,7 @@ export const UKWeather: React.FC<{ captions?: boolean; res?: number; audio?: str
   const q = sp ? sp.q : 0;
   const tilt = inTilt(t);
   const map = (
-    <AbsoluteFill style={{ filter: Math.max(bx, by) > 0.6 ? 'url(#ukblur)' : undefined }}>
+    <AbsoluteFill style={{ filter: (Math.max(bx, by) > 0.6 ? 'url(#ukblur) ' : '') + MAP_GRADE }}>
       <div style={{ position: 'absolute', left: 540 - PLANE.ox, top: 960 - PLANE.oy, width: PLANE.w, height: PLANE.h, transformOrigin: `${PLANE.ox}px ${PLANE.oy}px`, transform: `rotate(${cam.rot}deg)` }}>
         <MapCanvas cam={cam} res={res} />
         <Shapes c={cam} t={t} regions={regionsAt(t)} starts={starts(t)} />
@@ -84,13 +84,14 @@ export const UKWeather: React.FC<{ captions?: boolean; res?: number; audio?: str
             </U09TiltWorld>
           </Sequence>
         ) : map}
+        <Clouds t={t} a={tilt ? 0.6 : 1} />
         <MapFx t={t} c={cam} />
         {tilt && <TiltCounter t={t} />}
         <Flashes t={t} />
         <Grade frame={frame} />
       </AbsoluteFill>
       {sp && <NullPanel t={t} q={sp.q} name={sp.w.name} t0={sp.w.t0} t1={sp.w.t1} from={sp.w.from} fps={fps} />}
-      {sp?.w.name === 'A' && <AbsoluteFill style={{ transform: `translateY(${-480 * q + 480}px)` }}><Close t={t} /></AbsoluteFill>}
+      {sp?.w.name === 'A' && <AbsoluteFill style={{ transform: `translateY(${-480 * q + 480}px)` }}><Close t={t} c={cam} /></AbsoluteFill>}
       <div style={{ position: 'absolute', right: 22, bottom: q > 0 ? 974 : 14, left: 22, fontFamily: "'Montserrat', sans-serif", fontSize: 14, color: '#fff', opacity: 0.55, textShadow: '0 1px 2px rgba(0,0,0,0.8)', textAlign: 'right' }}>
         Sentinel-2 cloudless 2024 by EOX (CC BY 4.0) · relief: AWS Terrain Tiles (SRTM/NASA, ETOPO1/NOAA) · borders: Natural Earth · rainfall: World Bank · props AI, drawn in code
       </div>
