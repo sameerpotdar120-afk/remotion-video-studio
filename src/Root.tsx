@@ -45,6 +45,7 @@ import { CsCover } from './closestspace/edit/Cover';
 import { WhiskyWar, WK_DURATION_60 } from './whiskywar/edit/WhiskyWar';
 import { WkCover } from './whiskywar/edit/Cover';
 import { UKWeather, UK_DURATION_60 } from './ukweather/edit/UKWeather';
+import { UkCover } from './ukweather/edit/Cover';
 import { Hundred, HY_DURATION_60 } from './hundredyears/edit/Hundred';
 import { Chile, CHILE_DURATION_60 } from './chile/Chile';
 import { ChileCover } from './chile/Cover';
@@ -93,6 +94,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Closest4K60" component={Closest} durationInFrames={CS_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
       <Composition id="CsCover" component={CsCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="WhiskyWar4K60" component={WhiskyWar} durationInFrames={WK_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
+      <Composition id="UkCover" component={UkCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
       <Composition id="UKWeather4K60" component={UKWeather} durationInFrames={UK_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
       <Composition id="WkCover" component={WkCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true }} />
       <Composition id="Thailand4K60" component={Thailand} durationInFrames={TH_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: '' }} />
