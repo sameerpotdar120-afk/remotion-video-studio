@@ -1,0 +1,49 @@
+import { Easing, interpolate } from 'remotion';
+
+// Shared look for the UK weather motion pieces (the reference's palette): air masses blue (Arctic / Polar maritime),
+// purple (returning polar), red (tropical), yellow (polar continental); titles white with a red neon glow.
+export const C = {
+  arctic: '#2E9BE0',
+  polar: '#1C5FD0',
+  returning: '#7A3FD8',
+  tropical: '#D8262B',
+  tropicalPink: '#F07C8A',
+  continental: '#E6D81E',
+  neon: '#FF2E3A',
+  cyan: '#6FE6FF',
+  yellow: '#F5F23A',
+  ink: '#14161C',
+  white: '#FFFFFF',
+  uk: '#8B3A22',
+  ireland: '#5E9E2E',
+  colombia: '#E8901E',
+} as const;
+
+export const clamp = { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' } as const;
+export const ramp = (f: number, a: number, b: number, ease: (t: number) => number = Easing.out(Easing.cubic)) =>
+  interpolate(f, [a, b], [0, 1], { ...clamp, easing: ease });
+export const pop = (f: number, a: number, b: number, k = 1.8) => ramp(f, a, b, Easing.out(Easing.back(k)));
+export const inOut = Easing.inOut(Easing.cubic);
+export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+export const wobble = (f: number, a: number, hz = 2.2, decay = 4) => {
+  if (f < a) return 0;
+  const t = (f - a) / 60;
+  return Math.exp(-decay * t) * Math.cos(t * Math.PI * 2 * hz);
+};
+/** Letter-by-letter type-on (the reference: ~3 frames per letter, each popping from 1.4× to 1). */
+// split by grapheme cluster so Devanagari matras and conjuncts stay on their letter
+export const graphemes = (s: string): string[] => {
+  const Seg = (Intl as unknown as { Segmenter?: new (l: string, o: { granularity: string }) => { segment: (x: string) => Iterable<{ segment: string }> } }).Segmenter;
+  return Seg ? Array.from(new Seg('hi', { granularity: 'grapheme' }).segment(s), (x) => x.segment) : Array.from(s);
+};
+export const TypeOn: React.FC<{ text: string; f: number; at?: number; step?: number }> = ({ text, f, at = 0, step = 3 }) => {
+  const ch = graphemes(text);
+  return (
+    <>
+      {ch.map((c, i) => {
+        const s = pop(f, at + i * step, at + i * step + 7, 2);
+        return s > 0 ? <span key={i} style={{ display: 'inline-block', transform: `scale(${1.4 - 0.4 * s})`, opacity: Math.min(1, s * 2), whiteSpace: 'pre' }}>{c}</span> : null;
+      })}
+    </>
+  );
+};

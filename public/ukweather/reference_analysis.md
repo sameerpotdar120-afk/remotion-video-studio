@@ -153,3 +153,23 @@ bobbing, held to the end so it loops.
   tropical maritime, tropical continental, polar continental. Correct.
 - **The Gulf Stream / North Atlantic Drift** warms the waters off the British Isles; prevailing westerlies bring moist
   Atlantic air. Correct.
+
+## Motion detail at 30 fps (the moves the Remotion components rebuild)
+
+- **Character pop (0.23–0.63 s):** appears as a dot at 0.23, scales to full by 0.50 with an overshoot (~1.12 at 0.43) and a
+  squash on landing; the closed umbrella hangs at his right side; 0.50→0.63 it swings up from the side and snaps open
+  overhead in 4 frames, then a 2-frame bounce. From then on a slow bob (±3% scale, ~1.4 s period).
+- **The wind (10.0–10.6 s):** the hat lifts at 0.17 s and flies up-right in an arc, spinning, gone by 0.33; the body leans
+  ~15° into the wind and slides right ~40 px; the umbrella is yanked to the right and flips inside out; diagonal white
+  streaks (top-left → bottom-right) cross the frame in ~0.25 s each, staggered.
+- **Calendar (14.4–15.6 s):** a small tear-off pad flies in from the right (0.07–0.13 s) and lands over the islands with a
+  slight tilt; a page flips every ~3 frames, the pad wobbling ±8° on each flip; the last page lands red "250", the pad then
+  slides left and the yellow "rainy days/yr" types in at ~22 chars/s.
+- **Halo (37.7–38.4 s):** fat light-blue diagonal stripes sweep the whole frame (~6 frames), then condense into a hatched,
+  rounded blob with a bright rim that contracts onto the islands (ease-out ~0.3 s); the land inside goes grey-hatched.
+- **Collide arrows (40.9–41.4 s):** five dashed arrows with big triangle heads enter from the frame edges within 3–4 frames
+  each, staggered ~2 frames, ease-out; their dash pattern scrolls toward the head; semi-transparent (~0.75).
+- **Wind curls (48.4–51.7 s):** thin white crescent strokes, each ~¼ screen long, drift left → right at a steady pace, fading
+  in and out over ~0.6 s, a small curl at the head; a field of small blue rings (moisture) sits on the sea beneath.
+- **Typed titles:** letters pop one at a time (~3 frames per letter), each from ~1.4× to 1.0; neon titles add a red outer
+  glow that pulses once on landing.
