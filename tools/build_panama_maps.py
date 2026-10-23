@@ -34,6 +34,13 @@ PLACES = {"colon": (-79.90, 9.36), "gatun_locks": (-79.92, 9.27), "gatun_lake": 
 CANAL = [(-79.915, 9.42), (-79.915, 9.36), (-79.918, 9.28), (-79.90, 9.24), (-79.86, 9.20), (-79.80, 9.16), (-79.74, 9.12), (-79.69, 9.10),
          (-79.66, 9.07), (-79.635, 9.045), (-79.613, 9.017), (-79.592, 8.998), (-79.575, 8.965), (-79.56, 8.93), (-79.53, 8.88)]
 
+# Río Indio, west of Gatun Lake, flowing north to the Caribbean (approximate, traced from the plate)
+RIO_INDIO = [(-80.24, 8.60), (-80.20, 8.72), (-80.15, 8.84), (-80.12, 8.95), (-80.10, 9.06), (-80.09, 9.16), (-80.11, 9.25)]
+# the long way round: Colón east along the coast, round Brazil, down to Cape Horn, up the Pacific coast to Balboa
+ROUTE = [(-79.9, 9.45), (-75, 11.6), (-68, 11.8), (-60, 10.6), (-51, 4.5), (-42, -1.5), (-34.6, -7.5), (-37.5, -14), (-40.5, -22.5), (-47.5, -27),
+         (-53.5, -35), (-58.5, -40), (-64, -46.5), (-66.3, -54.2), (-67.3, -56.3), (-71.5, -54.5), (-75.6, -47), (-74.2, -38), (-71.9, -30), (-71.3, -20),
+         (-76.8, -13), (-81.5, -5.5), (-80.6, 0), (-79.9, 5.5), (-79.5, 8.8)]
+
 
 def main() -> None:
     cache, ne = Path(sys.argv[1]), Path(sys.argv[2])
@@ -52,6 +59,10 @@ def main() -> None:
     geo["panama"] = rings(C["Panama"], 0.004, 0.0005)
     geo["colombia"] = rings(C["Colombia"], 0.02, 0.01)
     geo["samerica"] = {k: rings(C[k], 0.05, 0.05) for k in ["Brazil", "Argentina", "Peru", "Chile", "Bolivia", "Venezuela", "Colombia", "Ecuador", "Paraguay", "Uruguay", "Guyana", "Suriname"] if k in C}
+    lk = shapefile.Reader(glob.glob(str(ne / "lakes" / "*.shp"))[0])
+    geo["gatun"] = next(rings(shape(sh.__geo_interface__).buffer(0), 0.0008, 0.0) for r, sh in zip(lk.records(), lk.shapes()) if r["name"] == "Lago Gatun")
+    geo["rio_indio"] = [[round(mx(a), 1), round(my(b), 1)] for a, b in RIO_INDIO]
+    geo["route"] = [[round(mx(a), 1), round(my(b), 1)] for a, b in ROUTE]
     geo["places"] = {k: [round(mx(a), 1), round(my(b), 1)] for k, (a, b) in PLACES.items()}
     geo["places_deg"] = PLACES
     geo["canal"] = [[round(mx(a), 1), round(my(b), 1)] for a, b in CANAL]
