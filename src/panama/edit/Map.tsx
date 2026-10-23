@@ -8,12 +8,12 @@ const mk = (name: string, feather: number, full: number, none: number): Plate =>
   return { src: `panama/maps/${name}_geo.jpg`, x0: b[0], y0: b[1], x1: b[2], y1: b[3], feather, full, none };
 };
 // The GeoLayers-style plates (EOX satellite + terrain/bathymetry hillshade + grade, built by tools/build_panama_maps.py),
-// coarse → fine: the Americas z4, the isthmus z8, the canal and Gatun Lake z12, the Pacific approach z13.
+// coarse → fine: the Americas z5, the isthmus z10, the canal and Gatun Lake z12, the Pacific approach z13.
 const GEOS = [
   mk('americas', 0.0, 1e9, 2e9),
-  mk('isthmus', 0.02, 1600, 3200),
-  mk('canal', 0.02, 60, 120),
-  mk('approach', 0.03, 25, 50),
+  mk('isthmus', 0.02, 4000, 8000),
+  mk('canal', 0.02, 150, 300),
+  mk('approach', 0.03, 40, 80),
 ];
 export type Look = 'geo';
 const STACK: Record<Look, Plate[]> = { geo: GEOS };
