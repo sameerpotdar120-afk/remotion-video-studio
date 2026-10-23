@@ -22,7 +22,7 @@ export const P14Waiting: React.FC<{ count?: number; label?: string; ship?: strin
         const sw = Math.sin(f / 30 + i) * 6;
         return (
           <div key={i} style={{ position: 'absolute', left: 300 + Math.cos(a) * r, top: 320 + Math.sin(a) * r * 0.7, transform: `rotate(${random(`wd${i}`) * 360 + sw}deg) scale(${s})` }}>
-            <ShipTop len={70} src={ship} seed={`w${i}`} />
+            <ShipTop len={96} src={ship} seed={`w${i}`} f={f + i * 7} />
           </div>
         );
       })}

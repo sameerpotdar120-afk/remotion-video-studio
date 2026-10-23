@@ -80,7 +80,7 @@ def grade(rgb, land):
     return np.clip(rgb, 0, 1)
 
 
-def build(name, zs, zd, lo0, lo1, la0, la1, cache):
+def build(name, zs, zd, lo0, lo1, la0, la1, cache, sat_water=False):
     sat, b = stitch(zs, lo0, lo1, la0, la1, cache / "eox")
     f = min(1.0, CAP / max(sat.size))
     if f < 1:
@@ -93,6 +93,12 @@ def build(name, zs, zd, lo0, lo1, la0, la1, cache):
     px_m = (lo1 - lo0) * 111320 * math.cos(mid_lat) / W
     a = np.asarray(sat.convert("RGB")).astype(np.float32) / 255
     land = (h > 0.5).astype(np.float32)
+    if sat_water:
+        # where the DEM is too coarse (islands, inland lakes), trust the satellite: dark blue pixels are water
+        r_, g_, b_ = a[..., 0], a[..., 1], a[..., 2]
+        wet = (b_ > r_ + 0.015) & (b_ >= g_ - 0.02) & ((r_ + g_ + b_) / 3 < 0.32)
+        land = land * (~wet)
+        h = np.where(wet & (h > 0), -2.0, h)
     land = np.asarray(Image.fromarray((land * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32) / 255
     # land: satellite with soft-light relief (exaggerated more when zoomed out)
     exag = max(1.0, min(6.0, px_m / 120))

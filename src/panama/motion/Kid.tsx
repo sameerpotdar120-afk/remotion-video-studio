@@ -7,7 +7,7 @@ import { C } from './theme';
 // origin at the ground under the body's centre. Faces: smile, grin, oh, frown, cry (tear streams), and an optional
 // "!" or "?" mark popping over the head. One hand can hold a paper cup (`cup`).
 export type Face = 'smile' | 'grin' | 'oh' | 'frown' | 'cry' | 'drink';
-export type KidPose = { face: Face; mark: '' | '!' | '?'; markK: number; tilt: number; lean: number; squash: number; hop: number; arm: number; cup: number; tears: number };
+export type KidPose = { face: Face; mark: '' | '!' | '?'; markK: number; tilt: number; lean: number; squash: number; hop: number; arm: number; cup: number; tears: number; armL?: number; look?: [number, number]; hairK?: number };
 export const K0: KidPose = { face: 'smile', mark: '', markK: 0, tilt: 0, lean: 0, squash: 1, hop: 0, arm: 0, cup: 0, tears: 0 };
 
 const HEAD: [number, number] = [0, -700];
@@ -36,7 +36,7 @@ export const Kid: React.FC<{ pose: KidPose; f: number; seed?: string }> = ({ pos
         <radialGradient id={`kb-${seed}`} cx="0.35" cy="0.25" r="0.9"><stop offset="0" stopColor="#FFFFFF" /><stop offset="1" stopColor="#D9DEE4" /></radialGradient>
         <radialGradient id={`kh-${seed}`} cx="0.38" cy="0.32" r="0.8"><stop offset="0" stopColor="#D9A274" /><stop offset="0.6" stopColor="#A86D45" /><stop offset="1" stopColor="#7E4E2E" /></radialGradient>
       </defs>
-      <ellipse cx={0} cy={p.hop} rx={230} ry={34} fill="#000" opacity={0.22} />
+      <ellipse cx={0} cy={p.hop} rx={230 * (1 - p.hop / 600)} ry={34 * (1 - p.hop / 600)} fill="#000" opacity={0.25 - p.hop / 2000} />
       <path d={BODY} fill={`url(#kb-${seed})`} stroke={C.ink} strokeWidth={10} strokeLinejoin="round" />
       {/* collar, buttons, the flag badge */}
       <path d="M -90 -505 L 0 -430 L 90 -505 L 60 -520 L 0 -470 L -60 -520 Z" fill="#fff" stroke={C.ink} strokeWidth={7} strokeLinejoin="round" />
@@ -47,7 +47,8 @@ export const Kid: React.FC<{ pose: KidPose; f: number; seed?: string }> = ({ pos
       <g>
         {Array.from({ length: 9 }, (_, k) => {
           const a = Math.PI * (1.05 + (k / 8) * 0.9);
-          return <circle key={k} cx={hx + Math.cos(a) * HR * 0.86} cy={hy + Math.sin(a) * HR * 0.86 - 10} r={58} fill="#17100C" stroke={C.ink} strokeWidth={6} />;
+          const b = (p.hairK ?? 0) * Math.sin(f / 4 + k) * 6;
+          return <circle key={k} cx={hx + Math.cos(a) * HR * 0.86} cy={hy + Math.sin(a) * HR * 0.86 - 10 + b} r={58 + Math.sin(f / 9 + k) * 2} fill="#17100C" stroke={C.ink} strokeWidth={6} />;
         })}
         <path d={`M ${-HR * 0.9} ${hy - 60} Q 0 ${hy - 170} ${HR * 0.9} ${hy - 60} Q 0 ${hy - 120} ${-HR * 0.9} ${hy - 60} Z`} fill="#17100C" />
       </g>
@@ -57,8 +58,8 @@ export const Kid: React.FC<{ pose: KidPose; f: number; seed?: string }> = ({ pos
         {[-1, 1].map((s) => (
           <g key={s}>
             {p.face === 'oh' ? <circle cx={s * 72} cy={0} r={30} fill="#fff" stroke={C.ink} strokeWidth={7} /> : null}
-            <ellipse cx={s * 72} cy={0} rx={p.face === 'oh' ? 14 : 24} ry={Math.max(3, (p.face === 'oh' ? 16 : cry ? 18 : 32) * (1 - blink))} fill={C.ink} />
-            {blink < 0.5 && <circle cx={s * 72 - 7} cy={-10} r={7} fill="#fff" />}
+            <ellipse cx={s * 72 + (p.look?.[0] ?? 0)} cy={p.look?.[1] ?? 0} rx={p.face === 'oh' ? 14 : 24} ry={Math.max(3, (p.face === 'oh' ? 16 : cry ? 18 : 32) * (1 - blink))} fill={C.ink} />
+            {blink < 0.5 && <circle cx={s * 72 - 7 + (p.look?.[0] ?? 0)} cy={-10 + (p.look?.[1] ?? 0)} r={7} fill="#fff" />}
             <path d={`M ${s * 72 - 30} ${-62} L ${s * 72 + 30} ${-62}`} stroke={C.ink} strokeWidth={12} strokeLinecap="round" transform={`rotate(${s * (cry ? -18 : p.face === 'frown' ? 14 : 0)} ${s * 72} -62)`} />
           </g>
         ))}
@@ -77,7 +78,10 @@ export const Kid: React.FC<{ pose: KidPose; f: number; seed?: string }> = ({ pos
         ))}
       </g>
       {/* arms: the left one hangs, the right one can lift a cup to the mouth */}
-      <path d="M -150 -430 Q -230 -330 -200 -230" stroke={C.ink} strokeWidth={12} fill="none" strokeLinecap="round" />
+      <g transform={`translate(-150 -430) rotate(${p.armL ?? 0})`}>
+        <path d="M 0 0 Q -80 100 -50 200" stroke={C.ink} strokeWidth={12} fill="none" strokeLinecap="round" />
+        <circle cx={-50} cy={200} r={20} fill="#A86D45" stroke={C.ink} strokeWidth={5} />
+      </g>
       <g transform={`translate(190 -400) rotate(${-p.arm})`}>
         <path d={`M 0 0 Q 60 80 40 ${160 - p.cup * 80}`} stroke={C.ink} strokeWidth={12} fill="none" strokeLinecap="round" />
         {p.cup > 0.01 && <g transform={`translate(40 ${160 - p.cup * 80})`}><path d="M -26 -60 L 26 -60 L 18 10 L -18 10 Z" fill="#F4F4F0" stroke={C.ink} strokeWidth={6} /><rect x={-24} y={-48} width={48} height={14} fill="#7FD3FF" /></g>}

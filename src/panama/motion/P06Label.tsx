@@ -26,11 +26,14 @@ export const P06Label: React.FC<{ text?: string; tag?: string; look?: 'dark' | '
           {ld >= 1 && <circle cx={300} cy={258} r={9} fill="#fff" stroke="#0E1620" strokeWidth={3} />}
         </svg>
       )}
-      <div style={{ position: 'absolute', left: 300, top: 110, transform: `translate(-50%, -50%) translate(${ix}px, ${iy}px) rotate(${ir}deg) scale(${s})`, display: 'flex', alignItems: 'center', gap: 14,
+      <div style={{ position: 'absolute', left: 300, top: 110, transform: `translate(-50%, -50%) translate(${ix}px, ${iy}px) rotate(${ir}deg) scale(${s * (1 + 0.06 * Math.max(0, 1 - f / 10))}, ${s * (1 - 0.06 * Math.max(0, 1 - f / 10))})`, overflow: 'visible', display: 'flex', alignItems: 'center', gap: 14,
         padding: look === 'pill' ? '8px 26px 4px 10px' : '6px 24px 2px', borderRadius: look === 'pill' ? 40 : 16, background: bg, border: look === 'dark' ? '3px solid rgba(255,255,255,0.75)' : '4px solid rgba(255,255,255,0.9)',
         boxShadow: '0 10px 22px rgba(0,0,0,0.4)', whiteSpace: 'nowrap', fontFamily: UI, fontWeight: 800, fontSize: size, color: fg, lineHeight: 1.3 }}>
         {look === 'pill' && <span style={{ background: '#1A1406', color: '#FFE36A', borderRadius: 30, padding: '2px 14px 0', fontSize: size * 0.7 }}>{tag}</span>}
-        <TypeOn text={text} f={f} at={3} step={2} />
+        <span style={{ whiteSpace: 'pre' }}><TypeOn text={text} f={f} at={3} step={2} /></span>
+        <div style={{ position: 'absolute', inset: 0, borderRadius: 'inherit', overflow: 'hidden', pointerEvents: 'none' }}>
+          <div style={{ position: 'absolute', top: -20, bottom: -20, width: 50, left: `${((f - 10) % 150) / 150 * 160 - 30}%`, background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,0.45), rgba(255,255,255,0))', transform: 'skewX(-20deg)' }} />
+        </div>
       </div>
     </AbsoluteFill>
   );

@@ -34,10 +34,19 @@ export const P20Dam: React.FC<{ river?: string; dam?: [number, number]; to?: [nu
       <svg width={1080} height={1080}>
         <path d={river} fill="none" stroke="#6FE6FF" strokeWidth={14} strokeLinecap="round" strokeDasharray={`${L * rd} ${L}`} style={{ filter: 'drop-shadow(0 0 8px #6FE6FF)' }} />
         <path d={river} fill="none" stroke="#fff" strokeWidth={4} strokeDasharray="18 40" strokeDashoffset={-f * 3} opacity={rd} />
-        {fill > 0 && <path d={blob} fill="#3FB6E8" stroke="#BFF4FF" strokeWidth={5} opacity={0.92} />}
+        {fill > 0 && (
+          <g>
+            <path d={blob} fill="#0B3A5A" opacity={0.35} transform="translate(8 12)" style={{ filter: 'blur(6px)' }} />
+            <path d={blob} fill="#3FB6E8" stroke="#BFF4FF" strokeWidth={5} opacity={0.95} />
+            {[0.75, 0.5, 0.28].map((k, j) => <path key={j} d={blob} fill="none" stroke="#E8FBFF" strokeWidth={3} opacity={0.25 + 0.2 * Math.sin(f / 10 + j)} transform={`translate(${dam[0] * (1 - k)} ${(dam[1] - 120) * (1 - k)}) scale(${k + 0.03 * Math.sin(f / 14 + j)})`} />)}
+          </g>
+        )}
         {ds > 0 && (
           <g transform={`translate(${dam[0]} ${dam[1] + dy + w * 6}) scale(${ds})`}>
+            <path d="M -130 -10 Q 0 -60 130 -10 L 120 16 Q 0 -30 -120 16 Z" transform="translate(6 18)" fill="#000" opacity={0.3} style={{ filter: 'blur(5px)' }} />
+            <path d="M -120 16 Q 0 -30 120 16 L 120 34 Q 0 -12 -120 34 Z" fill="#9AA2AA" />
             <path d="M -130 -10 Q 0 -60 130 -10 L 120 16 Q 0 -30 -120 16 Z" fill="#F0F2F4" stroke="#8A9096" strokeWidth={5} />
+            <path d="M -110 -16 Q 0 -54 110 -16" stroke="#fff" strokeWidth={4} fill="none" opacity={0.8} />
             {[-80, -40, 0, 40, 80].map((x) => <rect key={x} x={x - 6} y={-30 + Math.abs(x) * 0.15} width={12} height={30} fill="#B9BFC5" />)}
             {f < 60 && <ellipse rx={150 + (f - 38) * 6} ry={(150 + (f - 38) * 6) * 0.3} fill="none" stroke="#E8E2D6" strokeWidth={6} opacity={Math.max(0, 1 - (f - 38) / 22)} />}
           </g>

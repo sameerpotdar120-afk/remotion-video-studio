@@ -25,10 +25,17 @@ export const P12Kid: React.FC<{ beats?: Beat[] }> = ({ beats = [[0, 'smile', '']
   const cup = drinking ? ramp(f, at, at + 14, Easing.inOut(Easing.cubic)) : 0;
   const tears = face === 'cry' ? ramp(f, at, at + 20) : 0;
   const markK = cur[2] ? pop(f, at, at + 10, 2.6) * (1 + 0.06 * wobble(f, at + 10, 3, 4)) : 0;
+  // eyes glance around now and then; arms act out each face: wiping tears, both up in shock, a shrug for "?"
+  const gl = Math.floor(f / 50);
+  const look: [number, number] = face === 'oh' ? [0, -4] : [Math.round((Math.sin(gl * 2.1) * 10)), Math.round(Math.cos(gl * 1.3) * 5)];
+  const shock = face === 'oh' ? pop(f, at, at + 8, 2.4) : 0;
+  const wipe = face === 'cry' ? ramp(f, at + 10, at + 22) * (0.85 + 0.15 * Math.sin(f / 5)) : 0;
+  const shrug = cur[2] === '?' ? pop(f, at, at + 10, 2) : 0;
+  const armL = 150 * shock + 168 * wipe + 60 * shrug + Math.sin(f / 13) * 4; // + lifts the left arm
   const pose: KidPose = {
-    ...K0, face, mark: cur[2], markK,
+    ...K0, look, armL, hairK: face === 'oh' ? Math.max(0, 1 - (f - at) / 30) : 0.15, face, mark: cur[2], markK,
     tilt: (drinking ? -14 * cup : 0) + Math.sin(f / 21) * 4 + (face === 'cry' ? Math.sin(f / 6) * 3 : 0),
-    squash: land * swap * (1 + 0.02 * Math.sin(f / 12)), arm: drinking ? 40 * cup : Math.sin(f / 11) * 5, cup, tears,
+    squash: land * swap * (1 + 0.02 * Math.sin(f / 12)), arm: drinking ? 40 * cup : face === 'oh' ? 150 * shock : 60 * shrug + Math.sin(f / 11) * 5, cup, tears,
     lean: face === 'oh' ? -4 : 0, hop: face === 'oh' ? 30 * Math.max(0, 1 - (f - at) / 10) : 0,
   };
   return (

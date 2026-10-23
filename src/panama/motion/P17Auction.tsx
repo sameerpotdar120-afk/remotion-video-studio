@@ -19,21 +19,51 @@ export const P17Auction: React.FC<{ hammer?: string; block?: string; bids?: stri
     if (f >= h && f < h + 9) ang = interpolate(f, [h, h + 9], [0, -35], { ...clamp, easing: Easing.out(Easing.cubic) });
   }
   if (f < hits[0] - 9) ang = -35 + Math.sin(f / 10) * 3;
+  let prevAng = -35;
+  { const g = f - 1; prevAng = -35;
+    for (const h of hits) {
+      if (g >= h - 9 && g < h) prevAng = interpolate(g, [h - 9, h - 3, h], [-35, -55, 0], { ...clamp, easing: Easing.in(Easing.quad) });
+      if (g >= h && g < h + 9) prevAng = interpolate(g, [h, h + 9], [0, -35], { ...clamp, easing: Easing.out(Easing.cubic) });
+    } }
+  const flash = hits.reduce((a, h) => Math.max(a, f >= h && f < h + 6 ? 1 - (f - h) / 6 : 0), 0);
   const kick = hits.reduce((a, h) => a + (f >= h ? wobble(f, h, 5, 10) : 0), 0);
   return (
     <AbsoluteFill style={{ transform: `translateY(${kick * 6}px)` }}>
       {/* sound block */}
       <div style={{ position: 'absolute', left: 300, top: 760, width: 300, height: 140 }}>
         {block ? <Img src={block} style={{ width: 300, height: 140, objectFit: 'contain' }} /> : (
-          <svg width={300} height={140}><ellipse cx={150} cy={90} rx={140} ry={40} fill="#3B2314" /><ellipse cx={150} cy={70} rx={140} ry={40} fill="#6B4226" stroke="#C9A04A" strokeWidth={6} /></svg>
+          <svg width={300} height={140}>
+            <defs><radialGradient id="blkTop" cx="0.4" cy="0.35" r="0.8"><stop offset="0" stopColor="#9A6A42" /><stop offset="0.7" stopColor="#6B4226" /><stop offset="1" stopColor="#4A2C18" /></radialGradient></defs>
+            <ellipse cx={150} cy={118} rx={146} ry={22} fill="#000" opacity={0.35} />
+            <path d="M 10 70 L 10 92 A 140 40 0 0 0 290 92 L 290 70 Z" fill="#3B2314" />
+            <ellipse cx={150} cy={70} rx={140} ry={40} fill="url(#blkTop)" stroke="#D9B45A" strokeWidth={6} />
+            <ellipse cx={130} cy={60} rx={60} ry={12} fill="#fff" opacity={0.12} />
+          </svg>
         )}
       </div>
       {/* gavel, pivoting at the end of its handle (bottom right) */}
-      <div style={{ position: 'absolute', left: 420, top: 520, width: 420, height: 260, transformOrigin: '100% 80%', transform: `rotate(${ang}deg)` }}>
+      <div style={{ position: 'absolute', left: 420, top: 520, width: 420, height: 260, transformOrigin: '100% 80%', transform: `rotate(${ang}deg)`, filter: Math.abs(ang - prevAng) > 4 ? `blur(${Math.min(6, Math.abs(ang - prevAng) * 0.4).toFixed(1)}px)` : undefined }}>
         {hammer ? <Img src={hammer} style={{ width: 420, height: 260, objectFit: 'contain' }} /> : (
-          <svg width={420} height={260}><rect x={130} y={190} width={290} height={26} rx={13} fill="#7A4A2A" stroke="#3B2314" strokeWidth={4} /><rect x={20} y={130} width={130} height={130} rx={24} fill="#5A3420" stroke="#3B2314" strokeWidth={5} /><rect x={20} y={160} width={130} height={14} fill="#C9A04A" /><rect x={20} y={214} width={130} height={14} fill="#C9A04A" /></svg>
+          <svg width={420} height={260}>
+            <defs>
+              <linearGradient id="gvH" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#A06A40" /><stop offset="0.5" stopColor="#6E4426" /><stop offset="1" stopColor="#3E2412" /></linearGradient>
+              <linearGradient id="gvB" x1="0" x2="1"><stop offset="0" stopColor="#4A2A16" /><stop offset="0.35" stopColor="#8A5A34" /><stop offset="0.7" stopColor="#5A3420" /><stop offset="1" stopColor="#2E1A0C" /></linearGradient>
+              <linearGradient id="gvBr" x1="0" x2="1"><stop offset="0" stopColor="#8A6A26" /><stop offset="0.4" stopColor="#F2D27A" /><stop offset="1" stopColor="#8A6A26" /></linearGradient>
+            </defs>
+            <rect x={130} y={188} width={290} height={28} rx={14} fill="url(#gvH)" stroke="#2E1A0C" strokeWidth={3} />
+            <path d="M 150 196 L 410 196" stroke="#fff" strokeWidth={3} opacity={0.2} />
+            <rect x={14} y={124} width={142} height={140} rx={30} fill="url(#gvB)" stroke="#2E1A0C" strokeWidth={4} />
+            <rect x={14} y={150} width={142} height={16} fill="url(#gvBr)" />
+            <rect x={14} y={222} width={142} height={16} fill="url(#gvBr)" />
+            <rect x={36} y={128} width={18} height={132} rx={9} fill="#fff" opacity={0.15} />
+          </svg>
         )}
       </div>
+      {flash > 0 && <div style={{ position: 'absolute', left: 300, top: 700, width: 300, height: 220, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,240,190,0.95), rgba(255,220,120,0) 70%)', opacity: flash, mixBlendMode: 'screen' }} />}
+      {hits.map((h, i) => f >= h && f < h + 24 ? Array.from({ length: 10 }, (_, k) => {
+        const t = (f - h) / 24, a = Math.PI + (k / 9) * Math.PI;
+        return <div key={`d${i}${k}`} style={{ position: 'absolute', left: 450 + Math.cos(a) * 200 * t, top: 820 + Math.sin(a) * 120 * t + 300 * t * t, width: 7, height: 7, borderRadius: 2, background: '#C9A070', opacity: 1 - t }} />;
+      }) : null)}
       {hits.map((h, i) => {
         const r = ramp(f, h, h + 18);
         return f >= h && f < h + 18 ? <div key={`r${i}`} style={{ position: 'absolute', left: 450 - 150 * r, top: 830 - 50 * r, width: 300 * r, height: 100 * r, borderRadius: '50%', border: '6px solid #FFE27A', opacity: 1 - r }} /> : null;

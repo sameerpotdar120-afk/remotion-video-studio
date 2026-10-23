@@ -5,38 +5,50 @@ import { clamp, mblur, ramp } from './theme';
 
 // p01_ship_queue (line 1 and the loop, "एक ship ने 5.3 million dollar दे दिए, बस Panama Canal की line तोड़ने के लिए";
 // the reference's 0–4.5 s and 62–66 s): a long diagonal line of ships creeping toward the canal (each bobbing and
-// slowly yawing, with a short wake), one ship glowing gold with a pulsing halo. At `overtake` the gold ship pulls out
-// of the line, speeds up past the others (motion blur, long wake), and small red rings ripple at the ships it passes.
-// `lanes` > 1 draws parallel queues (the reference's 44–49 s). Transparent, 1080×1920, 60 fps. `ship` / `gold` are
-// the creator's top-down images (bow right); code-drawn ships until then.
-export const P01ShipQueue: React.FC<{ n?: number; angle?: number; overtake?: number; lanes?: number; goldAt?: number; ship?: string; gold?: string }> = ({
-  n = 22, angle = -62, overtake = 70, lanes = 1, goldAt = 0.62, ship, gold,
+// yawing on its own rhythm, bow foam pulsing, a broken-foam wake), one glowing gold (pulsing halo, turning god-rays,
+// rising sparkles). The whole shot never holds: a slow camera push and roll runs throughout. At `overtake` the gold
+// ship anticipates (a tiny back-off), pulls out of the line, accelerates past the others with motion blur, speed lines
+// and a long wake, red rings rippling at each ship it passes, then eases back in at the front. Sun glints sparkle on
+// the water. `lanes` > 1 draws parallel queues (44–49 s). Transparent, 1080×1920, 60 fps. `ship` / `gold` images.
+export const P01ShipQueue: React.FC<{ n?: number; angle?: number; overtake?: number; lanes?: number; goldAt?: number; ship?: string; gold?: string; glints?: boolean }> = ({
+  n = 11, angle = -62, overtake = 70, lanes = 1, goldAt = 0.6, ship, gold, glints = true,
 }) => {
   const f = useCurrentFrame();
-  const len = 150, gap = 175;
-  const creep = f * 0.35;
-  const go = ramp(f, overtake, overtake + 110, Easing.inOut(Easing.cubic));
-  const vGold = interpolate(f, [overtake, overtake + 55, overtake + 110], [0, 14, 0], clamp);
+  const len = 320, gap = 370;
+  const creep = f * 0.45;
+  const back = interpolate(f, [overtake - 10, overtake], [0, -14], { ...clamp, easing: Easing.out(Easing.quad) }) * (1 - ramp(f, overtake, overtake + 12));
+  const go = ramp(f, overtake, overtake + 120, Easing.inOut(Easing.cubic));
+  const vGold = interpolate(f, [overtake, overtake + 60, overtake + 120], [0, 16, 0], clamp);
   const total = n * gap;
+  const push = 1 + 0.06 * (f / 300) + 0.01 * Math.sin(f / 50);
+  const roll = Math.sin(f / 90) * 1.2;
+  const gi = Math.round(n * goldAt);
   return (
-    <AbsoluteFill>
+    <AbsoluteFill style={{ transform: `scale(${push}) rotate(${roll}deg)` }}>
+      {glints && Array.from({ length: 26 }, (_, i) => {
+        const t = ((f + random(`gl${i}`) * 90) % 90) / 90;
+        return <div key={`g${i}`} style={{ position: 'absolute', left: random(`glx${i}`) * 1080, top: random(`gly${i}`) * 1920, width: 18, height: 3, borderRadius: 2, background: '#fff', opacity: Math.sin(t * Math.PI) * 0.55, transform: `rotate(${angle + 90}deg) scaleX(${0.4 + t})` }} />;
+      })}
       <div style={{ position: 'absolute', left: 540, top: 960, transform: `rotate(${angle}deg)` }}>
         {Array.from({ length: lanes }, (_, L) => (
-          <div key={L} style={{ position: 'absolute', left: 0, top: (L - (lanes - 1) / 2) * 120 }}>
+          <div key={L} style={{ position: 'absolute', left: 0, top: (L - (lanes - 1) / 2) * 190 }}>
             {Array.from({ length: n }, (_, i) => {
-              const isGold = L === Math.floor(lanes / 2) && i === Math.round(n * goldAt);
-              const x0 = -total / 2 + i * gap + creep + (L % 2) * 60;
-              const x = isGold ? x0 + go * (total * 0.42) : x0;
-              const y = (isGold ? -go * Math.sin(go * Math.PI) * 70 : 0) + Math.sin(f / 40 + i) * 3;
-              const yaw = Math.sin(f / 55 + i * 1.7) * 1.5 + (isGold ? Math.sin(go * Math.PI) * -8 : 0);
-              const g0 = -total / 2 + Math.round(n * goldAt) * gap + creep + (L % 2) * 60, gx = g0 + go * total * 0.42;
-              const ring = !isGold && go > 0 && go < 1 && x0 > g0 && x0 < gx + gap * 0.5 && x0 > gx - gap * 3;
+              const isGold = L === Math.floor(lanes / 2) && i === gi;
+              const x0 = -total / 2 + i * gap + creep + (L % 2) * 90 + (random(`jx${L}${i}`) - 0.5) * 30;
+              const g0 = -total / 2 + gi * gap + creep + (L % 2) * 90, gx = g0 + back + go * total * 0.4;
+              const x = isGold ? gx : x0;
+              const y = (isGold ? -Math.sin(go * Math.PI) * 95 : (random(`jy${L}${i}`) - 0.5) * 16) + Math.sin(f / (36 + i % 5) + i) * 3;
+              const yaw = Math.sin(f / (50 + i % 7) + i * 1.7) * 1.6 + (isGold ? -Math.cos(go * Math.PI) * 0 - Math.sin(go * Math.PI * 2) * 7 : 0);
+              const ring = !isGold && go > 0 && go < 1 && x0 > g0 && x0 < gx + gap * 0.5 && x0 > gx - gap * 2.5;
               const tint = SHIP_TINTS[Math.floor(random(`t${L}${i}`) * SHIP_TINTS.length)];
               return (
-                <div key={i} style={{ position: 'absolute', left: x, top: y, transform: `rotate(${yaw}deg)`, filter: isGold ? mblur(vGold, 0.6, 8) : tint === 'none' ? undefined : tint }}>
+                <div key={i} style={{ position: 'absolute', left: x, top: y, transform: `rotate(${yaw}deg)`, filter: isGold ? mblur(vGold, 0.5, 7) : tint === 'none' ? undefined : tint, zIndex: isGold ? 5 : 1 }}>
                   {isGold && <GoldHalo len={len} f={f} />}
-                  <Wake len={len} f={f} k={isGold ? 0.6 + 0.4 * go : 0.45} seed={i} />
-                  <ShipTop len={isGold ? len * 1.08 : len} src={isGold ? gold : ship} seed={`q${L}${i}`} gas={isGold} />
+                  <Wake len={len} f={f} k={isGold ? 0.7 + 0.3 * go : 0.5} seed={i} speed={isGold ? 0.3 + vGold / 10 : 0.3} />
+                  {isGold && vGold > 3 && Array.from({ length: 6 }, (_, k) => (
+                    <div key={k} style={{ position: 'absolute', left: -len * (1 + random(`sl${k}`)), top: (random(`sy${k}`) - 0.5) * len * 0.5, width: len * (0.6 + random(`sw${k}`)), height: 3, background: 'linear-gradient(90deg, rgba(255,255,255,0), rgba(255,245,200,0.9))', opacity: vGold / 16 }} />
+                  ))}
+                  <ShipTop len={isGold ? len * 1.08 : len} src={isGold ? gold : ship} seed={`q${L}${i}`} gas={isGold} f={f + i * 9} />
                   {ring && <Ripple f={f} seed={i} />}
                 </div>
               );
@@ -49,6 +61,13 @@ export const P01ShipQueue: React.FC<{ n?: number; angle?: number; overtake?: num
 };
 
 const Ripple: React.FC<{ f: number; seed: number }> = ({ f, seed }) => {
-  const t = ((f + seed * 7) % 36) / 36;
-  return <div style={{ position: 'absolute', left: 60 - 30 * t, top: -40 - 30 * t, width: 60 * t + 20, height: 60 * t + 20, borderRadius: '50%', border: '3px solid #FF4A4A', opacity: 1 - t }} />;
+  const t = ((f + seed * 7) % 30) / 30;
+  return (
+    <>
+      {[0, 0.5].map((o) => {
+        const u = (t + o) % 1;
+        return <div key={o} style={{ position: 'absolute', left: -40 - 50 * u, top: -40 - 50 * u, width: 80 + 100 * u, height: 80 + 100 * u, borderRadius: '50%', border: `${4 - 3 * u}px solid #FF4A4A`, opacity: 1 - u, boxShadow: '0 0 10px rgba(255,60,60,0.6)' }} />;
+      })}
+    </>
+  );
 };
