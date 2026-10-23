@@ -1,0 +1,8 @@
+# Hooks scored with .claude/skills/yt-script/hookscore.py (scored on the English meaning — the scorer reads English keywords only)
+82 STRONG   | The Question     | You see one giant country, but Russia has collapsed 4 times in 1,100 years. Why does it never stop?
+           Hinglish: आप एक बहुत बड़ा देश देखते हो। पर Russia पिछले ग्यारह सौ साल में चार बार पूरी तरह बिखर चुका है। … ये बार-बार टूटता क्यों है?
+61 WORKABLE | The Question     | You say Russia, but the name was never Russian. Why did a giant country take its name from Viking rowers?
+           Hinglish: आप Russia बोलते हो, पर ये नाम Russians का है ही नहीं। एक इतना बड़ा देश, नाव चलाने वाले Vikings के नाम पर क्यों?
+57 WORKABLE | The Mistake      | In 862 there was no country here. In 1991 it broke into 15 countries overnight. Why does it never stop breaking?
+55 WORKABLE | Unclassified     | You think Russia is about Putin, but the same loop started in 862 and nobody has broken it yet.
+54 WEAK     | The Question     | You think it is the most powerful country, but in 862 its people begged a foreigner to come and rule them. Why?
