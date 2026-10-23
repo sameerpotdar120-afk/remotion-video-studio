@@ -22,8 +22,8 @@ from build_thailand_maps import mx, my, rings  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 uk.OUT = ROOT / "public" / "panama" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
-    ("americas", 4, 3, -135.0, -25.0, -60.0, 52.0),
-    ("isthmus", 8, 7, -84.0, -76.5, 6.5, 11.0),
+    ("americas", 5, 4, -135.0, -25.0, -60.0, 52.0),
+    ("isthmus", 10, 8, -84.0, -76.5, 6.5, 11.0),
     ("canal", 12, 10, -80.55, -79.3, 8.55, 9.5),
     ("approach", 13, 11, -79.7, -79.3, 8.6, 9.0),
 ]
