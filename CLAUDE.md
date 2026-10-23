@@ -10,6 +10,13 @@ EOX Sentinel-2 cloudless (CC BY 4.0, credit on screen), AWS Terrain Tiles / SRTM
 (public domain; India point-of-view edition for borders), Mixkit music (free licence), Sonniss GDC SFX (royalty-free),
 Google Fonts (OFL), the creator's own GPT images, and graphics drawn in code. Credit every source that asks for it.
 
+## House style (approved on the UK weather video)
+
+The creator wants every future NullDynasty video made the way the UK weather Short was: same workflow, GeoLayers-style
+map, Lumetri-style grade (no grain), highlight fills for every place the VO names, India's official boundary, living
+motion on every frame (not only the camera), and the same sound design. The full spec is `docs/HOUSE_STYLE.md`;
+start from `src/ukweather/` and the `tools/*ukweather*` scripts.
+
 ## Upload queue
 
 The current topic queue is `exports/week_plan_oct12-18.md`. When the creator asks "what's next?" (usually after a render),
