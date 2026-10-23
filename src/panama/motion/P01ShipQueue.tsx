@@ -10,10 +10,11 @@ import { clamp, mblur, ramp } from './theme';
 // ship anticipates (a tiny back-off), pulls out of the line, accelerates past the others with motion blur, speed lines
 // and a long wake, red rings rippling at each ship it passes, then eases back in at the front. Sun glints sparkle on
 // the water. `lanes` > 1 draws parallel queues (44–49 s). Transparent, 1080×1920, 60 fps. `ship` / `gold` images.
-export const P01ShipQueue: React.FC<{ n?: number; angle?: number; overtake?: number; lanes?: number; goldAt?: number; ship?: string; gold?: string; glints?: boolean }> = ({
-  n = 11, angle = -62, overtake = 70, lanes = 1, goldAt = 0.6, ship, gold, glints = true,
+export const P01ShipQueue: React.FC<{ n?: number; angle?: number; overtake?: number; lanes?: number; goldAt?: number; ship?: string; gold?: string; glints?: boolean; fo?: number }> = ({
+  n = 11, angle = -62, overtake = 70, lanes = 1, goldAt = 0.6, ship, gold, glints = true, fo = 0,
 }) => {
-  const f = useCurrentFrame();
+  // `fo` offsets the clock: the loop's closing instance runs to local frame -1, one frame before the opening's frame 0
+  const f = useCurrentFrame() + fo;
   const len = 320, gap = 370;
   const creep = f * 0.45;
   const back = interpolate(f, [overtake - 10, overtake], [0, -14], { ...clamp, easing: Easing.out(Easing.quad) }) * (1 - ramp(f, overtake, overtake + 12));

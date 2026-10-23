@@ -19,6 +19,7 @@ import sys
 from pathlib import Path
 
 import numpy as np
+from scipy import ndimage
 import shapefile
 from PIL import Image, ImageFilter
 from shapely.geometry import box, shape
@@ -99,6 +100,9 @@ def build(name, zs, zd, lo0, lo1, la0, la1, cache, sat_water=False):
         wet = (b_ > r_ + 0.015) & (b_ >= g_ - 0.02) & ((r_ + g_ + b_) / 3 < 0.32)
         land = land * (~wet)
         h = np.where(wet & (h > 0), -2.0, h)
+        # the coarse DEM shows through inland water as blocky depth squares: smooth the water's depth field
+        hw = ndimage.gaussian_filter(np.minimum(h, 0).astype(np.float32), 10)
+        h = np.where(h <= 0, np.minimum(hw, -0.6), h)
     land = np.asarray(Image.fromarray((land * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32) / 255
     # land: satellite with soft-light relief (exaggerated more when zoomed out)
     exag = max(1.0, min(6.0, px_m / 120))

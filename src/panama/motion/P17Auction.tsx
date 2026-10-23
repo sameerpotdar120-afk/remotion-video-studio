@@ -31,7 +31,7 @@ export const P17Auction: React.FC<{ hammer?: string; block?: string; bids?: stri
     <AbsoluteFill style={{ transform: `translateY(${kick * 6}px)` }}>
       {/* sound block */}
       <div style={{ position: 'absolute', left: 300, top: 760, width: 300, height: 140 }}>
-        {block ? <Img src={block} style={{ width: 300, height: 140, objectFit: 'contain' }} /> : (
+        {block ? <Img src={block} style={{ position: 'absolute', left: 0, top: -50, width: 300, height: 212, objectFit: 'contain' }} /> : (
           <svg width={300} height={140}>
             <defs><radialGradient id="blkTop" cx="0.4" cy="0.35" r="0.8"><stop offset="0" stopColor="#9A6A42" /><stop offset="0.7" stopColor="#6B4226" /><stop offset="1" stopColor="#4A2C18" /></radialGradient></defs>
             <ellipse cx={150} cy={118} rx={146} ry={22} fill="#000" opacity={0.35} />
@@ -43,7 +43,8 @@ export const P17Auction: React.FC<{ hammer?: string; block?: string; bids?: stri
       </div>
       {/* gavel, pivoting at the end of its handle (bottom right) */}
       <div style={{ position: 'absolute', left: 420, top: 520, width: 420, height: 260, transformOrigin: '100% 80%', transform: `rotate(${ang}deg)`, filter: Math.abs(ang - prevAng) > 4 ? `blur(${Math.min(6, Math.abs(ang - prevAng) * 0.4).toFixed(1)}px)` : undefined }}>
-        {hammer ? <Img src={hammer} style={{ width: 420, height: 260, objectFit: 'contain' }} /> : (
+        {/* the creator's gavel lies diagonally (head top right, handle down left): turned so the handle runs right */}
+        {hammer ? <Img src={hammer} style={{ position: 'absolute', left: 217 - 149, top: 196 - 142, width: 298, height: 285, transform: 'rotate(-136deg)' }} /> : (
           <svg width={420} height={260}>
             <defs>
               <linearGradient id="gvH" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="#A06A40" /><stop offset="0.5" stopColor="#6E4426" /><stop offset="1" stopColor="#3E2412" /></linearGradient>

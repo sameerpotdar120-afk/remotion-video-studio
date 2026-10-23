@@ -7,9 +7,9 @@ import { idle, pop, ramp } from './theme';
 // DRY"): white bold title over a red tilted sticker with a white rim and a drop shadow. Both are already in place on
 // frame 0 (so the loop's last frame matches), the sticker breathes 1–2% and floats, a light sweep crosses it every
 // ~1.5 s; at `out` both fade and shrink over 6 frames. Transparent, 1080×500, 60 fps.
-export const P04Sticker: React.FC<{ top?: string; sticker?: string; out?: number; intro?: boolean }> = ({ top = 'PANAMA CANAL', sticker = 'सूख रही है', out = 9999, intro = false }) => {
+export const P04Sticker: React.FC<{ top?: string; sticker?: string; out?: number; intro?: boolean; fo?: number }> = ({ top = 'PANAMA CANAL', sticker = 'सूख रही है', out = 9999, intro = false, fo = 0 }) => {
   useFonts();
-  const f = useCurrentFrame();
+  const f = useCurrentFrame() + fo;
   const s = intro ? pop(f, 0, 12, 2) : 1;
   const a = 1 - ramp(f, out, out + 6);
   const breathe = 1 + 0.015 * Math.sin(f / 14);
