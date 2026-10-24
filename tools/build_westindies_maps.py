@@ -36,6 +36,7 @@ PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
     ("greater", 9, 8, -85.5, -67.5, 16.5, 23.8),
     ("bahamas", 8, 7, -80.5, -71.0, 20.5, 27.5),
     ("lesser", 9, 8, -65.5, -58.8, 10.0, 18.8),
+    ("guyana", 8, 7, -63.5, -55.0, 0.5, 11.5),
 ]
 # the island countries the VO names, plus the territories and Guyana (the cricket team's mainland member)
 COUNTRIES = ["Cuba", "Jamaica", "Haiti", "Dominican Republic", "The Bahamas", "Barbados", "Trinidad and Tobago", "Grenada", "Saint Lucia",
