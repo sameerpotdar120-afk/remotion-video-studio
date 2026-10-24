@@ -1,5 +1,6 @@
 import React from 'react';
-import { AbsoluteFill, Sequence } from 'remotion';
+import { AbsoluteFill, Img, Sequence, random, staticFile } from 'remotion';
+import SIZES from '../../../public/westindies/img_sizes.json';
 import { clamp01, easeIn, easeOut, inOut, lerp, linear, pop, ramp, window4 } from './anim';
 import { C, CAPS, Cam, DURATION_S, GEO, P, merc, project, toScreen } from './cam';
 import type { Region } from './Shapes';
@@ -13,6 +14,55 @@ import { W09FedFlag } from '../motion/W09FedFlag';
 import { W10Crack } from '../motion/W10Crack';
 import { W11TitleCard } from '../motion/W11TitleCard';
 import { W12GlowLabel } from '../motion/W12GlowLabel';
+import { W08Ballot } from '../motion/W08Ballot';
+import { W13Parliament } from '../motion/W13Parliament';
+
+/** The creator's UE5 images (cut out by tools/cut_westindies_assets.py). */
+const SZ = SIZES as Record<string, { w: number; h: number }>;
+const IMG = (k: string) => (SZ[k] ? staticFile(`westindies/img/${k}.png`) : undefined);
+
+/** A cut-out figure rising into frame from behind a ground line (the reference's Chris Gayle rising out of Jamaica):
+ *  it slides up in 20 frames with an overshoot, gold rays turn behind it and sparkles burst, then it keeps a small
+ *  bounce and sway. `h` is its height in px; its feet sit on the ground line `y`. */
+const Rise: React.FC<{ t: number; t0: number; t1: number; src?: string; x: number; y: number; h: number; ratio: number }> = ({ t, t0, t1, src, x, y, h, ratio }) => {
+  const a = window4(t, t0, t0 + 0.05, t1 - 0.25, t1);
+  if (a <= 0 || !src) return null;
+  const u = t - t0;
+  const rise = 1 - clamp01(pop(t, t0, 14, 160));
+  const w = h * ratio;
+  const rays = ramp(t, t0 + 0.2, t0 + 0.6);
+  const bounce = u > 0.4 ? Math.abs(Math.sin(u * 3.2)) * -6 : 0;
+  return (
+    <div style={{ position: 'absolute', left: 0, top: 0, width: 1080, height: 1920, opacity: a, pointerEvents: 'none' }}>
+      {rays > 0 && (
+        <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, mixBlendMode: 'screen', opacity: 0.55 * rays }}>
+          {Array.from({ length: 12 }, (_, i) => <path key={i} d={`M ${x} ${y - h * 0.55} l ${h} ${-h * 0.05} l 0 ${h * 0.1} Z`} fill="#FFE48A" opacity={0.3 + 0.25 * Math.sin(u * 4 + i)} transform={`rotate(${i * 30 + u * 20} ${x} ${y - h * 0.55})`} style={{ filter: 'blur(6px)' }} />)}
+        </svg>
+      )}
+      <div style={{ position: 'absolute', left: x - w / 2 - 40, top: y - h - 60, width: w + 80, height: h + 60, overflow: 'hidden' }}>
+        <Img src={src} style={{ position: 'absolute', left: 40, top: 60 + rise * h * 1.05 + bounce, width: w, height: h, transform: `rotate(${Math.sin(u * 1.7) * 1.5}deg)`, transformOrigin: '50% 100%', filter: 'drop-shadow(0 12px 18px rgba(0,0,0,0.6))' }} />
+      </div>
+      {u > 0.3 && u < 1.2 && Array.from({ length: 14 }, (_, i) => {
+        const k = ramp(t, t0 + 0.3, t0 + 1.1), ang = (i / 14) * Math.PI * 2 + random(`rs${i}`), d = h * (0.3 + 0.5 * k);
+        return <div key={i} style={{ position: 'absolute', left: x + Math.cos(ang) * d, top: y - h * 0.55 + Math.sin(ang) * d * 0.8, width: 12, height: 12, background: '#FFF4C2', transform: `rotate(45deg) scale(${1 - k})`, boxShadow: '0 0 10px #FFC93C', opacity: 1 - k }} />;
+      })}
+    </div>
+  );
+};
+
+/** A cut-out prop that slides in from an edge on an eased path, then floats (bob and sway). */
+const SlideIn: React.FC<{ t: number; t0: number; t1: number; src?: string; x: number; y: number; w: number; ratio: number; from: [number, number]; rot?: number; flip?: boolean }> = ({ t, t0, t1, src, x, y, w, ratio, from, rot = 0, flip = false }) => {
+  const a = window4(t, t0, t0 + 0.08, t1 - 0.25, t1);
+  if (a <= 0 || !src) return null;
+  const k = ramp(t, t0, t0 + 0.45, easeOut), u = t - t0;
+  const px = lerp(from[0], x, k), py = lerp(from[1], y, k);
+  const h = w * ratio;
+  return (
+    <Img src={src} style={{ position: 'absolute', left: px - w / 2, top: py - h / 2 + Math.sin(u * 2.1) * 6, width: w, height: h, opacity: a,
+      transform: `rotate(${rot + Math.sin(u * 1.4) * 1.5}deg) scaleX(${flip ? -1 : 1})`, filter: 'drop-shadow(0 14px 20px rgba(0,0,0,0.6))', pointerEvents: 'none' }} />
+  );
+};
+const ratio = (k: string) => (SZ[k] ? SZ[k].h / SZ[k].w : 1);
 
 const FPS = 60;
 const f60 = (s: number) => Math.round(s * FPS);
@@ -195,6 +245,7 @@ const Links: React.FC<{ t: number; c: Cam; names: string[]; t0: number; t1: numb
 
 /** Columbus's crossing: a gold route draws from Spain past the Canaries to the Bahamas, a bright comet head leading
  *  it; on arrival a ring bursts. The map dims underneath (see `Dim`). */
+const SHIP = IMG('wi04_carrack_ship');
 const ROUTE = ([[-6.95, 37.2], [-12, 33], [-15.6, 28.1], [-30, 25], [-50, 24.2], [-65, 24.6], [-74.5, 24.05]] as Pt[]).map(([a, b]) => merc(a, b));
 const Voyage: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const t0 = C.columbus7 + 0.2, t1 = C.pahunch7 + 0.2;
@@ -217,10 +268,10 @@ const Voyage: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: a, overflow: 'visible' }}>
       <path d={d} fill="none" stroke="#FFC93C" strokeWidth={16} opacity={0.25} strokeDasharray={`${L * p} ${L * 2}`} strokeLinecap="round" style={{ filter: 'blur(6px)' }} />
       <path d={d} fill="none" stroke="#FFC93C" strokeWidth={5} strokeDasharray={`${L * p} ${L * 2}`} strokeLinecap="round" />
-      {p > 0 && p < 1 && <>
-        <circle cx={hx} cy={hy} r={26} fill="#FFE48A" opacity={0.35} style={{ filter: 'blur(10px)' }} />
-        <circle cx={hx} cy={hy} r={10} fill="#fff" style={{ filter: 'drop-shadow(0 0 12px #FFC93C)' }} />
-      </>}
+      {p > 0 && p < 1 && <circle cx={hx} cy={hy} r={30} fill="#FFE48A" opacity={0.3} style={{ filter: 'blur(12px)' }} />}
+      {p > 0 && SHIP && (
+        <image href={SHIP} x={hx - 110} y={hy - 140 + Math.sin(t * 4.2) * 5} width={220} height={220 * ratio('wi04_carrack_ship')} transform={`rotate(${Math.sin(t * 3) * 3} ${hx} ${hy}) translate(${2 * hx} 0) scale(-1 1)`} opacity={Math.min(1, (1 - burst * 0.0))} style={{ filter: 'drop-shadow(0 10px 12px rgba(0,0,0,0.6))' }} />
+      )}
       {burst > 0 && burst < 1 && <circle cx={pts[pts.length - 1][0]} cy={pts[pts.length - 1][1]} r={20 + 120 * burst} fill="none" stroke="#FFC93C" strokeWidth={8 * (1 - burst)} opacity={1 - burst} />}
     </svg>
   );
@@ -315,8 +366,9 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
       {/* line 1: the title card, the magnifier searching the world */}
-      <At t0={0} t1={C.kyun2 + 0.1} x={540} y={300} w={1080} h={640}><W11TitleCard out={f60(C.kyun2 - 0.15)} /></At>
-      <At t0={1.1} t1={C.kyun2} x={540} y={960} w={1080} h={1920}><W01Magnifier pts={[[240, 1080], [470, 940], [700, 1160], [880, 900], [600, 760], [380, 1280], [760, 1380]]} hop={38} out={f60(C.kyun2 - 1.3)} /></At>
+      <At t0={0} t1={C.kyun2 + 0.1} x={540} y={300} w={1080} h={640}><W11TitleCard out={f60(C.kyun2 - 0.15)} bat={IMG('wi01_cricket_bat_ball')} /></At>
+      <At t0={1.1} t1={C.kyun2} x={540} y={960} w={1080} h={1920}><W01Magnifier src={IMG('wi03_magnifying_glass')} pts={[[240, 1080], [470, 940], [700, 1160], [880, 900], [600, 760], [380, 1280], [760, 1380]]} hop={38} out={f60(C.kyun2 - 1.3)} /></At>
+      <Rise t={t} t0={C.cricket1 - 0.1} t1={C.kyun2 + 0.1} src={IMG('wi02_cricketer_body')} x={850} y={1560} h={620} ratio={SZ.wi02_cricketer_body ? SZ.wi02_cricketer_body.w / SZ.wi02_cricketer_body.h : 0.35} />
       {/* line 2: no such country */}
       <Big t={t} t0={C.desh2 - 0.1} t1={C.caribbean3 - 0.1} text="कोई देश नहीं!" x={540} y={420} size={110} color="#FF5A5F" rot={-4} />
       {/* line 3: the outline round the islands, the names in their fills, the 13, the islands that still belong to others */}
@@ -357,6 +409,7 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       })()}
       <Big t={t} t0={C.hamari5 + 0.15} t1={C.jamaica5 + 0.1} text="बिल्कुल हमारी तरह" x={540} y={1300} size={88} color="#FFB061" rot={-3} />
       {([['Jamaica', C.jamaica5], ['Barbados', C.barbados5], ['Trinidad and Tobago', C.trinidad5]] as [string, number][]).map(([n, t0]) => <NameTag key={`n5${n}`} t={t} c={c} n={n} t0={t0} t1={C.ajeeb6 + 0.2} color="#FF8FB1" />)}
+      <Rise t={t} t0={C.jamaica5 + 0.15} t1={C.chhote5 + 0.3} src={IMG('wi02_cricketer_body')} x={Math.max(250, S('Jamaica')[0])} y={S('Jamaica')[1] + 10} h={480} ratio={SZ.wi02_cricketer_body ? SZ.wi02_cricketer_body.w / SZ.wi02_cricketer_body.h : 0.35} />
       {['Antigua and Barbuda', 'Saint Kitts and Nevis', 'Dominica', 'Saint Lucia', 'Saint Vincent and the Grenadines', 'Grenada'].map((n, i) => <Pin key={`p5${n}`} t={t} t0={C.chhote5 + i * 0.1} t1={C.ajeeb6 + 0.3} at={S(n)} color="#FF8FB1" />)}
       {/* line 6: Guyana, not an island at all */}
       <Big t={t} t0={C.ajeeb6 - 0.05} t1={C.island6 + 0.2} text="सबसे अजीब बात" x={540} y={420} size={96} color="#FFD84D" rot={-4} />
@@ -369,18 +422,22 @@ export const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <Pin t={t} t0={C.columbus7 - 0.1} t1={C.pahunch7} at={L(-6.95, 37.2)} color="#FFC93C" />
       <Big t={t} t0={C.columbus7} t1={C.pahunch7 - 0.2} text="Spain → India?" x={540} y={420} size={84} color="#FFE48A" rot={-3} />
       <Voyage t={t} c={c} />
-      <At t0={C.yahi7 - 0.15} t1={C.east7 - 0.4} x={Math.min(760, Math.max(320, toScreen(c, merc(-74.5, 24.05))[0]))} y={toScreen(c, merc(-74.5, 24.05))[1] - 40} w={700} h={360} ax={220 / 700} ay={330 / 360}><W04SpeechBubble text="यही India है?" /></At>
-      <At t0={C.galti7 - 0.05} t1={C.east7 - 0.4} x={Math.min(760, Math.max(320, toScreen(c, merc(-74.5, 24.05))[0])) + 120} y={toScreen(c, merc(-74.5, 24.05))[1] - 180} w={400} h={400} scale={0.7}><W02CrossStamp seed="galti" /></At>
+      <SlideIn t={t} t0={C.columbus7 + 0.1} t1={C.east7 - 0.4} src={IMG('wi05_columbus_body')} x={250} y={1260} w={420} ratio={ratio('wi05_columbus_body')} from={[-300, 1300]} />
+      <SlideIn t={t} t0={C.pahunch7 - 0.2} t1={C.yahi7 + 0.4} src={IMG('wi05b_columbus_arm_spyglass')} x={800} y={760} w={520} ratio={ratio('wi05b_columbus_arm_spyglass')} from={[1400, 700]} rot={-6} />
+      <At t0={C.yahi7 - 0.15} t1={C.east7 - 0.4} x={330} y={820} w={700} h={360} ax={220 / 700} ay={330 / 360}><W04SpeechBubble text="यही India है?" /></At>
+      <At t0={C.galti7 - 0.05} t1={C.east7 - 0.4} x={560} y={690} w={400} h={400} scale={0.7}><W02CrossStamp seed="galti" /></At>
       <Big t={t} t0={C.galti7} t1={C.east7 - 0.4} text="गलती!" x={540} y={1360} size={120} color="#FF5A5F" rot={-6} />
       <Tag t={t} t0={C.east7 - 0.1} t1={C.desh8 - 0.6} at={L(88, 18)} text="EAST INDIES" color="#FFC93C" dy={-330} />
       <Tag t={t} t0={C.west7 - 0.1} t1={C.desh8 - 0.6} at={L(-70, 18)} text="WEST INDIES" color="#3FF0DC" dy={330} />
       {/* line 8: the West Indies Federation, 1958–1962 */}
       <Links t={t} c={c} names={['Jamaica', 'Antigua and Barbuda', 'Saint Kitts and Nevis', 'Dominica', 'Saint Lucia', 'Barbados', 'Saint Vincent and the Grenadines', 'Grenada', 'Trinidad and Tobago']} t0={C.desh8 + 0.2} t1={C.toot8 + 0.2} color="#9FC0FF" />
       <At t0={C.n1958_8 - 0.05} t1={C.sansad8} x={540} y={400} w={900} h={420} scale={0.8}><W03BigCount from={1900} to={1958} dur={30} caption="West Indies Federation" color="#BFD4FF" /></At>
-      <At t0={C.jhanda8 - 0.1} t1={C.n4_8 + 0.2} x={800} y={1250} w={520} h={640} scale={0.6}><W09FedFlag /></At>
+      <At t0={C.jhanda8 - 0.1} t1={C.n4_8 + 0.2} x={830} y={760} w={520} h={640} scale={0.55}><W09FedFlag /></At>
       <Pin t={t} t0={C.sansad8} t1={C.n4_8 + 0.2} at={L(-61.51, 10.66)} color="#BFD4FF" />
+      <At t0={C.sansad8 - 0.1} t1={C.n4_8 + 0.3} x={540} y={1180} w={900} h={700} scale={0.75}><W13Parliament src={IMG('wi07_parliament_building')} flagAt={9999} /></At>
       <Tag t={t} t0={C.sansad8 + 0.1} t1={C.n4_8 + 0.2} at={L(-61.51, 10.66)} text="संसद · Port of Spain" color="#BFD4FF" dy={-260} scale={0.75} />
       <At t0={C.n4_8 - 0.05} t1={C.toot8 + 0.3} x={540} y={420} w={900} h={420} scale={0.85}><W03BigCount from={0} to={4} dur={24} caption="साल" color="#FFFFFF" /></At>
+      <At t0={C.vote8 - 0.4} t1={C.toot8 + 0.3} x={780} y={1220} w={600} h={700} scale={0.6}><W08Ballot box={IMG('wi06_ballot_box')} paper={IMG('wi06b_ballot_paper')} drop={24} tag="VOTE" /></At>
       <Tag t={t} t0={C.vote8 - 0.05} t1={C.toot8 + 0.2} at={S('Jamaica')} text="Jamaica: VOTE ✓" color="#FF5A5F" dy={-240} />
       <At t0={C.toot8 - 0.05} t1={C.toot9 + 0.5} x={540} y={960} w={1080} h={1080}><W10Crack pts={[[S('Jamaica')[0], S('Jamaica')[1] - 420], [S('Jamaica')[0] + 160, S('Jamaica')[1] - 360], [560, 640], [700, 560], [820, 600], [1000, 420]]} /></At>
       <Big t={t} t0={C.toot8 + 0.05} t1={C.toot9 - 0.1} text="देश टूट गया" x={540} y={1360} size={110} color="#FF5A5F" rot={-5} />
@@ -401,7 +458,7 @@ const LoopClose: React.FC<{ t: number }> = ({ t }) => {
   const fo = f60(LOOP_T0) - N;
   return (
     <AbsoluteFill style={{ opacity: ramp(t, LOOP_T0, DURATION_S - 0.15, easeIn) }}>
-      <At t0={LOOP_T0} t1={DURATION_S + 1} x={540} y={300} w={1080} h={640}><W11TitleCard fo={fo} /></At>
+      <At t0={LOOP_T0} t1={DURATION_S + 1} x={540} y={300} w={1080} h={640}><W11TitleCard fo={fo} bat={IMG('wi01_cricket_bat_ball')} /></At>
     </AbsoluteFill>
   );
 };
