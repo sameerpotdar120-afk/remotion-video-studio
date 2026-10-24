@@ -48,6 +48,8 @@ import { UKWeather, UK_DURATION_60 } from './ukweather/edit/UKWeather';
 import { UkCover } from './ukweather/edit/Cover';
 import { PanamaCanal, PC_DURATION_60 } from './panama/edit/PanamaCanal';
 import { PcCover } from './panama/edit/Cover';
+import { WestIndies, WI_DURATION_60 } from './westindies/edit/WestIndies';
+import { WiCover } from './westindies/edit/Cover';
 import { Hundred, HY_DURATION_60 } from './hundredyears/edit/Hundred';
 import { Chile, CHILE_DURATION_60 } from './chile/Chile';
 import { ChileCover } from './chile/Cover';
@@ -98,6 +100,8 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="WhiskyWar4K60" component={WhiskyWar} durationInFrames={WK_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
       <Composition id="UkCover" component={UkCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
       <Composition id="UKWeather4K60" component={UKWeather} durationInFrames={UK_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
+      <Composition id="WiCover" component={WiCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
+      <Composition id="WestIndies4K60" component={WestIndies} durationInFrames={WI_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
       <Composition id="PcCover" component={PcCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true, res: 2 }} />
       <Composition id="PanamaCanal4K60" component={PanamaCanal} durationInFrames={PC_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, res: 2, audio: "" }} />
       <Composition id="WkCover" component={WkCover} durationInFrames={1} fps={60} width={1080} height={1920} defaultProps={{ text: true }} />
