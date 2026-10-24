@@ -13,6 +13,7 @@ const GEOS = [
   mk('world', 0.0, 1e9, 2e9),
   mk('caribbean', 0.02, 2600, 5200),
   mk('bahamas', 0.03, 700, 1400),
+  mk('guyana', 0.03, 700, 1400),
   mk('greater', 0.02, 420, 840),
   mk('lesser', 0.03, 420, 840),
 ];

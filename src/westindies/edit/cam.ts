@@ -1,5 +1,6 @@
 import { Ease, easeIn, easeOut, inOut, kick, lerp, linear } from '../../timezones/anim';
 import raw from '../geo.json';
+import timing from './timing.json';
 
 export type P = [number, number];
 
@@ -16,12 +17,10 @@ export const GEO = raw as unknown as {
   plates: Record<string, Plate>; countries: Record<string, Rings>; territories: Record<string, Rings>; india: Rings; hull: Rings; centroids: Record<string, P>;
 };
 
-/** The look test runs on estimated cue times (the creator's VO will replace them): about 2.6 words a second. */
-export const C = {
-  kyun2: 6.45, caribbean3: 9.4, cuba3: 11.9, jamaica3: 12.6, haiti3: 13.3, dr3: 14.0, bahamas3: 15.0, barbados3: 15.7, trinidad3: 16.4,
-  n13_3: 17.9, britain3: 19.9, france3: 20.6, neth3: 21.2, america3: 22.0, twist4: 22.8, cricket4: 24.2, xcuba4: 25.6, xhaiti4: 26.1, xdr4: 26.6, xbah4: 27.6,
-};
-export const DURATION_S = 29.5;
+const T = timing as unknown as { duration: number; cues: Record<string, number>; caps: [number, string][] };
+export const C = T.cues;
+export const CAPS = T.caps;
+export const DURATION_S = T.duration;
 
 export type Cam = { x: number; y: number; span: number; rot: number };
 type Key = { t: number; at: P; span: number; rot?: number; e?: Ease; cut?: boolean };
@@ -31,26 +30,58 @@ const ll = merc;
 export const CAM0: Cam = { x: merc(-45, 14)[0], y: merc(-45, 14)[1], span: 3.0e7, rot: 0 };
 
 const keys = (): Key[] => [
-  // line 1: the dark world, the title card; a slow drift west while the magnifier searches
+  // line 1: the dark world and the title card; a slow drift west while the magnifier searches
   { t: 0, at: [CAM0.x, CAM0.y], span: CAM0.span },
-  { t: C.kyun2 - 0.35, at: ll(-58, 16), span: 2.6e7, e: linear },
-  // line 2 → 3: the whip down onto the Caribbean, the outline draws round the islands
-  { t: C.kyun2 + 0.55, at: ll(-72.5, 18.2), span: 4.6e6, e: inOut },
-  { t: C.cuba3 - 0.4, at: ll(-71.5, 18.0), span: 4.2e6, e: linear },
-  // the island tour: a quick eased whip to each island, then a slow push while its fill and name land
+  { t: C.kyun2 - 0.3, at: ll(-58, 16), span: 2.6e7, e: linear },
+  // line 2: the whip down onto the Caribbean, the outline draws round the islands
+  { t: C.kyun2 + 0.6, at: ll(-72.5, 18.2), span: 4.6e6, e: inOut },
+  { t: C.cuba3 - 0.4, at: ll(-71.5, 18.0), span: 4.0e6, e: linear },
+  // line 3: the island tour, a quick eased whip to each island, then a slow push while its fill and name land
   { t: C.cuba3 + 0.05, at: ll(-79.2, 21.7), span: 1.55e6, e: inOut }, { t: C.jamaica3 - 0.3, at: ll(-79.0, 21.6), span: 1.45e6, e: linear },
   { t: C.jamaica3 + 0.05, at: ll(-77.35, 18.15), span: 5.2e5, e: inOut }, { t: C.haiti3 - 0.3, at: ll(-77.3, 18.15), span: 4.9e5, e: linear },
   { t: C.haiti3 + 0.05, at: ll(-72.6, 19.0), span: 6.8e5, e: inOut }, { t: C.dr3 - 0.3, at: ll(-72.4, 19.0), span: 6.5e5, e: linear },
   { t: C.dr3 + 0.05, at: ll(-70.6, 18.8), span: 7.2e5, e: inOut }, { t: C.bahamas3 - 0.3, at: ll(-70.5, 18.8), span: 6.9e5, e: linear },
   { t: C.bahamas3 + 0.05, at: ll(-76.6, 24.6), span: 1.45e6, e: inOut }, { t: C.barbados3 - 0.3, at: ll(-76.5, 24.5), span: 1.38e6, e: linear },
   { t: C.barbados3 + 0.05, at: ll(-59.55, 13.17), span: 2.6e5, e: inOut }, { t: C.trinidad3 - 0.3, at: ll(-59.55, 13.17), span: 2.45e5, e: linear },
-  { t: C.trinidad3 + 0.05, at: ll(-61.2, 10.75), span: 4.4e5, e: inOut }, { t: C.n13_3 - 0.45, at: ll(-61.2, 10.75), span: 4.2e5, e: linear },
+  { t: C.trinidad3 + 0.05, at: ll(-61.2, 10.75), span: 4.4e5, e: inOut }, { t: C.n13_3 - 0.6, at: ll(-61.2, 10.75), span: 4.1e5, e: linear },
   // all thirteen, then the islands that still belong to Britain, France, the Netherlands and the US
-  { t: C.n13_3 + 0.15, at: ll(-70.5, 18.0), span: 4.7e6, e: inOut },
+  { t: C.n13_3 + 0.1, at: ll(-70.5, 18.0), span: 4.7e6, e: inOut },
   { t: C.twist4 - 0.3, at: ll(-69.5, 17.6), span: 4.4e6, e: linear },
   // line 4: the twist, onto Cuba, Hispaniola and the Bahamas for the crosses
   { t: C.twist4 + 0.6, at: ll(-75.0, 21.2), span: 2.7e6, e: inOut },
-  { t: DURATION_S, at: ll(-74.6, 21.0), span: 2.45e6, e: linear },
+  { t: C.kyun5 - 0.2, at: ll(-74.6, 21.0), span: 2.45e6, e: linear },
+  // line 5: the cricket islands light up maroon; then the world, India, British राज like us; back to the islands
+  { t: C.kyun5 + 0.5, at: ll(-67.5, 15.8), span: 4.4e6, e: inOut },
+  { t: C.hamari5 - 0.55, at: ll(-67.0, 15.6), span: 4.2e6, e: linear },
+  { t: C.hamari5 + 0.1, at: ll(10, 18), span: 3.4e7, e: inOut },
+  { t: C.jamaica5 - 0.35, at: ll(12, 18), span: 3.3e7, e: linear },
+  { t: C.jamaica5 + 0.25, at: ll(-67.5, 15.5), span: 4.3e6, e: inOut },
+  { t: C.ajeeb6 - 0.2, at: ll(-66.5, 15.0), span: 4.0e6, e: linear },
+  // line 6: south to Guyana, the one member that isn't an island
+  { t: C.island6 - 0.2, at: ll(-61.5, 9.5), span: 3.2e6, e: inOut },
+  { t: C.guyana6 + 0.1, at: ll(-59.0, 5.6), span: 1.9e6, e: inOut },
+  { t: C.naam7 - 0.2, at: ll(-59.5, 6.5), span: 2.3e6, e: linear },
+  // line 7: why the name: out to the Atlantic, Spain, the crossing (the map dims), the Bahamas, India
+  { t: C.n500_7 - 0.1, at: ll(-38, 28), span: 1.6e7, e: inOut },
+  { t: C.columbus7 - 0.2, at: ll(-36, 28), span: 1.55e7, e: linear },
+  { t: C.pahunch7 + 0.4, at: ll(-46, 26), span: 1.45e7, e: linear },
+  { t: C.yahi7 - 0.3, at: ll(-74.5, 24.2), span: 1.2e6, e: inOut },
+  { t: C.galti7 + 0.5, at: ll(-74.3, 24.0), span: 1.1e6, e: linear },
+  { t: C.east7 - 0.4, at: ll(10, 18), span: 3.5e7, e: inOut },
+  { t: C.desh8 - 1.6, at: ll(8, 18), span: 3.4e7, e: linear },
+  // line 8: the British islands joined into one country, 1958; the flag and parliament; Jamaica's vote; the crack
+  { t: C.desh8 - 0.6, at: ll(-67.5, 15.5), span: 4.3e6, e: inOut },
+  { t: C.sansad8 - 0.3, at: ll(-66.0, 14.5), span: 3.9e6, e: linear },
+  { t: C.sansad8 + 0.3, at: ll(-61.5, 10.66), span: 9e5, e: inOut },
+  { t: C.n4_8 - 0.3, at: ll(-61.5, 10.66), span: 8.5e5, e: linear },
+  { t: C.n4_8 + 0.3, at: ll(-67.5, 15.5), span: 4.3e6, e: inOut },
+  { t: C.jamaica8 - 0.1, at: ll(-67.5, 15.5), span: 4.2e6, e: linear },
+  { t: C.jamaica8 + 0.4, at: ll(-77.3, 18.1), span: 1.0e6, e: inOut },
+  { t: C.toot8 - 0.2, at: ll(-77.1, 18.1), span: 9.5e5, e: linear },
+  { t: C.toot8 + 0.4, at: ll(-67.5, 15.5), span: 4.4e6, e: inOut },
+  // line 9: the team still plays together under the old name; then the whip back to the frame-0 world (the loop)
+  { t: C.naam9 - 0.2, at: ll(-66.5, 15.0), span: 4.0e6, e: linear },
+  { t: DURATION_S - 0.14, at: [CAM0.x, CAM0.y], span: CAM0.span, e: inOut },
 ];
 
 type Full = Cam & { t: number; e: Ease; cut: boolean };
@@ -82,11 +113,12 @@ const camRaw = (t: number): Cam => {
 };
 
 /** Zoom punches on the big hits. */
-export const HITS = () => [C.kyun2 + 0.55, C.n13_3 + 0.15, C.xcuba4, C.xhaiti4, C.xdr4, C.xbah4];
+export const HITS = () => [C.kyun2 + 0.6, C.n13_3 + 0.1, C.xcuba4, C.xhaiti4, C.xdr4, C.xbah4, C.guyana6 + 0.1, C.yahi7, C.n1958_8, C.toot8];
 
 const SMOOTH = [-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12];
 const W8 = [0.06, 0.12, 0.18, 0.28, 0.18, 0.12, 0.06];
-const LOOPF = (k: number) => (2 * Math.PI * k) / 100;
+/** The breathe and drift are tied to the loop (whole cycles over the duration), so the last frame matches frame 0. */
+const LOOPF = (k: number) => (2 * Math.PI * k) / DURATION_S;
 export const camAt = (t: number): Cam => {
   const [a, b] = segOf(t);
   let x = 0, y = 0, ls = 0, rot = 0;
@@ -123,7 +155,7 @@ export const camMotion = (t: number) => {
 
 export const shake = (t: number): [number, number] => {
   let x = 0, y = 0;
-  for (const [t0, a] of [[C.xcuba4, 7], [C.xhaiti4, 7], [C.xdr4, 7], [C.xbah4, 7]] as [number, number][]) {
+  for (const [t0, a] of [[C.xcuba4, 7], [C.xhaiti4, 7], [C.xdr4, 7], [C.xbah4, 7], [C.toot8, 9]] as [number, number][]) {
     x += kick(t, t0, a, 31, 9);
     y += kick(t, t0 + 0.02, a * 0.7, 27, 9);
   }
