@@ -1,0 +1,14 @@
+  0.00-  5.64  Why is Greenland called Greenland when it is 80% made up of glaciers and almost completely covered
+  5.64- 11.16  in ice? And why is Iceland, famous for its green landscapes and hot springs, called Iceland?
+ 11.76- 16.40  It seems like these names were mixed up. Well, it was actually a Viking trick.
+ 16.72- 20.64  In the 9th century, Norwegian Vikings were the first to reach the shores of Iceland.
+ 20.84- 25.36  It was winter, and as they saw nothing but ice and snow, they naturally named it Iceland.
+ 25.64- 29.46  It was common for explorers to name new lands based on what they saw first.
+ 29.46- 34.22  For example, Florida got its name from Spanish explorers, meaning land of flowers,
+ 34.46- 36.94  because they arrived during a period of vigorous blooming.
+ 37.70- 42.16  Sometime later, when Iceland became populated, one of the Vikings, known as Eric the Red,
+ 42.36- 47.48  was exiled from the island for his crimes. In search of new lands, he headed west and came
+ 47.48- 52.24  across a massive icy island. Realizing that it would be difficult to attract settlers to the
+ 52.24- 57.14  island, he used a clever trick and named it Greenland, the opposite of what it actually was,
+ 57.14- 59.52  to make the name sound attractive to new inhabitants.
+done
