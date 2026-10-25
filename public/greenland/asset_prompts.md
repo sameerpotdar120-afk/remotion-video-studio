@@ -252,3 +252,166 @@
   "output": "largest size available (4K if possible)"
 }
 ```
+
+---
+
+## New (round 2): these make the motion look real
+
+The 11 prompts above don't change. These 7 replace things that were drawn in code: the glowing names, the ice layer, the spyglass rim and the old paper. Check the spelling on the 4 title renders; if a letter is wrong, regenerate it.
+
+---
+
+**gl09_title_greenland_grass.png** (16:9)
+```json
+{
+  "type": "3D lettering on a plain white background, for cutting out",
+  "subject": "the single word GREENLAND (spelled G-R-E-E-N-L-A-N-D, all capitals) as thick, chunky bold 3D block letters, every letter fully covered in lush bright green moss and short grass, tiny white and yellow wildflowers here and there, a few grass tufts sticking up from the top edges, the letters sitting in one straight line",
+  "camera": "straight-on front view, very slightly from below, the whole word fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (soft moss, grass blades, small flowers)",
+  "lighting": "bright warm sunlight from the upper left, soft rim light",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "any other words or letters",
+    "logos",
+    "watermark",
+    "people"
+  ],
+  "aspect_ratio": "16:9",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl10_title_iceland_ice.png** (16:9)
+```json
+{
+  "type": "3D lettering on a plain white background, for cutting out",
+  "subject": "the single word ICELAND (spelled I-C-E-L-A-N-D, all capitals) as thick, chunky bold 3D block letters carved from clear blue glacier ice, frosty white edges, tiny trapped air bubbles inside, a thin layer of snow on the top edges, sharp icicles hanging from the bottom edges, the letters sitting in one straight line",
+  "camera": "straight-on front view, very slightly from below, the whole word fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (clear ice with refraction, frost, snow, icicles)",
+  "lighting": "cool bright light from the upper left, a strong bright rim on the ice edges",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "any other words or letters",
+    "logos",
+    "watermark",
+    "people"
+  ],
+  "aspect_ratio": "16:9",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl09b_title_greenland_ice.png** (16:9)
+```json
+{
+  "type": "3D lettering on a plain white background, for cutting out",
+  "subject": "the single word GREENLAND (spelled G-R-E-E-N-L-A-N-D, all capitals) as thick, chunky bold 3D block letters carved from clear blue glacier ice, frosty white edges, tiny trapped air bubbles inside, a thin layer of snow on the top edges, sharp icicles hanging from the bottom edges, the letters sitting in one straight line; the same lettering style as a matching ICELAND ice title",
+  "camera": "straight-on front view, very slightly from below, the whole word fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (clear ice with refraction, frost, snow, icicles)",
+  "lighting": "cool bright light from the upper left, a strong bright rim on the ice edges",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "any other words or letters",
+    "logos",
+    "watermark",
+    "people"
+  ],
+  "aspect_ratio": "16:9",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl10b_title_iceland_grass.png** (16:9)
+```json
+{
+  "type": "3D lettering on a plain white background, for cutting out",
+  "subject": "the single word ICELAND (spelled I-C-E-L-A-N-D, all capitals) as thick, chunky bold 3D block letters, every letter fully covered in lush bright green moss and short grass, tiny white and yellow wildflowers here and there, a few grass tufts sticking up from the top edges, the letters sitting in one straight line; the same lettering style as a matching GREENLAND grass title",
+  "camera": "straight-on front view, very slightly from below, the whole word fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (soft moss, grass blades, small flowers)",
+  "lighting": "bright warm sunlight from the upper left, soft rim light",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "any other words or letters",
+    "logos",
+    "watermark",
+    "people"
+  ],
+  "aspect_ratio": "16:9",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl11_ice_sheet_texture.png** (1:1)
+```json
+{
+  "type": "seamless top-down texture, fills the whole frame",
+  "subject": "the surface of a glacier ice sheet seen straight from above: bright white snow-covered ice with deep blue crevasses and cracks running across it, glassy turquoise-blue melt pools and streams, wind-blown snow ridges, the blue glowing from inside the cracks",
+  "camera": "straight top-down view, flat, no horizon, no perspective",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (compacted snow, glacial ice, crevasses, melt water)",
+  "lighting": "soft high sun, the cracks glowing blue",
+  "background": "the texture itself fills the whole frame edge to edge",
+  "avoid": [
+    "text",
+    "logos",
+    "people",
+    "horizon",
+    "sky",
+    "watermark"
+  ],
+  "aspect_ratio": "1:1",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl12_spyglass_eyepiece.png** (1:1)
+```json
+{
+  "type": "single prop on a plain white background, for cutting out",
+  "subject": "looking straight into the wide end of an old brass sailor's spyglass: a thick polished brass ring with engraved bands and small scratches, a darker inner ring around the glass, and the glass itself in the centre shown as a perfectly round pure white disc",
+  "camera": "straight-on front view, perfectly circular, the ring centred and fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (polished and worn brass, engraving, dark leather wrap)",
+  "lighting": "warm light from the upper left, a bright specular highlight on the brass",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "text",
+    "logos",
+    "a reflection of a person",
+    "watermark"
+  ],
+  "aspect_ratio": "1:1",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**gl13_parchment_texture.png** (9:16)
+```json
+{
+  "type": "full-frame paper texture",
+  "subject": "a sheet of blank aged parchment paper from an old sea chart: warm cream and tan tones, faint water stains and fibres, darker burnt-brown edges and corners, a few soft creases from being folded, completely empty with no drawing on it",
+  "camera": "straight top-down view, flat, the paper filling the whole frame",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (paper fibre, stains, creases)",
+  "lighting": "soft even light",
+  "background": "the paper itself fills the whole frame edge to edge",
+  "avoid": [
+    "text",
+    "maps",
+    "drawings",
+    "logos",
+    "watermark"
+  ],
+  "aspect_ratio": "9:16",
+  "output": "largest size available (4K if possible)"
+}
+```
