@@ -229,3 +229,26 @@
   "output": "largest size available (4K if possible)"
 }
 ```
+
+---
+
+**gl08_viking_helmet.png** (1:1)
+```json
+{
+  "type": "single prop on a plain white background, for cutting out",
+  "subject": "a single Viking-age iron helmet, historically accurate: a rounded iron cap with a straight nose guard, riveted bands across the dome, a little leather lining showing at the rim (no horns)",
+  "camera": "front three-quarter view, slightly from above, the whole helmet fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (hammered iron, rivets, worn leather)",
+  "lighting": "soft daylight from the upper left, a bright rim along the dome",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "text",
+    "logos",
+    "horns",
+    "a person",
+    "watermark"
+  ],
+  "aspect_ratio": "1:1",
+  "output": "largest size available (4K if possible)"
+}
+```
