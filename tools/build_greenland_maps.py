@@ -27,7 +27,7 @@ Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "greenland" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
-    ("atlantic", 6, 4, -75.0, 35.0, 50.0, 83.6),
+    ("atlantic", 6, 4, -80.0, 40.0, 38.0, 83.6),
     ("iceland", 8, 7, -29.0, -9.0, 61.0, 69.5),
 ]
 COUNTRIES = ["Greenland", "Iceland", "Norway", "Denmark"]
@@ -55,6 +55,29 @@ def lift(name: str, zd: int, box: tuple, cache: Path) -> None:
     base = np.array([0.80, 0.88, 0.95]) + (np.array([0.95, 0.97, 0.99]) - np.array([0.80, 0.88, 0.95])) * up
     a = a * (1 - ice) + np.clip(base + det * np.array([0.9, 0.8, 0.6]), 0, 1) * ice
     Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8)).save(p, quality=91)
+
+
+def green(name: str, zd: int, box: tuple, cache: Path) -> None:
+    """Greenland as if it were green (line 8, "यानी हरी-भरी ज़मीन"): its own relief, from the same DEM, coloured as lush
+    land (deep green low down, yellow-green higher, a little rock on the peaks), shaded with the same hillshade."""
+    src = np.asarray(Image.open(OUT / f"{name}_geo.jpg").convert("RGB")).astype(np.float32) / 255
+    H, W = src.shape[:2]
+    h = uk.dem(zd, *box, cache)
+    h = ndimage.gaussian_filter(np.asarray(Image.fromarray(h.astype(np.float32), mode="F").resize((W, H), Image.BICUBIC)), 2.0)
+    px_m = (box[1] - box[0]) * 111320 * 0.3 / W
+    hs = uk.hillshade(np.maximum(h, 0), px_m, exag=30)
+    det = np.clip((hs - ndimage.gaussian_filter(hs, 25)) * 2.2 + 0.5, 0, 1)[..., None]
+    e = np.clip(h / 3000, 0, 1)[..., None]
+    low, mid, top = np.array([0.16, 0.46, 0.12]), np.array([0.40, 0.62, 0.18]), np.array([0.62, 0.66, 0.40])
+    col = np.where(e < 0.5, low + (mid - low) * (e / 0.5), mid + (top - mid) * ((e - 0.5) / 0.5))
+    rng = np.random.default_rng(3)
+    patch = ndimage.gaussian_filter(rng.random((H // 6, W // 6)).astype(np.float32), 3)
+    patch = np.asarray(Image.fromarray(patch).resize((W, H), Image.BICUBIC))[..., None]
+    col = col * (0.88 + 0.3 * (patch - 0.5) * 4)  # meadows and darker moss in patches
+    out = np.clip(col * (0.55 + 0.75 * det), 0, 1)
+    land = (h > 1)[..., None]
+    out = np.where(land, out, src)
+    Image.fromarray((out * 255).astype(np.uint8)).filter(ImageFilter.UnsharpMask(radius=2, percent=50, threshold=2)).save(OUT / f"{name}_green.jpg", quality=88)
 
 
 def paper(name: str) -> None:
@@ -101,6 +124,7 @@ def main() -> None:
         lift(name, zd, (lo0, lo1, la0, la1), cache)
         if name == "atlantic":
             paper(name)
+            green(name, zd, (lo0, lo1, la0, la1), cache)
         print(name, geo["plates"][name]["w"], geo["plates"][name]["h"], flush=True)
     sf = shapefile.Reader(glob.glob(str(ne / "ne_10m_admin_0_countries_ind" / "*.shp"))[0])
     C = {r["ADMIN"]: shape(s.__geo_interface__).buffer(0) for r, s in zip(sf.records(), sf.shapes())}

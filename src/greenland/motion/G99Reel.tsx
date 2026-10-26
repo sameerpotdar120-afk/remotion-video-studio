@@ -85,7 +85,7 @@ const S5: React.FC = () => {
 };
 const S6: React.FC = () => {
   const c: Cam = { plate: 'iceland', center: [IS[0] + 150000, IS[1] + 80000], z: 1.5 };
-  return <G09Spyglass bubbleAt={40}><MapView c={c} /><G08Snow amount={0.6} /></G09Spyglass>;
+  return <G09Spyglass><MapView c={c} /><G08Snow amount={0.6} /></G09Spyglass>;
 };
 const S7: React.FC = () => {
   const f = useCurrentFrame();
