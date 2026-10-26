@@ -348,31 +348,6 @@
 
 ---
 
-**md13_footballer_back.png** (3:4)
-```json
-{
-  "type": "single character on a plain white background, for cutting out",
-  "subject": "a fictional professional footballer seen from behind, running and dribbling a ball, wearing a plain white football kit with a big number 7 on the back, white socks, dark boots, short dark hair; the face is not visible",
-  "camera": "full body from behind and slightly to the side, the whole figure and the ball fully in frame with empty space around them",
-  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (kit fabric, grass stains, leather ball)",
-  "lighting": "bright stadium-style light from above",
-  "background": "plain pure white, no floor, no shadow",
-  "avoid": [
-    "any face",
-    "a real person's likeness",
-    "names",
-    "logos",
-    "sponsors",
-    "club badges",
-    "watermark"
-  ],
-  "aspect_ratio": "3:4",
-  "output": "largest size available (4K if possible)"
-}
-```
-
----
-
 **md13_ronaldo_dribble.png** (3:4)
 ```json
 {
