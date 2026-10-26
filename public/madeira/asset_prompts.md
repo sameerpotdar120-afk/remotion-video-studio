@@ -370,3 +370,101 @@
   "output": "largest size available (4K if possible)"
 }
 ```
+
+---
+
+**md13_ronaldo_dribble.png** (3:4)
+```json
+{
+  "type": "single character on a plain white background, for cutting out",
+  "reference": "First find a free reference photo of Cristiano Ronaldo (public domain or Wikimedia Commons, e.g. Commons category 'Cristiano Ronaldo') and base his likeness on it; do not copy any copyrighted photo as-is.",
+  "subject": "Cristiano Ronaldo, the Portuguese footballer, running toward the camera and dribbling a football at his feet, focused determined face, athletic build, short dark styled hair, wearing a plain white football kit with no badge or sponsor and a big number 7, white socks, dark boots",
+  "camera": "full body, eye level, slightly from the front-left, the whole figure and the ball fully in frame with empty space around them",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (kit fabric, skin, leather ball, boot studs)",
+  "lighting": "bright stadium-style light from above, a soft rim light",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "club badges",
+    "sponsor logos",
+    "brand logos",
+    "text",
+    "other people",
+    "watermark"
+  ],
+  "aspect_ratio": "3:4",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**md14_ronaldo_celebration.png** (3:4)
+```json
+{
+  "type": "single character on a plain white background, for cutting out",
+  "reference": "First find a free reference photo of Cristiano Ronaldo (public domain or Wikimedia Commons, e.g. Commons category 'Cristiano Ronaldo') and base his likeness on it; do not copy any copyrighted photo as-is.",
+  "subject": "Cristiano Ronaldo, the Portuguese footballer, in his famous goal celebration: landing from a jump with legs apart, chest out, arms spread wide and pushed down and back, a big confident shout, wearing a plain white football kit with no badge or sponsor and a big number 7",
+  "camera": "full body, eye level, front view, the whole figure fully in frame with empty space around him",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (kit fabric, skin, sweat)",
+  "lighting": "bright stadium-style light from above, a strong rim light",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "club badges",
+    "sponsor logos",
+    "brand logos",
+    "text",
+    "other people",
+    "watermark"
+  ],
+  "aspect_ratio": "3:4",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**md15_ronaldo_portrait.png** (1:1)
+```json
+{
+  "type": "single character on a plain white background, for cutting out",
+  "reference": "First find a free reference photo of Cristiano Ronaldo (public domain or Wikimedia Commons, e.g. Commons category 'Cristiano Ronaldo') and base his likeness on it; do not copy any copyrighted photo as-is.",
+  "subject": "a head-and-shoulders portrait of Cristiano Ronaldo, the Portuguese footballer, a warm proud half-smile, looking slightly off to the side, short dark styled hair, wearing a plain white football shirt with no badge or sponsor",
+  "camera": "head and shoulders, eye level, the whole head and shoulders fully in frame with empty space around them",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (skin, hair, shirt fabric)",
+  "lighting": "soft warm key light from the left, a cool rim light",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "club badges",
+    "sponsor logos",
+    "brand logos",
+    "text",
+    "other people",
+    "watermark"
+  ],
+  "aspect_ratio": "1:1",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**md16_boy_funchal.png** (3:4)
+```json
+{
+  "type": "single character on a plain white background, for cutting out",
+  "subject": "a fictional skinny 8-year-old boy from Funchal in the early 1990s, a big hopeful smile, short dark hair, a worn plain t-shirt and shorts, old sneakers, kicking a scuffed football; a generic child, not a real person's likeness",
+  "camera": "full body, eye level, the whole boy and the ball fully in frame with empty space around them",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (cotton t-shirt, worn sneakers, scuffed leather ball)",
+  "lighting": "warm afternoon sunlight",
+  "background": "plain pure white, no floor, no shadow",
+  "avoid": [
+    "text",
+    "logos",
+    "a real person's likeness",
+    "watermark"
+  ],
+  "aspect_ratio": "3:4",
+  "output": "largest size available (4K if possible)"
+}
+```
+
