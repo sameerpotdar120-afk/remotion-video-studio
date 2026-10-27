@@ -1,0 +1,76 @@
+{
+ "ru_west": {
+  "width": 6144,
+  "height": 3456,
+  "lon0": 36,
+  "parallels": [
+   45,
+   62
+  ],
+  "scale": 6108.7836,
+  "translate": [
+   2993.062,
+   8249.619
+  ],
+  "sat": "russia/maps/ru_west_sat.jpg",
+  "land": "russia/maps/ru_west_land.png",
+  "outsideSourcePct": 0.0
+ },
+ "eurasia": {
+  "width": 5760,
+  "height": 3240,
+  "lon0": 92,
+  "parallels": [
+   35,
+   65
+  ],
+  "scale": 2283.6693,
+  "translate": [
+   2880.0,
+   4072.518
+  ],
+  "sat": "russia/maps/eurasia_sat.jpg",
+  "land": "russia/maps/eurasia_land.png",
+  "outsideSourcePct": 0.0
+ },
+ "india_route": {
+  "width": 3840,
+  "height": 2160,
+  "lon0": 58,
+  "parallels": [
+   15,
+   45
+  ],
+  "scale": 2146.0879,
+  "translate": [
+   1920.0,
+   2362.593
+  ],
+  "sat": "russia/maps/india_route_sat.jpg",
+  "land": "russia/maps/india_route_land.png",
+  "outsideSourcePct": 0.0
+ },
+ "europe_wide": {
+  "width": 5760,
+  "height": 3240,
+  "lon0": 25,
+  "parallels": [
+   40,
+   62
+  ],
+  "scale": 4731.8237,
+  "translate": [
+   2880.0,
+   6521.128
+  ],
+  "sat": "russia/maps/europe_wide_sat.jpg",
+  "land": "russia/maps/europe_wide_land.png",
+  "outsideSourcePct": 0.0
+ },
+ "world_eq": {
+  "width": 8192,
+  "height": 4096,
+  "projection": "equirectangular",
+  "sat": "russia/maps/world_eq_sat.jpg"
+ }
+}

@@ -12,6 +12,13 @@ REGIONS={
  "na3d":      (-110, 15,  -40, 62, 7,  80),      # everything the 3D colonies camera can see
  "europe":    ( -12, 34,   32, 62, 6,  60),
  "india":     (  66,  6,   98, 36, 6,  60),
+ # Russia video sources (reprojected to conic views by scripts/russia/maps/bake_views.py)
+ "src_eurasia":  ( -15,  0, 240, 82, 5, 22),
+ "src_ru_west":  (   5, 30,  70, 72, 7, 80),
+ "src_india_route": (25, 0,  92, 62, 6, 45),
+ "src_europe_wide": (-15, 30, 65, 72, 6, 45),
+ "src_arctic":   (-180, 55, 180, 85, 4, 10.667),
+ "src_antarctic":(-180,-85, 180,-50, 3, 6),
 }
 def mx(lon,z): return (lon+180)/360*256*2**z
 def my(lat,z):
