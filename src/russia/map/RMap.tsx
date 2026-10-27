@@ -22,7 +22,9 @@ import { HAND, RC, hand, pop } from '../kit/core';
 export type ViewName = keyof typeof VIEWS;
 export type MapCam = { at: number; lon: number; lat: number; zoom: number; dur?: number; easing?: (t: number) => number };
 
-type Ctx = { proj: GeoProjection; scale: number; toScreen: (lon: number, lat: number) => [number, number]; path: (g: Geometry | Feature) => string };
+type Ctx = { view: string; proj: GeoProjection; scale: number; toScreen: (lon: number, lat: number) => [number, number]; path: (g: Geometry | Feature) => string };
+/** projected SVG paths are pure functions of (view, feature): compute each once (projecting a 10m outline every frame is the slowest thing on a map) */
+const PATHS = new Map<string, Map<object, string>>();
 const MapCtx = createContext<Ctx | null>(null);
 export const useRMap = () => {
   const c = useContext(MapCtx);
@@ -81,23 +83,31 @@ export const RMap: React.FC<{
   const tx = W / 2 - cx * scale;
   const ty = H / 2 - cy * scale;
   const ctx: Ctx = {
+    view,
     proj,
     scale,
     toScreen: (lon, lat) => {
       const [x, y] = proj([lon, lat]) as [number, number];
       return [tx + x * scale, ty + y * scale];
     },
-    path: (g) => pathGen(g as never) ?? '',
+    path: (g) => {
+      let m = PATHS.get(view);
+      if (!m) PATHS.set(view, (m = new Map()));
+      let d = m.get(g as object);
+      if (d === undefined) m.set(g as object, (d = pathGen(g as never) ?? ''));
+      return d;
+    },
   };
   return (
     <MapCtx.Provider value={ctx}>
       <AbsoluteFill style={{ background: '#0B2441', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, transformOrigin: '0 0', transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}>
           <Img src={staticFile(v.sat)} style={{ position: 'absolute', inset: 0, width: v.width, height: v.height, filter: dim ? `brightness(${1 - dim})` : undefined }} />
-          <svg width={v.width} height={v.height} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-            {children}
-          </svg>
         </div>
+        {/* vector layers in SCREEN space (a world-sized SVG is re-rasterised in full every frame: ~5 s/frame) */}
+        <svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
+          <g transform={`translate(${tx} ${ty}) scale(${scale})`}>{children}</g>
+        </svg>
         {overlay}
       </AbsoluteFill>
     </MapCtx.Provider>
@@ -127,9 +137,9 @@ export const Fill: React.FC<{
   offset?: [number, number]; // world px shift (pieces pulling apart)
 }> = ({ id, color, colors, start, exit, mode = 'fade', dur, origin, opacity = 0.58, border = 'rgba(255,255,255,0.85)', borderPx = 3, pulseAt = [], offset }) => {
   const frame = useCurrentFrame();
-  const { path, scale, proj } = useRMap();
+  const { path, proj, view } = useRMap();
   const f = terr(id);
-  const d = useMemo(() => path(f), [f, path]);
+  const d = path(f);
   if (frame < start) return null;
   const D = dur ?? (mode === 'flood' ? 90 : mode === 'wipe' ? 50 : 14);
   const outK = exit !== undefined ? 1 - ramp(frame, exit, 14, ease.in) : 1;
@@ -146,30 +156,69 @@ export const Fill: React.FC<{
   const [lx, ly] = proj(f.properties.label) as [number, number];
   const k = ramp(frame, start, D, mode === 'flood' ? ease.inOut : ease.out);
   const op = (mode === 'fade' ? k : 1) * outK;
-  const clipId = `clip-${id}-${start}`;
-  let clip: React.ReactNode = null;
-  let transform: string | undefined;
-  if (mode === 'flood' || mode === 'wipe') {
-    const [ox, oy] = mode === 'flood' ? (proj(origin ?? f.properties.label) as [number, number]) : [0, 0];
-    const R = 9000 * k;
-    clip = (
-      <clipPath id={clipId}>
-        {mode === 'flood' ? <circle cx={ox} cy={oy} r={R} /> : <rect x={-20000} y={-20000} width={20000 + 12000 * k} height={60000} />}
-      </clipPath>
-    );
+  const v = VIEWS[view as ViewName] as { width: number; height: number };
+  let cssClip: string | undefined;
+  if (mode === 'flood') {
+    const [ox, oy] = proj(origin ?? f.properties.label) as [number, number];
+    cssClip = `circle(${9000 * k}px at ${ox}px ${oy}px)`;
+  } else if (mode === 'wipe') {
+    cssClip = `inset(0 ${Math.max(0, v.width - 12000 * k)}px 0 0)`;
   }
+  let transform = '';
   if (mode === 'pop') {
-    const s = pop(frame, start, 1.08);
-    transform = `translate(${lx} ${ly}) scale(${s}) translate(${-lx} ${-ly})`;
+    const s2 = pop(frame, start, 1.08);
+    transform = `translate(${lx}px, ${ly}px) scale(${s2}) translate(${-lx}px, ${-ly}px)`;
   }
-  if (offset) transform = `${transform ?? ''} translate(${offset[0]} ${offset[1]})`;
+  if (offset) transform += ` translate(${offset[0]}px, ${offset[1]}px)`;
+  // colour: the current colour's raster, cross-faded from the previous one during a recolour
+  let prevCol: string | null = null, mix = 1;
+  if (colors?.length) {
+    const ks = [[start, color] as [number, string], ...colors];
+    let cur = ks[0][1];
+    for (let i = 1; i < ks.length; i++) if (frame >= ks[i][0]) { prevCol = cur; cur = ks[i][1]; mix = ramp(frame, ks[i][0], 12); }
+    col = cur;
+    if (mix >= 1) prevCol = null;
+  }
   return (
-    <g opacity={op} transform={transform}>
-      {clip && <defs>{clip}</defs>}
-      <path d={d} clipPath={clip ? `url(#${clipId})` : undefined} fill={col} fillOpacity={Math.min(0.95, opacity + 0.25 * pulse)}
-        stroke={border} strokeWidth={borderPx / scale} strokeLinejoin="round" fillRule="evenodd" />
-    </g>
+    <foreignObject x={0} y={0} width={v.width} height={v.height} style={{ overflow: 'visible', pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, opacity: op, transform: transform || undefined, transformOrigin: '0 0', clipPath: cssClip }}>
+        {prevCol && <FillRaster view={view} id={id} d={d} color={prevCol} alpha={opacity} border={border} borderPx={borderPx} style={{ opacity: 1 - mix }} />}
+        <FillRaster view={view} id={id} d={d} color={col} alpha={opacity} border={border} borderPx={borderPx} style={{ opacity: prevCol ? mix : 1 }} />
+        {pulse > 0 && <FillRaster view={view} id={id} d={d} color={col} alpha={0.5} border="rgba(0,0,0,0)" borderPx={0} style={{ opacity: pulse * 0.6 }} />}
+      </div>
+    </foreignObject>
   );
+};
+
+/**
+ * A territory drawn ONCE into a half-resolution canvas (world coordinates), then only composited. Stroking a
+ * 10 m coastline in SVG on every frame cost ≈4 s/frame in software GL; this costs one draw per colour.
+ */
+const RASTER_K = 0.5;
+const FillRaster: React.FC<{ view: string; id: string; d: string; color: string; alpha: number; border: string; borderPx: number; style?: React.CSSProperties }> = ({
+  view, d, color, alpha, border, borderPx, style,
+}) => {
+  const ref = React.useRef<HTMLCanvasElement>(null);
+  const v = VIEWS[view as ViewName] as { width: number; height: number };
+  React.useLayoutEffect(() => {
+    const c = ref.current;
+    if (!c) return;
+    const g = c.getContext('2d')!;
+    g.clearRect(0, 0, c.width, c.height);
+    g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
+    const p2 = new Path2D(d);
+    g.globalAlpha = Math.min(0.95, alpha);
+    g.fillStyle = color;
+    g.fill(p2, 'evenodd');
+    if (borderPx > 0) {
+      g.globalAlpha = 1;
+      g.strokeStyle = border;
+      g.lineWidth = borderPx * 1.1;
+      g.lineJoin = 'round';
+      g.stroke(p2);
+    }
+  }, [d, color, alpha, border, borderPx]);
+  return <canvas ref={ref} width={Math.round(v.width * RASTER_K)} height={Math.round(v.height * RASTER_K)} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, ...style }} />;
 };
 
 /** Several territories flipping into view one after another (patchwork of principalities, 15 republics). */
@@ -203,9 +252,14 @@ export const River: React.FC<{ name: string; start: number; dur?: number; width?
   const d = useMemo(() => (f ? path(f) : ''), [f, path]);
   if (!f || frame < start) return null;
   const k = ramp(frame, start, dur, ease.inOut);
+  // no CSS filter here: a filter on a world-sized SVG element is re-rasterised every frame (≈20× slower renders)
   return (
-    <path d={d} fill="none" stroke={color} strokeWidth={width / scale} strokeLinecap="round" strokeLinejoin="round" pathLength={1}
-      strokeDasharray="1 1" strokeDashoffset={1 - k} style={{ filter: 'drop-shadow(0 0 2px rgba(0,40,80,0.5))' }} />
+    <g>
+      <path d={d} fill="none" stroke="rgba(0,40,80,0.45)" strokeWidth={(width + 4) / scale} strokeLinecap="round" strokeLinejoin="round" pathLength={1}
+        strokeDasharray="1 1" strokeDashoffset={1 - k} />
+      <path d={d} fill="none" stroke={color} strokeWidth={width / scale} strokeLinecap="round" strokeLinejoin="round" pathLength={1}
+        strokeDasharray="1 1" strokeDashoffset={1 - k} />
+    </g>
   );
 };
 
@@ -275,7 +329,8 @@ export const Route: React.FC<{
   const wTip = w0 + (w1 - w0) * (n / dense.length);
   const hs = Math.max(wTip * 2.4, 34 / scale);
   return (
-    <g opacity={outK} style={{ filter: 'drop-shadow(0 3px 4px rgba(0,0,0,0.45))' }}>
+    <g opacity={outK}>
+      {!dotted && <polygon points={[...left, ...right].join(' ')} fill="rgba(0,0,0,0.35)" transform={`translate(0 ${4 / scale})`} />}
       {dotted ? (
         <polyline points={seg.map((p) => p.join(',')).join(' ')} fill="none" stroke={color} strokeWidth={w0 * 0.45} strokeLinecap="round" strokeDasharray={`${w0 * 0.1} ${w0 * 0.9}`} />
       ) : (
