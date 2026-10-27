@@ -45,25 +45,69 @@ export const BgPlate: React.FC<{
 
 /** Flickering cartoon fire (flat flames, the reference's growing fire/smoke). */
 export const Fire: React.FC<{ x: number; y: number; size: number; start: number; grow?: number; exit?: number; seed?: string }> = ({ x, y, size, start, grow = 30, exit, seed = 'f' }) => {
+  // painterly particle fire (reads on photo backgrounds): soft glowing tongues that rise, narrow and fade,
+  // a warm ground glow, and sparks; everything blends with 'screen' so it lights up what is behind it
   const frame = useCurrentFrame();
   if (frame < start) return null;
   const g = ramp(frame, start, grow, ease.out) * (exit !== undefined ? 1 - ramp(frame, exit, 14, ease.in) : 1);
   if (g <= 0) return null;
-  const flames = [0, 1, 2, 3, 4].map((i) => {
-    const ph = frame / (3 + i * 0.7) + random(`${seed}${i}`) * 6;
-    const h = size * (0.6 + 0.4 * random(`${seed}h${i}`)) * (1 + 0.12 * Math.sin(ph));
-    const dx = (i - 2) * size * 0.16 + Math.sin(ph * 0.7) * size * 0.03;
-    return { h, dx, col: i % 2 ? '#FF8A1E' : '#FFC23A' };
+  const t = frame - start;
+  const tongues: React.ReactNode[] = [];
+  const N = 26;
+  for (let i = 0; i < N; i++) {
+    const life = 22 + random(`${seed}l${i}`) * 14;
+    const u = ((t + random(`${seed}o${i}`) * life) % life) / life; // 0 → 1 over its life
+    const off = (random(`${seed}x${i}`) - 0.5) * size * 0.6;
+    const bx = off * (1 - u * 0.5) + Math.sin(t / 6 + i) * size * 0.05 * u;
+    const by = -u * size * 0.35;
+    const w = size * (0.17 - 0.08 * u) * (1 - Math.abs(off) / size * 0.8);
+    const h = size * (0.55 + random(`${seed}h${i}`) * 0.6) * (1 - u * 0.35) * (1 - Math.abs(off) / size * 1.2);
+    const lean = Math.sin(t / 5 + i * 1.7) * w * 0.6;
+    const d = `M ${bx - w} ${by} C ${bx - w} ${by - h * 0.45} ${bx - w * 0.2 + lean * 0.5} ${by - h * 0.7} ${bx + lean} ${by - h} C ${bx + w * 0.3 + lean * 0.5} ${by - h * 0.65} ${bx + w} ${by - h * 0.45} ${bx + w} ${by} Q ${bx} ${by + w * 0.5} ${bx - w} ${by} Z`;
+    tongues.push(<path key={i} d={d} fill={`url(#${seed}g${u < 0.4 ? 'a' : 'b'})`} opacity={Math.sin(Math.min(1, u * 1.1) * Math.PI) * 0.95} />);
+  }
+  const smoke = Array.from({ length: 6 }, (_, i) => {
+    const life = 90;
+    const u = ((t + i * 15) % life) / life;
+    const r = size * (0.25 + u * 0.55);
+    const sx = (random(`${seed}k${i}`) - 0.5) * size * 0.4 + u * size * 0.35;
+    const sy = -size * (0.9 + u * 1.6);
+    return <div key={`k${i}`} style={{ position: 'absolute', left: sx - r, top: sy - r, width: r * 2, height: r * 2, borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(36,28,24,0.62), rgba(36,28,24,0) 70%)', opacity: Math.sin(u * Math.PI) * Math.min(1, t / 30) }} />;
   });
+  const sparks = Array.from({ length: 8 }, (_, i) => {
+    const life = 50;
+    const u = ((t + i * 7) % life) / life;
+    const sx = (random(`${seed}s${i}`) - 0.5) * size * 0.8 + Math.sin(t / 9 + i * 2) * size * 0.12 * u;
+    const sy = -u * size * 1.7;
+    const r = size * 0.018 * (1 - u * 0.5);
+    return <div key={`s${i}`} style={{ position: 'absolute', left: sx - r, top: sy - r, width: r * 2, height: r * 2, borderRadius: '50%',
+      background: '#FFD27A', boxShadow: `0 0 ${r * 4}px ${r * 1.5}px rgba(255,150,40,0.8)`, opacity: (1 - u) * 0.9 }} />;
+  });
+  const flicker = 0.85 + 0.15 * Math.sin(t / 3.1) * Math.sin(t / 5.3 + 1);
   return (
-    <svg width={size * 1.4} height={size * 1.4} viewBox={`${-size * 0.7} ${-size * 1.3} ${size * 1.4} ${size * 1.4}`}
-      style={{ position: 'absolute', left: x - size * 0.7, top: y - size * 1.3, overflow: 'visible', transform: `scale(${g})`, transformOrigin: '50% 93%' }}>
-      <ellipse cx={0} cy={-size * 0.3} rx={size * 0.6} ry={size * 0.55} fill="rgba(255,140,40,0.22)" />
-      {flames.map((f, i) => (
-        <path key={i} d={`M ${f.dx - size * 0.16} 0 Q ${f.dx - size * 0.2} ${-f.h * 0.55} ${f.dx} ${-f.h} Q ${f.dx + size * 0.2} ${-f.h * 0.55} ${f.dx + size * 0.16} 0 Z`} fill={f.col} stroke="#B23A12" strokeWidth={size * 0.012} />
-      ))}
-      <path d={`M ${-size * 0.12} 0 Q 0 ${-size * 0.4} ${size * 0.12} 0 Z`} fill="#FFF2B0" />
-    </svg>
+    <div style={{ position: 'absolute', left: x, top: y, width: 0, height: 0, transform: `scale(${g})`, transformOrigin: '0 0' }}>
+      {smoke}
+      <div style={{ position: 'absolute', left: -size * 1.1, top: -size * 1.15, width: size * 2.2, height: size * 1.5, borderRadius: '50%',
+        background: 'radial-gradient(ellipse at 50% 70%, rgba(255,140,40,0.55), rgba(255,90,20,0.18) 45%, rgba(255,80,20,0) 70%)', opacity: flicker, mixBlendMode: 'screen' }} />
+      <svg width={size * 2} height={size * 1.6} viewBox={`${-size} ${-size * 1.45} ${size * 2} ${size * 1.6}`}
+        style={{ position: 'absolute', left: -size, top: -size * 1.45, overflow: 'visible', mixBlendMode: 'screen' }}>
+        <defs>
+          <radialGradient id={`${seed}ga`} cx="50%" cy="85%" r="75%">
+            <stop offset="0" stopColor="#FFFBE0" /><stop offset="0.35" stopColor="#FFD35A" /><stop offset="0.7" stopColor="#FF7A1A" /><stop offset="1" stopColor="#C8300C" stopOpacity="0" />
+          </radialGradient>
+          <radialGradient id={`${seed}gb`} cx="50%" cy="85%" r="75%">
+            <stop offset="0" stopColor="#FFC24A" /><stop offset="0.5" stopColor="#FF6A14" /><stop offset="1" stopColor="#A0200A" stopOpacity="0" />
+          </radialGradient>
+          <filter id={`${seed}fb`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation={size * 0.008} /></filter>
+        </defs>
+        <g filter={`url(#${seed}fb)`}>
+          <ellipse cx={0} cy={-size * 0.02} rx={size * 0.36} ry={size * 0.05} fill={`url(#${seed}ga)`} opacity={0.6 * flicker} />
+          {tongues}
+        </g>
+      </svg>
+      {sparks}
+    </div>
   );
 };
 
@@ -81,7 +125,7 @@ export const Smoke: React.FC<{ x: number; y: number; size: number; start: number
     const py = y - u * size * 2.4;
     const r = size * (0.18 + u * 0.5);
     puffs.push(<div key={i} style={{ position: 'absolute', left: px - r, top: py - r, width: r * 2, height: r * 2, borderRadius: '50%',
-      background: `radial-gradient(circle, rgba(${color},0.55) 0%, rgba(${color},0) 70%)`, opacity: (1 - u) * o * Math.min(1, (frame - start) / 20) }} />);
+      background: `radial-gradient(circle, rgba(${color},0.4) 0%, rgba(${color},0) 70%)`, opacity: (1 - u) * o * Math.min(1, (frame - start) / 20) }} />);
   }
   return <>{puffs}</>;
 };

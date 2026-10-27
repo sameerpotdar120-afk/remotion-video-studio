@@ -193,8 +193,9 @@ export const Stamp: React.FC<{ text: string; x: number; y: number; start: number
     <div style={{ position: 'absolute', left: x + shake, top: y, transform: `translate(-50%, -50%) rotate(${rotate}deg) scale(${s * out})`, opacity: t < 1 ? 0.5 : 1 }}>
       <div style={{
         border: `${size * 0.085}px solid ${color}`, borderRadius: size * 0.14, padding: `${size * 0.06}px ${size * 0.28}px`,
-        color, fontFamily: '"Anton", "Impact", sans-serif', fontSize: size, letterSpacing: size * 0.04, lineHeight: 1.08, whiteSpace: 'nowrap',
-        maskImage: 'radial-gradient(circle at 30% 40%, #000 60%, rgba(0,0,0,0.78) 100%)', mixBlendMode: 'multiply',
+        color, fontFamily: '"Anton", "Kalam", "Impact", sans-serif', fontSize: size, letterSpacing: size * 0.04, lineHeight: 1.08, whiteSpace: 'nowrap',
+        background: 'rgba(250,244,232,0.82)', boxShadow: `0 ${size * 0.05}px ${size * 0.2}px rgba(0,0,0,0.35)`,
+        maskImage: 'radial-gradient(circle at 30% 40%, #000 60%, rgba(0,0,0,0.86) 100%)',
         textAlign: 'center',
       }}>
         {text}
