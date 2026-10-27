@@ -32,17 +32,17 @@ const PETROGRAD: [number, number] = [30.32, 59.94];
 const A: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
   const last = L(at(67, 'आख़िरी'));
-  const fam = L(at(67, 'family', 1));
+  const fam = L(at(67, 'family'));
   const didnt = L(at(67, 'शायद'));
   const god = L(at(67, 'भगवान'));
   return (
     <GreyStage>
       <Camera from={0}>
         <Card src="cards/card_nicholas_ii.png" x={W * 0.42} y={H * 0.45} w={W * 0.19} start={4} name="Nicholas II" />
-        <PopIn x={W * 0.42} y={H * 0.11} start={8}><RImg src="props/crown_catherine.png" w={200} h={200} label="👑" /></PopIn>
+        <PopIn x={W * 0.42} y={H * 0.11} start={8}><RImg src="props/crown_catherine.png" w={260} h={260} label="👑" /></PopIn>
         <TypeOn text="आख़िरी Tsar" x={W * 0.42} y={H * 0.86} start={last} size={100} color={RC.danger} />
         <Card src="cards/card_romanov_family.png" x={W * 0.74} y={H * 0.46} w={W * 0.3} h={W * 0.24} start={fam} tilt={3} name="family man 👨‍👩‍👧‍👦" />
-        <TypeOn text="Tsar बनना चाहता ही नहीं था? 🤷" x={W * 0.66} y={H * 0.2} start={didnt} size={84} color={RC.sub} exit={god} />
+        <TypeOn text="Tsar बनना चाहता ही नहीं था? 🤷" x={W * 0.66} y={H * 0.2} start={didnt} size={84} color={RC.sub} exit={god - 10} />
         <TypeOn text="“भगवान ने भेजा है” ✨" x={W * 0.6} y={H * 0.2} start={god} size={110} color={RC.yellow} />
       </Camera>
       <Host x={W * 0.13} y={H * 0.92} height={H * 0.5} offset={base} start={0} gestures={[[0, 'present'], [god, 'fingerUp']]} moods={[[0, 'neutral'], [god, 'smug']]} />
@@ -58,8 +58,9 @@ const B: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
   const east = L(at(68, 'पूरब'));
   const tag = L(at(68, 'उन्नीस'));
+  const russia = L(at(68, 'Russia'));
   const japan = L(at(68, 'Japan'));
-  const easy = L(at(68, 'आसानी'));
+  const big = L(at(68, 'बड़ा'));
   const opposite = L(at(68, 'उल्टा'));
   const sank = L(at(68, 'डुबो'));
   const first = L(at(68, 'पहली'));
@@ -71,11 +72,11 @@ const B: React.FC<{ base: number }> = ({ base }) => {
         overlay={
           <>
             <MapLabel lon={138} lat={37} text="Japan" start={japan} size={110} color="#FFDADA" />
-            <MapLabel lon={110} lat={60} text="Russia 💪" start={easy - 10} size={110} />
-            <At lon={130} lat={39} start={easy}><div style={{ ...hand(84, RC.white), textAlign: 'center' }}>बड़ा 🐘 vs छोटा 🐭</div></At>
+            <MapLabel lon={110} lat={60} text="Russia 💪" start={russia} size={110} />
+            <At lon={123} lat={45} start={big}><div style={{ ...hand(84, RC.white), textAlign: 'center' }}>बड़ा 🐘 vs छोटा 🐭</div></At>
             <At lon={126} lat={36.5} start={sank - 20}>
-              <div style={{ position: 'relative', transform: `translateY(${sink * 160}px) rotate(${sink * 24}deg)`, opacity: 1 - sink * 0.8 }}><RImg src="props/warship_1904.png" w={360} h={200} label="🚢" /></div>
-              {frame >= sank && [0, 1, 2, 3].map((i) => <div key={i} style={{ position: 'absolute', left: 120 + i * 30, top: 60 - ((frame - sank + i * 9) % 40) * 4, width: 26, height: 26, borderRadius: '50%', border: '4px solid #DFF4FF' }} />)}
+              <div style={{ position: 'relative', transform: `translateY(${sink * 160}px) rotate(${sink * 24}deg)`, opacity: 1 - sink * 0.8 }}><RImg src="props/warship_1904.png" w={540} h={300} label="🚢" /></div>
+              {frame >= sank && [0, 1, 2, 3].map((i) => <div key={i} style={{ position: 'absolute', left: 200 + i * 40, top: 90 - ((frame - sank + i * 9) % 40) * 5, width: 34, height: 34, borderRadius: '50%', border: '4px solid #DFF4FF' }} />)}
             </At>
           </>
         }>
@@ -83,7 +84,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
         <Fill id="japan" color="#D23A3A" start={japan} opacity={0.65} mode="pop" pulseAt={[sank]} />
       </RMap>
       <Stamp text="Japan जीता!" x={W * 0.5} y={H * 0.2} start={opposite + 10} size={130} color={RC.stampGreen} />
-      <TypeOn text="पहली बार कोई Asian देश 🌏" x={W * 0.5} y={H * 0.86} start={first} size={100} color={RC.yellow} exit={anger} />
+      <TypeOn text="पहली बार कोई Asian देश 🌏" x={W * 0.5} y={H * 0.86} start={first} size={100} color={RC.yellow} exit={anger - 10} />
       <TypeOn text="Russia के अंदर ग़ुस्सा 🔥" x={W * 0.5} y={H * 0.86} start={anger} size={110} color={RC.danger} />
       <YearTag text="1904" start={tag} />
       <Sfx at={opposite} file="sting_hit.wav" volume={0.5} />
@@ -106,15 +107,15 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       <BgPlate src="bg/bg_palace_square_1905.png" from={0} sky="#B4BCC6" ground="#E2E6EC" />
       <Camera from={0} shake={[{ at: fire + 6, amp: 20, dur: 20 }]}>
         {[0, 1, 2, 3, 4].map((i) => (
-          <Char key={i} who={i % 2 ? 'worker_woman_1917' : 'worker_1905'} seed={`bs${i}`} x={W * (0.14 + i * 0.09)} y={H * (0.96 - (i % 2) * 0.02)} height={H * 0.34} start={workers + i * 3}
-            walk={[{ at: 0, x: W * (-0.2 + i * 0.09) }, { at: workers, x: W * (0.14 + i * 0.09), dur: 140 }]} moods={[[0, 'smile'], [fire, 'shocked'], [bloody, 'sad']]} gestures={[[0, 'hold'], [fire, 'handsHead']]} fallAt={i === 2 ? fire + 10 : undefined} />
+          <Char key={i} who={i % 2 ? 'worker_woman_1917' : 'worker_1905'} seed={`bs${i}`} x={W * (0.14 + i * 0.09)} y={H * (0.96 - (i % 2) * 0.02)} height={H * 0.34} start={tag + 30 + i * 3}
+            walk={[{ at: 0, x: W * (-0.2 + i * 0.09) }, { at: tag + 30, x: W * (0.14 + i * 0.09), dur: 150 }]} moods={[[0, 'smile'], [fire, 'shocked'], [bloody, 'sad']]} gestures={[[0, 'hold'], [fire, 'handsHead']]} />
         ))}
         <PopIn x={W * 0.3} y={H * 0.44} start={workers + 20} exit={fire + 4}><RImg src="props/church_banner.png" w={H * 0.26} h={H * 0.4} label="☦ banner" /></PopIn>
         <PopIn x={W * 0.48} y={H * 0.5} start={workers + 30} exit={fire}><div style={{ background: '#F6EBCF', padding: '14px 30px', borderRadius: 10, ...hand(60, '#3A2616'), textShadow: 'none' }}>📜 अर्ज़ी</div></PopIn>
-        {[0, 1, 2].map((i) => <Char key={`s${i}`} who="tsarist_soldier_1914" seed={`ts${i}`} x={W * (0.72 + i * 0.09)} y={H * 0.96} height={H * 0.38} start={tag + i * 4} flip gestures={[[0, 'down'], [fire - 20, 'point']]} moods={[[0, 'neutral'], [fire - 20, 'angry']]} />)}
+        {[0, 1, 2].map((i) => <Char key={`s${i}`} who="tsarist_soldier_1914" seed={`ts${i}`} x={W * (0.7 + i * 0.1)} y={H * 0.96} height={H * 0.38} start={tag + i * 4} flip gestures={[[0, 'down'], [fire - 20, i === 0 ? 'point' : 'hips']]} moods={[[0, 'neutral'], [fire - 20, 'angry']]} />)}
         <TypeOn text="शांति से… 🕊️" x={W * 0.3} y={H * 0.14} start={workers} size={100} exit={fire} />
         <TypeOn text="Bloody Sunday" x={W * 0.5} y={H * 0.14} start={bloody} size={160} color={RC.danger} />
-        <PopIn x={W * 0.5} y={H * 0.34} start={respect}><div style={{ ...hand(100, RC.white) }}>Tsar के लिए इज़्ज़त 💔</div></PopIn>
+        <PopIn x={W * 0.42} y={H * 0.3} start={respect}><div style={{ ...hand(120, RC.white) }}>Tsar के लिए इज़्ज़त 💔</div></PopIn>
       </Camera>
       <Flash at={fire + 6} dur={6} />
       <YearTag text="January 1905" start={tag} />
@@ -134,7 +135,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <RMap view="europe_wide" cam={[{ at: 0, lon: 22, lat: 52, zoom: 1.4 }, { at: dead, lon: 26, lat: 53, zoom: 1.6, dur: 120 }]}
-        overlay={<><MapLabel lon={11} lat={51} text="Germany" start={4} size={90} /><MapLabel lon={17} lat={47.6} text="Austria" start={10} size={80} /><At lon={36} lat={52} start={noArms}><div style={{ ...hand(80, RC.white), textAlign: 'center' }}>🔫 ✗ · 🧥 ✗</div></At></>}>
+        overlay={<><MapLabel lon={11} lat={51} text="Germany" start={4} size={90} /><MapLabel lon={17} lat={47.6} text="Austria" start={10} size={80} /><At lon={36} lat={52} start={noArms} exit={dead - 10}><div style={{ ...hand(120, RC.white), textAlign: 'center' }}>🔫 ✗ · 🧥 ✗</div></At></>}>
         <Fill id="russia_1914" color={RC.empireGold} start={0} dur={1} opacity={0.5} />
         <Fill id="germany_modern" color={RC.germany} start={4} opacity={0.6} />
         <Route pts={[[14, 54], [19, 54.6], [23, 54.0]]} start={8} dur={50} width={44} color="#D0302A" head={RC.stampRed} />
@@ -142,8 +143,8 @@ const D: React.FC<{ base: number }> = ({ base }) => {
       </RMap>
       <PeopleGrid x={W * 0.74} y={H * 0.74} cols={12} rows={3} size={46} start={dead - 10} greyFrom={dead} perRow={10} color="#6E6A46" />
       <TypeOn text="लाखों सैनिक मारे गए" x={W * 0.74} y={H * 0.56} start={dead} size={90} color={RC.white} />
-      <PopIn x={W * 0.22} y={H * 0.74} start={bread}><div style={{ position: 'relative' }}><RImg src="props/bread_loaf.png" w={260} h={200} label="🍞" /><RedX x={130} y={100} w={240} h={200} start={bread + 8} /></div></PopIn>
-      <TypeOn text="रोटी की लाइनें ⬆️" x={W * 0.22} y={H * 0.9} start={bread + 6} size={84} color={RC.yellow} />
+      <PopIn x={W * 0.2} y={H * 0.7} start={bread}><div style={{ position: 'relative' }}><RImg src="props/bread_loaf.png" w={400} h={300} label="🍞" /><RedX x={200} y={150} w={360} h={300} start={bread + 8} /></div></PopIn>
+      <TypeOn text="रोटी की लाइनें ⬆️" x={W * 0.2} y={H * 0.88} start={bread + 6} size={100} color={RC.yellow} />
       <YearTag text="1914" start={tag} />
       <Sfx at={8} file="timpani_roll.wav" volume={0.4} />
       <Sfx at={bread + 8} file="tick.wav" volume={0.5} />
@@ -154,6 +155,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
 /* ───────────── E · Rasputin ───────────── */
 const E: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
+  const wife = L(at(71, 'पत्नी'));
   const ras = L(at(71, 'Rasputin.'));
   const heal = L(at(71, 'बीमार'));
   const runs = L(at(71, 'देश'));
@@ -163,15 +165,16 @@ const E: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <BgPlate src="bg/bg_palace_interior_1916.png" from={0} sky="#4A3A2E" ground="#2E241C" dim={0.15} />
-      <Camera from={0}>
-        <Char who="alexandra" x={W * 0.34} y={H * 0.96} height={H * 0.52} start={2} moods={[[0, 'worried'], [heal, 'smile']]} gestures={[[0, 'down']]} look2={0.8} />
-        <Char who="rasputin" x={W * 0.56} y={H * 0.97} height={H * 0.6} start={ras - 10} flip gestures={[[0, 'chin'], [heal, 'present']]} moods={[[0, 'smug']]} talk={[[ras, heal + 80]]} />
-        <TypeOn text="Rasputin" x={W * 0.56} y={H * 0.26} start={ras} size={140} color={RC.blue} />
-        <TypeOn text="psst… 🤫" x={W * 0.44} y={H * 0.36} start={ras + 20} size={80} color={RC.white} exit={runs} />
-        <TypeOn text="बीमार बेटे को ठीक करेगा? 🙏" x={W * 0.5} y={H * 0.17} start={heal} size={90} color={RC.yellow} exit={runs} />
-        <TypeOn text="“देश Rasputin चला रहा है!”" x={W * 0.5} y={H * 0.17} start={runs} size={100} color={RC.danger} />
-        <Stamp text="हर कहानी सच नहीं" x={W * 0.82} y={H * 0.5} start={legend} size={90} rotate={-10} />
-        <TypeOn text="1916 के आख़िर में मारा गया" x={W * 0.8} y={H * 0.36} start={killed} size={70} color={RC.white} />
+      <Camera from={0} drift={0.004}>
+        <Char who="alexandra" x={W * 0.26} y={H * 0.96} height={H * 0.52} start={2} moods={[[0, 'worried'], [heal, 'smile']]} gestures={[[0, 'down']]} look2={0.8} />
+        <Char who="rasputin" x={W * 0.54} y={H * 0.97} height={H * 0.6} start={ras - 10} flip gestures={[[0, 'down'], [ras + 20, 'fingerUp'], [heal, 'present']]} moods={[[0, 'smug']]} talk={[[ras, heal + 80]]} />
+        <TypeOn text="Tsar की पत्नी · Alexandra" x={W * 0.3} y={H * 0.3} start={wife} size={80} color={RC.white} exit={ras - 10} />
+        <TypeOn text="Rasputin" x={W * 0.54} y={H * 0.26} start={ras} size={140} color={RC.blue} />
+        <TypeOn text="psst… 🤫" x={W * 0.4} y={H * 0.36} start={ras + 20} size={80} color={RC.white} exit={heal - 10} />
+        <TypeOn text="बीमार बेटे को ठीक करेगा? 🙏" x={W * 0.5} y={H * 0.15} start={heal} size={90} color={RC.yellow} exit={runs - 12} />
+        <TypeOn text="“देश Rasputin चला रहा है!”" x={W * 0.5} y={H * 0.15} start={runs} size={100} color={RC.danger} />
+        <Stamp text="हर कहानी सच नहीं" x={W * 0.79} y={H * 0.56} start={legend} size={90} rotate={-8} />
+        <TypeOn text="1916 के आख़िर में मारा गया" x={W * 0.79} y={H * 0.4} start={killed} size={80} color={RC.white} />
       </Camera>
       <YearTag text="1916" start={tag} />
       <Sfx at={legend} file="stamp_slam.wav" volume={0.55} />
@@ -207,17 +210,18 @@ const F: React.FC<{ base: number }> = ({ base }) => {
                 <div style={{ background: '#C8352B', padding: '18px 40px', borderRadius: 10, ...hand(80, '#fff'), boxShadow: '0 10px 24px rgba(0,0,0,0.3)' }}>{t}</div>
               </PopIn>
             ))}
-            {[0, 1].map((i) => <Char key={`s${i}`} who="tsarist_soldier_1914" seed={`fs${i}`} x={W * (0.76 + i * 0.1)} y={H * 0.96} height={H * 0.38} start={refuse - 30} flip gestures={[[0, 'point'], [refuse, 'shrug']]} moods={[[0, 'angry'], [refuse, 'smile']]} />)}
-            <TypeOn text="गोली नहीं चलाएँगे ✋" x={W * 0.8} y={H * 0.4} start={refuse + 10} size={80} color={RC.green} />
+            {[0, 1].map((i) => <Char key={`s${i}`} who="tsarist_soldier_1914" seed={`fs${i}`} x={W * (0.72 + i * 0.16)} y={H * 0.96} height={H * 0.38} start={refuse - 30} flip gestures={[[0, 'point'], [refuse, 'shrug']]} moods={[[0, 'angry'], [refuse, 'smile']]} />)}
+            <TypeOn text="गोली नहीं चलाएँगे ✋" x={W * 0.77} y={H * 0.4} start={refuse + 10} size={80} color={RC.green} />
             <TypeOn text="revolution ✊" x={W * 0.4} y={H * 0.14} start={revo} size={150} color={RC.danger} />
           </Camera>
         </AbsoluteFill>
       ) : (
         <GreyStage>
           <Camera from={ended - 20}>
-            <Char who="nicholas_ii" x={W * 0.55} y={H * 0.96} height={H * 0.6} start={ended - 20} moods={[[0, 'sad'], [abd, 'shocked']]} gestures={[[0, 'down'], [abd, 'handsHead']]} />
-            <div style={{ position: 'absolute', left: W * 0.55 - 110 + crownFall * 260, top: H * 0.3 + crownFall * H * 0.56, transform: `rotate(${crownFall * 140}deg)` }}><RImg src="props/crown_catherine.png" w={220} h={220} label="👑" /></div>
-            <TypeOn text="300 साल · Romanov dynasty ख़त्म" x={W * 0.55} y={H * 0.12} start={ended - 10} size={110} color={RC.danger} />
+            <PopIn x={W * 0.66} y={H * 0.62} start={ended - 20}><RImg src="props/throne_gold.png" w={H * 0.5} h={H * 0.62} label="throne" /></PopIn>
+            <Char who="nicholas_ii" x={W * 0.42} y={H * 0.96} height={H * 0.6} start={ended - 20} moods={[[0, 'sad'], [abd, 'shocked']]} gestures={[[0, 'down'], [abd, 'handsHead']]} />
+            <div style={{ position: 'absolute', left: W * 0.42 - 110 - crownFall * 260, top: H * 0.3 + crownFall * H * 0.56, transform: `rotate(${-crownFall * 140}deg)` }}><RImg src="props/crown_catherine.png" w={220} h={220} label="👑" /></div>
+            <TypeOn text="300 साल · Romanov dynasty ख़त्म" x={W * 0.5} y={H * 0.2} start={ended - 10} size={110} color={RC.danger} />
           </Camera>
         </GreyStage>
       )}
@@ -234,6 +238,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
   const notLast = L(at(73, 'नई'));
+  const fell = L(at(73, 'टिकी।'));
   const oct = L(at(73, 'October'));
   const lenin = L(at(73, 'Lenin'));
   const seized = L(at(73, 'क़ब्ज़ा'));
@@ -243,7 +248,9 @@ const G: React.FC<{ base: number }> = ({ base }) => {
       {!map ? (
         <GreyStage>
           <Camera from={0}>
-            <TypeOn text="नई सरकार ❌ टिकी नहीं" x={W * 0.56} y={H * 0.12} start={notLast} size={100} color={RC.sub} />
+            <TypeOn text="नई सरकार ❌ टिकी नहीं" x={W * 0.5} y={H * 0.2} start={notLast} size={100} color={RC.sub} />
+            <PopIn x={W * 0.56} y={H * 0.56} start={notLast} exit={lenin - 14}><div style={{ position: 'relative' }}><RImg src="props/throne_wooden.png" w={H * 0.42} h={H * 0.52} label="throne" /><RedX x={H * 0.21} y={H * 0.26} w={H * 0.4} h={H * 0.4} start={fell} /></div></PopIn>
+            <Char who="red_guard_1917" seed="g8" x={W * 0.84} y={H * 0.94} height={H * 0.44} start={oct} flip gestures={[[0, 'down'], [lenin, 'fist']]} moods={[[0, 'angry']]} />
             <Card src="cards/card_lenin.png" x={W * 0.56} y={H * 0.5} w={W * 0.2} start={lenin - 10} name="Lenin" nameColor={RC.danger} />
             <PopIn x={W * 0.66} y={H * 0.24} start={lenin + 10} over={1.3}><Glyph g="⭐" size={160} /></PopIn>
             <TypeOn text="October 1917 · Bolsheviks" x={W * 0.56} y={H * 0.9} start={oct} size={100} color={RC.danger} />
@@ -274,10 +281,10 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
       <BgPlate src="bg/bg_cellar_1918.png" from={0} sky="#2A2420" ground="#1A1612" dim={0.35} />
       <Camera from={0} drift={0.006}>
         {Array.from({ length: 7 }, (_, i) => (
-          <Candle key={i} x={W * (0.22 + i * 0.093)} y={H * 0.8} size={130} start={6 + i * 4} outAt={shot + 6 + i * 14} />
+          <Candle key={i} x={W * (0.2 + i * 0.1)} y={H * 0.9} size={170} start={6 + i * 4} outAt={shot + 6 + i * 14} />
         ))}
-        <TypeOn text="Yekaterinburg" x={W * 0.5} y={H * 0.18} start={cellar} size={110} color="#D8D0C4" />
-        <TypeOn text="Nicholas · पत्नी · 5 बच्चे" x={W * 0.5} y={H * 0.3} start={L(at(74, 'Nicholas,'))} size={84} color="#BDB4A8" />
+        <TypeOn text="Yekaterinburg" x={W * 0.5} y={H * 0.12} start={cellar} size={120} color="#EAE2D6" />
+        <Card src="cards/card_romanov_family.png" x={W * 0.5} y={H * 0.42} w={W * 0.27} h={W * 0.21} start={L(at(74, 'Nicholas,'))} tilt={-2} grey={shot} name="Nicholas · पत्नी · 5 बच्चे" nameColor="#F2E6CF" />
       </Camera>
       <YearTag text="July 1918" start={tag} />
       {Array.from({ length: 7 }, (_, i) => <Sfx key={i} at={shot + 6 + i * 14} file="tick.wav" volume={0.3} />)}
@@ -299,7 +306,7 @@ const I: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <RMap view="eurasia" cam={[{ at: 0, lon: 60, lat: 56, zoom: 1.4 }, { at: ussr, lon: 80, lat: 56, zoom: 1.25, dur: 90 }]}
-        overlay={<><MapLabel lon={40} lat={56} text="Reds" start={civil} size={110} color="#FFB0A8" /><MapLabel lon={80} lat={58} text="Whites" start={civil + 10} size={110} color="#FFFFFF" /><MapLabel lon={90} lat={55} text="Soviet Union ☭" start={ussr} size={140} color={RC.yellow} /></>}>
+        overlay={<><MapLabel lon={33} lat={59} text="Reds" start={civil} exit={ussr - 10} size={110} color="#FFB0A8" /><MapLabel lon={92} lat={61} text="Whites" start={civil + 10} exit={ussr - 10} size={110} color="#FFFFFF" /><MapLabel lon={90} lat={55} text="Soviet Union ☭" start={ussr} size={140} color={RC.yellow} /></>}>
         <Fill id="russia_1914" color={RC.empireGold} start={0} dur={1} opacity={0.5} exit={civil} />
         <Fill id="ussr_1922" color={RC.sovietRed} start={civil} opacity={shake ? 0.4 + 0.2 * Math.sin(frame / 3) : 0.62} />
         {frame < ussr && <Fill id="rep_kazakhstan" color="#EDEAE2" start={civil + 6} exit={red + 30} opacity={0.6} />}
