@@ -1,6 +1,7 @@
 import React from 'react';
 import { AbsoluteFill, Audio, Sequence, staticFile } from 'remotion';
-import { AUDIO, CHAPTERS, TOTAL, at } from './vo/timeline';
+import { AUDIO, CHAPTERS, TOTAL, at, speakingAt } from './vo/timeline';
+import { interpolate } from 'remotion';
 import { ChapterScroll, CollapseMarks } from './kit/devices';
 import { Sfx } from '../lib/fx/particles';
 import { S00Open, OPEN_TO } from './scenes/S00Open';
@@ -12,6 +13,9 @@ import { C05Peter, C5_FROM, C5_TO } from './scenes/C05Peter';
 import { C06Catherine, C6_FROM, C6_TO } from './scenes/C06Catherine';
 import { C07Napoleon, C7_FROM, C7_TO } from './scenes/C07Napoleon';
 import { C08LastTsar, C8_FROM, C8_TO } from './scenes/C08LastTsar';
+import { C09Stalin, C9_FROM, C9_TO } from './scenes/C09Stalin';
+import { C10Today, C10_FROM, C10_TO } from './scenes/C10Today';
+import { C11Payoff, PAY_FROM, PAY_TO } from './scenes/C11Payoff';
 
 /**
  * RUSSIA — final 4K60 cut. Scenes sit on exact VO frames; chapter cards fill the silent gaps the timeline
@@ -29,6 +33,9 @@ const BUILT: Built[] = [
   { from: C6_FROM, to: C6_TO, comp: C06Catherine },
   { from: C7_FROM, to: C7_TO, comp: C07Napoleon },
   { from: C8_FROM, to: C8_TO, comp: C08LastTsar },
+  { from: C9_FROM, to: C9_TO, comp: C09Stalin },
+  { from: C10_FROM, to: C10_TO, comp: C10Today },
+  { from: PAY_FROM, to: PAY_TO, comp: C11Payoff },
 ];
 
 // the four collapses (top-right marks turn red when the narrator says "पहला/दूसरा/तीसरा/चौथा collapse")
@@ -57,13 +64,15 @@ export const RussiaFinal: React.FC = () => {
       ))}
       {/* persistent corner marks from the end of the turn, hidden on chapter cards */}
       {[{ from: OPEN_TO }, ...cards.map((c) => ({ from: c.to }))].map((seg, i) => {
-        const to = i < cards.length ? cards[i].from : TOTAL;
+        const to = i < cards.length ? cards[i].from : PAY_FROM;
         return (
           <Sequence key={`m${i}`} from={seg.from} durationInFrames={Math.max(1, to - seg.from)} layout="none">
             <MarksAbs offset={seg.from} />
           </Sequence>
         );
       })}
+      {/* original score (scripts/russia/make_bgm.py), ducked ≈7 dB under the narration */}
+      <Audio src={staticFile('russia/music/bgm.mp3')} volume={(f) => interpolate(speakingAt(f), [0, 1], [1, 0.45])} />
       {AUDIO.map((a, i) => (
         <Sequence key={`a${i}`} from={a.at} durationInFrames={a.trimTo - a.trimFrom} layout="none">
           <Audio src={staticFile(a.file)} trimBefore={a.trimFrom} trimAfter={a.trimTo} volume={1} />
