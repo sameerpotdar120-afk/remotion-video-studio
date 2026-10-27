@@ -1,0 +1,62 @@
+RUSSIA VIDEO — IMAGE BATCH 4 of 10 (Ch3 Ivan) — 16 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C (portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Rich classical oil-painting brushwork, warm museum lighting, plain dark warm background with a soft vignette. A NORMAL painted face with full features (eyes, nose, mouth): this is a painting, NOT a peg doll. ORIGINAL artwork: do not copy any existing painting or photograph. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. ivan_iv_young.png — 1024x1024 — STYLE P + CHARACTER: Ivan IV at his coronation in 1547, aged 16: no beard, short dark-brown hair under the gold Cap of Monomakh (gold filigree, sable rim, small gold cross on top), a gold-brocade coronation robe with a wide jewelled collar (barmy).
+
+2. ivan_iv_child.png — 1024x1024 — STYLE P + CHARACTER: Ivan IV as a small boy of about 6 in 1536: a tiny figure (head even bigger than usual, 50% of the height), a little gold-brocade kaftan, a fur-rimmed cap that is much too big and slips over one side.
+
+3. ivan_iv_terrible.png — 1024x1024 — STYLE P + CHARACTER: Ivan IV ("the Terrible") in 1570, gaunt and grim: a long pointed dark beard, a black monk-like robe with thin gold trim, a tall dark sable hat, a heavy gold cross pendant.
+
+4. boyar_a.png — 1024x1024 — STYLE P + CHARACTER: a fat Russian boyar of the 1530s: a VERY tall cylindrical brown fur hat (gorlatnaya), a long red-and-gold brocade kaftan with long hanging sleeves folded back, a long bushy black beard.
+
+5. boyar_b.png — 1024x1024 — STYLE P + CHARACTER: a thin Russian boyar of the 1530s: a VERY tall cylindrical grey fur hat, a long green-and-gold brocade kaftan, a very long grey beard reaching the waist.
+
+6. oprichnik.png — 1024x1024 — STYLE P + CHARACTER: an oprichnik (Ivan IV's black guard) of 1565: an all-black monk-like cassock with a black hood up, a black sash, a thin black beard, pale skin. Sinister but cartoon, not gory.
+
+7. card_anastasia.png — 1024x1280 — STYLE C + SUBJECT: Anastasia Romanovna, first wife of Ivan IV, about 1555: a young gentle woman with a pearl-embroidered kokoshnik headdress over a white veil, a deep-red brocade dress.
+
+8. card_tsarevich_ivan.png — 1024x1280 — STYLE C + SUBJECT: Tsarevich Ivan Ivanovich, about 1580: a young man of 26 with a short dark beard, a fur-trimmed brocade kaftan and a sable hat.
+
+9. bg_cathedral_1547.png — 1536x1024 — STYLE B + Moscow Kremlin, Cathedral of the Dormition, 1547. Interior: a towering golden iconostasis wall of icons (faces too small to read), hundreds of candles, painted pillars, warm golden light, an open stone floor.
+
+10. bg_kremlin_hall_1530s.png — 1536x1024 — STYLE B + Moscow Kremlin, 1530s. A low vaulted palace chamber with every surface painted in red, gold and green ornament, one thick central pillar, small deep windows, an EMPTY space at the back centre for a throne.
+
+11. bg_red_square_1561.png — 1536x1024 — STYLE B + Moscow, 1561, bright winter day. Red Square: the red-brick Kremlin wall and towers along the left side, a snowy open square, wooden market stalls in the distance. The RIGHT THIRD of the image is open sky and snow (a cathedral is added there in animation).
+
+12. bg_snow_road_night.png — 1536x1024 — STYLE B + Russia, winter 1565, night. A snowy road running into the distance through a birch forest, deep blue moonlight, a pale moon, cold mist.
+
+13. throne_gold.png — 1024x1024 — STYLE R + A Russian Tsar's throne: gilded and carved, covered in ivory panels and jewels, a high back crowned by a double-headed eagle, a red velvet cushion, front view. Big and too large for a child.
+
+14. st_basils_cathedral.png — 1024x1280 — STYLE R + St Basil's Cathedral in Moscow: the cluster of nine colourful swirled onion domes (red-green, blue-white, gold, striped), red brick and white trim, front view, on a small patch of snowy ground. Portrait 1024x1280.
+
+15. pointed_staff.png — 512x1536 — STYLE R + Ivan the Terrible's staff: a long dark wooden staff with a sharp iron point and a carved ivory knob on top, vertical. Portrait 512x1536.
+
+16. rurik_family_tree.png — 1024x1280 — STYLE R + A parchment family tree: an old oak tree drawn in brown ink with many small round empty medallions on its branches, a few gold leaves, worn edges. NO names, NO letters. Portrait 1024x1280.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

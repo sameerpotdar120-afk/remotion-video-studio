@@ -1,0 +1,59 @@
+RUSSIA VIDEO — IMAGE BATCH 3 of 10 (Ch1 Rus + Ch2 Mongols) — 16 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. primary_chronicle_page.png — 1536x1024 — STYLE R + An open medieval manuscript book (the Russian Primary Chronicle): two pages of dense illegible Old Cyrillic-style handwriting in brown ink, red decorated initial letters, a small painted miniature of boats on a river in one corner, worn vellum. Wide 1536x1024.
+
+2. rus_prince.png — 1024x1024 — STYLE P + CHARACTER: a Rus prince of the 13th century bowing to the Khan: a crimson cloak over a gold-trimmed blue kaftan, a round fur-rimmed cap, a long brown beard.
+
+3. alexander_nevsky.png — 1024x1024 — STYLE P + CHARACTER: Prince Alexander Nevsky in 1242, young: a pointed steel helmet (shishak) with gold trim, a chainmail shirt, a scarlet cloak, a short light-brown beard.
+
+4. teutonic_knight.png — 1024x1024 — STYLE P + CHARACTER: a Teutonic (German crusader) knight of 1242: a white surcoat with a plain black cross over chainmail, a chainmail hood with an open round face opening, a white cloak.
+
+5. moscow_soldier.png — 1024x1024 — STYLE P + CHARACTER: a Muscovite foot soldier of 1380–1480: a pointed steel helmet, a quilted red tegilyai coat over chainmail, a short dark beard.
+
+6. afanasy_nikitin.png — 1024x1024 — STYLE P + CHARACTER: Afanasy Nikitin, a merchant from Tver travelling to India around 1469: a dusty brown kaftan with a red sash, a tall brown felt hat, a big cloth travel bundle tied on his back (visible above both shoulders), a full brown beard, sun-tanned skin.
+
+7. ivan_iii.png — 1024x1024 — STYLE P + CHARACTER: Ivan III, Grand Prince of Moscow, about 1480: an older man with a long grey-brown beard, the gold Cap of Monomakh (gold filigree cap with a sable rim and a small gold cross on top), a heavy gold-brocade robe with a jewelled collar.
+
+8. bg_steppe_horde_camp.png — 1536x1024 — STYLE B + The Golden Horde, 13th century, bright day. Endless green-gold steppe, a large camp of round white felt yurts, one big golden yurt in the centre, banners on poles (plain colours, no symbols), blue sky with flat white clouds.
+
+9. bg_frozen_lake_1242.png — 1536x1024 — STYLE B + Lake Peipus, April 1242, cold overcast morning. A wide frozen lake of grey-white ice with dark cracks, a low snowy forest shoreline far away, grey sky.
+
+10. bg_kulikovo_field_1380.png — 1536x1024 — STYLE B + Kulikovo Field, September 1380, early autumn morning mist. A wide open field of yellowing grass, a small river and a birch grove at the edge, low sun through the mist.
+
+11. bg_ugra_river_1480.png — 1536x1024 — STYLE B + The Ugra River, autumn 1480. A NARROW river running straight across the middle of the frame from left to right, both banks open meadow with autumn trees, a grey autumn sky. Seen from slightly above so BOTH banks are visible: the far bank across the upper-middle, the near bank in the lower third.
+
+12. cap_of_monomakh.png — 1024x1024 — STYLE R + The Cap of Monomakh: a gold filigree cap with a thick dark sable fur rim, studded with rubies, emeralds and pearls, topped by a small gold cross.
+
+13. double_headed_eagle.png — 1024x1024 — STYLE R + A golden Byzantine-Russian double-headed eagle emblem with spread wings and two crowned heads, metallic gold, flat front view, no shield on its chest.
+
+14. yarlyk_scroll.png — 1024x1536 — STYLE R + An unrolled parchment scroll (Mongol yarlyk) with lines of illegible vertical script and a big round red wax seal at the bottom, rolled ends top and bottom. Portrait 1024x1536.
+
+15. money_bag.png — 1024x1024 — STYLE R + A fat brown leather money bag tied at the top with a string, gold coins spilling out at the base. (A cartoon smirk is added in animation.)
+
+16. tribute_sack.png — 1024x1024 — STYLE R + A burlap sack bulging with sable furs and silver coins, tied at the top.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

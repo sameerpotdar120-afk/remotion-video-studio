@@ -1,0 +1,59 @@
+RUSSIA VIDEO — IMAGE BATCH 1 of 10 (Style + host + map tokens) — 14 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE H (horse): the same painterly peg-doll toy style as the characters (soft painterly shading, light from the top left, subtle paper grain, thin dark-brown outline #3A2A20). A cartoon horse in exact SIDE VIEW facing RIGHT, chunky toy proportions (big head, short round barrel body, fairly short legs, flowing mane and tail), saddle and saddle blanket on its back, NO RIDER. The top of the saddle sits exactly 42% down from the top of the canvas and the horse is centred horizontally. Transparent background, no ground shadow, no text, wide 1536x1024.
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+STYLE M (3D map token): a tiny 3D-rendered isometric miniature like a premium board-game piece, viewed from 3/4 above, soft studio light from the top left, gentle ambient occlusion, bright clean colours, centred, filling 75% of the frame, transparent background, NO ground shadow, NO text, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. _style_sheet_russia.png — 1536x1024 [attach: chars/_style_reference_sheet.png (America)] — STYLE P + A character model sheet on a plain light-grey background showing SIX peg-doll characters standing in a row at the same scale, in the exact style of the attached sheet: a Viking chieftain of 860 with a red braided beard and a blue cloak; a Russian boyar of 1550 in a very tall cylindrical brown fur hat and a long gold-brocade kaftan with a long dark beard; a Tsar in a gold Cap of Monomakh with sable fur rim; an 18th-century Russian empress with powdered hair and an ermine mantle; a 1917 factory worker in a flat cap and padded jacket; a Soviet soldier of 1943 in a khaki tunic and side cap. Every figure is one rounded capsule: very large round head (45% of the height) directly on the collar, no neck, smooth body widening slightly to a flat rounded bottom, NO LEGS, NO FEET, NO ARMS, NO HANDS. All faces completely blank. Wide 1536x1024, light-grey background (not transparent).
+>> Show me this one and WAIT for my OK before continuing. Then use it, together with image 1, as the style reference for everything below.
+
+2. host_narrator.png — 1024x1024 — STYLE P + CHARACTER: the channel's funny narrator-host (fictional, modern, not historical): a cheerful Indian traveller-historian. An OVERSIZED brown fur ushanka hat (Russian trapper hat) with both ear flaps sticking out sideways like little wings, slightly too big for him; a long saffron-orange knitted scarf wrapped twice round the collar with one end hanging down the front; a mustard-yellow knee-length kurta-style coat with a mandarin collar and a row of small wooden toggle buttons; a brown leather satchel strap across the body; a small red Indian-flag-free pin (just a plain round red badge) on the chest. Friendly, slightly goofy silhouette. Warm medium-brown skin (#C68B59).
+
+3. horse_brown_gallop_a.png — 1536x1024 — STYLE H + a chestnut-brown horse with a dark mane, red saddle blanket with a gold border. GALLOP FRAME A: all four legs stretched out (front legs reaching forward, back legs kicked back), mane and tail flying back.
+
+4. horse_brown_gallop_b.png — 1536x1024 [attach: horses/horse_brown_gallop_a.png] — STYLE H + EXACTLY the same horse as the attached frame A, same size, same canvas position, same saddle height. GALLOP FRAME B: all four legs gathered under the belly, head slightly lower, mane and tail lifting.
+
+5. horse_black_gallop_a.png — 1536x1024 — STYLE H + a coal-black horse with a black mane, a black saddle blanket, with a carved wooden dog's-head emblem and a twig broom tied behind the saddle (folk-art, cartoon, NOT gory). GALLOP FRAME A: all four legs stretched out (front legs reaching forward, back legs kicked back), mane and tail flying back.
+
+6. horse_black_gallop_b.png — 1536x1024 [attach: horses/horse_black_gallop_a.png] — STYLE H + EXACTLY the same horse as the attached frame A, same size, same canvas position, same saddle height. GALLOP FRAME B: all four legs gathered under the belly, head slightly lower, mane and tail lifting.
+
+7. horse_steppe_gallop_a.png — 1536x1024 — STYLE H + a small sturdy dun-coloured Mongol steppe pony with a short dark mane, a red-and-blue felt saddle blanket and a wooden saddle. GALLOP FRAME A: all four legs stretched out (front legs reaching forward, back legs kicked back), mane and tail flying back.
+
+8. horse_steppe_gallop_b.png — 1536x1024 [attach: horses/horse_steppe_gallop_a.png] — STYLE H + EXACTLY the same horse as the attached frame A, same size, same canvas position, same saddle height. GALLOP FRAME B: all four legs gathered under the belly, head slightly lower, mane and tail lifting.
+
+9. horse_white_gallop_a.png — 1536x1024 — STYLE H + an elegant white-grey horse with a red-and-gold saddle blanket. GALLOP FRAME A: all four legs stretched out (front legs reaching forward, back legs kicked back), mane and tail flying back.
+
+10. horse_white_gallop_b.png — 1536x1024 [attach: horses/horse_white_gallop_a.png] — STYLE H + EXACTLY the same horse as the attached frame A, same size, same canvas position, same saddle height. GALLOP FRAME B: all four legs gathered under the belly, head slightly lower, mane and tail lifting.
+
+11. host_pointer_staff.png — 512x1536 — STYLE R + A long thin wooden pointer staff, like a teacher's pointer crossed with a pilgrim's staff: straight polished light wood, a small red wool tassel tied just below the top, a brass ferrule at the bottom tip. Perfectly VERTICAL, the staff fills 95% of the canvas height. Portrait 512x1536.
+
+12. kremlin_tower.png — 1024x1024 — STYLE M + A miniature Moscow Kremlin tower: red brick with white trim, a tall green tent roof and a small gold spire on top, standing on a short piece of crenellated red wall.
+
+13. onion_church_small.png — 1024x1024 — STYLE M + A small white Russian church with one golden onion dome and a gold cross, on a round grassy base.
+
+14. napoleon_bicorne.png — 1024x1024 — STYLE R + Napoleon's black felt bicorne hat with a small red-white-blue cockade, side view.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

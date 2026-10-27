@@ -1,0 +1,74 @@
+RUSSIA VIDEO — IMAGE BATCH 5 of 10 (Ch4 Troubles + Ch5 Peter) — 22 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C (portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Rich classical oil-painting brushwork, warm museum lighting, plain dark warm background with a soft vignette. A NORMAL painted face with full features (eyes, nose, mouth): this is a painting, NOT a peg doll. ORIGINAL artwork: do not copy any existing painting or photograph. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. boris_godunov.png — 1024x1024 — STYLE P + CHARACTER: Tsar Boris Godunov in 1601: a dark trimmed beard, the gold Cap of Monomakh, a dark-red velvet robe with gold embroidery, a worried look in his posture.
+
+2. polish_hussar.png — 1024x1024 — STYLE P + CHARACTER: a Polish winged hussar of 1610: an open-faced shiny lobster-tail helmet, polished breastplate, a leopard-skin cloak over one shoulder, a tall frame of white-and-brown feather wings rising from the back above the head, a big curled moustache.
+
+3. kuzma_minin.png — 1024x1024 — STYLE P + CHARACTER: Kuzma Minin, a meat-merchant of Nizhny Novgorod in 1612: a plain brown wool kaftan with a rope belt, a soft brown cap, a bushy brown beard, a leather money pouch at the belt.
+
+4. dmitry_pozharsky.png — 1024x1024 — STYLE P + CHARACTER: Prince Dmitry Pozharsky in 1612: a pointed steel helmet with a gold band, chainmail under a crimson cloak, a dark beard.
+
+5. militia_volunteer.png — 1024x1024 — STYLE P + CHARACTER: a Russian townsman volunteer of 1612: a rough grey homespun kaftan, a rope belt, a fur cap with ear flaps tied up, a short beard.
+
+6. michael_romanov.png — 1024x1024 — STYLE P + CHARACTER: Michael Romanov elected Tsar in 1613, aged 16, nervous: no beard, a gold Cap of Monomakh that is a little too big for him, a gold-and-white brocade robe.
+
+7. card_false_dmitry.png — 1024x1280 — STYLE C + SUBJECT: False Dmitry I, about 1605: a young man with reddish hair, no beard, a broad face with a wart beside the nose, a Polish-style hussar collar under a Russian fur cloak.
+
+8. bg_village_1601.png — 1536x1024 — STYLE B + A Russian log-cabin village in the summer of 1601, wrong weather: grey sky, snow on the green fields and on the rooftops, frozen crops, a wooden church in the distance.
+
+9. bg_kremlin_exterior_1612.png — 1536x1024 — STYLE B + Moscow, autumn 1612. The red-brick Kremlin walls and towers seen from across the Moskva river, golden church domes inside, smoke from a few fires, grey-gold autumn light, an open riverbank in the foreground.
+
+10. volcano_erupting.png — 1024x1024 — STYLE R + A small toy-like volcano erupting: a brown cone, orange lava glow at the top, a big grey ash cloud billowing up.
+
+11. boyar_a_beardless.png — 1024x1024 [attach: chars/boyar_a.png] — STYLE P + CHARACTER: EXACTLY the same boyar as the attached image (same hat, same red-and-gold kaftan, same size and position on the canvas) but his beard has just been shaved off: smooth chin, a little patch of stubble, nothing else changed.
+
+12. peter_great.png — 1024x1024 — STYLE P + CHARACTER: Peter the Great in 1700: noticeably TALLER and slimmer than a normal peg doll (the body is longer, head 38% of the height), a dark-green Preobrazhensky regiment coat with red cuffs and gold buttons, a black tricorne, short dark-brown hair to the ears (no wig), a small dark moustache, no beard.
+
+13. peter_carpenter.png — 1024x1024 [attach: chars/peter_great.png] — STYLE P + CHARACTER: Peter the Great disguised as a shipyard carpenter in Holland, 1697: tall and slim like the attached Peter, a plain red shirt, a brown leather apron, a wide-brimmed black hat, small moustache.
+
+14. swedish_soldier.png — 1024x1024 — STYLE P + CHARACTER: a Swedish Carolean soldier of 1709: a blue coat with yellow cuffs, a black tricorne, a buff leather belt.
+
+15. serf_worker.png — 1024x1024 — STYLE P + CHARACTER: a Russian serf labourer of 1703: a rough off-white linen shirt with a rope belt, grey wool trousers tucked in (body only), a battered felt cap, a tangled beard, tired posture.
+
+16. card_tsarevich_alexei.png — 1024x1280 — STYLE C + SUBJECT: Tsarevich Alexei Petrovich, son of Peter the Great, about 1715: a thin pale young man with long brown hair, a dark European coat with a white cravat.
+
+17. bg_shipyard_zaandam_1697.png — 1536x1024 — STYLE B + Zaandam, Holland, 1697, bright day. A busy shipyard: a half-built wooden ship hull on a slipway, timber stacks, ropes and pulleys, a windmill in the distance, an open plank yard in the foreground.
+
+18. bg_peter_court_1698.png — 1536x1024 — STYLE B + Moscow, 1698. A palace reception hall half way between Russian and European: a painted vaulted ceiling, new European chairs pushed against the walls, tall windows, a polished open floor.
+
+19. bg_neva_swamp_1703.png — 1536x1024 — STYLE B + The Neva river mouth, May 1703. A flat grey marsh with reeds, standing water, a wide grey river, rows of freshly driven wooden piles, low grey sky.
+
+20. bg_st_petersburg_1725.png — 1536x1024 — STYLE B + St Petersburg, 1725. A granite river embankment, the gilded needle spire of the Peter and Paul Cathedral across the river, new baroque palaces in pastel colours, ships with furled sails.
+
+21. bg_dark_study_1718.png — 1536x1024 — STYLE B + A dark 18th-century study at night: a heavy desk with papers and a single candle, a dark wood-panelled wall, a barred window.
+
+22. shears_giant.png — 1024x1024 — STYLE R + A pair of giant iron tailor's shears, open, diagonal.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

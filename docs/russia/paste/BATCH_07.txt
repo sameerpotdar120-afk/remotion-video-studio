@@ -1,0 +1,55 @@
+RUSSIA VIDEO — IMAGE BATCH 7 of 10 (Ch7 1812 & reforms) — 14 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. napoleon.png — 1024x1024 — STYLE P + CHARACTER: Napoleon Bonaparte in 1812: a black bicorne hat worn sideways, a grey greatcoat open over a dark-green chasseur uniform with a white waistcoat, short dark hair, slightly plump. Small and confident.
+
+2. french_soldier.png — 1024x1024 — STYLE P + CHARACTER: a French line infantryman of 1812: a tall black shako with a brass plate and red pompom, a dark-blue coat with white lapels and red cuffs, white cross-belts.
+
+3. russian_soldier_1812.png — 1024x1024 — STYLE P + CHARACTER: a Russian infantryman of 1812: a black shako, a dark-green coat with red collar, white cross-belts, a grey greatcoat roll over one shoulder.
+
+4. decembrist_officer.png — 1024x1024 — STYLE P + CHARACTER: a young Russian guards officer of 1825: a dark-green uniform with a high red collar and gold epaulettes, a black bicorne with a white plume, curly sideburns.
+
+5. alexander_ii.png — 1024x1024 — STYLE P + CHARACTER: Tsar Alexander II in 1861: balding with neat side hair, big mutton-chop sideburns joined to a thick moustache, a white military tunic with gold epaulettes and a blue sash.
+
+6. bg_borodino_1812.png — 1536x1024 — STYLE B + Borodino, 7 September 1812. A rolling field covered in white and grey cannon smoke, earthen redoubts, a burning village and a church in the distance, broken wheels.
+
+7. bg_moscow_skyline_1812.png — 1536x1024 — STYLE B + Moscow, September 1812, seen from a hill. A panorama of the city: the Kremlin towers, the Ivan the Great bell tower, dozens of golden and green onion domes, wooden houses, an evening sky. (Fire is added in animation.)
+
+8. bg_winter_retreat_1812.png — 1536x1024 — STYLE B + Russia, November 1812. A flat endless snowy plain under a heavy grey blizzard, a frozen road with an abandoned overturned cart and a broken cannon wheel half buried in snow.
+
+9. bg_paris_1814.png (optional) — 1536x1024 — STYLE B + Paris, 1814, spring. The Seine with an old stone bridge, Notre-Dame cathedral in the distance, cream stone buildings, blue sky. NO Eiffel Tower.
+
+10. bg_senate_square_1825.png — 1536x1024 — STYLE B + St Petersburg, Senate Square, 14 December 1825. A wide snowy square, the Bronze Horseman statue of Peter the Great on its rock, a yellow-and-white classical Senate building, grey winter sky.
+
+11. bg_canal_street_1881.png — 1536x1024 — STYLE B + St Petersburg, 1 March 1881, winter. A snowy embankment street beside a frozen canal with an iron railing, lamp posts, pastel buildings, grey sky.
+
+12. cannon_1812.png — 1024x1024 — STYLE R + An early-19th-century field cannon on a wooden carriage, side view facing RIGHT, dark bronze barrel.
+
+13. chains_broken.png (optional) — 1024x1024 — STYLE R + A short length of heavy iron chain with one link snapped open, pieces flying apart.
+
+14. carriage_1881.png — 1024x1024 — STYLE R + A black closed imperial carriage of 1881 on a sleigh-like chassis, side view facing RIGHT, gold trim, no horses.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

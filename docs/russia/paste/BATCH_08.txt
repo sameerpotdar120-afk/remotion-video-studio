@@ -1,0 +1,66 @@
+RUSSIA VIDEO — IMAGE BATCH 8 of 10 (Ch8 Last Tsar) — 18 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C20 (20th-century portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Painted in a muted sepia, warm-grey and faded-ink palette that suggests an old photograph, but clearly a PAINTING with visible brushwork (not a photo). A NORMAL painted face with full features. ORIGINAL artwork: do not copy any existing photograph. Plain soft grey-brown background. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. nicholas_ii.png — 1024x1024 — STYLE P + CHARACTER: Tsar Nicholas II in 1905: short brown hair, a neatly trimmed brown beard and moustache, a plain khaki military tunic with small shoulder boards, no hat.
+
+2. alexandra.png — 1024x1024 — STYLE P + CHARACTER: Empress Alexandra in 1916: auburn hair in a high Edwardian updo, a long white lace dress with a high collar, a long pearl necklace.
+
+3. rasputin.png — 1024x1024 — STYLE P + CHARACTER: Grigori Rasputin in 1916: long black hair parted in the middle, a huge bushy black beard, a black peasant tunic belted with a cord, a large wooden-and-silver cross pendant. Mysterious but cartoon.
+
+4. worker_1905.png — 1024x1024 — STYLE P + CHARACTER: a St Petersburg factory worker of 1905–1917: a flat cloth cap, a grey padded jacket, a scarf, a short beard.
+
+5. worker_woman_1917.png — 1024x1024 — STYLE P + CHARACTER: a Petrograd working woman of 1917: a dark wool coat, a grey woollen headscarf, holding nothing.
+
+6. tsarist_soldier_1914.png — 1024x1024 — STYLE P + CHARACTER: a Russian Imperial Army private of 1914: a khaki gymnastyorka tunic, a khaki peaked cap, a rolled grey greatcoat over the shoulder, a leather belt.
+
+7. red_guard_1917.png — 1024x1024 — STYLE P + CHARACTER: a Bolshevik Red Guard of October 1917: a black leather jacket, a cloth cap with a red ribbon, a red armband.
+
+8. white_officer_1919.png (optional) — 1024x1024 — STYLE P + CHARACTER: a White Army officer of 1919: a khaki officer tunic with gold shoulder boards, a white-banded officer cap, a neat moustache.
+
+9. card_nicholas_ii.png — 1024x1280 — STYLE C20 + SUBJECT: Tsar Nicholas II about 1905: trimmed brown beard and moustache, a dark-green military tunic with a few orders.
+
+10. card_romanov_family.png — 1280x1024 — STYLE C20 + SUBJECT: a formal family group of seven in 1913: a bearded father in a military tunic, a mother in a white dress and a wide hat, four daughters in white dresses with long hair, one small boy in a sailor suit. Everyone calm and formal. Landscape 1280x1024 instead of portrait.
+
+11. card_lenin.png — 1024x1280 — STYLE C20 + SUBJECT: Vladimir Lenin in 1917: bald, with a short reddish goatee and moustache, a dark suit and tie, a determined look.
+
+12. bg_palace_square_1905.png — 1536x1024 — STYLE B + St Petersburg, January 1905. The huge snowy Palace Square in front of the green-and-white Winter Palace, the Alexander Column, grey sky.
+
+13. bg_palace_interior_1916.png — 1536x1024 — STYLE B + Tsarskoye Selo, 1916, evening. A dim, rich imperial drawing room with dark wood, icons in a corner lit by a small red lamp, heavy curtains, a fireplace.
+
+14. bg_petrograd_street_1917.png — 1536x1024 — STYLE B + Petrograd, February 1917, cold morning. A snowy city street with a closed bakery shopfront (blank sign), lamp posts, tram rails, grey sky.
+
+15. bg_cellar_1918.png — 1536x1024 — STYLE B + A dark empty basement room in Yekaterinburg, July 1918: striped wallpaper, a vaulted low ceiling, a single bare light bulb, a closed wooden door. Sombre, nothing violent.
+
+16. warship_1904.png — 1024x1024 — STYLE R + A Russian pre-dreadnought battleship of 1904, side view facing RIGHT, grey hull, two yellow funnels, gun turrets, NO flags.
+
+17. church_banner.png — 1024x1024 — STYLE R + An Orthodox procession banner on a tall pole: a gold-fringed cloth with a gold cross on deep red, no faces, no text.
+
+18. bread_loaf.png — 1024x1024 — STYLE R + A round dark rye bread loaf.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

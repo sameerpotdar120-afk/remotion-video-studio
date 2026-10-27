@@ -1,0 +1,63 @@
+RUSSIA VIDEO — IMAGE BATCH 9 of 10 (Ch9 Stalin) — 15 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C20 (20th-century portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Painted in a muted sepia, warm-grey and faded-ink palette that suggests an old photograph, but clearly a PAINTING with visible brushwork (not a photo). A NORMAL painted face with full features. ORIGINAL artwork: do not copy any existing photograph. Plain soft grey-brown background. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+STYLE M (3D map token): a tiny 3D-rendered isometric miniature like a premium board-game piece, viewed from 3/4 above, soft studio light from the top left, gentle ambient occlusion, bright clean colours, centred, filling 75% of the frame, transparent background, NO ground shadow, NO text, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. stalin.png — 1024x1024 — STYLE P + CHARACTER: Joseph Stalin in 1937: thick swept-back black-grey hair, a thick black moustache, a plain grey-khaki high-collared tunic with breast pockets, no badges.
+
+2. kolkhoz_farmer.png — 1024x1024 — STYLE P + CHARACTER: a Soviet collective-farm peasant of 1932: a patched grey shirt, a cloth cap, a thin worried look in the posture, a thin beard.
+
+3. soviet_soldier_ww2.png — 1024x1024 — STYLE P + CHARACTER: a Red Army soldier of 1943: a khaki tunic with a leather belt, a khaki side cap (pilotka) with a small red star, a rolled greatcoat over one shoulder.
+
+4. german_soldier_ww2.png — 1024x1024 — STYLE P + CHARACTER: a German Wehrmacht soldier of 1942: a field-grey uniform, a grey steel helmet, a winter scarf, NO insignia, NO symbols, NO eagle, NO swastika anywhere.
+
+5. german_general_surrender.png — 1024x1024 — STYLE P + CHARACTER: a defeated German general in February 1943: a long grey greatcoat, a grey peaked cap, a tired unshaven face area (stubble only on the chin), NO insignia, NO symbols, NO swastika anywhere.
+
+6. card_stalin.png — 1024x1280 — STYLE C20 + SUBJECT: Joseph Stalin about 1937: thick swept-back hair, a thick moustache, a plain grey military-style tunic.
+
+7. card_hitler.png — 1024x1280 — STYLE C20 + SUBJECT: Adolf Hitler in 1939, the German dictator, painted in a cold grey palette: side-parted dark hair, a small toothbrush moustache, a plain brown jacket, NO armband, NO symbols, NO swastika.
+
+8. bg_industrial_1930s.png — 1536x1024 — STYLE B + The USSR in 1932. A new steel plant under construction on an open plain: smokestacks, scaffolding, cranes, blast furnaces, red sunset sky, a dirt road in the foreground.
+
+9. bg_stalingrad_ruins_1942.png — 1536x1024 — STYLE B + Stalingrad, winter 1942. A ruined city street under snow: burnt-out brick apartment blocks with empty windows, rubble, smoke, grey sky.
+
+10. factory_chimneys.png — 1024x1024 — STYLE M + A small Soviet factory with three tall brick chimneys puffing grey smoke, red brick walls.
+
+11. tractor_1930.png — 1024x1024 — STYLE R + A 1930s Soviet wheeled tractor, red bodywork, big steel rear wheels, 3/4 view.
+
+12. grain_sack.png — 1024x1024 — STYLE R + A bulging burlap grain sack tied at the top, a little grain spilling.
+
+13. tank_t34.png — 1024x1024 — STYLE M + A Soviet T-34 tank of 1943 in 3/4 view, olive-green, a red star on the turret.
+
+14. tank_german.png — 1024x1024 — STYLE M + A German Panzer IV tank of 1942 in 3/4 view, dark grey, NO crosses, NO symbols, NO numbers.
+
+15. pact_document.png — 1024x1280 — STYLE R + A typed 1939 diplomatic treaty document on two sheets with two signatures and two wax seals, lines of illegible text, slightly tilted. Portrait 1024x1280.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

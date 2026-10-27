@@ -1,0 +1,74 @@
+RUSSIA VIDEO — IMAGE BATCH 6 of 10 (Ch5 Peter + Ch6 Catherine) — 22 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C (portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Rich classical oil-painting brushwork, warm museum lighting, plain dark warm background with a soft vignette. A NORMAL painted face with full features (eyes, nose, mouth): this is a painting, NOT a peg doll. ORIGINAL artwork: do not copy any existing painting or photograph. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. beard_token.png — 1024x1024 — STYLE R + The 1698 Russian beard-tax token: a small copper coin showing an embossed beard and moustache on one face, slightly worn, 3/4 tilt showing the edge. NO readable letters.
+
+2. carpenter_hammer.png — 1024x1024 — STYLE R + A 17th-century carpenter's hammer with a wooden handle and an iron head, diagonal.
+
+3. ship_russian_1700.png — 1536x1024 — STYLE R + A Russian navy sailing frigate of 1700 in side view facing RIGHT, three masts with white sails, green-and-gold hull, NO flags. Wide 1536x1024.
+
+4. palace_facade_baroque.png — 1536x1024 — STYLE R + A long pastel-yellow and white baroque palace facade (front view, flat, like a theatre flat) with tall windows and columns, a green roof. Wide 1536x1024.
+
+5. serf_woman.png (optional) — 1024x1024 — STYLE P + CHARACTER: a Russian peasant woman of the 18th–19th century: a red sarafan dress over a white blouse with embroidered sleeves, a patterned headscarf tied under the chin.
+
+6. catherine_great.png — 1024x1024 — STYLE P + CHARACTER: Catherine the Great in 1762: powdered grey-white hair in a neat updo, a small diamond crown, a silver-white silk gown, a wide pale-blue sash of the Order of St Andrew, an ermine mantle with black spots over the shoulders.
+
+7. peter_iii.png — 1024x1024 — STYLE P + CHARACTER: Emperor Peter III in 1762: a thin young man in a tight Prussian-style blue uniform coat with red cuffs, a white powdered wig with side curls, a black ribbon queue.
+
+8. russian_guard.png — 1024x1024 — STYLE P + CHARACTER: a Russian Preobrazhensky guardsman of 1762: a dark-green coat with red cuffs, a tall brass-fronted grenadier mitre cap, white cross-belt.
+
+9. potemkin.png — 1024x1024 — STYLE P + CHARACTER: Prince Grigory Potemkin in 1787: a big burly man, a white powdered wig, a red-and-gold general's coat covered in star-shaped orders, one eye slightly narrowed.
+
+10. pugachev.png — 1024x1024 — STYLE P + CHARACTER: Yemelyan Pugachev, the Cossack rebel of 1773: a thick black beard, a crude home-made gold paper crown slightly crooked on a fur cap, a red Cossack kaftan, a sabre belt.
+
+11. card_sophie_princess.png — 1024x1280 — STYLE C + SUBJECT: Sophie of Anhalt-Zerbst (the future Catherine the Great) aged 15 in 1744: a young German princess with powdered hair, a pale-pink silk gown, a small pearl choker.
+
+12. card_voltaire.png (optional) — 1024x1280 — STYLE C + SUBJECT: Voltaire, French philosopher, about 1770: an old thin man with a sly smile, a long white curled wig, a brown velvet coat.
+
+13. bg_palace_room_1762.png — 1536x1024 — STYLE B + St Petersburg, 1762. A rococo palace room in pale blue, white and gold, a tall window with daylight, a polished parquet floor that is open in the lower third.
+
+14. bg_riverbank_1787.png — 1536x1024 — STYLE B + The Dnieper river, 1787, sunny. A wide river on the left half with a calm surface, a grassy empty bank on the right half, a few poplar trees, open land behind (empty — facades are added in animation).
+
+15. bg_volga_steppe_1773.png (optional) — 1536x1024 — STYLE B + The lower Volga steppe, 1773, stormy evening. Flat grassland to the horizon, the wide Volga, a dramatic orange-grey storm sky.
+
+16. toy_soldiers.png — 1024x1024 — STYLE R + A small group of five painted wooden toy soldiers in blue Prussian uniforms standing in a row on the floor.
+
+17. crown_catherine.png — 1024x1024 — STYLE R + The Great Imperial Crown of Russia: two silver half-domes covered in diamonds, a row of pearls between them, a big red spinel and a small cross on top.
+
+18. potemkin_facade_front.png — 1536x1024 — STYLE R + A row of three pretty painted wooden village house fronts (only the flat fronts, like theatre scenery), with flower boxes and smiling painted windows. Wide 1536x1024.
+
+19. potemkin_facade_back.png — 1536x1024 — STYLE R + The BACK of the same row of flat wooden house fronts: bare planks, diagonal wooden props and scaffolding holding them up, nothing behind. Wide 1536x1024.
+
+20. royal_barge.png — 1536x1024 — STYLE R + A royal 18th-century river barge in side view facing RIGHT, gilded, with a red-and-gold canopy, oars out. Wide 1536x1024.
+
+21. books_quill.png — 1024x1024 — STYLE R + A small stack of old leather-bound books with a quill pen in an inkwell on top.
+
+22. letter_sealed.png — 1024x1024 — STYLE R + A folded 18th-century letter with a red wax seal, slightly tilted.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

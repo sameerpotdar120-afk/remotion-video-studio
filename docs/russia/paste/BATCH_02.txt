@@ -1,0 +1,77 @@
+RUSSIA VIDEO — IMAGE BATCH 2 of 10 (Ch1 Rus) — 22 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C (portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Rich classical oil-painting brushwork, warm museum lighting, plain dark warm background with a soft vignette. A NORMAL painted face with full features (eyes, nose, mouth): this is a painting, NOT a peg doll. ORIGINAL artwork: do not copy any existing painting or photograph. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+STYLE M (3D map token): a tiny 3D-rendered isometric miniature like a premium board-game piece, viewed from 3/4 above, soft studio light from the top left, gentle ambient occlusion, bright clean colours, centred, filling 75% of the frame, transparent background, NO ground shadow, NO text, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. slav_elder.png — 1024x1024 — STYLE P + CHARACTER: an East Slav tribal elder of the 9th century: a long white beard, a cream linen tunic with red embroidered bands at the collar, a brown fur-trimmed wool cloak pinned at the shoulder, a low round fur cap.
+
+2. finn_elder.png — 1024x1024 — STYLE P + CHARACTER: a Finnic forest-tribe elder of the 9th century: a grey-brown wool kaftan hung with small bronze pendants and a beaded belt, a pointed felt hood, a short braided grey beard.
+
+3. balt_elder.png — 1024x1024 — STYLE P + CHARACTER: a Baltic tribal elder of the 9th century: a dark-green wool cloak held by a round amber-and-bronze brooch, long loose sandy hair to the shoulders, a short reddish beard, a woven sash.
+
+4. rurik_viking.png — 1024x1024 — STYLE P + CHARACTER: Rurik, a Viking (Varangian) chieftain of 862: an open-faced round iron helmet WITHOUT horns and without a nose guard, a long red braided beard, a chainmail shirt over a dark-red tunic, a royal-blue cloak with a gold-and-bronze brooch, a round wooden shield painted red and white slung on his back (rim visible behind the shoulders).
+
+5. viking_warrior.png (optional) — 1024x1024 — STYLE P + CHARACTER: a Varangian warrior of the 9th century: an open-faced conical iron helmet WITHOUT horns, a blond beard, a padded leather jerkin over a grey tunic, a round shield painted yellow and black on his back.
+
+6. vladimir_prince.png — 1024x1024 — STYLE P + CHARACTER: Prince Vladimir of Kyiv in 988: a gold cap with a thick sable-fur rim, a long red silk kaftan with heavy gold embroidery and a jewelled belt, a long drooping brown moustache and a short trimmed beard.
+
+7. envoy_kievan.png — 1024x1024 — STYLE P + CHARACTER: a Kievan envoy of 987 back from a long journey: a dusty forest-green travelling kaftan, a brown fur hat, a leather satchel, a short brown beard. (Used four times with different tints.)
+
+8. batu_khan.png — 1024x1024 — STYLE P + CHARACTER: Batu Khan, Mongol ruler of 1237: a richly embroidered deep-blue silk deel robe with a gold belt, a round fur-brimmed hat with a gold top ornament and a red plume, a thin long moustache and a small goatee, warm tan skin (#D9A877).
+
+9. mongol_warrior.png — 1024x1024 — STYLE P + CHARACTER: a Mongol cavalry warrior of 1237: lamellar leather armour in brown and red, a pointed iron helmet with a fur rim and a short plume, a bow case and quiver at the hip, warm tan skin (#D9A877).
+
+10. card_anna_porphyrogenita.png — 1024x1280 — STYLE C + SUBJECT: Anna Porphyrogenita, Byzantine princess of 988, sister of Emperor Basil II: dark hair under a jewelled Byzantine crown with pearl pendants, a purple-and-gold silk robe.
+
+11. bg_forest_river_862.png — 1536x1024 — STYLE B + Northern Europe, the year 862, misty early morning. A wide calm river curving through dense pine and birch forest, a rough wooden landing jetty on the near bank, low grey sky.
+
+12. bg_kyiv_hall_988.png — 1536x1024 — STYLE B + Kyiv, 988, warm firelight. The great wooden hall of a Kievan prince: carved and painted wooden pillars, heavy roof beams, bear and wolf furs on the floor, bronze oil lamps, an EMPTY raised platform at the back centre (no throne).
+
+13. bg_hagia_sophia_interior.png — 1536x1024 — STYLE B + Constantinople, 10th century. The interior of the Hagia Sophia: the vast golden dome floating on a ring of windows, shafts of golden light streaming down, gold mosaics without readable figures, marble columns, incense haze.
+
+14. bg_kyiv_burning_1240.png — 1536x1024 — STYLE B + Kyiv, December 1240, dusk. A wooden-walled hill city with a few golden church domes, heavy black smoke and orange fire glow rising from behind the walls, snow on the ground, a dark red sky.
+
+15. viking_longship.png — 1536x1024 — STYLE R + A Viking longship in exact side view facing RIGHT: a long low dark-oak clinker hull, a carved dragon-head prow, a row of round shields along the side (red, white, yellow), a single square sail with broad red and white vertical stripes, oars out. Wide 1536x1024.
+
+16. oar_wooden.png — 1024x1024 — STYLE R + A single long wooden ship oar, diagonal from bottom-left to top-right.
+
+17. icon_card_mosque.png — 1024x1024 — STYLE M + A small domed mosque with one slender minaret, sand-coloured stone, a green dome, standing on a round grassy base.
+
+18. icon_card_synagogue.png — 1024x1024 — STYLE M + A small medieval stone synagogue with a round arched window and a low tiled roof, standing on a round grassy base.
+
+19. icon_card_latin_church.png — 1024x1024 — STYLE M + A small Romanesque Latin church with a square bell tower and a red tiled roof, standing on a round grassy base.
+
+20. hagia_sophia_model.png — 1024x1024 — STYLE M + A miniature model of the Hagia Sophia in Constantinople as it was in 988 (NO minarets): the great central dome with half-domes, warm stone, golden light glowing from the windows, on a round base.
+
+21. wine_jug.png — 1024x1024 — STYLE R + A rustic clay wine jug with a handle, a little red wine splashing from the spout.
+
+22. throne_wooden.png — 1024x1024 — STYLE R + A carved dark-wood medieval throne with a high back, carved bear and bird motifs, a red cushion, front 3/4 view.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.

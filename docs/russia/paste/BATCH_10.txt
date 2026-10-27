@@ -1,0 +1,77 @@
+RUSSIA VIDEO — IMAGE BATCH 10 of 10 (Ch10 Today + Close) — 22 images
+
+You are generating image assets for an animated Hindi/Hinglish history YouTube video ("Russia Kaise Bana?", 862 to today). Characters use the same peg-doll style as our earlier video: the style reference sheet is attached (image 1) — use it as the strict style reference for every character and horse.
+
+GLOBAL RULES (apply to every image)
+- Make ONE image at a time, in the order below. Give each image the exact file name listed. After each image go straight on to the next one unless I say stop.
+- Transparent background PNG for characters, horses and props. Backgrounds and portrait cards fill the whole canvas.
+- After removing the background, every WHITE or pale part of an object must stay solid and opaque (not see-through).
+- No text, letters or numbers anywhere unless the prompt asks for exact words.
+- Characters: the face is ALWAYS completely blank (no eyes, nose, mouth, brows) and there are NO arms, hands, legs or feet. The animation adds them.
+- If an item says "attach", I will upload that image in the chat: use it as the reference.
+
+======================================================================
+STYLE P (character): 2D illustrated character for an animated history YouTube channel, in a "peg doll" cartoon style. The whole figure is ONE soft rounded capsule like a wooden peg doll or a bowling pin: a very large, perfectly round head (45% of the total height) sitting directly on the collar with NO neck; below it a smooth rounded body that widens slightly toward a flat, gently rounded bottom edge. NO LEGS, NO FEET, NO SHOES: the clothing simply ends at the rounded bottom of the body. Body width at the bottom about 1.1 times the head width. Historically accurate clothing of the era named in the CHARACTER line, drawn ONTO the body shape with fine detail (embroidery, fur trims, buttons, belts, sashes follow the body's curve). Soft painterly shading with gentle gradients, light from the top left, subtle paper grain inside the colours, a thin-to-medium dark-brown outline (#3A2A20) around the silhouette and main shapes. Warm pale skin (#F3DCC4) unless stated. Hair, beards and fur drawn with fine strands. Hats are large and overhang the head. BLANK FACE: the face is completely smooth skin with NO eyes, NO eyebrows, NO nose, NO mouth, NO blush. Beards and moustaches are allowed: they frame the LOWER edge of the face, and the skin from the forehead down to just above the moustache stays completely blank. NO ARMS and NO HANDS anywhere (arms are added in animation). Front view, body very slightly turned to the right. Centred, the bottom of the body touching the bottom edge of the canvas, 6% empty margin left, right and top. Transparent background, PNG, no ground shadow, no text, no border, square 1024x1024.
+
+======================================================================
+STYLE C20 (20th-century portrait card): a painted head-and-shoulders portrait used as a card in a history explainer. The subject looks slightly to the right. Painted in a muted sepia, warm-grey and faded-ink palette that suggests an old photograph, but clearly a PAINTING with visible brushwork (not a photo). A NORMAL painted face with full features. ORIGINAL artwork: do not copy any existing photograph. Plain soft grey-brown background. No frame, no text, no signature, no border. Fills the whole canvas, portrait 1024x1280.
+
+======================================================================
+STYLE B (background): photorealistic cinematic matte painting, gentle atmospheric haze, shallow depth of field on the far background, rich but slightly desaturated colours, film-still quality. Keep important elements inside the middle band (15% to 85% of the height) and leave the lower third open floor/ground where cartoon characters will stand. ABSOLUTELY NO PEOPLE, no animals, no text, no letters, no modern objects unless the era is modern. Wide 1536x1024, full scene (not transparent).
+
+======================================================================
+STYLE R (3D-rendered prop): a stylised 3D-rendered object for an animated history video: semi-realistic, slightly toy-like proportions, rendered like a high-end Blender Cycles / Pixar product shot, soft studio lighting from the top left, gentle ambient occlusion, softly bevelled edges, believable materials (wood, iron, gold, cloth, parchment) with a light hand-painted texture. 3/4 view from slightly above unless stated. Centred, filling 80% of the frame, transparent background PNG, NO ground shadow, NO text, NO letters or numbers, square 1024x1024.
+
+======================================================================
+STYLE M (3D map token): a tiny 3D-rendered isometric miniature like a premium board-game piece, viewed from 3/4 above, soft studio light from the top left, gentle ambient occlusion, bright clean colours, centred, filling 75% of the frame, transparent background, NO ground shadow, NO text, square 1024x1024.
+
+======================================================================
+THE IMAGES
+======================================================================
+
+1. gagarin_spacesuit.png — 1024x1024 — STYLE P + CHARACTER: Yuri Gagarin in 1961 in his orange flight spacesuit with a white rounded helmet pushed back so the blank face is fully visible, a small red patch on the chest with no letters, a wide smile implied by posture.
+
+2. soviet_navy_officer.png — 1024x1024 — STYLE P + CHARACTER: a Soviet submarine officer of 1962: a dark-navy officer uniform with gold buttons, a white-topped peaked officer cap, sweating (small drops on the cap brim), a moustache. (Used three times with tints.)
+
+3. soviet_citizen_1980s.png — 1024x1024 — STYLE P + CHARACTER: a Soviet citizen of 1985 queueing: a grey wool overcoat, a brown fur ushanka hat, a string shopping bag (avoska) hanging from the coat button.
+
+4. russian_1990s.png (optional) — 1024x1024 — STYLE P + CHARACTER: a Russian man in the chaotic 1990s: a shiny maroon tracksuit jacket, a thin gold chain, short buzz-cut hair.
+
+5. card_gagarin.png — 1024x1280 — STYLE C20 + SUBJECT: Yuri Gagarin in 1961: a young smiling man with short dark hair in an officer's uniform cap, a very warm big smile.
+
+6. card_arkhipov.png — 1024x1280 — STYLE C20 + SUBJECT: Vasily Arkhipov, Soviet naval officer, 1962: a calm man in his thirties, dark hair, a navy officer jacket.
+
+7. card_rakesh_sharma.png — 1024x1280 — STYLE C20 + SUBJECT: Rakesh Sharma, Indian Air Force pilot and cosmonaut in 1984: a young Indian man with a neat moustache, a blue flight suit, a confident smile. Full colour, NOT sepia.
+
+8. card_gorbachev.png — 1024x1280 — STYLE C20 + SUBJECT: Mikhail Gorbachev about 1987: a bald man with the well-known birthmark on the top of his head, glasses, a dark suit and tie. Full muted colour.
+
+9. card_yeltsin.png — 1024x1280 — STYLE C20 + SUBJECT: Boris Yeltsin about 1999: a big man with thick white-grey hair, a heavy face, a dark suit and tie.
+
+10. card_putin.png — 1024x1280 — STYLE C20 + SUBJECT: Vladimir Putin about 2000: a slim man with thinning light-brown hair, a dark suit and tie, a neutral expression. Full muted colour.
+
+11. bg_submarine_1962.png — 1536x1024 — STYLE B + Inside a Soviet diesel submarine in October 1962: a cramped control room, red emergency lighting, pipes and valves everywhere, round dials with NO readable numbers, condensation and heat haze.
+
+12. bg_soviet_shop_1985.png — 1536x1024 — STYLE B + A Soviet grocery shop in 1985: long EMPTY shelves, a bare counter, an abacus on the counter, pale green walls, fluorescent light.
+
+13. bg_apartment_1999.png — 1536x1024 — STYLE B + A Russian apartment living room on 31 December 1999, night: a patterned carpet hanging on the wall, a small decorated New Year tree, a wooden sideboard; an EMPTY low table in the centre (a TV is added in animation).
+
+14. bg_chernobyl_1986.png — 1536x1024 — STYLE B + Chernobyl, 26 April 1986, night. A big industrial nuclear power plant with a tall red-and-white striped ventilation chimney, one reactor building broken open with smoke and an eerie blue glow, dark sky.
+
+15. bg_berlin_wall_1989.png — 1536x1024 — STYLE B + Berlin, November 1989, night. A long grey concrete wall covered in colourful abstract graffiti shapes (NO readable words), floodlights, a crack running down one section.
+
+16. rocket_vostok.png — 768x1536 — STYLE R + The Soviet Vostok rocket on the launch pad, white and grey with the four flared side boosters, vertical. Portrait 768x1536, NO letters.
+
+17. submarine_foxtrot.png — 1536x1024 — STYLE R + A Soviet Foxtrot-class diesel submarine in side view facing RIGHT, black hull, on the surface, NO numbers. Wide 1536x1024.
+
+18. reactor_building.png — 1024x1024 — STYLE M + The Chernobyl reactor 4 building after the explosion, a broken roof with smoke, a red-and-white striped chimney beside it.
+
+19. tv_crt_1999.png — 1024x1024 — STYLE R + A late-1990s CRT television set with a silver-grey plastic body and a dark empty screen, front 3/4 view.
+
+20. oil_barrel.png — 1024x1024 — STYLE R + A blue steel oil barrel with a little shine.
+
+21. rouble_banknotes.png — 1024x1024 — STYLE R + A fanned stack of colourful generic paper banknotes with NO readable numbers or words, tied with a paper band.
+
+22. subscribe_bell.png (optional) — 1024x1024 — STYLE R + A shiny golden bell, slightly tilted as if ringing.
+
+======================================================================
+BEFORE SENDING: characters have blank faces and NO arms/hands/legs/feet; horses have no rider; backgrounds have no people and no readable text; nothing has a swastika or any other symbol not asked for.
