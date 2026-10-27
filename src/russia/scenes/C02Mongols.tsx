@@ -36,6 +36,7 @@ const NOVGOROD: [number, number] = [31.3, 58.5];
 const A: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
   const yrs = L(at(17, 'ढाई'));
+  const mongols = L(at(17, 'Mongols'));
   const notHere = L(at(17, 'Mongols', 1));
   const tax = L(at(17, 'Tax,'));
   const loyal = L(at(17, 'वफ़ादारी।'));
@@ -53,14 +54,15 @@ const A: React.FC<{ base: number }> = ({ base }) => {
               </Flow>
             ))}
             <At lon={46.2} lat={51.5} start={notHere} bob={5}><Glyph g="🏕️" size={110} /></At>
+            <At lon={54} lat={54.6} start={mongols} bob={6}><RImg src="chars/batu_khan.png" w={260} h={300} label="Khan" /></At>
           </>
         }>
         <Patchwork ids={PRIN} colors={PRIN_COL} start={0} stagger={0} opacity={0.5} />
         <Fill id="golden_horde" color={RC.horde} start={0} dur={1} opacity={0.55} pulseAt={[tax, loyal]} />
       </RMap>
-      <BigNumber x={W * 0.18} y={H * 0.8} to={250} start={yrs} dur={40} size={170} prefix="~" sub="साल" />
-      <PopIn x={W * 0.74} y={H * 0.84} start={tax}><div style={{ ...hand(110, RC.yellow) }}>💰 Tax</div></PopIn>
-      <PopIn x={W * 0.9} y={H * 0.84} start={loyal}><div style={{ ...hand(110, RC.white) }}>+ 🙇 वफ़ादारी</div></PopIn>
+      <BigNumber x={W * 0.16} y={H * 0.78} to={250} start={yrs} dur={40} size={240} prefix="~" sub="साल" />
+      <PopIn x={W * 0.66} y={H * 0.86} start={tax}><div style={{ ...hand(120, RC.yellow) }}>💰 Tax</div></PopIn>
+      <PopIn x={W * 0.83} y={H * 0.86} start={loyal}><div style={{ ...hand(120, RC.white) }}>+ 🙇 वफ़ादारी</div></PopIn>
       <YearTag text="1240 – 1480" start={6} />
       <Sfx at={tax} file="coin.wav" volume={0.6} />
       <Sfx at={loyal} file="pop.wav" volume={0.5} />
@@ -93,7 +95,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
             </div>
             <PopIn x={W * 0.51} y={H * 0.42} start={yarlyk} tilt={-6}><RImg src="props/yarlyk_scroll.png" w={H * 0.24} h={H * 0.36} label="yarlyk 📜" /></PopIn>
             <TypeOn text="yarlyk" x={W * 0.51} y={H * 0.17} start={yarlyk + 4} size={130} color={RC.blue} />
-            <TypeOn text="झुको… 🙇" x={W * 0.3} y={H * 0.36} start={bow} size={90} exit={letter + 20} />
+            <TypeOn text="झुको… 🙇" x={W * 0.32} y={H * 0.4} start={bow} size={120} exit={letter + 20} />
           </Camera>
         </AbsoluteFill>
       ) : (
@@ -103,7 +105,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
             <TypeOn text="Permission slip" x={W * 0.6} y={H * 0.85} start={slip} size={150} color={RC.yellow} />
             <TypeOn text="अपने ही देश के लिए!" x={W * 0.8} y={H * 0.2} start={L(at(18, 'अपने'))} size={90} color={RC.danger} rotate={-4} />
           </Camera>
-          <Host x={W * 0.17} y={H * 0.92} height={H * 0.6} offset={base} start={think} gestures={[[think, 'chin'], [slip, 'present']]} moods={[[think, 'smug'], [slip, 'grin']]} />
+          <Host x={W * 0.17} y={H * 0.92} height={H * 0.6} offset={base} start={think} gestures={[[think, 'fingerUp'], [slip, 'present']]} moods={[[think, 'smug'], [slip, 'grin']]} />
           <Sfx at={slip} file="pen_draw.wav" volume={0.5} />
         </GreyStage>
       )}
@@ -116,8 +118,10 @@ const B: React.FC<{ base: number }> = ({ base }) => {
 /* ───────────── C · Moscow the tax collector ───────────── */
 const Cc: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
+  const town = L(at(19, 'शहर'));
   const city = L(at(19, 'Moscow.'));
   const smart = L(at(19, 'smart'));
+  const horde = L(at(19, 'Mongols'));
   const tax = L(at(19, 'tax'));
   const power = L(at(19, 'ताक़त'));
   const grow = L(at(19, 'धीरे-धीरे'));
@@ -127,13 +131,15 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       <RMap view="ru_west" cam={[{ at: 0, lon: 42, lat: 52, zoom: 1.4 }, { at: 4, lon: 38.5, lat: 55.6, zoom: 3.4, dur: 90 }, { at: grow, lon: 39, lat: 56.5, zoom: 2.4, dur: 120 }]}
         overlay={
           <>
-            <Pin lon={MOSCOW[0]} lat={MOSCOW[1]} label="Moscow" start={city} size={80} />
-            <At lon={MOSCOW[0]} lat={MOSCOW[1]} dy={-170} start={smart} bob={6}><SmirkBag /></At>
+            <Pin lon={MOSCOW[0]} lat={MOSCOW[1]} label="Moscow" start={town} size={90} />
+            <At lon={MOSCOW[0]} lat={MOSCOW[1]} dx={-260} dy={-190} start={smart} bob={6}><SmirkBag /></At>
             {nb.map((n, i) => (
               <Flow key={i} from={n} to={MOSCOW} start={tax + i * 5} count={6} every={18} life={44} arc={30}><Glyph g="🪙" size={70} /></Flow>
             ))}
-            <Flow from={MOSCOW} to={[44, 52]} start={tax + 40} count={5} every={30} life={70} arc={40}><Glyph g="🪙" size={50} /></Flow>
-            <MapLabel lon={44.5} lat={51.8} text="→ Horde" start={tax + 40} size={80} color="#FFE2B8" />
+            <Flow from={MOSCOW} to={[43.2, 52.9]} start={tax + 40} count={5} every={30} life={70} arc={40}><Glyph g="🪙" size={70} /></Flow>
+            <At lon={43.2} lat={52.9} start={horde} bob={5}>
+              <div style={{ textAlign: 'center' }}><RImg src="chars/batu_khan.png" w={240} h={280} label="Khan" /><div style={hand(80, '#FFE2B8')}>Horde</div></div>
+            </At>
           </>
         }>
         <Patchwork ids={['prin_rostov', 'prin_vladimir_suzdal', 'prin_murom', 'prin_ryazan', 'prin_smolensk', 'prin_novgorod', 'prin_chernigov']} colors={['#9E4A7A', '#8A6ABF', '#7A6ABF', '#D98A2E', '#3E8E8A', '#D9B23A', '#4A7AC8']} start={0} stagger={0} opacity={0.42} />
@@ -164,14 +170,16 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
   const west = L(at(20, 'पश्चिम'));
+  const mongols = L(at(20, 'Mongols'));
   const nevsky = L(at(20, 'Alexander'));
   const tag = L(at(20, 'बारह'));
   const lake = L(at(20, 'जमी'));
   const fun = L(at(20, 'मज़ेदार'));
   const bows = L(at(20, 'झुककर'));
   const both = L(at(20, 'दोनों'));
+  const mongolsR = L(at(20, 'Mongols', 1));
   const phase = frame < lake ? 0 : frame < fun ? 1 : 2;
-  const crack = lake + 40;
+  const crack = L(at(20, 'हराया।')) - 10;
   return (
     <AbsoluteFill>
       {phase === 0 && (
@@ -181,14 +189,15 @@ const D: React.FC<{ base: number }> = ({ base }) => {
               <Pin lon={NOVGOROD[0]} lat={NOVGOROD[1]} label="Novgorod" start={2} />
               <MapLabel lon={20.5} lat={60.6} text="Swedes" start={west + 10} size={100} color="#CFE0FF" />
               <MapLabel lon={23.5} lat={56.2} text="German knights" start={west + 24} size={90} color="#F2F2F2" />
-              <At lon={30.7} lat={57.6} start={nevsky} over={1.2}><div style={{ textAlign: 'center' }}><RImg src="chars/alexander_nevsky.png" w={240} h={290} label="Nevsky" /><div style={hand(80, RC.blue)}>Alexander Nevsky</div></div></At>
-              <Pin lon={27.7} lat={58.6} label="Lake Peipus" start={tag} side="l" />
+              <At lon={38.6} lat={54.4} start={mongols} bob={5}><div style={{ textAlign: 'center' }}><RImg src="chars/batu_khan.png" w={220} h={260} label="Khan" /><div style={hand(70, '#FFB8A8')}>Mongols</div></div></At>
+              <At lon={32} lat={56.9} start={nevsky} over={1.2}><div style={{ textAlign: 'center' }}><RImg src="chars/alexander_nevsky.png" w={300} h={360} label="Nevsky" /><div style={hand(90, RC.blue)}>Alexander Nevsky</div></div></At>
+              <Pin lon={27.7} lat={58.6} label="Lake Peipus" start={tag} side="t" />
             </>
           }>
           <Fill id="novgorod_rep" color="#C46A2E" start={0} dur={1} opacity={0.45} />
           <Route pts={[[18, 60.5], [24, 60.2], [29.5, 59.9]]} start={west + 10} dur={50} width={24} head={RC.sweden} />
-          <Route pts={[[21.5, 56.6], [25.5, 57.8], [27.6, 58.5]]} start={west + 24} dur={50} width={24} head="#333" />
-          <Route pts={[[31.3, 58.4], [29.4, 58.5], [28.0, 58.6]]} start={nevsky + 30} dur={40} width={30} />
+          <Route pts={[[21.5, 56.6], [25.5, 57.8], [27.1, 58.35]]} start={west + 24} dur={50} width={24} head="#333" />
+          <Route pts={[[31.3, 58.4], [29.4, 58.55], [28.35, 58.65]]} start={nevsky + 30} dur={40} width={30} />
         </RMap>
       )}
       {phase === 1 && (
@@ -197,14 +206,14 @@ const D: React.FC<{ base: number }> = ({ base }) => {
           <Camera from={lake} shake={[{ at: crack, amp: 16, dur: 20 }]}>
             {[0, 1, 2].map((i) => (
               <Char key={i} who="teutonic_knight" x={W * (0.55 + i * 0.12)} y={H * 0.9 + (frame > crack ? ramp(frame, crack + i * 6, 30, ease.in) * H * 0.5 : 0)} height={H * 0.36} start={lake + i * 5} flip seed={`tk${i}`}
-                walk={[{ at: lake, x: W * (0.75 + i * 0.12) }, { at: lake + 4, x: W * (0.55 + i * 0.12), dur: 40 }]} moods={[[lake, 'angry'], [crack, 'shocked']]} gestures={[[crack, 'handsHead']]} />
+                walk={[{ at: lake, x: W * (0.75 + i * 0.12) }, { at: lake + 4, x: W * (0.55 + i * 0.12), dur: 40 }]} moods={[[lake, 'angry'], [crack, 'shocked']]} gestures={[[lake, 'fist'], [crack, 'handsHead']]} />
             ))}
             <Char who="alexander_nevsky" x={W * 0.2} y={H * 0.92} height={H * 0.44} start={lake} gestures={[[lake, 'point'], [crack + 20, 'cheer']]} moods={[[lake, 'angry'], [crack + 20, 'grin']]} />
             {frame > crack && <svg width={W} height={H} style={{ position: 'absolute', inset: 0 }}>
               {[0, 1, 2, 3, 4].map((i) => <polyline key={i} points={`${W * 0.66},${H * 0.92} ${W * (0.5 + i * 0.07)},${H * (0.86 + (i % 2) * 0.05)} ${W * (0.42 + i * 0.12)},${H * 0.98}`} fill="none" stroke="#2A3A44" strokeWidth={8} opacity={ramp(frame, crack, 6)} />)}
             </svg>}
             <TypeOn text="1242 · बर्फ़ पर जंग" x={W * 0.5} y={H * 0.14} start={lake + 4} size={110} />
-            <Stamp text="LEGEND?" x={W * 0.82} y={H * 0.3} start={crack + 30} size={80} sub="बर्फ़ टूटने वाला हिस्सा" />
+            <Stamp text="LEGEND?" x={W * 0.8} y={H * 0.32} start={crack + 12} size={110} sub="बर्फ़ टूटने वाला हिस्सा" />
           </Camera>
           <Sfx at={crack} file="paper_tear.wav" volume={0.7} />
           <Sfx at={crack + 4} file="impact_boom.wav" volume={0.4} />
@@ -212,17 +221,17 @@ const D: React.FC<{ base: number }> = ({ base }) => {
       )}
       {phase === 2 && (
         <GreyStage>
-          <div style={{ position: 'absolute', left: W / 2 - 6, top: H * 0.08, width: 12, height: H * 0.84, background: '#333', borderRadius: 6 }} />
-          <TypeOn text="पश्चिम से: लड़ो ⚔️" x={W * 0.25} y={H * 0.14} start={fun} size={100} color={RC.green} />
-          <TypeOn text="पूरब के आगे: झुको 🙇" x={W * 0.75} y={H * 0.14} start={bows} size={100} color={RC.danger} />
-          <Char who="alexander_nevsky" x={W * 0.24} y={H * 0.9} height={H * 0.5} start={fun} gestures={[[fun, 'fist']]} moods={[[fun, 'angry']]} />
-          <Char who="teutonic_knight" x={W * 0.4} y={H * 0.9} height={H * 0.42} start={fun + 6} flip moods={[[fun, 'worried']]} gestures={[[fun, 'handsHead']]} />
-          <div style={{ position: 'absolute', left: 0, top: 0, width: W, height: H, transformOrigin: `${W * 0.62}px ${H * 0.9}px`, transform: `rotate(${ramp(frame, bows + 6, 12, ease.out) * 20}deg)` }}>
-            <Char who="alexander_nevsky" x={W * 0.62} y={H * 0.9} height={H * 0.5} start={bows} gestures={[[bows, 'hold']]} moods={[[bows, 'worried']]} />
+          <div style={{ position: 'absolute', left: W / 2 - 6, top: H * 0.08, width: 12, height: H * 0.78, background: '#333', borderRadius: 6 }} />
+          <TypeOn text="पश्चिम से: लड़ो ⚔️" x={W * 0.25} y={H * 0.14} start={fun} size={110} color={RC.green} />
+          <TypeOn text="पूरब के आगे: झुको 🙇" x={W * 0.75} y={H * 0.14} start={bows} size={110} color={RC.danger} />
+          <Char who="alexander_nevsky" x={W * 0.16} y={H * 0.85} height={H * 0.5} start={fun} gestures={[[fun, 'fist']]} moods={[[fun, 'angry']]} />
+          <Char who="teutonic_knight" x={W * 0.37} y={H * 0.85} height={H * 0.42} start={fun + 6} flip moods={[[fun, 'worried']]} gestures={[[fun, 'handsHead']]} />
+          <div style={{ position: 'absolute', left: 0, top: 0, width: W, height: H, transformOrigin: `${W * 0.6}px ${H * 0.85}px`, transform: `rotate(${ramp(frame, bows + 6, 12, ease.out) * 14}deg)` }}>
+            <Char who="alexander_nevsky" x={W * 0.6} y={H * 0.85} height={H * 0.5} start={mongolsR} gestures={[[mongolsR, 'down'], [bows, 'hold']]} moods={[[mongolsR, 'worried']]} />
           </div>
-          <Char who="batu_khan" x={W * 0.84} y={H * 0.9} height={H * 0.5} start={bows} flip gestures={[[bows, 'hips']]} moods={[[bows, 'smug']]} />
-          <PopIn x={W * 0.72} y={H * 0.48} start={bows + 20}><Glyph g="💰" size={130} /></PopIn>
-          <TypeOn text="दोनों से एक साथ नहीं लड़ सकते" x={W * 0.5} y={H * 0.94} start={both} size={90} color={RC.yellow} />
+          <Char who="batu_khan" x={W * 0.85} y={H * 0.85} height={H * 0.5} start={fun + 12} flip gestures={[[fun, 'hips']]} moods={[[fun, 'smug']]} />
+          <PopIn x={W * 0.745} y={H * 0.66} start={bows + 20}><Glyph g="💰" size={140} /></PopIn>
+          <TypeOn text="दोनों से एक साथ नहीं लड़ सकते" x={W * 0.5} y={H * 0.93} start={both} size={100} color={RC.yellow} />
           <Sfx at={fun} file="pluck_up.wav" volume={0.5} />
           <Sfx at={bows + 20} file="coin.wav" volume={0.5} />
         </GreyStage>
@@ -253,11 +262,11 @@ const E: React.FC<{ base: number }> = ({ base }) => {
             walk={[{ at: 0, x: W * (0.8 + i * 0.1) }, { at: 10, x: W * (0.64 + i * 0.1), dur: 60 }, { at: win, x: W * (1.1 + i * 0.1), dur: 50 }]} gestures={[[0, 'fist'], [win - 10, 'handsHead']]} moods={[[0, 'angry'], [win - 10, 'shocked']]} />
         ))}
         <ShockLines x={W * 0.5} y={H * 0.62} r={H * 0.3} start={30} dur={60} />
-        <PopIn x={W * 0.32} y={H * 0.36} start={win}>
-          <svg width={260} height={360} viewBox="0 0 26 36"><rect x={2} y={0} width={1.4} height={36} fill="#6B4A2E" /><path d={`M3.4 2 L24 ${3 + Math.sin(frame / 6)} L24 ${15 + Math.sin(frame / 6)} L3.4 14 Z`} fill="#C8352B" stroke="#7A1E1E" strokeWidth={0.4} /><text x={13} y={11} fontSize={7} textAnchor="middle" fill="#FFD84A">☦</text></svg>
+        <PopIn x={W * 0.6} y={H * 0.6} start={win} origin="50% 100%">
+          <svg width={380} height={520} viewBox="0 0 26 36"><rect x={2} y={0} width={1.4} height={36} fill="#6B4A2E" /><path d={`M3.4 2 L24 ${3 + Math.sin(frame / 6)} L24 ${15 + Math.sin(frame / 6)} L3.4 14 Z`} fill="#C8352B" stroke="#7A1E1E" strokeWidth={0.4} /><text x={13} y={11} fontSize={7} textAnchor="middle" fill="#FFD84A">☦</text></svg>
         </PopIn>
         <TypeOn text="Kulikovo · पहली बड़ी जीत" x={W * 0.5} y={H * 0.14} start={6} size={120} color={RC.yellow} />
-        <TypeOn text="पर Mongol राज अभी बाक़ी…" x={W * 0.6} y={H * 0.26} start={but} size={90} color={RC.danger} />
+        <TypeOn text="पर Mongol राज अभी बाक़ी…" x={W * 0.5} y={H * 0.27} start={but} size={110} color={RC.danger} />
       </Camera>
       <YearTag text="1380" start={tag} />
       <Sfx at={30} file="musket_volley.wav" volume={0.25} />
@@ -270,6 +279,7 @@ const E: React.FC<{ base: number }> = ({ base }) => {
 const NIKITIN: [number, number][] = [[35.9, 56.86], [40, 57.6], [44, 56.3], [49.1, 55.8], [47.6, 51], [48.0, 46.35], [48.3, 42.06], [49.6, 37.3], [52.5, 34.0], [54.4, 31.9], [56.45, 27.1], [62, 23.8], [68, 20.6], [72.93, 18.55]];
 const F: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
+  const detour = L(at(22, 'detour,'));
   const india = L(at(22, 'भारत'));
   const tver = L(at(22, 'Tver'));
   const name = L(at(22, 'Afanasy'));
@@ -279,15 +289,15 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   const old = L(at(22, 'यानी'));
   return (
     <AbsoluteFill>
-      <RMap view="india_route" cam={[{ at: 0, lon: 50, lat: 42, zoom: 1.0 }, { at: tver, lon: 40, lat: 52, zoom: 1.6, dur: 60 }, { at: walk, lon: 58, lat: 32, zoom: 1.15, dur: 260 }]}
+      <RMap view="india_route" cam={[{ at: 0, lon: 58, lat: 34.03, zoom: 1.0 }, { at: tver, lon: 41.68, lat: 53.47, zoom: 3.4, dur: 60 }, { at: walk, lon: 58, lat: 33, zoom: 1.15, dur: 260 }]}
         overlay={
           <>
-            <Pin lon={35.9} lat={56.86} label="Tver" start={tver} side="l" />
+            <Pin lon={35.9} lat={56.86} label="Tver" start={tver + 50} side="l" />
             <Pin lon={72.93} lat={18.55} label="Chaul (भारत)" start={walk + 80} side="l" />
             <Traveller pts={NIKITIN} start={walk} dur={240}>
-              {(dir) => <div style={{ transform: `scaleX(${dir < 0 ? -1 : 1})` }}><Char who="afanasy_nikitin" x={0} y={0} height={260} start={0} walk={[{ at: 0, x: 0 }, { at: 1, x: 0.5, dur: 600 }]} /></div>}
+              {(dir) => <div style={{ transform: `scaleX(${dir < 0 ? -1 : 1})` }}><Char who="afanasy_nikitin" x={0} y={0} height={360} start={0} walk={[{ at: 0, x: 0 }, { at: 1, x: 0.5, dur: 600 }]} /></div>}
             </Traveller>
-            <MapLabel lon={79} lat={22} text="भारत 🇮🇳" start={india} size={130} color={RC.yellow} />
+            <MapLabel lon={79.5} lat={17} text="भारत 🇮🇳" start={india} size={130} color={RC.yellow} />
             <MapLabel lon={51} lat={41.5} text="Caspian" start={walk + 60} size={70} color="#CFE7FF" />
             <MapLabel lon={54} lat={30} text="Persia" start={walk + 100} size={80} color="#FFF" />
           </>
@@ -295,9 +305,10 @@ const F: React.FC<{ base: number }> = ({ base }) => {
         <Route pts={NIKITIN} start={walk} dur={240} width={14} dotted color="#FFE9A8" head={false} />
         <Fill id="india" color="#E8892B" start={india} opacity={0.3} mode="fade" />
       </RMap>
-      <TypeOn text="Afanasy Nikitin" x={W * 0.5} y={H * 0.1} start={name} size={130} color={RC.blue} />
+      <TypeOn text="छोटा सा detour… 🧭" x={W * 0.5} y={H * 0.1} start={detour} size={120} color={RC.yellow} exit={tver - 10} />
+      <TypeOn text="Afanasy Nikitin" x={W * 0.3} y={H * 0.88} start={name} size={130} color={RC.blue} exit={old - 10} />
       <YearTag text="~1469" start={yr} />
-      <Frame x={W * 0.84} y={H * 0.72} w={W * 0.22} h={W * 0.16} start={book} tilt={4}>
+      <Frame x={W * 0.17} y={H * 0.6} w={W * 0.22} h={W * 0.16} start={book} tilt={-4}>
         <div style={{ width: '100%', height: '100%', background: '#7A3E1E', display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center', ...hand(64, '#F4E3C1'), whiteSpace: 'normal' }}>
           Journey Beyond<br />Three Seas 📖
         </div>
@@ -318,7 +329,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
   const khan = L(at(23, 'Khan'));
   const ugra = L(at(23, 'Ugra'));
   const weeks = L(at(23, 'हफ़्तों'));
-  const then = L(at(23, 'फिर?'));
+  const then = L(at(23, 'फिर?', 1));
   const back = L(at(23, 'वापस'));
   const noBattle = L(at(23, 'कोई'));
   const endRule = L(at(23, 'ढाई'));
@@ -329,20 +340,20 @@ const G: React.FC<{ base: number }> = ({ base }) => {
       <div style={{ position: 'absolute', left: 0, top: H * 0.5, width: W, height: H * 0.1, background: 'linear-gradient(#4F7FA8, #6E9CC2)', opacity: 0.0 }} />
       <Camera from={0}>
         {[0, 1, 2, 3].map((i) => (
-          <Char key={`t${i}`} who="mongol_warrior" x={W * (0.3 + i * 0.13)} y={H * 0.56} height={H * 0.22} start={khan + i * 4} flip seed={`ug${i}`}
-            walk={[{ at: 0, x: W * (0.3 + i * 0.13) }, { at: back, x: W * (1.3 + i * 0.13), dur: 120 }]} moods={[[0, 'angry'], [weeks + 40, 'worried'], [back, 'sad']]} gestures={[[0, 'fist'], [weeks + 40, 'chin']]} />
+          <Char key={`t${i}`} who="mongol_warrior" x={W * (0.3 + i * 0.13)} y={H * 0.435} height={H * 0.2} start={khan + i * 4} flip seed={`ug${i}`}
+            walk={[{ at: 0, x: W * (0.3 + i * 0.13) }, { at: back, x: W * (1.3 + i * 0.13), dur: 120 }]} moods={[[0, 'angry'], [weeks + 40, 'worried'], [back, 'sad']]} gestures={[[0, 'fist'], [weeks + 40, 'shrug']]} />
         ))}
         {[0, 1, 2, 3].map((i) => (
-          <Char key={`m${i}`} who="moscow_soldier" x={W * (0.24 + i * 0.16)} y={H * 0.97} height={H * 0.36} start={stop + i * 4} seed={`um${i}`}
+          <Char key={`m${i}`} who="moscow_soldier" x={W * (0.2 + i * 0.16)} y={H * 0.94} height={H * 0.32} start={stop + i * 4} seed={`um${i}`}
             moods={[[0, 'angry'], [weeks + 40, 'worried'], [back + 30, 'grin']]} gestures={[[0, 'fist'], [back + 30, 'cheer']]} hopAt={[back + 40]} />
         ))}
-        <PopIn x={W * 0.5} y={H * 0.3} start={weeks} exit={then}>
+        <PopIn x={W * 0.86} y={H * 0.4} start={weeks} exit={then}>
           <svg width={260} height={260} viewBox="0 0 100 100"><circle cx={50} cy={50} r={44} fill="#FBF8F1" stroke="#333" strokeWidth={6} /><line x1={50} y1={50} x2={50} y2={18} stroke="#333" strokeWidth={6} strokeLinecap="round" transform={`rotate(${spin} 50 50)`} /><line x1={50} y1={50} x2={72} y2={50} stroke="#C8352B" strokeWidth={5} strokeLinecap="round" transform={`rotate(${spin / 12} 50 50)`} /></svg>
         </PopIn>
         <TypeOn text="हफ़्तों तक… घूरते रहे 👀" x={W * 0.5} y={H * 0.12} start={weeks} size={100} exit={then} />
-        <TypeOn text="Ugra नदी" x={W * 0.84} y={H * 0.48} start={ugra} size={80} color="#CFE7FF" />
+        <TypeOn text="Ugra नदी 🌊" x={W * 0.86} y={H * 0.6} start={ugra} size={100} color="#CFE7FF" />
         <TypeOn text="कोई लड़ाई नहीं हुई" x={W * 0.5} y={H * 0.16} start={noBattle} size={130} color={RC.yellow} />
-        <Stamp text="250 साल का राज ख़त्म" x={W * 0.5} y={H * 0.36} start={endRule} size={100} color={RC.stampGreen} rotate={-5} />
+        <Stamp text="250 साल का राज ख़त्म" x={W * 0.5} y={H * 0.33} start={endRule} size={130} color={RC.stampGreen} rotate={-5} />
       </Camera>
       <YearTag text="1480" start={tag} />
       <Iris at={tag + 2} hold={40} />
@@ -357,6 +368,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
 /* ───────────── H · Ivan III — Moscow is the boss ───────────── */
 const Hh: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
+  const moscow = L(at(24, 'Moscow'));
   const ivan = L(at(24, 'Ivan'));
   const joined = L(at(24, 'जोड़-जोड़कर'));
   const chaosEnd = L(at(24, 'Chaos'));
@@ -365,9 +377,9 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <Char who="ivan_iii" x={W * 0.42} y={H * 0.9} height={H * 0.52} start={ivan} gestures={[[ivan, 'hips'], [joined, 'present'], [tsar, 'chin']]} moods={[[ivan, 'smug'], [tsar, 'neutral']]} />
-        <TypeOn text="Ivan III" x={W * 0.42} y={H * 0.3} start={ivan + 4} size={120} color={RC.blue} />
-        <PopIn x={W * 0.42} y={H * 0.14} start={ivan + 20}><RImg src="props/double_headed_eagle.png" w={H * 0.2} h={H * 0.2} label="🦅🦅" /></PopIn>
+        <Char who="ivan_iii" x={W * 0.38} y={H * 0.9} height={H * 0.52} start={ivan} gestures={[[ivan, 'hips'], [joined, 'present'], [tsar, 'hips']]} moods={[[ivan, 'smug'], [tsar, 'neutral']]} />
+        <TypeOn text="Ivan III" x={W * 0.38} y={H * 0.3} start={ivan + 4} size={120} color={RC.blue} />
+        <PopIn x={W * 0.38} y={H * 0.14} start={moscow}><RImg src="props/double_headed_eagle.png" w={H * 0.2} h={H * 0.2} label="🦅🦅" /></PopIn>
         <Frame x={W * 0.75} y={H * 0.42} w={W * 0.36} h={W * 0.36 * 0.56} start={joined} tilt={3} exit={chaosEnd - 4}>
           <Fit w={W * 0.36} h={W * 0.36 * 0.56}>
             <RMap view="ru_west" cam={[{ at: 0, lon: 42, lat: 59, zoom: 1.8 }]} drift={0.02} from={joined}>
@@ -377,11 +389,11 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
           </Fit>
         </Frame>
         <TypeOn text="Moscow अब बॉस 😎" x={W * 0.75} y={H * 0.74} start={joined + 30} size={110} color={RC.yellow} exit={chaosEnd - 4} />
-        <LoopWheel x={W * 0.78} y={H * 0.5} r={H * 0.18} start={chaosEnd} small steps={[[chaosEnd + 2, 0], [centre, 1]]} exit={tsar - 4} />
+        <LoopWheel x={W * 0.67} y={H * 0.5} r={H * 0.15} start={chaosEnd} small steps={[[chaosEnd + 2, 0], [centre, 1]]} exit={tsar - 4} />
         <PopIn x={W * 0.75} y={H * 0.45} start={tsar}><div style={{ position: 'relative' }}><RImg src="props/cap_of_monomakh.png" w={H * 0.3} h={H * 0.3} label="👑" /><div style={{ position: 'absolute', right: -40, top: -40, ...hand(180, RC.yellow) }}>?</div></div></PopIn>
         <TypeOn text="अब बस एक Tsar चाहिए…" x={W * 0.72} y={H * 0.8} start={tsar + 6} size={100} />
       </Camera>
-      <Host x={W * 0.14} y={H * 0.92} height={H * 0.56} offset={base} start={0} gestures={[[0, 'present'], [chaosEnd, 'fingerUp'], [tsar, 'chin']]} moods={[[0, 'smile'], [tsar, 'smug']]} />
+      <Host x={W * 0.14} y={H * 0.92} height={H * 0.56} offset={base} start={0} gestures={[[0, 'present'], [ivan, 'hips'], [chaosEnd, 'fingerUp'], [tsar, 'hips']]} moods={[[0, 'smile'], [tsar, 'smug']]} />
       <Sfx at={ivan} file="sting_crown.wav" volume={0.45} />
       <Sfx at={joined + 20} file="riser.wav" volume={0.35} />
       <Sfx at={tsar} file="pop.wav" volume={0.5} />
