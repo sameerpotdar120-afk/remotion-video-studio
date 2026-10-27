@@ -108,7 +108,7 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0} shake={[{ at: fire + 6, amp: 20, dur: 20 }]}>
         {[0, 1, 2, 3, 4].map((i) => (
           <Char key={i} who={i % 2 ? 'worker_woman_1917' : 'worker_1905'} seed={`bs${i}`} x={W * (0.14 + i * 0.09)} y={H * (0.96 - (i % 2) * 0.02)} height={H * 0.34} start={tag + 30 + i * 3}
-            walk={[{ at: 0, x: W * (-0.2 + i * 0.09) }, { at: tag + 30, x: W * (0.14 + i * 0.09), dur: 150 }]} moods={[[0, 'smile'], [fire, 'shocked'], [bloody, 'sad']]} gestures={[[0, 'hold'], [fire, 'handsHead']]} />
+            walk={[{ at: 0, x: W * (-0.2 + i * 0.09) }, { at: tag + 30, x: W * (0.14 + i * 0.09), dur: 150 }]} moods={[[0, 'smile'], [fire, 'shocked'], [bloody, 'sad']]} gestures={[[0, 'hold'], [fire, 'handsHead'], [bloody - 20, 'down']]} />
         ))}
         <PopIn x={W * 0.3} y={H * 0.44} start={workers + 20} exit={fire + 4}><RImg src="props/church_banner.png" w={H * 0.26} h={H * 0.4} label="☦ banner" /></PopIn>
         <PopIn x={W * 0.48} y={H * 0.5} start={workers + 30} exit={fire}><div style={{ background: '#F6EBCF', padding: '14px 30px', borderRadius: 10, ...hand(60, '#3A2616'), textShadow: 'none' }}>📜 अर्ज़ी</div></PopIn>
@@ -168,7 +168,7 @@ const E: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0} drift={0.004}>
         <Char who="alexandra" x={W * 0.26} y={H * 0.96} height={H * 0.52} start={2} moods={[[0, 'worried'], [heal, 'smile']]} gestures={[[0, 'down']]} look2={0.8} />
         <Char who="rasputin" x={W * 0.54} y={H * 0.97} height={H * 0.6} start={ras - 10} flip gestures={[[0, 'down'], [ras + 20, 'fingerUp'], [heal, 'present']]} moods={[[0, 'smug']]} talk={[[ras, heal + 80]]} />
-        <TypeOn text="Tsar की पत्नी · Alexandra" x={W * 0.3} y={H * 0.3} start={wife} size={80} color={RC.white} exit={ras - 10} />
+        <TypeOn text="Tsar की पत्नी · Alexandra" x={W * 0.3} y={H * 0.3} start={wife} size={80} color={RC.white} exit={ras - 26} />
         <TypeOn text="Rasputin" x={W * 0.54} y={H * 0.26} start={ras} size={140} color={RC.blue} />
         <TypeOn text="psst… 🤫" x={W * 0.4} y={H * 0.36} start={ras + 20} size={80} color={RC.white} exit={heal - 10} />
         <TypeOn text="बीमार बेटे को ठीक करेगा? 🙏" x={W * 0.5} y={H * 0.15} start={heal} size={90} color={RC.yellow} exit={runs - 12} />
@@ -194,6 +194,7 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   const ended = L(at(72, 'ख़त्म।'));
   const abd = L(at(72, 'गद्दी'));
   const crownFall = ramp(frame, abd - 10, 30, ease.in);
+  const crownOut = ramp(frame, abd - 10, 30, ease.out);
   const stage = frame >= ended - 20;
   return (
     <AbsoluteFill>
@@ -220,7 +221,7 @@ const F: React.FC<{ base: number }> = ({ base }) => {
           <Camera from={ended - 20}>
             <PopIn x={W * 0.66} y={H * 0.62} start={ended - 20}><RImg src="props/throne_gold.png" w={H * 0.5} h={H * 0.62} label="throne" /></PopIn>
             <Char who="nicholas_ii" x={W * 0.42} y={H * 0.96} height={H * 0.6} start={ended - 20} moods={[[0, 'sad'], [abd, 'shocked']]} gestures={[[0, 'down'], [abd, 'handsHead']]} />
-            <div style={{ position: 'absolute', left: W * 0.42 - 110 - crownFall * 260, top: H * 0.3 + crownFall * H * 0.56, transform: `rotate(${-crownFall * 140}deg)` }}><RImg src="props/crown_catherine.png" w={220} h={220} label="👑" /></div>
+            <div style={{ position: 'absolute', left: W * 0.42 - 110 - crownOut * 520, top: H * 0.3 + crownFall * H * 0.56, transform: `rotate(${-crownFall * 140}deg) scale(${ramp(frame, ended - 12, 10, ease.out)})` }}><RImg src="props/crown_catherine.png" w={220} h={220} label="👑" /></div>
             <TypeOn text="300 साल · Romanov dynasty ख़त्म" x={W * 0.5} y={H * 0.2} start={ended - 10} size={110} color={RC.danger} />
           </Camera>
         </GreyStage>
