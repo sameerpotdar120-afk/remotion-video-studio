@@ -43,19 +43,30 @@ export const RC = {
 
 export const HAND = '"Kalam", cursive';
 
-/** Text style for handwritten captions: white body + soft dark shadow (the reference's look). */
-export const hand = (size: number, color: string = RC.white, weight = 700): React.CSSProperties => ({
-  fontFamily: HAND,
-  fontWeight: weight,
-  fontSize: size,
-  color,
-  lineHeight: 1.12,
-  whiteSpace: 'nowrap',
-  textShadow:
-    color === RC.white || color === RC.yellow
-      ? '0 0.04em 0 rgba(0,0,0,0.55), 0 0.06em 0.18em rgba(0,0,0,0.45)'
-      : '0 0.03em 0.12em rgba(255,255,255,0.35)',
-});
+const lum = (hex: string) => {
+  const m = /^#([0-9a-f]{6})$/i.exec(hex);
+  if (!m) return 0.5;
+  const n = parseInt(m[1], 16);
+  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+};
+
+/**
+ * Text style for handwritten captions, readable on any plate (grey stage, map, photo background):
+ * light text gets a dark sticker outline, coloured text a white one, both with a soft drop shadow.
+ * Dark-grey sub-captions (only used on the light stage) keep a plain soft glow.
+ */
+export const hand = (size: number, color: string = RC.white, weight = 700): React.CSSProperties => {
+  const L = lum(color);
+  const base: React.CSSProperties = { fontFamily: HAND, fontWeight: weight, fontSize: size, color, lineHeight: 1.12, whiteSpace: 'nowrap' };
+  if (L < 0.32 && color !== RC.danger) return { ...base, textShadow: '0 0.03em 0.12em rgba(255,255,255,0.35)' };
+  const light = L > 0.72;
+  return {
+    ...base,
+    WebkitTextStroke: `${light ? 0.09 : 0.12}em ${light ? 'rgba(26,20,16,0.88)' : '#FFFFFF'}`,
+    paintOrder: 'stroke fill',
+    textShadow: '0 0.05em 0.16em rgba(0,0,0,0.45)',
+  };
+};
 
 /* ──────────────────────────────── assets ──────────────────────────────── */
 
