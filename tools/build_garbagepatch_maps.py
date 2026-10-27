@@ -16,7 +16,8 @@ from pathlib import Path
 import numpy as np
 import shapefile
 from PIL import Image
-from shapely.geometry import shape
+from shapely.geometry import MultiLineString, Point, shape
+from shapely.ops import linemerge
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import build_ukweather_maps as uk  # noqa: E402
@@ -65,6 +66,24 @@ def main() -> None:
     sf1 = shapefile.Reader(glob.glob(str(ne / "ne_10m_admin_1_states_provinces_lakes" / "*.shp"))[0])
     S = {r["name"]: shape(s.__geo_interface__).buffer(0) for r, s in zip(sf1.records(), sf1.shapes()) if r["admin"] == "United States of America"}
     geo["states"] = {"California": rings(S["California"], 0.02, 0.01), "Hawaii": rings(S["Hawaii"], 0.005, 0.0005)}
+    # rivers that reach the north-east Pacific (line 7, "नदियों से"), each oriented to end at its mouth
+    MOUTHS = {"Columbia": (-124.0, 46.25), "Fraser": (-123.2, 49.1), "Sacramento": (-122.0, 38.05), "San Joaquin": (-121.9, 38.05), "Klamath": (-124.07, 41.55),
+              "Skeena": (-130.1, 54.2), "Stikine": (-132.3, 56.6), "Rogue": (-124.4, 42.4), "Eel": (-124.3, 40.6)}
+    sfr = shapefile.Reader(glob.glob(str(ne / "ne_10m_rivers_lake_centerlines" / "*.shp"))[0])
+    parts: dict = {}
+    for r, sh in zip(sfr.records(), sfr.shapes()):
+        if r["name"] in MOUTHS:
+            g = shape(sh.__geo_interface__)
+            parts.setdefault(r["name"], []).extend(g.geoms if hasattr(g, "geoms") else [g])
+    geo["rivers"] = {}
+    for n, ls in parts.items():
+        m = linemerge(MultiLineString(ls))
+        line = max(m.geoms, key=lambda g: g.length) if hasattr(m, "geoms") else m
+        line = line.simplify(0.02)
+        pts = list(line.coords)
+        if Point(pts[0]).distance(Point(MOUTHS[n])) < Point(pts[-1]).distance(Point(MOUTHS[n])):
+            pts = pts[::-1]
+        geo["rivers"][n] = [[round(mx(x)), round(my(y))] for x, y in pts]
     gj.write_text(json.dumps(geo, separators=(",", ":")))
     print("geo kB", gj.stat().st_size // 1024, "india rings", len(geo["india"]), "pts", sum(len(r) for r in geo["india"]))
 

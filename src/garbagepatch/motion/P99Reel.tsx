@@ -22,14 +22,27 @@ import { P19Currents } from './P19Currents';
 import { P20Smear } from './P20Smear';
 import { P21CrossSection } from './P21CrossSection';
 import { P22Satellite } from './P22Satellite';
+import { P23Plane } from './P23Plane';
+import { P24PinDrop } from './P24PinDrop';
+import { P25Shatter } from './P25Shatter';
+import { P26Magnifier } from './P26Magnifier';
+import { P27Hud } from './P27Hud';
+import { P28Vortex } from './P28Vortex';
+import { P29PropPath } from './P29PropPath';
+import { P30Rivers } from './P30Rivers';
+import { P31SoupBowl } from './P31SoupBowl';
+import { P32Shock, shake } from './P32Shock';
+import { P33CityPins } from './P33CityPins';
+import { P34Waves } from './P34Waves';
+import { P35Bracket } from './P35Bracket';
 import { NUM, useFonts } from './font';
-import { Cam, MapView, PATCH, indiaRing, merc, patchRing, ringsD, state, toS } from './MapView';
+import { Cam, MapView, PATCH, indiaRing, merc, patchRing, riverD, ringsD, state, toS } from './MapView';
 import { inOut, lerp, ramp } from './theme';
 
 // p99_reel: every piece in script order on the real bright map (the world and north-east Pacific plates), with the
 // camera moving, as they will sit in the edit. Image slots take the creator's images (gp01–gp17) via `img`; until
 // they arrive this is a test harness only. Opaque, 1080×1920, 60 fps.
-type Key = 'island' | 'texture' | 'bottle' | 'container' | 'net' | 'bag' | 'boat' | 'sun' | 'drop' | 'fish' | 'bigfish' | 'thali' | 'soup1' | 'soup2' | 'cutaway' | 'beach' | 'satellite';
+type Key = 'island' | 'texture' | 'bottle' | 'container' | 'net' | 'bag' | 'boat' | 'ship' | 'plane' | 'sun' | 'drop' | 'wave' | 'shard' | 'glass' | 'fish' | 'bigfish' | 'thali' | 'soup1' | 'soup2' | 'bowl' | 'ladle' | 'cutaway' | 'beach' | 'satellite' | 'pin' | 'city';
 type Imgs = Partial<Record<Key, string>>;
 const cam = (f: number, a: Cam, b: Cam, from: number, dur: number): Cam => {
   const t = ramp(f, from, from + dur, inOut);
@@ -180,6 +193,58 @@ const Section: React.FC<{ img: Imgs }> = ({ img }) => {
   const next = img.cutaway ? <Sequence from={30} layout="none"><P21CrossSection bg={img.cutaway} beach={img.beach} props={props} down={60} shore={170} /></Sequence> : null;
   return <P20Smear at={20} dur={14} next={next}><MapView c={c} /><P c={c} img={img} extra={{ dissolveAt: -100 }} /></P20Smear>;
 };
+const Pin: React.FC<{ img: Imgs }> = ({ img }) => {
+  const f = useCurrentFrame();
+  const [sx, sy] = shake(f, 90);
+  const c = breathe({ ...CP, x: CP.x + sx * CP.mpp, y: CP.y + sy * CP.mpp }, f);
+  const [px, py] = toS(c, PATCH);
+  return (
+    <>
+      <MapView c={c} />
+      <P c={c} img={img} />
+      <P32Shock at={[px, py]} repeat={60} />
+      {img.plane && <P23Plane src={img.plane} from={[200, 0]} to={[900, 700]} dur={280} />}
+      {img.pin && at(30, <P24PinDrop src={img.pin} at={[px, py - 20]} stamp={90} />)}
+      {img.pin && at(160, <P24PinDrop src={img.pin} at={[860, 1180]} ask={false} label="California" />)}
+    </>
+  );
+};
+const Rivers: React.FC<{ img: Imgs }> = ({ img }) => {
+  const f = useCurrentFrame();
+  const c = breathe({ x: merc(-128, 44)[0], y: merc(-128, 44)[1], mpp: 4200 }, f);
+  const ds = ['Stikine', 'Skeena', 'Fraser', 'Columbia', 'Rogue', 'Klamath', 'Eel', 'Sacramento', 'San Joaquin'].map((n) => riverD(c, n));
+  const cities: [number, number, string][] = [[-123.1, 49.3, 'Vancouver'], [-122.3, 47.6, 'Seattle'], [-122.4, 37.8, 'San Francisco'], [-118.25, 34.05, 'Los Angeles']].map(([lo, la, n]) => { const [x, y] = toS(c, merc(lo as number, la as number)); return [x, y, n as string]; });
+  return (
+    <>
+      <MapView c={c} />
+      <P30Rivers ds={ds} />
+      {img.city && at(60, <P33CityPins src={img.city} cities={cities} />)}
+      {img.ship && at(30, <P13Boat src={img.ship} from={[-100, 1500]} to={[400, 1300]} dur={200} w={260} ratio={0.5} />)}
+      {at(120, <P28Vortex at={[540, 1500]} r={200} />)}
+    </>
+  );
+};
+const Break: React.FC<{ img: Imgs }> = ({ img }) => {
+  const f = useCurrentFrame();
+  const c = breathe(CP, f);
+  const [px, py] = toS(c, PATCH);
+  return (
+    <>
+      <MapView c={c} />
+      <P c={c} img={img} />
+      {img.wave && <P34Waves src={img.wave} at={[px, py]} rx={patchW(c) * 0.55} ry={patchH(c) * 0.6} />}
+      {img.bottle && img.shard && at(70, <P25Shatter whole={img.bottle} pieces={Array(7).fill(img.shard)} />)}
+      {img.glass && img.texture && at(150, <P26Magnifier glass={img.glass} texture={img.texture} to={[px, py]} />)}
+      {img.bottle && <P29PropPath src={img.bottle} keys={[[0, px, py, 0, 0], [12, px + 180, py - 160, 120, 1], [30, px + 60, py - 20, 260, 0.6], [34, px + 60, py - 20, 260, 0]]} />}
+    </>
+  );
+};
+const Scan: React.FC = () => {
+  const f = useCurrentFrame();
+  const c = breathe({ ...WIDE, mpp: 9000 }, f);
+  return <><MapView c={c} /><P27Hud at={toS(c, PATCH)} miss={80} /></>;
+};
+const Bowl: React.FC<{ img: Imgs }> = ({ img }) => <AbsoluteFill style={{ background: '#0a1a2a' }}>{img.bowl && img.ladle && <P31SoupBowl bowl={img.bowl} ladle={img.ladle} />}<P35Bracket top={400} bottom={700} /></AbsoluteFill>;
 type Item = [string, number, React.FC<{ img: Imgs }>];
 export const REEL: Item[] = [
   ['p01 mosaic + p02 accents + p03 arrows', 300, Hook],
@@ -193,6 +258,11 @@ export const REEL: Item[] = [
   ['p18 zoom blur + p17 letterbox', 210, Soup],
   ['p19 currents + p15 swell', 230, Gyre],
   ['p20 smear + p21 cross-section', 320, Section],
+  ['p23 plane + p24 pins + p32 shock', 260, Pin],
+  ['p30 rivers + p33 cities + p13 ship + p28 vortex', 240, Rivers],
+  ['p34 waves + p25 shatter + p26 magnifier + p29 path', 260, Break],
+  ['p27 hud', 160, Scan as React.FC<{ img: Imgs }>],
+  ['p31 soup bowl + p35 bracket', 160, Bowl],
 ];
 export const REEL_FRAMES = REEL.reduce((a, [, d]) => a + d, 0);
 export const P99Reel: React.FC<{ img?: Imgs }> = ({ img = {} }) => {
@@ -220,5 +290,7 @@ export const TEST_IMGS: Imgs = {
   container: T('madeira/img/md07_sugar_loaf.png'), net: T('greenland/img/gl08_viking_helmet.png'), bag: T('madeira/img/md06_sugar_cane.png'), boat: T('madeira/img/md08_settlers_boat.png'),
   sun: T('madeira/img/md04_flame_a.jpg'), drop: T('madeira/img/md04b_flame_b.jpg'), fish: T('greenland/img/gl04_raven_wings_up.png'), bigfish: T('greenland/img/gl04b_raven_wings_down.png'),
   thali: T('madeira/img/md07_sugar_loaf.png'), soup1: T('madeira/img/md09_levada_forest.jpg'), soup2: T('madeira/img/md10_vineyard_terraces.jpg'),
+  ship: T('madeira/img/md01_caravel.png'), plane: T('greenland/img/gl04_raven_wings_up.png'), wave: T('greenland/img/gl09b_title_greenland_ice.png'), shard: T('madeira/img/md11_wine_bottle.png'),
+  glass: T('greenland/img/gl12_spyglass_eyepiece.png'), bowl: T('madeira/img/md07_sugar_loaf.png'), ladle: T('madeira/img/md11_wine_bottle.png'), pin: T('madeira/img/md11_wine_bottle.png'), city: T('madeira/img/md12_madeira_paradise.jpg'),
   cutaway: T('greenland/img/gl05_fjord_drift_ice_bg.jpg'), beach: T('greenland/img/gl09_title_greenland_grass.png'), satellite: T('greenland/img/gl12_spyglass_eyepiece.png'),
 };

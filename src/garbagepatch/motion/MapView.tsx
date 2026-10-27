@@ -8,12 +8,14 @@ import geo from '../geo.json';
 // boundary at its true size (scaled for Mercator at the point it is drawn).
 type Plate = { bounds: number[]; w: number; h: number };
 export type Cam = { x: number; y: number; mpp: number };
-const G = geo as unknown as { plates: Record<string, Plate>; india: number[][][]; indiaCentroid: number[]; states: Record<string, number[][][]> };
+const G = geo as unknown as { plates: Record<string, Plate>; india: number[][][]; indiaCentroid: number[]; states: Record<string, number[][][]>; rivers: Record<string, number[][]> };
 const R = 6378137;
 export const merc = (lon: number, lat: number): [number, number] => [R * (lon * Math.PI / 180), R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360))];
 export const toS = (c: Cam, [x, y]: number[]): [number, number] => [540 + (x - c.x) / c.mpp, 960 - (y - c.y) / c.mpp];
 export const ringsD = (c: Cam, rings: number[][][]) => rings.map((r) => r.map((p, i) => { const [sx, sy] = toS(c, p); return `${i ? 'L' : 'M'}${sx.toFixed(1)},${sy.toFixed(1)}`; }).join('') + 'Z').join('');
 export const state = (n: string) => G.states[n];
+/** A river (Natural Earth centreline, source → mouth) as an open SVG path for this camera. */
+export const riverD = (c: Cam, n: string) => G.rivers[n].map((p, i) => { const [sx, sy] = toS(c, p); return `${i ? 'L' : 'M'}${sx.toFixed(1)},${sy.toFixed(1)}`; }).join('');
 export const PATCH = merc(-142, 32);
 /** The patch outline in Mercator metres: a lumpy oval of ~1.6 million km² (real), centred on PATCH. */
 export const patchRing = (seed = 0): number[][][] => {
