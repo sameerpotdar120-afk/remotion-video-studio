@@ -1,0 +1,29 @@
+  0.00-  2.64  Did you know there's a giant island in the Pacific Ocean
+  2.64-  4.14  that you won't find on any map?
+  4.54-  7.36  And no one lives there, because it's made of trash.
+  7.98- 10.68  This area is known as the Great Pacific Garbage Patch.
+ 11.06- 12.94  Located between California and Hawaii,
+ 13.20- 16.40  it covers about 617,000 square miles.
+ 16.76- 18.46  That's larger than the area of France,
+ 18.64- 20.06  Germany, and Spain combined.
+ 20.60- 23.04  Moreover, there are at least five other similar zones
+ 23.04- 23.92  in the world's oceans.
+ 24.40- 26.64  They're made up of millions of tons of plastic,
+ 26.94- 29.66  bottles, fishing nets, containers, and other waste
+ 29.66- 33.16  that enters the ocean from rivers, ships, and coastal cities.
+ 33.60- 35.50  Under the influence of the sun and water,
+ 35.82- 37.50  they break down into microplastics,
+ 37.78- 39.20  which then enter the food chain.
+ 39.82- 41.24  Because of their tiny size,
+ 41.76- 43.64  microplastics can't be seen from satellites,
+ 43.94- 46.28  and their consistency is more like a plastic soup.
+ 46.86- 49.14  Meanwhile, ocean currents create a vortex
+ 49.14- 50.06  that traps trash,
+ 50.30- 52.42  keeping the patch contained as it continues to grow.
+ 52.86- 54.78  These patches are only a small fraction
+ 54.78- 56.26  of all the plastic in the ocean,
+ 56.36- 58.56  as a significant part sinks to the ocean floor
+ 58.56- 59.78  or washes up on shores.
+done
+done
+58.56-60.35  or washes up on shores.  (from burned-in captions; Whisper stopped before the last line)
