@@ -314,7 +314,8 @@ export const Camera: React.FC<{
     prev = { zoom: k.zoom, x: k.x ?? 0, y: k.y ?? 0 };
     if (frame < k.at + dur) break;
   }
-  const d = 1 + drift * t;
+  // slow push-in that eases out and never exceeds +8 % (long shots used to crop at the edges)
+  const d = 1 + 0.08 * (1 - Math.exp(-(drift * t) / 0.08));
   let sx = 0, sy = 0;
   for (const s of shake) {
     const u = frame - s.at;
