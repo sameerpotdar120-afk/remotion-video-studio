@@ -19,7 +19,8 @@
   "shoulderR": [
    0.6703,
    0.485
-  ]
+  ],
+  "sleeve": "#D78A18"
  },
  "finn_elder.png": {
   "aspect": 0.535,
@@ -41,7 +42,8 @@
   "shoulderR": [
    0.8369,
    0.5
-  ]
+  ],
+  "sleeve": "#170803"
  },
  "slav_elder.png": {
   "aspect": 0.5669,
@@ -63,7 +65,8 @@
   "shoulderR": [
    0.8168,
    0.44
-  ]
+  ],
+  "sleeve": "#472718"
  },
  "balt_elder.png": {
   "aspect": 0.6012,
@@ -85,7 +88,8 @@
   "shoulderR": [
    0.7932,
    0.435
-  ]
+  ],
+  "sleeve": "#242A1A"
  },
  "rurik_viking.png": {
   "aspect": 0.5537,
@@ -107,7 +111,8 @@
   "shoulderR": [
    0.8233,
    0.465
-  ]
+  ],
+  "sleeve": "#133869"
  },
  "viking_warrior.png": {
   "aspect": 0.5525,
@@ -129,7 +134,8 @@
   "shoulderR": [
    0.8442,
    0.5025
-  ]
+  ],
+  "sleeve": "#472818"
  },
  "vladimir_prince.png": {
   "aspect": 0.5081,
@@ -151,7 +157,8 @@
   "shoulderR": [
    0.8053,
    0.5275
-  ]
+  ],
+  "sleeve": "#F6DBB7"
  },
  "batu_khan.png": {
   "aspect": 0.5537,
@@ -173,7 +180,8 @@
   "shoulderR": [
    0.8423,
    0.5525
-  ]
+  ],
+  "sleeve": "#472814"
  },
  "envoy_kievan.png": {
   "aspect": 0.4856,
@@ -195,7 +203,8 @@
   "shoulderR": [
    0.8001,
    0.485
-  ]
+  ],
+  "sleeve": "#2A2616"
  },
  "mongol_warrior.png": {
   "aspect": 0.4788,
@@ -217,7 +226,8 @@
   "shoulderR": [
    0.8119,
    0.5425
-  ]
+  ],
+  "sleeve": "#170803"
  },
  "rus_prince.png": {
   "aspect": 0.5606,
@@ -239,7 +249,8 @@
   "shoulderR": [
    0.788,
    0.4725
-  ]
+  ],
+  "sleeve": "#680202"
  },
  "alexander_nevsky.png": {
   "aspect": 0.5025,
@@ -261,7 +272,8 @@
   "shoulderR": [
    0.8022,
    0.5175
-  ]
+  ],
+  "sleeve": "#980108"
  },
  "moscow_soldier.png": {
   "aspect": 0.4625,
@@ -283,7 +295,8 @@
   "shoulderR": [
    0.799,
    0.525
-  ]
+  ],
+  "sleeve": "#670507"
  },
  "teutonic_knight.png": {
   "aspect": 0.5613,
@@ -305,7 +318,8 @@
   "shoulderR": [
    0.7768,
    0.4925
-  ]
+  ],
+  "sleeve": "#EAD8C4"
  },
  "afanasy_nikitin.png": {
   "aspect": 0.515,
@@ -327,7 +341,8 @@
   "shoulderR": [
    0.8335,
    0.485
-  ]
+  ],
+  "sleeve": "#180903"
  },
  "ivan_iii.png": {
   "aspect": 0.5325,
@@ -349,7 +364,8 @@
   "shoulderR": [
    0.7978,
    0.535
-  ]
+  ],
+  "sleeve": "#770B04"
  },
  "ivan_iv_child.png": {
   "aspect": 0.5931,
@@ -371,7 +387,8 @@
   "shoulderR": [
    0.6592,
    0.545
-  ]
+  ],
+  "sleeve": "#874A14"
  },
  "ivan_iv_young.png": {
   "aspect": 0.4587,
@@ -393,7 +410,8 @@
   "shoulderR": [
    0.8024,
    0.575
-  ]
+  ],
+  "sleeve": "#E7C9A8"
  },
  "boyar_a.png": {
   "aspect": 0.5212,
@@ -415,7 +433,8 @@
   "shoulderR": [
    0.7549,
    0.5075
-  ]
+  ],
+  "sleeve": "#880708"
  },
  "ivan_iv_terrible.png": {
   "aspect": 0.4669,
@@ -437,7 +456,8 @@
   "shoulderR": [
    0.8126,
    0.5075
-  ]
+  ],
+  "sleeve": "#241B19"
  },
  "boyar_b.png": {
   "aspect": 0.4469,
@@ -459,7 +479,8 @@
   "shoulderR": [
    0.8068,
    0.5025
-  ]
+  ],
+  "sleeve": "#462B19"
  },
  "oprichnik.png": {
   "aspect": 0.5363,
@@ -481,7 +502,8 @@
   "shoulderR": [
    0.7596,
    0.47
-  ]
+  ],
+  "sleeve": "#231C19"
  },
  "boris_godunov.png": {
   "aspect": 0.4956,
@@ -503,7 +525,8 @@
   "shoulderR": [
    0.7922,
    0.53
-  ]
+  ],
+  "sleeve": "#670103"
  },
  "polish_hussar.png": {
   "aspect": 0.64,
@@ -525,7 +548,8 @@
   "shoulderR": [
    0.8132,
    0.54
-  ]
+  ],
+  "sleeve": "#D7B898"
  },
  "dmitry_pozharsky.png": {
   "aspect": 0.4919,
@@ -547,7 +571,8 @@
   "shoulderR": [
    0.7987,
    0.495
-  ]
+  ],
+  "sleeve": "#580406"
  },
  "kuzma_minin.png": {
   "aspect": 0.47,
@@ -569,7 +594,8 @@
   "shoulderR": [
    0.7423,
    0.475
-  ]
+  ],
+  "sleeve": "#482817"
  },
  "michael_romanov.png": {
   "aspect": 0.4594,
@@ -591,7 +617,8 @@
   "shoulderR": [
    0.8001,
    0.5725
-  ]
+  ],
+  "sleeve": "#F7E4C8"
  },
  "militia_volunteer.png": {
   "aspect": 0.54,
@@ -613,7 +640,8 @@
   "shoulderR": [
    0.7546,
    0.505
-  ]
+  ],
+  "sleeve": "#47352B"
  },
  "boyar_a_beardless.png": {
   "aspect": 0.5219,
@@ -635,7 +663,8 @@
   "shoulderR": [
    0.7698,
    0.5425
-  ]
+  ],
+  "sleeve": "#980506"
  },
  "peter_carpenter.png": {
   "aspect": 0.5775,
@@ -657,7 +686,8 @@
   "shoulderR": [
    0.6832,
    0.47
-  ]
+  ],
+  "sleeve": "#66371C"
  },
  "peter_great.png": {
   "aspect": 0.5456,
@@ -679,7 +709,8 @@
   "shoulderR": [
    0.7196,
    0.47
-  ]
+  ],
+  "sleeve": "#142A1A"
  },
  "serf_worker.png": {
   "aspect": 0.4944,
@@ -701,7 +732,8 @@
   "shoulderR": [
    0.7676,
    0.495
-  ]
+  ],
+  "sleeve": "#F3DAB9"
  },
  "swedish_soldier.png": {
   "aspect": 0.6569,
@@ -723,7 +755,8 @@
   "shoulderR": [
    0.6883,
    0.4725
-  ]
+  ],
+  "sleeve": "#173668"
  },
  "catherine_great.png": {
   "aspect": 0.5006,
@@ -745,7 +778,8 @@
   "shoulderR": [
    0.7727,
    0.485
-  ]
+  ],
+  "sleeve": "#FAE7C7"
  },
  "serf_woman.png": {
   "aspect": 0.5431,
@@ -767,7 +801,8 @@
   "shoulderR": [
    0.765,
    0.4475
-  ]
+  ],
+  "sleeve": "#EBD3BB"
  },
  "peter_iii.png": {
   "aspect": 0.4813,
@@ -789,7 +824,8 @@
   "shoulderR": [
    0.743,
    0.45
-  ]
+  ],
+  "sleeve": "#081A39"
  },
  "russian_guard.png": {
   "aspect": 0.4088,
@@ -811,7 +847,8 @@
   "shoulderR": [
    0.8035,
    0.6175
-  ]
+  ],
+  "sleeve": "#17291B"
  },
  "potemkin.png": {
   "aspect": 0.65,
@@ -833,7 +870,8 @@
   "shoulderR": [
    0.7725,
    0.4875
-  ]
+  ],
+  "sleeve": "#23261A"
  },
  "pugachev.png": {
   "aspect": 0.4681,
@@ -855,7 +893,8 @@
   "shoulderR": [
    0.8154,
    0.525
-  ]
+  ],
+  "sleeve": "#880308"
  },
  "french_soldier.png": {
   "aspect": 0.41,
@@ -877,7 +916,8 @@
   "shoulderR": [
    0.8312,
    0.62
-  ]
+  ],
+  "sleeve": "#0A1C35"
  },
  "napoleon.png": {
   "aspect": 0.69,
@@ -899,7 +939,8 @@
   "shoulderR": [
    0.7379,
    0.53
-  ]
+  ],
+  "sleeve": "#544A4A"
  },
  "russian_soldier_1812.png": {
   "aspect": 0.4587,
@@ -921,7 +962,8 @@
   "shoulderR": [
    0.7913,
    0.6
-  ]
+  ],
+  "sleeve": "#E9D3BB"
  },
  "alexander_ii.png": {
   "aspect": 0.5719,
@@ -943,7 +985,8 @@
   "shoulderR": [
    0.7686,
    0.4225
-  ]
+  ],
+  "sleeve": "#F5E9D4"
  },
  "decembrist_officer.png": {
   "aspect": 0.5988,
@@ -965,7 +1008,8 @@
   "shoulderR": [
    0.7552,
    0.56
-  ]
+  ],
+  "sleeve": "#18251A"
  },
  "alexandra.png": {
   "aspect": 0.4506,
@@ -987,7 +1031,8 @@
   "shoulderR": [
    0.7708,
    0.525
-  ]
+  ],
+  "sleeve": "#F5E9D7"
  },
  "nicholas_ii.png": {
   "aspect": 0.5038,
@@ -1009,7 +1054,8 @@
   "shoulderR": [
    0.7618,
    0.4475
-  ]
+  ],
+  "sleeve": "#634C29"
  },
  "rasputin.png": {
   "aspect": 0.4569,
@@ -1031,7 +1077,8 @@
   "shoulderR": [
    0.776,
    0.4125
-  ]
+  ],
+  "sleeve": "#342B27"
  },
  "worker_1905.png": {
   "aspect": 0.5006,
@@ -1053,7 +1100,8 @@
   "shoulderR": [
    0.7832,
    0.4625
-  ]
+  ],
+  "sleeve": "#362B27"
  },
  "worker_woman_1917.png": {
   "aspect": 0.5094,
@@ -1075,7 +1123,8 @@
   "shoulderR": [
    0.7616,
    0.43
-  ]
+  ],
+  "sleeve": "#382A24"
  },
  "red_guard_1917.png": {
   "aspect": 0.5369,
@@ -1097,7 +1146,8 @@
   "shoulderR": [
    0.8063,
    0.505
-  ]
+  ],
+  "sleeve": "#1B1614"
  },
  "tsarist_soldier_1914.png": {
   "aspect": 0.5787,
@@ -1119,7 +1169,8 @@
   "shoulderR": [
    0.8759,
    0.53
-  ]
+  ],
+  "sleeve": "#452414"
  },
  "white_officer_1919.png": {
   "aspect": 0.4888,
@@ -1141,7 +1192,8 @@
   "shoulderR": [
    0.802,
    0.5175
-  ]
+  ],
+  "sleeve": "#654B29"
  },
  "kolkhoz_farmer.png": {
   "aspect": 0.4587,
@@ -1163,7 +1215,8 @@
   "shoulderR": [
    0.7682,
    0.4625
-  ]
+  ],
+  "sleeve": "#B5977A"
  },
  "soviet_soldier_ww2.png": {
   "aspect": 0.5825,
@@ -1185,7 +1238,8 @@
   "shoulderR": [
    0.7212,
    0.4975
-  ]
+  ],
+  "sleeve": "#775946"
  },
  "stalin.png": {
   "aspect": 0.4844,
@@ -1207,7 +1261,8 @@
   "shoulderR": [
    0.725,
    0.4975
-  ]
+  ],
+  "sleeve": "#574736"
  },
  "german_general_surrender.png": {
   "aspect": 0.4731,
@@ -1229,7 +1284,8 @@
   "shoulderR": [
    0.8174,
    0.52
-  ]
+  ],
+  "sleeve": "#362B25"
  },
  "german_soldier_ww2.png": {
   "aspect": 0.495,
@@ -1251,7 +1307,8 @@
   "shoulderR": [
    0.7812,
    0.4975
-  ]
+  ],
+  "sleeve": "#554A3B"
  },
  "gagarin_spacesuit.png": {
   "aspect": 0.5088,
@@ -1273,7 +1330,8 @@
   "shoulderR": [
    0.7961,
    0.485
-  ]
+  ],
+  "sleeve": "#F86915"
  },
  "soviet_navy_officer.png": {
   "aspect": 0.5531,
@@ -1295,7 +1353,8 @@
   "shoulderR": [
    0.7956,
    0.53
-  ]
+  ],
+  "sleeve": "#12141B"
  },
  "russian_1990s.png": {
   "aspect": 0.4875,
@@ -1317,7 +1376,8 @@
   "shoulderR": [
    0.8076,
    0.465
-  ]
+  ],
+  "sleeve": "#861C25"
  },
  "soviet_citizen_1980s.png": {
   "aspect": 0.5431,
@@ -1339,6 +1399,7 @@
   "shoulderR": [
    0.767,
    0.465
-  ]
+  ],
+  "sleeve": "#463A36"
  }
 }
