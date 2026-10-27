@@ -157,12 +157,12 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <TypeOn text="सबसे अजीब दौर 🤨" x={W * 0.56} y={H * 0.14} start={weird} size={120} color={RC.yellow} exit={son} />
-        <Bouncy x={W * 0.56} y={H * 0.5} start={weird + 10} size={420} color={RC.yellow} exit={son} />
+        <TypeOn text="सबसे अजीब दौर 🤨" x={W * 0.56} y={H * 0.14} start={weird} size={120} color={RC.yellow} exit={son - 10} />
+        <Bouncy x={W * 0.56} y={H * 0.5} start={weird + 10} size={420} color={RC.yellow} exit={son - 10} />
         <Char who="ivan_iv_child" x={W * 0.56} y={H * 0.9} height={H * 0.46} start={son} exit={man - 4} opacity={1 - 0.55 * ramp(frame, died, 30)}
           moods={[[son, 'smile'], [died, 'sad']]} gestures={[[son, 'wave'], [died, 'down']]} />
-        <TypeOn text="Dmitry · Ivan का छोटा बेटा" x={W * 0.56} y={H * 0.14} start={son + 4} size={96} color={RC.blue} exit={dead} />
-        <TypeOn text="असली Dmitry: बचपन में मौत ✝" x={W * 0.56} y={H * 0.14} start={dead} size={96} color={RC.sub} exit={claim} />
+        <TypeOn text="Dmitry · Ivan का छोटा बेटा" x={W * 0.56} y={H * 0.14} start={son + 6} size={96} color={RC.blue} exit={dead - 10} />
+        <TypeOn text="असली Dmitry: बचपन में मौत ✝" x={W * 0.56} y={H * 0.14} start={dead + 4} size={96} color={RC.sub} exit={claim - 10} />
         {cardsAt.map((f, i) => (
           <React.Fragment key={i}>
             <Card src="cards/card_false_dmitry.png" x={cx(i)} y={H * 0.48} w={W * 0.15} start={f} name={`Dmitry ${['I', 'II', 'III'][i]}?`} tilt={[-5, 3, -2][i]} />
@@ -193,7 +193,7 @@ const EF: React.FC<{ base: number }> = ({ base }) => {
       <RMap view="ru_west" cam={[{ at: 0, lon: 34, lat: 56, zoom: 1.45 }, { at: kremlin, lon: 36, lat: 56, zoom: 2.0, dur: 80 }, { at: gone, lon: 38, lat: 57, zoom: 1.5, dur: 80 }]}
         overlay={
           <>
-            <MapLabel lon={47} lat={57.5} text="Russia" start={6} size={120} color="#FFF" />
+            <MapLabel lon={47} lat={57.5} text="Russia" start={6} size={120} color="#FFF" exit={second - 6} />
             <MapLabel lon={25} lat={52.4} text="Poland–Lithuania" start={polish} size={100} color="#FFF" />
             <At lon={MOSCOW[0]} lat={MOSCOW[1]} dy={-90} start={kremlin} over={1.3}><PolishFlag size={150} /></At>
             <Pin lon={MOSCOW[0]} lat={MOSCOW[1]} label="Kremlin" start={kremlin - 10} side="l" size={88} />
@@ -234,7 +234,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0}>
         {[0, 1, 2, 3, 4].map((i) => (
           <Char key={i} who="militia_volunteer" x={W * (0.4 + i * 0.07)} y={H * (0.97 - (i % 2) * 0.02)} height={H * 0.3} start={army + i * 4} seed={`mv${i}`}
-            walk={[{ at: 0, x: W * (-0.1 - i * 0.07) }, { at: army + i * 4, x: W * (0.42 + i * 0.07), dur: 120 }]} moods={[[0, 'angry'], [free, 'grin']]} gestures={[[0, 'fist'], [free, 'cheer']]} />
+            walk={[{ at: 0, x: W * (-0.1 - i * 0.07) }, { at: army + i * 4, x: W * (0.42 + i * 0.07), dur: 120 }]} moods={[[0, 'angry'], [free, 'grin']]} gestures={[[0, 'fist']]} />
         ))}
         <Char who="kuzma_minin" x={W * 0.18} y={H * 0.95} height={H * 0.44} start={minin} gestures={[[minin, 'fist'], [free, 'cheer']]} moods={[[minin, 'angry'], [free, 'grin']]} />
         <Char who="dmitry_pozharsky" x={W * 0.32} y={H * 0.95} height={H * 0.46} start={poz} gestures={[[poz, 'point'], [free, 'cheer']]} moods={[[poz, 'angry'], [free, 'grin']]} />
