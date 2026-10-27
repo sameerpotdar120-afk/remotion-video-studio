@@ -4,7 +4,7 @@
 set -euo pipefail
 a=$1; b=$2
 cd "$(dirname "$0")/../.."
-CHROME=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell | head -1)
+CHROME=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell /opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell 2>/dev/null | head -1)
 printf "import { Config } from '@remotion/cli/config';\nConfig.setOverwriteOutput(true);\n" > /tmp/audio.config.ts
 mkdir -p renders/russia-audio
 npx remotion render src/index.ts Russia-Audio renders/russia-audio/part_$a.wav --codec=wav --frames=$a-$b --scale=0.25 --concurrency=4 \

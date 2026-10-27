@@ -6,7 +6,7 @@ set -uo pipefail
 FIRST=$1; LAST=$2; NAME=$3; SCALE=${4:-0.25}; SEG=1200
 cd "$(dirname "$0")/../.."
 [ -d node_modules ] || npm ci --no-audit --no-fund
-CHROME=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell 2>/dev/null | head -1)
+CHROME=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell /opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell 2>/dev/null | head -1)
 BR=preview/russia-$NAME
 git config user.email >/dev/null || git config user.email "render@local"
 git config user.name >/dev/null || git config user.name "render worker"
