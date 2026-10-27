@@ -60,9 +60,11 @@ export const hand = (size: number, color: string = RC.white, weight = 700): Reac
 /* ──────────────────────────────── assets ──────────────────────────────── */
 
 const PRESENT = new Set<string>(FILES as string[]);
+// backgrounds and cards are installed as .jpg; the code keeps asking for the .png name
+const real = (path: string) => (PRESENT.has(path) ? path : path.replace(/\.png$/, '.jpg'));
 /** Russia asset present in public/russia/assets? (src/russia/kit/assets.generated.json) */
-export const has = (path: string) => PRESENT.has(path);
-export const ra = (path: string) => staticFile(`russia/assets/${path}`);
+export const has = (path: string) => PRESENT.has(real(path));
+export const ra = (path: string) => staticFile(`russia/assets/${real(path)}`);
 /** America-era shared asset (gloves, candle, …) */
 export const aa = (path: string) => staticFile(`assets/${path}`);
 
