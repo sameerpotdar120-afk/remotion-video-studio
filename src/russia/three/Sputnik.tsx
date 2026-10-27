@@ -15,8 +15,12 @@ export const SputnikOrbit: React.FC<{ start?: number }> = ({ start = 0 }) => {
   const [tex, setTex] = useState<THREE.Texture | null>(null);
   const [h] = useState(() => delayRender('sputnik earth'));
   useEffect(() => {
-    new THREE.TextureLoader().load(staticFile('russia/maps/world_eq_sat.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; setTex(t); continueRender(h); });
+    new THREE.TextureLoader().load(staticFile('russia/maps/world_eq_sat.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; setTex(t); });
   }, [h]);
+  useEffect(() => {
+    if (!tex) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => continueRender(h)));
+  }, [tex, h]);
   const a = frame / 60 * 0.9;
   const orbitR = 1.55;
   const sx = Math.cos(a) * orbitR, sz = Math.sin(a) * orbitR * 0.55, sy = Math.sin(a) * 0.35;

@@ -24,9 +24,13 @@ const useTexture = (src: string) => {
       t.colorSpace = THREE.SRGBColorSpace;
       t.anisotropy = 4;
       setTex(t);
-      continueRender(handle);
     });
   }, [src, handle]);
+  // release the frame only after the textured mesh has been committed (and painted on the next frame)
+  useEffect(() => {
+    if (!tex) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle)));
+  }, [tex, handle]);
   return tex;
 };
 
