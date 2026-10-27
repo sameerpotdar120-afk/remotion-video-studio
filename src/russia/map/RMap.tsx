@@ -21,7 +21,12 @@ import { useAudioOnly } from '../kit/audioMode';
  */
 
 export type ViewName = keyof typeof VIEWS;
-export type MapCam = { at: number; lon: number; lat: number; zoom: number; dur?: number; easing?: (t: number) => number };
+export type MapCam = { at: number; lon: number; lat: number; zoom: number; dur?: number; easing?: (t: number) => number; tilt?: number };
+
+/** maps are a 3D board: tilted away from the camera under perspective (deg); a key may set its own tilt */
+export const MAP_TILT = 26;
+const PERSP = W * 1.45;
+const BLEED = 0.22; // the tilted plane is larger than the frame so its receding top edge never shows
 
 type Ctx = { view: string; proj: GeoProjection; scale: number; toScreen: (lon: number, lat: number) => [number, number]; path: (g: Geometry | Feature) => string };
 /** projected SVG paths are pure functions of (view, feature): compute each once (projecting a 10m outline every frame is the slowest thing on a map) */
@@ -51,17 +56,28 @@ export const terr = (id: string) => {
 };
 
 const camAt = (frame: number, keys: MapCam[]) => {
-  let cur = { lon: keys[0].lon, lat: keys[0].lat, zoom: keys[0].zoom };
+  let cur = { lon: keys[0].lon, lat: keys[0].lat, zoom: keys[0].zoom, tilt: keys[0].tilt ?? MAP_TILT };
   for (let i = 1; i < keys.length; i++) {
     const k = keys[i];
     if (frame < k.at) break;
     const t = ramp(frame, k.at, k.dur ?? 60, k.easing ?? ease.inOut);
     const p = cur;
+    const kt = k.tilt ?? p.tilt;
     // zoom interpolates in log space (constant perceived speed)
-    cur = { lon: p.lon + (k.lon - p.lon) * t, lat: p.lat + (k.lat - p.lat) * t, zoom: Math.exp(Math.log(p.zoom) + (Math.log(k.zoom) - Math.log(p.zoom)) * t) };
+    cur = { lon: p.lon + (k.lon - p.lon) * t, lat: p.lat + (k.lat - p.lat) * t, zoom: Math.exp(Math.log(p.zoom) + (Math.log(k.zoom) - Math.log(p.zoom)) * t), tilt: p.tilt + (kt - p.tilt) * t };
     if (t < 1) break;
   }
   return cur;
+};
+
+/** flat frame position → where it lands on the tilted board (CSS rotateX about the frame centre + perspective) */
+const tiltPt = (fx: number, fy: number, tiltDeg: number): [number, number] => {
+  if (!tiltDeg) return [fx, fy];
+  const a = (tiltDeg * Math.PI) / 180;
+  const X = fx - W / 2, Y = fy - H / 2;
+  const yr = Y * Math.cos(a), z = Y * Math.sin(a);
+  const k = PERSP / (PERSP - z); // CSS: z toward the viewer; the far (top) edge has z < 0
+  return [W / 2 + X * k, H / 2 + yr * k];
 };
 
 export const RMap: React.FC<{
@@ -90,7 +106,7 @@ export const RMap: React.FC<{
     scale,
     toScreen: (lon, lat) => {
       const [x, y] = proj([lon, lat]) as [number, number];
-      return [tx + x * scale, ty + y * scale];
+      return tiltPt(tx + x * scale, ty + y * scale, c.tilt);
     },
     path: (g) => {
       let m = PATHS.get(view);
@@ -102,14 +118,24 @@ export const RMap: React.FC<{
   };
   return (
     <MapCtx.Provider value={ctx}>
-      <AbsoluteFill style={{ background: '#0B2441', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, transformOrigin: '0 0', transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}>
-          {!audioOnly && <Img src={staticFile(v.sat)} style={{ position: 'absolute', inset: 0, width: v.width, height: v.height, filter: dim ? `brightness(${1 - dim})` : undefined }} />}
+      <AbsoluteFill style={{ background: 'linear-gradient(#0A1424, #13243A 40%, #0B2441)', overflow: 'hidden', perspective: PERSP, perspectiveOrigin: '50% 50%' }}>
+        {/* the board: terrain + world-space layers, tilted away from the camera (rotateX about the frame centre);
+            it bleeds past the frame so the receding top edge never shows */}
+        <div style={{ position: 'absolute', left: -W * BLEED, top: -H * BLEED, width: W * (1 + 2 * BLEED), height: H * (1 + 2 * BLEED),
+          transformOrigin: '50% 50%', transform: `rotateX(${c.tilt}deg)`, transformStyle: 'flat' }}>
+          <div style={{ position: 'absolute', left: W * BLEED, top: H * BLEED, width: v.width, height: v.height, transformOrigin: '0 0', transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}>
+            {!audioOnly && <Img src={staticFile(v.sat)} style={{ position: 'absolute', inset: 0, width: v.width, height: v.height, filter: dim ? `brightness(${1 - dim})` : undefined }} />}
+          </div>
+          {/* vector layers in SCREEN space (a world-sized SVG is re-rasterised in full every frame: ~5 s/frame) */}
+          <svg width={W} height={H} style={{ position: 'absolute', left: W * BLEED, top: H * BLEED, overflow: 'visible' }}>
+            <g transform={`translate(${tx} ${ty}) scale(${scale})`}>{children}</g>
+          </svg>
         </div>
-        {/* vector layers in SCREEN space (a world-sized SVG is re-rasterised in full every frame: ~5 s/frame) */}
-        <svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
-          <g transform={`translate(${tx} ${ty}) scale(${scale})`}>{children}</g>
-        </svg>
+        {/* depth: atmospheric haze toward the far edge and a soft lens vignette */}
+        {!audioOnly && c.tilt > 0 && (
+          <AbsoluteFill style={{ pointerEvents: 'none', background: `linear-gradient(180deg, rgba(190,210,235,${0.34 * Math.min(1, c.tilt / 26)}) 0%, rgba(190,210,235,0.12) 16%, rgba(190,210,235,0) 34%)` }} />
+        )}
+        {!audioOnly && <AbsoluteFill style={{ pointerEvents: 'none', background: 'radial-gradient(ellipse 75% 70% at 50% 55%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.28) 100%)' }} />}
         {overlay}
       </AbsoluteFill>
     </MapCtx.Provider>
@@ -197,6 +223,62 @@ export const Fill: React.FC<{
  * 10 m coastline in SVG on every frame cost ≈4 s/frame in software GL; this costs one draw per colour.
  */
 const RASTER_K = 0.5;
+
+/**
+ * A territory as a raised 3D slab on the board: soft cast shadow, darker extruded side wall, translucent top face
+ * (terrain shows through), bevel light from the top-left, pale rim. Drawn once into a canvas in world coordinates.
+ */
+const drawSlab = (g: CanvasRenderingContext2D, p2: Path2D, viewW: number, color: string, alpha: number, border: string, borderPx: number) => {
+  const depth = Math.max(8, viewW * 0.0026);
+  const thin = borderPx <= 0;
+  if (!thin) {
+    // cast shadow + extruded wall (offset copies), then darken them, then cut the top face out of them
+    g.save();
+    g.shadowColor = 'rgba(0,0,0,0.5)';
+    g.shadowBlur = depth * 2.2 * RASTER_K;
+    g.shadowOffsetY = depth * 1.4 * RASTER_K;
+    g.fillStyle = color;
+    g.translate(0, depth);
+    g.fill(p2, 'evenodd');
+    g.restore();
+    for (let k = depth; k > 0; k -= Math.max(1.5, depth / 10)) {
+      g.save(); g.translate(0, k); g.fillStyle = color; g.fill(p2, 'evenodd'); g.restore();
+    }
+    g.save();
+    g.globalCompositeOperation = 'source-atop';
+    g.fillStyle = 'rgba(0,0,0,0.42)';
+    g.fillRect(0, 0, g.canvas.width / RASTER_K, g.canvas.height / RASTER_K);
+    g.restore();
+    g.save(); g.globalCompositeOperation = 'destination-out'; g.fill(p2, 'evenodd'); g.restore();
+  }
+  // top face
+  g.save();
+  g.globalAlpha = Math.min(0.9, alpha + (thin ? 0 : 0.16));
+  g.fillStyle = color;
+  g.fill(p2, 'evenodd');
+  g.restore();
+  if (!thin) {
+    // bevel: light inner edge top-left, shade inner edge bottom-right
+    g.save();
+    g.clip(p2, 'evenodd');
+    g.lineJoin = 'round';
+    g.lineWidth = depth * 0.9;
+    g.translate(depth * 0.3, depth * 0.3);
+    g.strokeStyle = 'rgba(255,255,255,0.32)';
+    g.stroke(p2);
+    g.translate(-depth * 0.6, -depth * 0.6);
+    g.strokeStyle = 'rgba(0,0,0,0.26)';
+    g.stroke(p2);
+    g.restore();
+    g.save();
+    g.globalAlpha = 1;
+    g.strokeStyle = border;
+    g.lineWidth = borderPx * 1.1;
+    g.lineJoin = 'round';
+    g.stroke(p2);
+    g.restore();
+  }
+};
 const FillRaster: React.FC<{ view: string; id: string; d: string; color: string; alpha: number; border: string; borderPx: number; style?: React.CSSProperties }> = ({
   view, d, color, alpha, border, borderPx, style,
 }) => {
@@ -209,17 +291,7 @@ const FillRaster: React.FC<{ view: string; id: string; d: string; color: string;
     const g = c.getContext('2d')!;
     g.clearRect(0, 0, c.width, c.height);
     g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
-    const p2 = new Path2D(d);
-    g.globalAlpha = Math.min(0.95, alpha);
-    g.fillStyle = color;
-    g.fill(p2, 'evenodd');
-    if (borderPx > 0) {
-      g.globalAlpha = 1;
-      g.strokeStyle = border;
-      g.lineWidth = borderPx * 1.1;
-      g.lineJoin = 'round';
-      g.stroke(p2);
-    }
+    drawSlab(g, new Path2D(d), v.width, color, alpha, border, borderPx);
   }, [d, color, alpha, border, borderPx, audioOnly]);
   if (audioOnly) return null;
   return <canvas ref={ref} width={Math.round(v.width * RASTER_K)} height={Math.round(v.height * RASTER_K)} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, ...style }} />;
@@ -514,15 +586,7 @@ export const ShatterFill: React.FC<{ id: string; color: string; center: [number,
     c.width = Math.round(v.width * RASTER_K); c.height = Math.round(v.height * RASTER_K);
     const g = c.getContext('2d')!;
     g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
-    const p2 = new Path2D(d);
-    g.globalAlpha = Math.min(0.95, opacity);
-    g.fillStyle = color;
-    g.fill(p2, 'evenodd');
-    g.globalAlpha = 1;
-    g.strokeStyle = 'rgba(255,255,255,0.9)';
-    g.lineWidth = 3.3;
-    g.lineJoin = 'round';
-    g.stroke(p2);
+    drawSlab(g, new Path2D(d), v.width, color, opacity, 'rgba(255,255,255,0.9)', 3);
     return c.toDataURL('image/png');
   }, [d, color, opacity, v.width, v.height, audioOnly]);
   const crackPath = useMemo(() => (audioOnly || typeof Path2D === 'undefined' ? null : new Path2D(d)), [d, audioOnly]);
@@ -582,7 +646,7 @@ export const ShatterFill: React.FC<{ id: string; color: string; center: [number,
           const rot = (random(`sr${i}`) - 0.5) * 8 * apart;
           return (
             <div key={i} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height,
-              transformOrigin: `${cx}px ${cy}px`, transform: `translate(${Math.cos(mid) * dist}px, ${Math.sin(mid) * dist}px) rotate(${rot}deg)` }}>
+              transformOrigin: `${cx}px ${cy}px`, transform: `translate(${Math.cos(mid) * dist}px, ${Math.sin(mid) * dist - apart * 30 / scale}px) rotate(${rot}deg) scale(${1 + 0.035 * apart})` }}>
               <img src={url} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, clipPath: `polygon(${poly})` }} />
             </div>
           );
