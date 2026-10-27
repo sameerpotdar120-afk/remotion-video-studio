@@ -24,7 +24,7 @@ for ((a = FIRST; a <= LAST; a += SEG)); do
   [ -s /tmp/seg/raw.mp4 ] || { echo "FAILED $a"; exit 1; }
   ffmpeg -v error -y -i /tmp/seg/raw.mp4 -c:v libx264 -preset medium -crf 23 -g 120 -pix_fmt yuv420p -an "$out"
   rm -f /tmp/seg/raw.mp4
-  git add -f "$out" && git commit -q -m "Russia preview segment $a-$b ($NAME)"
+  git add -f "$out" && git commit -q -m "Russia preview segment $a-$b ($NAME)" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   for t in 1 2 3 4 5; do git push -q -u origin "$BR" && break; sleep $((2 ** t)); done
   echo "SEGMENT $a-$b pushed"
 done
