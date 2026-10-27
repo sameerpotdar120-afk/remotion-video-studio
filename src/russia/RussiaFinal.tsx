@@ -1,0 +1,66 @@
+import React from 'react';
+import { AbsoluteFill, Audio, Sequence, staticFile } from 'remotion';
+import { AUDIO, CHAPTERS, TOTAL, at } from './vo/timeline';
+import { ChapterScroll, CollapseMarks } from './kit/devices';
+import { Sfx } from '../lib/fx/particles';
+import { S00Open, OPEN_TO } from './scenes/S00Open';
+import { C01Rus, C1_FROM, C1_TO } from './scenes/C01Rus';
+
+/**
+ * RUSSIA — final 4K60 cut. Scenes sit on exact VO frames; chapter cards fill the silent gaps the timeline
+ * inserted. Unbuilt stretches render a labelled slate (never silent black).
+ *   npx remotion render src/index.ts Russia-4K out/russia/part01.mp4 --frames=0-3599 --gl=swangle
+ */
+type Built = { from: number; to: number; comp: React.FC };
+const BUILT: Built[] = [
+  { from: 0, to: OPEN_TO, comp: S00Open },
+  { from: C1_FROM, to: C1_TO, comp: C01Rus },
+];
+
+// the four collapses (top-right marks turn red when the narrator says "पहला/दूसरा/तीसरा/चौथा collapse")
+export const COLLAPSE_AT = [at(16, 'पहला'), at(39, 'दूसरा'), at(75, 'तीसरा'), at(90, 'चौथा')];
+
+const Slate: React.FC<{ label: string }> = ({ label }) => (
+  <AbsoluteFill style={{ background: '#2A2D33', color: '#999', fontFamily: '"Kalam", cursive', fontSize: 90, alignItems: 'center', justifyContent: 'center' }}>{label}</AbsoluteFill>
+);
+
+export const RussiaFinal: React.FC = () => {
+  const cards = CHAPTERS.map((c) => ({ from: c.card, to: c.from }));
+  return (
+    <AbsoluteFill style={{ background: '#000' }}>
+      <Slate label="(scene not built yet)" />
+      {BUILT.map((b, i) => (
+        <Sequence key={i} from={b.from} durationInFrames={b.to - b.from}>
+          <b.comp />
+        </Sequence>
+      ))}
+      {CHAPTERS.map((c) => (
+        <Sequence key={c.n} from={c.card} durationInFrames={c.from - c.card} name={`chapter ${c.n}`}>
+          <ChapterScroll n={c.n} dur={c.from - c.card} />
+          <Sfx at={0} file="paper_swish.wav" volume={0.7} />
+          <Sfx at={60} file="pop_high.wav" volume={0.6} />
+        </Sequence>
+      ))}
+      {/* persistent corner marks from the end of the turn, hidden on chapter cards */}
+      {[{ from: OPEN_TO }, ...cards.map((c) => ({ from: c.to }))].map((seg, i) => {
+        const to = i < cards.length ? cards[i].from : TOTAL;
+        return (
+          <Sequence key={`m${i}`} from={seg.from} durationInFrames={Math.max(1, to - seg.from)} layout="none">
+            <MarksAbs offset={seg.from} />
+          </Sequence>
+        );
+      })}
+      {AUDIO.map((a, i) => (
+        <Sequence key={`a${i}`} from={a.at} durationInFrames={a.trimTo - a.trimFrom} layout="none">
+          <Audio src={staticFile(a.file)} trimBefore={a.trimFrom} trimAfter={a.trimTo} volume={1} />
+        </Sequence>
+      ))}
+    </AbsoluteFill>
+  );
+};
+
+const MarksAbs: React.FC<{ offset: number }> = ({ offset }) => (
+  <CollapseMarks redAt={COLLAPSE_AT.map((f) => f - offset)} start={0} size={64} />
+);
+
+export const RUSSIA_TOTAL = TOTAL;

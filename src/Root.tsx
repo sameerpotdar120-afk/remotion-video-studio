@@ -12,6 +12,7 @@ import { TOTAL_FRAMES } from './vo/cues';
 import { Final } from './final/Final';
 import { RigSheet } from './scenes/RigSheet';
 import { Thumbnail } from './thumb/Thumbnail';
+import { RussiaFinal, RUSSIA_TOTAL } from './russia/RussiaFinal';
 
 loadFonts();
 
@@ -20,6 +21,7 @@ export const RemotionRoot: React.FC = () => {
     <>
       {/* 4K 60 fps long-form (16:9) */}
       <Composition id="Final-4K" component={Final} durationInFrames={TOTAL_FRAMES} fps={FPS} width={W} height={H} />
+      <Composition id="Russia-4K" component={RussiaFinal} durationInFrames={RUSSIA_TOTAL} fps={FPS} width={W} height={H} />
       <Composition id="Thumb-4K" component={Thumbnail} durationInFrames={60} fps={FPS} width={W} height={H} />
       <Composition id="Preview-Hook10s" component={PreviewHook} durationInFrames={600} fps={FPS} width={W} height={H} />
       <Composition id="Full-Animatic" component={Animatic} durationInFrames={TOTAL_FRAMES} fps={FPS} width={W} height={H} />

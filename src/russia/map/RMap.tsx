@@ -434,3 +434,66 @@ export const Flow: React.FC<{ from: [number, number]; to: [number, number]; star
 };
 
 export const HANDFONT = HAND;
+
+/**
+ * A territory that cracks like glass: jagged wedges around `center` (lon/lat), crack lines flash white,
+ * pieces drift apart at `breakAt` and snap back together at `mendAt` (Russia breaks · rises again).
+ */
+export const ShatterFill: React.FC<{ id: string; color: string; center: [number, number]; start: number; breakAt: number; mendAt?: number; pieces?: number; exit?: number; opacity?: number }> = ({
+  id, color, center, start, breakAt, mendAt, pieces = 9, exit, opacity = 0.62,
+}) => {
+  const frame = useCurrentFrame();
+  const { path, proj, scale } = useRMap();
+  const d = useMemo(() => path(terr(id)), [id, path]);
+  if (frame < start) return null;
+  const o = exit !== undefined ? 1 - ramp(frame, exit, 12, ease.in) : 1;
+  const [cx, cy] = proj(center) as [number, number];
+  const R = 40000;
+  const angs = Array.from({ length: pieces }, (_, i) => ((i + 0.5 * random(`sa${i}`)) / pieces) * Math.PI * 2);
+  const apart = frame < breakAt ? 0 : ramp(frame, breakAt + 6, 26, ease.out) * (mendAt !== undefined ? 1 - ramp(frame, mendAt, 18, ease.inOut) : 1);
+  const crackK = frame < breakAt ? 0 : ramp(frame, breakAt, 7, ease.out);
+  const crackFade = mendAt !== undefined ? 1 - ramp(frame, mendAt + 10, 12, ease.out) : 1;
+  return (
+    <g opacity={o}>
+      <defs>
+        {angs.map((a, i) => {
+          const b = angs[(i + 1) % pieces] + (i === pieces - 1 ? Math.PI * 2 : 0);
+          // jagged wedge edge: a few kinks along each ray
+          const ray = (t: number, k: number) => {
+            const pts: string[] = [];
+            for (let s = 1; s <= 5; s++) {
+              const rr = (s / 5) * R * (s === 5 ? 1 : 0.06 * s);
+              const j = (random(`j${k}${s}`) - 0.5) * 0.25;
+              pts.push(`${cx + Math.cos(t + j) * rr},${cy + Math.sin(t + j) * rr}`);
+            }
+            return pts;
+          };
+          const pts = [`${cx},${cy}`, ...ray(a, i), ...ray(b, (i + 1) % pieces).reverse()];
+          return <clipPath key={i} id={`sh-${id}-${i}`}><polygon points={pts.join(' ')} /></clipPath>;
+        })}
+      </defs>
+      {angs.map((a, i) => {
+        const mid = a + Math.PI / pieces;
+        const dist = (90 + 60 * random(`sd${i}`)) / scale * apart;
+        const rot = (random(`sr${i}`) - 0.5) * 8 * apart;
+        return (
+          <g key={i} clipPath={`url(#sh-${id}-${i})`} transform={`translate(${Math.cos(mid) * dist} ${Math.sin(mid) * dist}) rotate(${rot} ${cx} ${cy})`}>
+            <path d={d} fill={color} fillOpacity={opacity} stroke="rgba(255,255,255,0.9)" strokeWidth={3 / scale} fillRule="evenodd" />
+          </g>
+        );
+      })}
+      <clipPath id={`shc-${id}`}><path d={d} /></clipPath>
+      <g clipPath={`url(#shc-${id})`}>
+      {crackK > 0 && crackFade > 0 && angs.map((a, i) => {
+        const pts: string[] = [`${cx},${cy}`];
+        for (let s = 1; s <= 6; s++) {
+          const rr = (s / 6) * (1500 / scale) * crackK * 2.2;
+          const j = (random(`j${i}${Math.min(5, s)}`) - 0.5) * 0.25;
+          pts.push(`${cx + Math.cos(a + j) * rr},${cy + Math.sin(a + j) * rr}`);
+        }
+        return <polyline key={i} points={pts.join(' ')} fill="none" stroke="#fff" strokeWidth={(7 / scale) * (1 - apart * 0.5)} opacity={crackFade} strokeLinejoin="bevel" />;
+      })}
+      </g>
+    </g>
+  );
+};

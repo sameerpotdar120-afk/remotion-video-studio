@@ -1,0 +1,73 @@
+import React from 'react';
+import { Peg, type Look } from './Peg';
+
+/**
+ * The Russia cast: generated body image (docs/russia/PROMPTS_IMAGES.md) + fallback colours used until the image
+ * arrives. Rulers keep the same outfit every time they reappear (reference §5).
+ */
+export const CAST: Record<string, Look> = {
+  slav_elder: { coat: '#E8DCC0', trim: '#B33A2A', hat: 'fur', hatColor: '#6B4A2E', beard: '#F2F2F2' },
+  finn_elder: { coat: '#7A6E5A', hat: 'hood', hatColor: '#5E5544', beard: '#9A8E7A' },
+  balt_elder: { coat: '#3E5A3A', hair: '#C9A86A', beard: '#B5632E' },
+  rurik_viking: { coat: '#2F4E8C', trim: '#8C8C8C', hat: 'helmet', beard: '#B5482A' },
+  viking_warrior: { coat: '#6B5038', hat: 'helmet', beard: '#E2C26A' },
+  vladimir_prince: { coat: '#B8322A', trim: '#D9A520', hat: 'crown', beard: '#6B4628' },
+  envoy_kievan: { coat: '#3E6B3A', hat: 'fur', hatColor: '#5C3E26', beard: '#7A5232' },
+  batu_khan: { coat: '#2D4A86', trim: '#D9A520', hat: 'fur', hatColor: '#4A3320', skin: '#D9A877' },
+  mongol_warrior: { coat: '#8A5A34', trim: '#B33A2A', hat: 'helmet', skin: '#D9A877' },
+  rus_prince: { coat: '#2E4F8E', trim: '#D9A520', hat: 'fur', hatColor: '#5C3E26', beard: '#6B4628' },
+  alexander_nevsky: { coat: '#B8322A', trim: '#9AA0A6', hat: 'helmet', beard: '#B08A5A' },
+  teutonic_knight: { coat: '#F2F0EA', trim: '#111111', hat: 'hood', hatColor: '#9AA0A6' },
+  moscow_soldier: { coat: '#B8322A', hat: 'helmet', beard: '#4A3320' },
+  afanasy_nikitin: { coat: '#8A6A44', trim: '#B33A2A', hat: 'tall', hatColor: '#6B4A2E', beard: '#6B4628', skin: '#E8C6A0' },
+  ivan_iii: { coat: '#C79A2C', trim: '#7A2A1E', hat: 'crown', beard: '#7A6450' },
+  ivan_iv_young: { coat: '#D2A833', trim: '#8C1E1E', hat: 'crown', hair: '#4A3320' },
+  ivan_iv_child: { coat: '#D2A833', hat: 'fur', hatColor: '#4A3320', hair: '#4A3320' },
+  ivan_iv_terrible: { coat: '#1E1E22', trim: '#C79A2C', hat: 'tall', hatColor: '#2A2A2A', beard: '#2E2218' },
+  boyar_a: { coat: '#A8322A', trim: '#D9A520', hat: 'tall', hatColor: '#6B4A2E', beard: '#1E1A16' },
+  boyar_b: { coat: '#2F6B3A', trim: '#D9A520', hat: 'tall', hatColor: '#8A8A8A', beard: '#B8B8B8' },
+  boyar_a_beardless: { coat: '#A8322A', trim: '#D9A520', hat: 'tall', hatColor: '#6B4A2E' },
+  oprichnik: { coat: '#141416', hat: 'hood', hatColor: '#141416', beard: '#1E1A16', skin: '#EED8C4' },
+  boris_godunov: { coat: '#7A1E22', trim: '#D9A520', hat: 'crown', beard: '#2E2218' },
+  polish_hussar: { coat: '#B7B9BD', trim: '#C9A86A', hat: 'helmet', beard: '#6B4628' },
+  kuzma_minin: { coat: '#7A5A3A', hat: 'cap', hatColor: '#5C3E26', beard: '#7A5232' },
+  dmitry_pozharsky: { coat: '#B8322A', trim: '#9AA0A6', hat: 'helmet', beard: '#2E2218' },
+  militia_volunteer: { coat: '#8A8478', hat: 'ushanka', hatColor: '#6B4A2E', beard: '#7A5232' },
+  michael_romanov: { coat: '#E2D6B8', trim: '#D9A520', hat: 'crown', hair: '#6B4628' },
+  peter_great: { coat: '#2F5E34', trim: '#B8322A', hat: 'tricorne', hatColor: '#1A1A1A', hair: '#3A2A1E' },
+  peter_carpenter: { coat: '#B8322A', trim: '#6B4A2E', hat: 'tricorne', hatColor: '#222', hair: '#3A2A1E' },
+  swedish_soldier: { coat: '#2F5EA8', trim: '#E2C23A', hat: 'tricorne', hatColor: '#1A1A1A' },
+  serf_worker: { coat: '#D8D0BC', trim: '#7A5A3A', hat: 'cap', hatColor: '#6B5A44', beard: '#6B4628' },
+  serf_woman: { coat: '#B8322A', hat: 'hood', hatColor: '#3E6B8A' },
+  catherine_great: { coat: '#E6E6EE', trim: '#7FA7D9', hat: 'crown', hair: '#D8D8D8' },
+  peter_iii: { coat: '#2F4E8C', trim: '#B8322A', hair: '#EEEEEE' },
+  russian_guard: { coat: '#2F5E34', trim: '#B8322A', hat: 'tall', hatColor: '#C9A86A' },
+  potemkin: { coat: '#B8322A', trim: '#D9A520', hair: '#EEEEEE' },
+  pugachev: { coat: '#B8322A', hat: 'crown', beard: '#141414' },
+  napoleon: { coat: '#6E737A', trim: '#2F5E34', hat: 'bicorne', hatColor: '#141414' },
+  french_soldier: { coat: '#2F4E8C', trim: '#EEEEEE', hat: 'shako', hatColor: '#141414' },
+  russian_soldier_1812: { coat: '#2F5E34', trim: '#EEEEEE', hat: 'shako', hatColor: '#141414' },
+  decembrist_officer: { coat: '#2F5E34', trim: '#D9A520', hat: 'bicorne', hatColor: '#141414', hair: '#6B4628' },
+  alexander_ii: { coat: '#EEEEEE', trim: '#2F4E8C', beard: '#7A5A3A' },
+  nicholas_ii: { coat: '#6E6A4A', trim: '#D9A520', hair: '#6B4628', beard: '#6B4628' },
+  alexandra: { coat: '#F2F0EA', hair: '#A0522D' },
+  rasputin: { coat: '#1E1E22', hair: '#141414', beard: '#141414' },
+  worker_1905: { coat: '#5A5A5A', hat: 'cap', hatColor: '#3A3A3A', beard: '#5C3E26' },
+  worker_woman_1917: { coat: '#3A3A44', hat: 'hood', hatColor: '#8A8A8A' },
+  tsarist_soldier_1914: { coat: '#7A7A50', hat: 'cap', hatColor: '#6E6E46' },
+  red_guard_1917: { coat: '#1E1E1E', trim: '#C8352B', hat: 'cap', hatColor: '#2A2A2A' },
+  white_officer_1919: { coat: '#8A8460', trim: '#D9A520', hat: 'cap', hatColor: '#EEEEEE' },
+  stalin: { coat: '#8A8A78', hair: '#2A2A2A', beard: undefined },
+  kolkhoz_farmer: { coat: '#8A8478', hat: 'cap', hatColor: '#5C5040', beard: '#6B5A44' },
+  soviet_soldier_ww2: { coat: '#6E6A46', hat: 'cap', hatColor: '#6E6A46' },
+  german_soldier_ww2: { coat: '#6A6E68', hat: 'helmet' },
+  german_general_surrender: { coat: '#6A6E68', hat: 'cap', hatColor: '#5A5E58' },
+  gagarin_spacesuit: { coat: '#E8752A', hat: 'helmet' },
+  soviet_navy_officer: { coat: '#1E2A44', trim: '#D9A520', hat: 'cap', hatColor: '#F2F2F2' },
+  soviet_citizen_1980s: { coat: '#6A6A6A', hat: 'ushanka', hatColor: '#5C3E26' },
+  russian_1990s: { coat: '#7A1E3A', hair: '#3A2A1E' },
+};
+
+type P = Omit<React.ComponentProps<typeof Peg>, 'src' | 'look'> & { who: keyof typeof CAST | string };
+/** A cast member: <Char who="rurik_viking" x… y… height… /> */
+export const Char: React.FC<P> = ({ who, ...p }) => <Peg src={`chars/${who}.png`} look={CAST[who] ?? { coat: '#888' }} seed={who} {...p} />;
