@@ -173,3 +173,54 @@ export const ShockLines: React.FC<{ x: number; y: number; r: number; start: numb
     </svg>
   );
 };
+
+/**
+ * Horse + rider: 2-frame gallop (generated frames A/B swapped every 5 f @60 ≈ 12 strides/s) with a body bob,
+ * dust puffs behind; rider = a cast member without legs sitting on the saddle. Fallback horse drawn in code.
+ */
+import { Char } from './cast';
+export const Rider: React.FC<{
+  horse: 'horse_brown' | 'horse_black' | 'horse_steppe' | 'horse_white';
+  who: string; x: number; y: number; height: number; // height of the horse body box (feet → saddle ≈ 0.58)
+  start: number; exit?: number; flip?: boolean; gallop?: boolean; moods?: [number, import('../../lib/character/Face').Mood][];
+  gestures?: [number, import('./Peg').Gesture][]; seed?: string; dust?: boolean; children?: React.ReactNode;
+}> = ({ horse, who, x, y, height, start, exit, flip, gallop = true, moods, gestures, seed = 'r', dust = true, children }) => {
+  const frame = useCurrentFrame();
+  if (frame < start) return null;
+  if (exit !== undefined && frame > exit) return null;
+  const s = pop(frame, start, 1.05);
+  const step = gallop ? Math.floor((frame + seed.length * 3) / 5) % 2 : 1;
+  const bob = gallop ? Math.abs(Math.sin((frame + seed.length * 3) / 5 * Math.PI)) * height * 0.03 : 0;
+  const wBox = height * 1.5;
+  const src = `horses/${horse}_gallop_${step ? 'b' : 'a'}.png`;
+  const col = { horse_brown: '#8A5A34', horse_black: '#1E1E22', horse_steppe: '#B8925A', horse_white: '#E8E6E0' }[horse];
+  return (
+    <div style={{ position: 'absolute', left: x - wBox / 2, top: y - height - bob, width: wBox, height, transform: `scaleX(${flip ? -1 : 1}) scale(${s})`, transformOrigin: '50% 100%' }}>
+      {dust && gallop && [0, 1, 2].map((i) => {
+        const u = ((frame + i * 9) % 27) / 27;
+        return <div key={i} style={{ position: 'absolute', left: wBox * (0.12 - u * 0.25), top: height * (0.86 - u * 0.12), width: height * (0.12 + u * 0.2), height: height * (0.12 + u * 0.2),
+          borderRadius: '50%', background: 'rgba(170,150,120,0.5)', opacity: 1 - u }} />;
+      })}
+      {/* rider sits on the saddle (saddle top ≈ 42 % from the top of the horse box) */}
+      <div style={{ position: 'absolute', left: 0, top: 0, width: wBox, height }}>
+        <Char who={who} x={wBox * 0.47} y={height * 0.5} height={height * 0.6} legs={false} start={0} moods={moods} gestures={gestures} seed={seed} />
+      </div>
+      {has(src) ? (
+        <Img src={ra(src)} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' }} />
+      ) : (
+        <svg viewBox="0 0 150 100" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}>
+          <g stroke="#1A1410" strokeWidth={1.6} strokeLinejoin="round">
+            {(step ? [[52, 70, 46, 96], [62, 70, 66, 96], [98, 70, 92, 96], [108, 70, 112, 96]] : [[52, 70, 30, 92], [62, 70, 44, 96], [98, 70, 118, 94], [108, 70, 130, 88]]).map(([a, b, c, d], i) => (
+              <line key={i} x1={a} y1={b} x2={c} y2={d} stroke={col} strokeWidth={6} strokeLinecap="round" />
+            ))}
+            <ellipse cx={80} cy={58} rx={36} ry={17} fill={col} />
+            <path d="M108 52 Q118 30 128 26 L140 34 Q136 40 128 40 L118 58 Z" fill={col} />
+            <path d="M44 52 Q30 50 26 66 Q36 60 46 60 Z" fill="#3A2A20" />
+            <rect x={68} y={40} width={26} height={10} rx={3} fill="#B8322A" />
+          </g>
+        </svg>
+      )}
+      {children}
+    </div>
+  );
+};

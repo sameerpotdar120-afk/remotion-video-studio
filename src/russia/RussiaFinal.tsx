@@ -6,6 +6,8 @@ import { Sfx } from '../lib/fx/particles';
 import { S00Open, OPEN_TO } from './scenes/S00Open';
 import { C01Rus, C1_FROM, C1_TO } from './scenes/C01Rus';
 import { C02Mongols, C2_FROM, C2_TO } from './scenes/C02Mongols';
+import { C03Ivan, C3_FROM, C3_TO } from './scenes/C03Ivan';
+import { C04Troubles, C4_FROM, C4_TO } from './scenes/C04Troubles';
 
 /**
  * RUSSIA — final 4K60 cut. Scenes sit on exact VO frames; chapter cards fill the silent gaps the timeline
@@ -17,6 +19,8 @@ const BUILT: Built[] = [
   { from: 0, to: OPEN_TO, comp: S00Open },
   { from: C1_FROM, to: C1_TO, comp: C01Rus },
   { from: C2_FROM, to: C2_TO, comp: C02Mongols },
+  { from: C3_FROM, to: C3_TO, comp: C03Ivan },
+  { from: C4_FROM, to: C4_TO, comp: C04Troubles },
 ];
 
 // the four collapses (top-right marks turn red when the narrator says "पहला/दूसरा/तीसरा/चौथा collapse")
