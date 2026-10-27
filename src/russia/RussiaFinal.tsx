@@ -4,6 +4,7 @@ import { AUDIO, CHAPTERS, TOTAL, at, speakingAt } from './vo/timeline';
 import { interpolate } from 'remotion';
 import { ChapterScroll, CollapseMarks } from './kit/devices';
 import { Sfx } from '../lib/fx/particles';
+import { AudioOnly } from './kit/audioMode';
 import { S00Open, OPEN_TO } from './scenes/S00Open';
 import { C01Rus, C1_FROM, C1_TO } from './scenes/C01Rus';
 import { C02Mongols, C2_FROM, C2_TO } from './scenes/C02Mongols';
@@ -45,9 +46,10 @@ const Slate: React.FC<{ label: string }> = ({ label }) => (
   <AbsoluteFill style={{ background: '#2A2D33', color: '#999', fontFamily: '"Kalam", cursive', fontSize: 90, alignItems: 'center', justifyContent: 'center' }}>{label}</AbsoluteFill>
 );
 
-export const RussiaFinal: React.FC = () => {
+export const RussiaFinal: React.FC<{ audioOnly?: boolean }> = ({ audioOnly = false }) => {
   const cards = CHAPTERS.map((c) => ({ from: c.card, to: c.from }));
   return (
+    <AudioOnly.Provider value={audioOnly}>
     <AbsoluteFill style={{ background: '#000' }}>
       <Slate label="(scene not built yet)" />
       {BUILT.map((b, i) => (
@@ -79,6 +81,7 @@ export const RussiaFinal: React.FC = () => {
         </Sequence>
       ))}
     </AbsoluteFill>
+    </AudioOnly.Provider>
   );
 };
 

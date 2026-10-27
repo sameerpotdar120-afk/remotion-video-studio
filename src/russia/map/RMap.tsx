@@ -8,6 +8,7 @@ import RIVERS from '../maps/rivers.json';
 import { H, W } from '../../lib/constants';
 import { clamp, ease, ramp } from '../../lib/easing';
 import { HAND, RC, hand, pop } from '../kit/core';
+import { useAudioOnly } from '../kit/audioMode';
 
 /**
  * Satellite map stage for the Russia video (§1.2): real terrain in a conformal conic view, flat translucent
@@ -73,6 +74,7 @@ export const RMap: React.FC<{
   overlay?: React.ReactNode; // screen-space layers (pins, labels, icons)
 }> = ({ view, cam, drift = 0.01, from = 0, dim = 0, children, overlay }) => {
   const frame = useCurrentFrame();
+  const audioOnly = useAudioOnly();
   const v = VIEWS[view] as { width: number; height: number; sat: string };
   const proj = useMemo(() => projOf(view), [view]);
   const pathGen = useMemo(() => geoPath(proj), [proj]);
@@ -102,7 +104,7 @@ export const RMap: React.FC<{
     <MapCtx.Provider value={ctx}>
       <AbsoluteFill style={{ background: '#0B2441', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, transformOrigin: '0 0', transform: `translate(${tx}px, ${ty}px) scale(${scale})` }}>
-          <Img src={staticFile(v.sat)} style={{ position: 'absolute', inset: 0, width: v.width, height: v.height, filter: dim ? `brightness(${1 - dim})` : undefined }} />
+          {!audioOnly && <Img src={staticFile(v.sat)} style={{ position: 'absolute', inset: 0, width: v.width, height: v.height, filter: dim ? `brightness(${1 - dim})` : undefined }} />}
         </div>
         {/* vector layers in SCREEN space (a world-sized SVG is re-rasterised in full every frame: ~5 s/frame) */}
         <svg width={W} height={H} style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -199,10 +201,11 @@ const FillRaster: React.FC<{ view: string; id: string; d: string; color: string;
   view, d, color, alpha, border, borderPx, style,
 }) => {
   const ref = React.useRef<HTMLCanvasElement>(null);
+  const audioOnly = useAudioOnly();
   const v = VIEWS[view as ViewName] as { width: number; height: number };
   React.useLayoutEffect(() => {
     const c = ref.current;
-    if (!c) return;
+    if (!c || audioOnly) return;
     const g = c.getContext('2d')!;
     g.clearRect(0, 0, c.width, c.height);
     g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
@@ -217,7 +220,8 @@ const FillRaster: React.FC<{ view: string; id: string; d: string; color: string;
       g.lineJoin = 'round';
       g.stroke(p2);
     }
-  }, [d, color, alpha, border, borderPx]);
+  }, [d, color, alpha, border, borderPx, audioOnly]);
+  if (audioOnly) return null;
   return <canvas ref={ref} width={Math.round(v.width * RASTER_K)} height={Math.round(v.height * RASTER_K)} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, ...style }} />;
 };
 

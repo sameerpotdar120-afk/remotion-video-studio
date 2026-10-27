@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useAudioOnly } from '../kit/audioMode';
 import { ThreeCanvas } from '@remotion/three';
 import { continueRender, delayRender, staticFile, useCurrentFrame } from 'remotion';
 import * as THREE from 'three';
@@ -86,6 +87,7 @@ export const Globe: React.FC<{
   highlight?: { ids: string[]; color: string; start: number; exit?: number; pulse?: number[] };
   spinBias?: number; // extra slow rotation deg/s
 }> = ({ keys, highlight, spinBias = 1.5 }) => {
+  if (useAudioOnly()) return null;
   const frame = useCurrentFrame();
   const tex = useTexture('russia/maps/world_eq_sat.jpg');
   const over = useOverlay(highlight?.ids ?? [], highlight?.color ?? '#C8352B');

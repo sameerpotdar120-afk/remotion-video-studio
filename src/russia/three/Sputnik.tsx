@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useAudioOnly } from '../kit/audioMode';
 import { ThreeCanvas } from '@remotion/three';
 import { continueRender, delayRender, staticFile, useCurrentFrame } from 'remotion';
 import * as THREE from 'three';
@@ -9,6 +10,7 @@ import { H, W } from '../../lib/constants';
  * (the same baked satellite texture as the globe), lit by a hard "sun" so the metal glints every turn.
  */
 export const SputnikOrbit: React.FC<{ start?: number }> = ({ start = 0 }) => {
+  if (useAudioOnly()) return null;
   const frame = useCurrentFrame() - start;
   const [tex, setTex] = useState<THREE.Texture | null>(null);
   const [h] = useState(() => delayRender('sputnik earth'));

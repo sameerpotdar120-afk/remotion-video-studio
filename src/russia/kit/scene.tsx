@@ -3,6 +3,7 @@ import { AbsoluteFill, Img, random, useCurrentFrame } from 'remotion';
 import { H, W } from '../../lib/constants';
 import { ease, ramp } from '../../lib/easing';
 import { RC, has, hand, pop, ra } from './core';
+import { useAudioOnly } from './audioMode';
 
 /**
  * Cartoon-scene helpers for the Russia video: background plates (with a painted fallback while the generated
@@ -22,6 +23,7 @@ export const BgPlate: React.FC<{
   focus?: [number, number];
 }> = ({ src, from = 0, push = 0.012, pan = -6, sky = '#9FC3E0', ground = '#7D8F4E', dim = 0, tint, blur = 0, focus = [0.5, 0.5] }) => {
   const frame = useCurrentFrame();
+  if (useAudioOnly()) return null;
   const t = Math.max(0, frame - from) / 60;
   const z = 1.04 + push * t;
   return (
