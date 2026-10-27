@@ -81,7 +81,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0} drift={0.004} keys={[{ at: never, zoom: 1.6, y: H * 0.07, dur: 14, easing: ease.snap }]} focus={[W * 0.5, H * 0.5]}>
         <PopIn x={W * 0.5} y={H * 0.56} start={6}><RImg src="props/throne_gold.png" w={H * 0.72} h={H * 0.72} label="throne" /></PopIn>
         <Char who="ivan_iv_child" x={W * 0.5} y={H * 0.668} height={H * 0.22} start={where} legs={false}
-          moods={[[0, 'neutral'], [father, 'sad'], [fight, 'worried'], [noRespect, 'sad'], [never, 'furious']]} gestures={[[0, 'down'], [fight, 'handsHead']]} />
+          moods={[[0, 'neutral'], [father, 'sad'], [fight, 'worried'], [noRespect, 'sad'], [never, 'furious']]} gestures={[[0, 'down'], [fight, 'handsHead'], [noRespect, 'down']]} />
         <Candle x={W * 0.12} y={H * 0.5} size={210} start={father - 10} outAt={father + 8} exit={boyars - 16} />
         <TypeOn text="पिता" x={W * 0.12} y={H * 0.6} start={father - 6} size={90} color={RC.sub} exit={boyars - 16} />
         <Candle x={W * 0.22} y={H * 0.5} size={210} start={mother - 10} outAt={mother + 8} exit={boyars - 16} />
@@ -184,7 +184,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
             background: `radial-gradient(ellipse 34% 52% at 50% 62%, rgba(170,24,24,0.55) 0%, rgba(90,10,10,0.25) 55%, rgba(0,0,0,0) 100%)` }} />
         )}
         {!swapped ? (
-          <Char who="ivan_iv_young" x={W * 0.8} y={H * 0.95} height={H * 0.52} start={ana} flip moods={[[ana, 'sad'], [poison, 'angry']]} gestures={[[ana, 'handsHead'], [poison, 'fist']]} shake={[poison, changed]} />
+          <Char who="ivan_iv_young" x={W * 0.8} y={H * 0.95} height={H * 0.52} start={ana} flip moods={[[ana, 'sad'], [poison, 'angry']]} gestures={[[ana, 'handsHead'], [ana + 70, 'down'], [poison, 'fist']]} shake={[poison, changed]} />
         ) : (
           <Char who="ivan_iv_terrible" x={W * 0.5} y={H * 0.95} height={H * 0.66} start={changed} moods={[[changed, 'furious']]} gestures={[[changed, 'hips']]} shake={[changed, changed + 24]} />
         )}
