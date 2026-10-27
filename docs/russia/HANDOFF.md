@@ -203,3 +203,15 @@ Ranges: steps of 6000 frames (0–5999, 6000–11999, … 84000–89541).
 - The Chrome headless shell lives at either
   `/opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell` or
   `.../chrome-headless-shell-linux64/chrome-headless-shell`.
+
+## Kit improvements requested by the polish helpers (do these before the 4K render)
+
+- **`BigNumber`** (`core.tsx`): add a `subSize` prop. The sub-caption is tiny at 4K, so the default should
+  be about 2× larger.
+- **`LoopWheel`** (`devices.tsx`): give labels a max width and wrap them, because long labels run
+  off-screen at a larger radius. The pointer hub also covers the centre "डर" text.
+- **`PeopleGrid`** (`devices.tsx`): add a `greyCount` / `greyRows` prop. `perRow=0` currently greys every
+  row at once.
+- **C08:** in February 1917, the shrug pose puts a glove partly over a soldier's own face.
+- **C11:** the globe drew without its texture in two still renders. This was fixed by waiting for the
+  textured mesh before continuing. Verify it in the 4K output.
