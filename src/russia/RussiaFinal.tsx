@@ -10,6 +10,8 @@ import { C03Ivan, C3_FROM, C3_TO } from './scenes/C03Ivan';
 import { C04Troubles, C4_FROM, C4_TO } from './scenes/C04Troubles';
 import { C05Peter, C5_FROM, C5_TO } from './scenes/C05Peter';
 import { C06Catherine, C6_FROM, C6_TO } from './scenes/C06Catherine';
+import { C07Napoleon, C7_FROM, C7_TO } from './scenes/C07Napoleon';
+import { C08LastTsar, C8_FROM, C8_TO } from './scenes/C08LastTsar';
 
 /**
  * RUSSIA — final 4K60 cut. Scenes sit on exact VO frames; chapter cards fill the silent gaps the timeline
@@ -25,6 +27,8 @@ const BUILT: Built[] = [
   { from: C4_FROM, to: C4_TO, comp: C04Troubles },
   { from: C5_FROM, to: C5_TO, comp: C05Peter },
   { from: C6_FROM, to: C6_TO, comp: C06Catherine },
+  { from: C7_FROM, to: C7_TO, comp: C07Napoleon },
+  { from: C8_FROM, to: C8_TO, comp: C08LastTsar },
 ];
 
 // the four collapses (top-right marks turn red when the narrator says "पहला/दूसरा/तीसरा/चौथा collapse")
