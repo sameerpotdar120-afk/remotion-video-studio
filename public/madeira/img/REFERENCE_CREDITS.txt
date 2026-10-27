@@ -1,0 +1,10 @@
+Likeness reference used for md13_ronaldo_dribble.png, md14_ronaldo_celebration.png and md15_ronaldo_portrait.png:
+
+Cristiano Ronaldo 2018.jpg
+Author: Anna Nessi (Анна Нэсси), soccer.ru
+Source page: https://commons.wikimedia.org/wiki/File:Cristiano_Ronaldo_2018.jpg
+Photo date: 15 June 2018
+Licence: Creative Commons Attribution-ShareAlike 3.0 Unported
+https://creativecommons.org/licenses/by-sa/3.0/
+
+Changes: new AI-generated rendered compositions, poses, lighting, white unbranded clothing and white backgrounds. The source photo is used for facial likeness and is not reproduced as-is. The three reference-based Ronaldo assets are supplied under CC BY-SA 3.0 to retain the source licence conditions. No endorsement is implied. Other generated assets do not use this photo.
