@@ -215,3 +215,7 @@ Ranges: steps of 6000 frames (0–5999, 6000–11999, … 84000–89541).
 - **C08:** in February 1917, the shrug pose puts a glove partly over a soldier's own face.
 - **C11:** the globe drew without its texture in two still renders. This was fixed by waiting for the
   textured mesh before continuing. Verify it in the 4K output.
+- **Emoji:** some emoji (e.g. 🤷) render wrongly in the headless renderer. Grep the scenes for emoji in
+  captions and swap any that break for an icon image or plain text. Check every one in a still.
+- **Done here:** `Camera` drift now eases out and is capped at +8 % zoom, which fixes edge crops on long shots.
+- **Merged so far:** polish for c02, c03, c04, c06, c08 and c11. Still to merge: s00, c01, c05, c07, c09, c10.
