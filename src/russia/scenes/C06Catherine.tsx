@@ -25,10 +25,28 @@ export const C6_FROM = CHAPTERS[5].from;
 export const C6_TO = CHAPTERS[6].card;
 const P = (n: number) => para(n).f - 6;
 
+/** Type-on caption on a soft dark plate, for busy photo backgrounds. */
+const PlateText: React.FC<{ text: string; x: number; y: number; start: number; size: number; color: string; exit?: number }> = ({ text, x, y, start, size, color, exit }) => {
+  const frame = useCurrentFrame();
+  if (frame < start) return null;
+  const o = ramp(frame, start, 8, ease.out) * (exit !== undefined ? 1 - ramp(frame, exit, 10, ease.in) : 1);
+  if (o <= 0) return null;
+  return (
+    <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%, -50%)', padding: `${size * 0.14}px ${size * 0.42}px`, borderRadius: size * 0.3, background: 'rgba(24,16,10,0.58)', opacity: o }}>
+      <span style={{ ...hand(size, color), visibility: 'hidden' }}>{text}</span>
+      <div style={{ position: 'absolute', left: '50%', top: '50%', width: 0, height: 0 }}>
+        <TypeOn text={text} x={0} y={0} start={start} size={size} color={color} />
+      </div>
+    </div>
+  );
+};
+
 /* ───────────── A · Sophie ───────────── */
 const A: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
   const twist = L(at(51, 'twist.'));
+  const famous = L(at(51, 'मशहूर'));
+  const empress = L(at(51, 'महारानी,'));
   const notRussian = L(at(51, 'Russian'));
   const sophie = L(at(51, 'Sophie,'));
   const germany = L(at(51, 'Germany'));
@@ -36,7 +54,8 @@ const A: React.FC<{ base: number }> = ({ base }) => {
     <GreyStage>
       <Camera from={0}>
         <TypeOn text="TWIST 🔄" x={W * 0.56} y={H * 0.12} start={twist} size={140} color={RC.yellow} />
-        <PopIn x={W * 0.82} y={H * 0.36} start={notRussian}><div style={{ position: 'relative' }}><RImg src="props/crown_catherine.png" w={H * 0.3} h={H * 0.3} label="👑" /><div style={{ position: 'absolute', right: -60, top: -60 }}><Bouncy x={0} y={0} start={notRussian + 4} size={200} color={RC.danger} /></div></div></PopIn>
+        <PopIn x={W * 0.82} y={H * 0.36} start={famous}><div style={{ position: 'relative' }}><RImg src="props/crown_catherine.png" w={H * 0.3} h={H * 0.3} label="👑" /><div style={{ position: 'absolute', right: -60, top: -60 }}><Bouncy x={0} y={0} start={notRussian + 4} size={200} color={RC.danger} /></div></div></PopIn>
+        <TypeOn text="Catherine the Great" x={W * 0.82} y={H * 0.58} start={empress} size={84} color={RC.blue} />
         <Card src="cards/card_sophie_princess.png" x={W * 0.52} y={H * 0.5} w={W * 0.2} start={sophie - 10} name="Sophie" tilt={-4} />
         <TypeOn text="Germany से 🏰 (Anhalt-Zerbst)" x={W * 0.56} y={H * 0.92} start={germany} size={96} color={RC.blue} />
       </Camera>
@@ -62,19 +81,19 @@ const B: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <BgPlate src="bg/bg_palace_room_1762.png" from={0} sky="#CFE0EC" ground="#B89A6A" />
-      <Camera from={0}>
-        <PopIn x={W * 0.3} y={H * 0.9} start={peter3}><RImg src="props/toy_soldiers.png" w={W * 0.16} h={W * 0.11} label="🪖🪖 toy soldiers" /></PopIn>
-        <Char who="peter_iii" x={W * (0.42 - pushed * 0.6)} y={H * 0.97} height={H * 0.44} start={married} gestures={[[0, 'cheer'], [disliked, 'hold'], [coup, 'handsHead']]} moods={[[0, 'grin'], [coup, 'shocked']]}
+      <Camera from={0} drift={0.004} focus={[W * 0.5, H * 0.9]}>
+        <PopIn x={W * 0.13} y={H * 0.84} start={peter3}><RImg src="props/toy_soldiers.png" w={W * 0.14} h={W * 0.095} label="🪖🪖 toy soldiers" /></PopIn>
+        <Char who="peter_iii" x={W * (0.3 - pushed * 0.6)} y={H * 0.93} height={H * 0.46} start={married} gestures={[[0, 'cheer'], [disliked, 'hold'], [coup, 'handsHead']]} moods={[[0, 'grin'], [coup, 'shocked']]}
           hopAt={[married + 20, married + 60]} />
-        <TypeOn text="Peter III 🧸" x={W * 0.38} y={H * 0.4} start={peter3} size={100} color={RC.blue} exit={coup} />
-        <TypeOn text="किसी को पसंद नहीं 👎" x={W * 0.38} y={H * 0.3} start={disliked} size={90} color={RC.danger} exit={coup} />
-        <Char who="catherine_great" x={W * 0.7} y={H * 0.96} height={H * 0.5} start={married + 6} flip gestures={[[0, 'down'], [cath, 'point']]} moods={[[0, 'smug'], [cath, 'angry']]} />
+        <PlateText text="Peter III 🧸" x={W * 0.3} y={H * 0.37} start={peter3} size={100} color={RC.blue} exit={coup} />
+        <PlateText text="किसी को पसंद नहीं 👎" x={W * 0.3} y={H * 0.25} start={disliked} size={90} color={RC.danger} exit={coup} />
+        <Char who="catherine_great" x={W * 0.64} y={H * 0.93} height={H * 0.5} start={married + 6} flip gestures={[[0, 'down'], [cath, 'point']]} moods={[[0, 'smug'], [cath, 'angry']]} />
         {[0, 1].map((i) => (
-          <Char key={i} who="russian_guard" seed={`g${i}`} x={W * (0.82 + i * 0.1)} y={H * 0.97} height={H * 0.46} start={cath + i * 6} flip
-            walk={[{ at: 0, x: W * (1.1 + i * 0.1) }, { at: cath + i * 6, x: W * (0.82 + i * 0.1), dur: 40 }, { at: coup, x: W * (0.5 + i * 0.1), dur: 50 }]} gestures={[[0, 'fist']]} moods={[[0, 'angry']]} />
+          <Char key={i} who="russian_guard" seed={`g${i}`} x={W * (0.79 + i * 0.12)} y={H * 0.93} height={H * 0.46} start={cath + i * 6} flip
+            walk={[{ at: 0, x: W * (1.1 + i * 0.12) }, { at: cath + i * 6, x: W * (0.79 + i * 0.12), dur: 40 }, { at: coup, x: W * (0.28 + i * 0.17), dur: 50 }]} gestures={[[0, 'fist']]} moods={[[0, 'angry']]} />
         ))}
         <Stamp text="COUP" x={W * 0.5} y={H * 0.2} start={coup} size={200} />
-        <TypeOn text="कुछ दिन बाद… रहस्यमय मौत ❓" x={W * 0.5} y={H * 0.36} start={death} size={96} color={RC.white} />
+        <PlateText text="कुछ दिन बाद… रहस्यमय मौत ❓" x={W * 0.5} y={H * 0.36} start={death} size={96} color={RC.white} />
       </Camera>
       <YearTag text="1762" start={tag} />
       <Iris at={tag + 2} hold={40} />
@@ -101,7 +120,7 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       <RMap view="ru_west" cam={[{ at: 0, lon: 38, lat: 52, zoom: 1.3 }, { at: ottoman, lon: 34, lat: 47, zoom: 1.9, dur: 90 }, { at: crimea, lon: 34, lat: 45.3, zoom: 3.2, dur: 70 }]}
         overlay={
           <>
-            <MapLabel lon={33} lat={39.6} text="Ottoman Empire" start={ottoman} size={110} />
+            <MapLabel lon={25} lat={43.2} text="Ottoman Empire" start={ottoman} exit={crimea - 20} size={110} />
             <MapLabel lon={34} lat={43.3} text="Black Sea 🌊" start={black} size={90} color="#CFE7FF" />
             <Pin lon={CRIMEA[0]} lat={CRIMEA[1]} label="Crimea" start={crimea} />
             <At lon={36.6} lat={46.7} start={remember} over={1.2}><div style={{ ...hand(100, RC.yellow) }}>📌 नाम याद रखना!</div></At>
@@ -112,7 +131,7 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
         <Fill id="crimean_khanate" color={RC.ottoman} colors={[[crimea + 10, RC.peterGreen]]} start={ottoman} opacity={0.6} pulseAt={[crimea + 10, remember]} />
         <Fill id="russia_1796" color={RC.peterGreen} start={bigger} mode="flood" origin={[37.6, 55.7]} dur={110} opacity={0.58} />
       </RMap>
-      <BigNumber x={W * 0.16} y={H * 0.82} to={34} start={yrs} dur={30} size={190} sub="साल राज" />
+      <BigNumber x={W * 0.86} y={H * 0.8} to={34} start={yrs} dur={30} size={190} sub="साल राज" />
       <YearTag text="1783" start={tag} />
       <Sfx at={bigger} file="riser.wav" volume={0.4} />
       <Sfx at={crimea + 10} file="pop_low.wav" volume={0.6} />
@@ -134,29 +153,30 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   const enemies = L(at(54, 'दुश्मनों'));
   const still = L(at(54, 'phrase', 1));
   const behind = ramp(frame, myth - 10, 40, ease.inOut);
-  const bargeX = W * (1.2 - 1.5 * ramp(frame, tour, show + 60 - tour, ease.linear));
+  // the barge sails in on the river, stops beside the village while Catherine admires it, then leaves
+  const bargeX = W * (-0.32 + 0.51 * ramp(frame, tour, 150, ease.out) - 0.5 * ramp(frame, myth - 10, 60, ease.in));
   return (
     <AbsoluteFill>
       <BgPlate src="bg/bg_riverbank_1787.png" from={0} sky="#BFE0F4" ground="#7FA05A" />
-      <Camera from={0} keys={[{ at: myth - 10, zoom: 1.0, x: W * 0.18, dur: 40 }]}>
+      <Camera from={0} drift={0.003} focus={[W * 0.55, H * 0.9]}>
         <TypeOn text="“Potemkin village”" x={W * 0.5} y={H * 0.1} start={phrase} size={140} color={RC.yellow} exit={tour} />
-        <div style={{ position: 'absolute', left: W * 0.42, top: H * 0.3, width: W * 0.56, height: H * 0.5, transform: `perspective(1600px) rotateY(${behind * 160}deg)`, transformStyle: 'preserve-3d' }}>
-          <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden' }}><RImg src="props/potemkin_facade_front.png" w={W * 0.56} h={H * 0.5} label="🏠🏠🏠 pretty village" /></div>
-          <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}><RImg src="props/potemkin_facade_back.png" w={W * 0.56} h={H * 0.5} label="🪵 just planks!" /></div>
-        </div>
-        {frame >= tour && frame < show + 80 && (
-          <div style={{ position: 'absolute', left: bargeX, top: H * 0.66 + Math.sin(frame / 14) * 8 }}>
+        {frame >= tour && frame < myth + 50 && (
+          <div style={{ position: 'absolute', left: bargeX, top: H * 0.42 + Math.sin(frame / 14) * 8, transform: 'scale(0.8)', transformOrigin: '0 0' }}>
             <div style={{ position: 'relative', width: W * 0.28, height: H * 0.24 }}>
-              <div style={{ position: 'absolute', left: W * 0.09, top: -H * 0.26 }}><Char who="catherine_great" x={0} y={H * 0.3} height={H * 0.32} start={0} legs={false} gestures={[[0, 'wave']]} moods={[[0, 'smile']]} /></div>
+              <div style={{ position: 'absolute', left: W * 0.09, top: -H * 0.2 }}><Char who="catherine_great" x={0} y={H * 0.3} height={H * 0.32} start={0} legs={false} gestures={[[0, 'wave'], [fake, 'present'], [show, 'cheer']]} moods={[[0, 'smile'], [show, 'grin']]} /></div>
               <RImg src="props/royal_barge.png" w={W * 0.28} h={H * 0.24} label="🚣 barge" />
             </div>
           </div>
         )}
-        <Char who="potemkin" x={W * 0.32} y={H * 0.97} height={H * 0.46} start={potemkin} gestures={[[potemkin, 'present'], [fake, 'wave'], [myth, 'shrug']]} moods={[[potemkin, 'grin'], [myth, 'worried']]} />
-        <TypeOn text="Potemkin" x={W * 0.32} y={H * 0.46} start={potemkin + 4} size={90} color={RC.blue} />
+        <div style={{ position: 'absolute', left: W * 0.38, top: H * 0.3, width: W * 0.54, height: H * 0.5, transform: `perspective(1600px) rotateY(${behind * 160}deg)`, transformStyle: 'preserve-3d' }}>
+          <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden' }}><RImg src="props/potemkin_facade_front.png" w={W * 0.54} h={H * 0.5} label="🏠🏠🏠 pretty village" /></div>
+          <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}><RImg src="props/potemkin_facade_back.png" w={W * 0.54} h={H * 0.5} label="🪵 just planks!" /></div>
+        </div>
+        <Char who="potemkin" x={W * 0.13} y={H * 0.94} height={H * 0.5} start={phrase - 30} gestures={[[0, 'down'], [potemkin, 'present'], [fake, 'wave'], [myth, 'shrug']]} moods={[[potemkin, 'grin'], [myth, 'worried']]} />
+        <TypeOn text="Potemkin" x={W * 0.13} y={H * 0.38} start={potemkin + 4} size={90} color={RC.blue} />
         <TypeOn text="सब ख़ुशहाल है! 😁" x={W * 0.68} y={H * 0.22} start={show} size={100} color={RC.white} exit={myth} />
         <Stamp text="EXAGGERATED?" x={W * 0.62} y={H * 0.2} start={myth + 20} size={120} />
-        <TypeOn text="दुश्मनों ने बढ़ा-चढ़ाकर फैलाई" x={W * 0.62} y={H * 0.33} start={enemies} size={84} color={RC.white} />
+        <PlateText text="दुश्मनों ने बढ़ा-चढ़ाकर फैलाई" x={W * 0.62} y={H * 0.32} start={enemies} size={84} color={RC.white} />
         <TypeOn text="phrase आज भी: किसी भी दिखावे के लिए 🎭" x={W * 0.5} y={H * 0.92} start={still} size={84} color={RC.yellow} />
       </Camera>
       <Sfx at={myth - 10} file="whoosh_soft.wav" volume={0.5} />
@@ -169,13 +189,14 @@ const D: React.FC<{ base: number }> = ({ base }) => {
 const E: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
   const letters = L(at(55, 'letters'));
+  const philosophers = L(at(55, 'philosophers'));
   const freedom = L(at(55, 'आज़ादी'));
   return (
     <GreyStage>
       <Camera from={0}>
         <Char who="catherine_great" x={W * 0.32} y={H * 0.96} height={H * 0.6} start={0} gestures={[[0, 'hold'], [freedom, 'present']]} moods={[[0, 'smile'], [freedom, 'smug']]} />
         <PopIn x={W * 0.44} y={H * 0.74} start={4}><RImg src="props/books_quill.png" w={H * 0.26} h={H * 0.26} label="📚✒️" /></PopIn>
-        <Card src="cards/card_voltaire.png" x={W * 0.8} y={H * 0.46} w={W * 0.16} start={letters - 20} name="Voltaire" tilt={4} />
+        <Card src="cards/card_voltaire.png" x={W * 0.8} y={H * 0.46} w={W * 0.16} start={philosophers} name="Voltaire" tilt={4} />
         <Flow3 start={letters} />
         <TypeOn text="आज़ादी! तर्क! 💡" x={W * 0.6} y={H * 0.16} start={freedom} size={110} color={RC.white} />
         <TypeOn text="Enlightened? 🤔" x={W * 0.6} y={H * 0.28} start={freedom + 40} size={110} color={RC.yellow} />
@@ -203,7 +224,6 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
   const reality = L(at(56, 'हक़ीक़त'));
-  const serf = L(at(56, 'serf'));
   const slaves = L(at(56, 'ग़ुलाम,'));
   const sold = L(at(56, 'बेचा'));
   const tag = L(at(56, 'सत्रह'));
@@ -216,13 +236,13 @@ const F: React.FC<{ base: number }> = ({ base }) => {
     <AbsoluteFill>
       {!map ? (
         <GreyStage>
-          <Camera from={0}>
+          <Camera from={0} drift={0.004}>
             <TypeOn text="ज़मीन पर हक़ीक़त 🔄" x={W * 0.56} y={H * 0.1} start={reality} size={110} color={RC.white} />
             {[0, 1, 2].map((i) => (
-              <Char key={i} who={i === 1 ? 'serf_woman' : 'serf_worker'} seed={`sf${i}`} x={W * (0.42 + i * 0.16)} y={H * 0.96} height={H * 0.46} start={serf + i * 5} moods={[[0, 'sad']]} gestures={[[0, 'down']]} />
+              <Char key={i} who={i === 1 ? 'serf_woman' : 'serf_worker'} seed={`sf${i}`} x={W * (0.42 + i * 0.16)} y={H * 0.93} height={H * 0.46} start={reality + 10 + i * 5} moods={[[0, 'sad']]} gestures={[[0, 'down']]} />
             ))}
             <TypeOn text="serf = लगभग ग़ुलाम ⛓️" x={W * 0.58} y={H * 0.26} start={slaves} size={110} color={RC.danger} />
-            <PopIn x={W * 0.86} y={H * 0.5} start={sold} tilt={-12}><div style={{ background: '#F6EBCF', padding: '20px 40px', borderRadius: 20, ...hand(90, '#3A2616'), textShadow: 'none', boxShadow: '0 14px 30px rgba(0,0,0,0.35)' }}>🏷️ ज़मीन के साथ बिकाऊ</div></PopIn>
+            <PopIn x={W * 0.58} y={H * 0.4} start={sold} tilt={-6}><div style={{ background: '#F6EBCF', padding: '20px 40px', borderRadius: 20, ...hand(90, '#3A2616'), textShadow: 'none', boxShadow: '0 14px 30px rgba(0,0,0,0.35)' }}>🏷️ ज़मीन के साथ बिकाऊ</div></PopIn>
           </Camera>
           <Host x={W * 0.14} y={H * 0.92} height={H * 0.52} offset={base} start={0} gestures={[[0, 'present'], [sold, 'handsHead']]} moods={[[0, 'neutral'], [slaves, 'sad'], [sold, 'shocked']]} />
         </GreyStage>
@@ -259,16 +279,21 @@ const G: React.FC<{ base: number }> = ({ base }) => {
   const pressure = L(at(57, 'दबाव'));
   const g = ramp(frame, bigger, 60, ease.out);
   const p = ramp(frame, below, 60, ease.out);
+  const sh = H * (0.6 - p * 0.16); // the serf shrinks under the load, feet stay on the floor
+  const sack = ramp(frame, below - 10, 40, ease.out);
   return (
     <GreyStage>
       <Camera from={0}>
-        <div style={{ position: 'absolute', left: W * 0.36, top: H * (0.62 - g * 0.2), transform: `translate(-50%,-50%) scale(${0.8 + g * 1.2})` }}><RImg src="props/crown_catherine.png" w={360} h={360} label="👑" /></div>
-        <TypeOn text="Empire ⬆️" x={W * 0.36} y={H * 0.12} start={bigger} size={120} color={RC.green} />
-        <div style={{ position: 'absolute', left: 0, top: 0, width: W, height: H, transform: `translateY(${p * H * 0.06}px)` }}>
-          <Char who="serf_worker" x={W * 0.7} y={H * 0.96} height={H * (0.5 - p * 0.18)} start={2} moods={[[0, 'sad']]} gestures={[[0, 'handsHead']]} shake={[below, below + 300]} />
-        </div>
-        <TypeOn text="किसान ⬇️" x={W * 0.7} y={H * 0.12} start={below} size={120} color={RC.danger} />
-        <TypeOn text="दबाव · 100 साल तक जमा होता रहेगा ⏳" x={W * 0.52} y={H * 0.88} start={pressure} size={96} color={RC.yellow} />
+        <div style={{ position: 'absolute', left: W * 0.3, top: H * (0.6 - g * 0.1), transform: `translate(-50%,-50%) scale(${1 + g * 0.9})` }}><RImg src="props/crown_catherine.png" w={H * 0.24} h={H * 0.24} label="👑" /></div>
+        <TypeOn text="Empire ⬆️" x={W * 0.3} y={H * 0.17} start={bigger} size={120} color={RC.green} />
+        <Char who="serf_worker" x={W * 0.7} y={H * 0.94} height={sh} start={2} moods={[[0, 'sad']]} gestures={[[0, 'handsHead']]} shake={[below, below + 300]} />
+        {sack > 0 && (
+          <div style={{ position: 'absolute', left: W * 0.7, top: H * 0.94 - sh * 0.93, transform: `translate(-50%,-100%) scale(${0.4 + sack * 0.45 + p * 0.15})`, transformOrigin: '50% 100%', opacity: Math.min(1, sack * 3) }}>
+            <RImg src="props/tribute_sack.png" w={H * 0.26} h={H * 0.26} label="💰" />
+          </div>
+        )}
+        <TypeOn text="किसान ⬇️" x={W * 0.7} y={H * 0.17} start={below} size={120} color={RC.danger} />
+        <TypeOn text="दबाव · 100 साल तक जमा होता रहेगा ⏳" x={W * 0.38} y={H * 0.88} start={pressure} size={96} color={RC.yellow} />
       </Camera>
       <Sfx at={pressure} file="heartbeat_low.wav" volume={0.5} />
     </GreyStage>
