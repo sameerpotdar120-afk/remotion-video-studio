@@ -233,7 +233,7 @@ const Break: React.FC<{ img: Imgs }> = ({ img }) => {
       <MapView c={c} />
       <P c={c} img={img} />
       {img.wave && <P34Waves src={img.wave} at={[px, py]} rx={patchW(c) * 0.55} ry={patchH(c) * 0.6} />}
-      {img.bottle && img.shard && at(70, <P25Shatter whole={img.bottle} pieces={Array(7).fill(img.shard)} />)}
+      {img.bottle && img.shard && at(70, <P25Shatter whole={img.bottle} pieces={img.shard.includes('gp13_shard') ? SHARDS : Array(7).fill(img.shard)} />)}
       {img.glass && img.texture && at(150, <P26Magnifier glass={img.glass} texture={img.texture} to={[px, py]} />)}
       {img.bottle && <P29PropPath src={img.bottle} keys={[[0, px, py, 0, 0], [12, px + 180, py - 160, 120, 1], [30, px + 60, py - 20, 260, 0.6], [34, px + 60, py - 20, 260, 0]]} />}
     </>
@@ -283,6 +283,16 @@ export const P99Reel: React.FC<{ img?: Imgs }> = ({ img = {} }) => {
     </AbsoluteFill>
   );
 };
+/** The creator's images (gp01–gp25), cut out by tools/cut_garbagepatch_assets.py. */
+const G = (n: string) => staticFile(`garbagepatch/img/${n}`);
+export const GP_IMGS: Imgs = {
+  island: G('gp01_trash_island.png'), texture: G('gp02_microplastic_texture.jpg'), bottle: G('gp03_plastic_bottle.png'), container: G('gp04_plastic_crate.png'), net: G('gp05_ghost_net.png'),
+  bag: G('gp06_plastic_bag.png'), boat: G('gp07_fishing_boat.png'), ship: G('gp08_cargo_ship.png'), plane: G('gp09_airplane.png'), sun: G('gp10_sun.png'), drop: G('gp11_water_drop.png'),
+  wave: G('gp12_wave.png'), shard: G('gp13_shard_3.png'), glass: G('gp14_magnifying_glass.png'), fish: G('gp15_small_fish.png'), bigfish: G('gp16_big_fish.png'), thali: G('gp17_fish_thali.png'),
+  satellite: G('gp18_satellite.png'), pin: G('gp19_map_pin.png'), city: G('gp20_city_skyline.png'), soup1: G('gp21_soup_underwater.jpg'), soup2: G('gp22_soup_surface.jpg'),
+  bowl: G('gp23_soup_bowl.png'), ladle: G('gp23b_ladle.png'), cutaway: G('gp24_ocean_cutaway.jpg'), beach: G('gp25_shore_slope.png'),
+};
+export const SHARDS = [1, 2, 3, 4, 5, 6, 7].map((i) => G(`gp13_shard_${i}.png`));
 /** Test-only stand-ins from earlier videos' images, to check the motion mechanics before the creator's images arrive. */
 const T = (p: string) => staticFile(p);
 export const TEST_IMGS: Imgs = {

@@ -3,7 +3,7 @@ import { Composition } from 'remotion';
 import { P02Accent } from './P02Accent';
 import { P07CountUp } from './P07CountUp';
 import { P10NumRing } from './P10NumRing';
-import { P99Reel, REEL_FRAMES, TEST_IMGS } from './P99Reel';
+import { GP_IMGS, P99Reel, REEL_FRAMES, TEST_IMGS } from './P99Reel';
 
 // Standalone pieces; the rest take map geometry or the creator's images as props and are used in the edit (and
 // shown in p99-reel on the real map).
@@ -13,6 +13,7 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="p07-count-up" component={P07CountUp} width={1000} height={400} fps={60} durationInFrames={150} defaultProps={{ to: 16, unit: ' लाख km²', sub: 'भारत का लगभग आधा' }} />
     <Composition id="p10-num-ring" component={P10NumRing} width={360} height={360} fps={60} durationInFrames={120} defaultProps={{ n: 1, size: 120 }} />
     <Composition id="p99-reel" component={P99Reel} width={1080} height={1920} fps={60} durationInFrames={REEL_FRAMES} />
+    <Composition id="p99-reel-gp" component={P99Reel} width={1080} height={1920} fps={60} durationInFrames={REEL_FRAMES} defaultProps={{ img: GP_IMGS }} />
     <Composition id="p99-reel-test" component={P99Reel} width={1080} height={1920} fps={60} durationInFrames={REEL_FRAMES} defaultProps={{ img: TEST_IMGS }} />
   </>
 );
