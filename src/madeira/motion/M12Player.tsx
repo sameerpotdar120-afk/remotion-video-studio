@@ -22,7 +22,7 @@ export const M12Player: React.FC<{ src: string; ratio: number; h?: number; mode?
   return (
     <AbsoluteFill style={{ opacity: o * Math.min(1, f / 4) }}>
       {rays > 0 && (
-        <svg width={w * 3} height={w * 3} viewBox="-1 -1 2 2" style={{ position: 'absolute', left: '50%', bottom: h * 0.35, marginLeft: -w * 1.5, marginBottom: -w * 1.5, transform: `rotate(${f * 0.4}deg) scale(${rays})`, opacity: 0.6 }}>
+        <svg width={w * 3} height={w * 3} viewBox="-1 -1 2 2" style={{ position: 'absolute', left: '50%', bottom: h * 0.35, marginLeft: -w * 1.5, marginBottom: -w * 1.5, transform: `rotate(${f * 0.4}deg) scale(${rays})`, opacity: 0.3, filter: 'blur(14px)', WebkitMaskImage: 'radial-gradient(circle, #000 20%, transparent 70%)', maskImage: 'radial-gradient(circle, #000 20%, transparent 70%)' }}>
           {Array.from({ length: 16 }, (_, i) => { const a = (i / 16) * Math.PI * 2; return <path key={i} d={`M 0 0 L ${Math.cos(a - 0.08)} ${Math.sin(a - 0.08)} L ${Math.cos(a + 0.08)} ${Math.sin(a + 0.08)} Z`} fill={C.gold} opacity={i % 2 ? 0.5 : 0.25} />; })}
         </svg>
       )}
