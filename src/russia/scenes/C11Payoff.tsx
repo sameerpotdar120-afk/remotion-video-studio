@@ -29,6 +29,7 @@ const NODES = ['862', '1240', '1613', '1917', '1991', 'आज'];
 /* ───────────── A · four collapses on the HUD ───────────── */
 const A: React.FC<{ base: number }> = ({ base }) => {
   const L = (f: number) => f - base;
+  const promise = L(at(96, 'वादा'));
   const four = L(at(96, 'चार'));
   const c1 = L(at(96, 'बारह'));
   const c2 = L(at(96, 'Ivan'));
@@ -39,16 +40,17 @@ const A: React.FC<{ base: number }> = ({ base }) => {
     <GreyStage>
       <TimelineHUD nodes={NODES} start={0} active={[[0, 0], [c1, 1], [c2, 2], [c3, 3], [c4, 4]]} collapses={[1, 2, 3, 4]} />
       <Camera from={0}>
-        <TypeOn text="वादा पूरा: 4 collapse" x={W * 0.56} y={H * 0.3} start={four} size={130} color={RC.yellow} />
+        <TypeOn text="वादा पूरा: 4 collapse" x={W * 0.6} y={H * 0.27} start={promise} size={150} color={RC.yellow} />
         {beats.map(([f, txt, yr], i) => (
-          <PopIn key={i} x={W * (0.3 + (i % 2) * 0.44)} y={H * (0.52 + Math.floor(i / 2) * 0.24)} start={f} tilt={i % 2 ? 3 : -3}>
-            <div style={{ background: '#F4F1EA', borderRadius: 30, padding: '24px 50px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', textAlign: 'center' }}>
-              <div style={{ ...hand(90, RC.danger), textShadow: 'none' }}>✘ #{i + 1} · {yr}</div>
-              <div style={{ ...hand(70, '#333'), textShadow: 'none' }}>{txt}</div>
+          <PopIn key={i} x={W * (0.44 + (i % 2) * 0.34)} y={H * (0.5 + Math.floor(i / 2) * 0.26)} start={f} tilt={i % 2 ? 3 : -3}>
+            <div style={{ background: '#F4F1EA', borderRadius: 40, padding: '30px 64px', boxShadow: '0 24px 48px rgba(0,0,0,0.3)', textAlign: 'center' }}>
+              <div style={{ ...hand(120, RC.danger), textShadow: 'none' }}>✘ #{i + 1} · {yr}</div>
+              <div style={{ ...hand(96, '#333'), textShadow: 'none' }}>{txt}</div>
             </div>
           </PopIn>
         ))}
       </Camera>
+      <Host x={W * 0.12} y={H * 0.94} height={H * 0.56} offset={base} start={-12} gestures={[[0, 'present'], [four, 'fingerUp'], [c1, 'point']]} moods={[[0, 'neutral'], [c3, 'worried']]} />
       {beats.map(([f], i) => <Sfx key={i} at={f} file="stamp_slam.wav" volume={0.45} />)}
     </GreyStage>
   );
@@ -61,6 +63,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
   const flat = L(at(97, 'सपाट'));
   const noMount = L(at(97, 'पहाड़,'));
   const any = L(at(97, 'हमला'));
+  const hist = L(at(97, 'historians'));
   const names: [string, number, [number, number][], string][] = [
     ['Mongols', L(at(97, 'Mongols,')), [[95, 47], [75, 49], [55, 51], [42, 54]], RC.horde],
     ['Poles', L(at(97, 'Poles,')), [[17, 52], [26, 53.5], [34, 55]], RC.poland],
@@ -70,14 +73,20 @@ const B: React.FC<{ base: number }> = ({ base }) => {
   ];
   return (
     <AbsoluteFill>
-      <RMap view="eurasia" cam={[{ at: 0, lon: 75, lat: 55, zoom: 1.05 }, { at: any, lon: 55, lat: 54, zoom: 1.35, dur: 140 }]}
+      <RMap view="eurasia" cam={[{ at: 0, lon: 75, lat: 55, zoom: 1.05 }, { at: 1, lon: 70, lat: 57, zoom: 1.2, dur: flat - 1 }, { at: any, lon: 55, lat: 54, zoom: 1.35, dur: 140 }]}
         overlay={<><MapLabel lon={80} lat={63} text="बहुत बड़ी 📏 · बहुत सपाट ➖" start={flat} size={110} color={RC.yellow} />
-          <MapLabel lon={60} lat={49} text="न पहाड़ ⛰️✗ · न समुंदर 🌊✗" start={noMount} size={90} />
-          {names.map(([n, f, pts]) => <MapLabel key={n} lon={pts[0][0]} lat={pts[0][1] + 2.4} text={n} start={f} size={84} />)}</>}>
-        <Fill id="russia_modern" color={RC.rusRed} start={0} dur={1} opacity={0.5} pulseAt={[flat]} />
+          <MapLabel lon={60} lat={49} text="न पहाड़ ⛰️✗ · न समुंदर 🌊✗" start={noMount} size={100} />
+          {names.map(([n, f, pts]) => <MapLabel key={n} lon={pts[0][0]} lat={pts[0][1] + (n === 'Hitler' ? -2.6 : 2.4)} text={n} start={f} size={92} />)}</>}>
+        <Fill id="russia_modern" color={RC.rusRed} start={-2} dur={1} opacity={0.5} pulseAt={[flat]} />
         {names.map(([n, f, pts, c]) => <Route key={n} pts={pts} start={f - 6} dur={40} width={34} color={c === RC.poland ? '#EDEDED' : c} head={RC.stampRed} />)}
       </RMap>
-      <TypeOn text="Loop रुकता क्यों नहीं? 🤔" x={W * 0.5} y={H * 0.1} start={q} size={120} color={RC.white} exit={flat} />
+      <TypeOn text="Loop रुकता क्यों नहीं? 🤔" x={W * 0.5} y={H * 0.1} start={q} size={140} color={RC.white} exit={flat} />
+      <PopIn x={W * 0.2} y={H * 0.72} start={hist} exit={flat} tilt={-4}>
+        <div style={{ background: '#F4F1EA', borderRadius: 36, padding: '28px 48px', boxShadow: '0 24px 48px rgba(0,0,0,0.4)', textAlign: 'center' }}>
+          <RImg src="props/books_quill.png" w={H * 0.26} h={H * 0.26} label="📚" style={{ margin: '0 auto' }} />
+          <div style={{ ...hand(90, '#333'), textShadow: 'none' }}>historians 📚 👉 ज़मीन</div>
+        </div>
+      </PopIn>
       {names.map(([n, f]) => <Sfx key={n} at={f - 6} file="whoosh_fast.wav" volume={0.4} />)}
     </AbsoluteFill>
   );
@@ -95,7 +104,7 @@ const C: React.FC<{ base: number }> = ({ base }) => {
     [L(at(98, 'Peter')), 'props/shears_giant.png', 'Empire · किसानों की पीठ पर ✂️', 3],
     [L(at(98, 'Tsars')), 'props/crown_catherine.png', 'ढीले पड़े → गिरे 👑⬇️', 3],
     [L(at(98, 'Stalin')), 'cards/card_stalin.png', 'superpower · करोड़ों जानें', 4],
-    [L(at(98, 'Soviet')), 'props/oil_barrel.png', 'गिरा → chaos → फिर एक ताक़तवर आदमी', 5],
+    [L(at(98, 'Soviet')), 'cards/card_putin.jpg', 'गिरा → chaos → फिर एक ताक़तवर आदमी', 5],
   ];
   let cur = 0;
   beats.forEach(([f], i) => { if (frame >= f) cur = i; });
@@ -104,13 +113,13 @@ const C: React.FC<{ base: number }> = ({ base }) => {
     <GreyStage>
       <TimelineHUD nodes={NODES} start={0} active={beats.map(([f, , , n]) => [f, Math.min(5, n)] as [number, number])} collapses={[1, 2, 3, 4]} />
       <Camera from={0}>
-        <TypeOn text="पूरी कहानी एक साथ 👀" x={W * 0.5} y={H * 0.3} start={L(at(98, 'अब'))} size={110} color={RC.yellow} exit={beats[0][0]} />
+        <TypeOn text="पूरी कहानी एक साथ 👀" x={W * 0.5} y={H * 0.48} start={L(at(98, 'अब')) - 24} size={170} color={RC.yellow} exit={beats[0][0]} />
         {frame >= beats[0][0] && (
-          <div key={cur} style={{ position: 'absolute', left: W * 0.5, top: H * 0.56, transform: `translate(-50%, -50%) scale(${pop(frame, beats[cur][0], 1.1)})`, textAlign: 'center' }}>
+          <div key={cur} style={{ position: 'absolute', left: W * 0.5, top: H * 0.56, transform: `translate(-50%, -50%) scale(${0.72 + 0.28 * pop(frame, beats[cur][0], 1.1)})`, textAlign: 'center' }}>
             <div style={{ display: 'inline-block', background: '#F4F1EA', borderRadius: 36, padding: 24, boxShadow: '0 30px 60px rgba(0,0,0,0.3)' }}>
-              <RImg src={src} w={H * 0.42} h={H * 0.42} label={txt} />
+              <RImg src={src} w={H * 0.52} h={H * 0.52} label={txt} />
             </div>
-            <div style={{ ...hand(100, RC.white), marginTop: 30 }}>{txt}</div>
+            <div style={{ ...hand(130, RC.white), marginTop: 30 }}>{txt}</div>
           </div>
         )}
       </Camera>
@@ -131,10 +140,10 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <LoopWheel x={W * 0.6} y={H * 0.52} r={H * 0.3} start={0} steps={[[danger, 0], [strong, 1], [order, 2], [over, 3], [breaks, 4]]} spinAt={breaks + 30} center={{ text: 'डर', at: danger + 10 }} />
-        <TypeOn text="सब कुछ एक ही आदमी पर टिका ☝️" x={W * 0.6} y={H * 0.94} start={one} size={96} color={RC.yellow} />
+        <LoopWheel x={W * 0.5} y={H * 0.45} r={H * 0.27} start={-12} steps={[[danger, 0], [strong, 1], [order, 2], [over, 3], [breaks, 4]]} spinAt={breaks + 30} center={{ text: 'डर', at: danger + 10 }} />
+        <TypeOn text="सब कुछ एक ही आदमी पर टिका ☝️" x={W * 0.56} y={H * 0.88} start={one} size={120} color={RC.yellow} />
       </Camera>
-      <Host x={W * 0.14} y={H * 0.92} height={H * 0.56} offset={base} start={0} gestures={[[0, 'present'], [strong, 'fingerUp'], [over, 'shrug'], [breaks, 'handsHead']]} moods={[[0, 'neutral'], [over, 'worried'], [breaks, 'shocked']]} />
+      <Host x={W * 0.12} y={H * 0.94} height={H * 0.56} offset={base} start={-12} gestures={[[0, 'present'], [strong, 'fingerUp'], [over, 'shrug'], [breaks, 'handsHead']]} moods={[[0, 'neutral'], [over, 'worried'], [breaks, 'shocked']]} />
       <Sfx at={danger + 10} file="heartbeat_low.wav" volume={0.55} />
       <Sfx at={breaks} file="glass_break.wav" volume={0.5} />
     </GreyStage>
@@ -151,22 +160,22 @@ const EF: React.FC<{ base: number }> = ({ base }) => {
   const close = L(at(101, 'Loop'));
   const sub = L(at(101, 'subscribe'));
   const end = TOTAL - base;
-  const bell = sub + 20;
+  const bell = sub + 45;
   return (
     <AbsoluteFill>
       <Globe keys={[{ at: 0, lon: 80, lat: 50, dist: 3.4 }, { at: 2, lon: 95, lat: 56, dist: 2.9, dur: 200 }, { at: close, lon: 95, lat: 56, dist: 4.2, dur: end - close }]}
         highlight={{ ids: ['russia_modern'], color: '#D0302A', start: 0, pulse: [hands, falls] }} spinBias={2} />
       <CollapseMarks redAt={[0, 0, 0, 0]} start={0} x={W * 0.5} y={H * 0.06} size={150} />
-      <TypeOn text="कमज़ोर नहीं…" x={W * 0.3} y={H * 0.74} start={notWeak} size={110} color={RC.white} exit={hands} />
-      <TypeOn text="सारी ताक़त ➡️ एक आदमी" x={W * 0.32} y={H * 0.74} start={hands} size={110} color={RC.yellow} exit={close} />
-      <TypeOn text="वो गिरा → देश गिरा" x={W * 0.32} y={H * 0.86} start={falls} size={110} color={RC.danger} exit={close} />
-      <TypeOn text="Loop टूटेगा? ⏳" x={W * 0.32} y={H * 0.74} start={close} size={130} color={RC.white} />
-      <Host x={W * 0.86} y={H * 1.1} height={H * 0.62} flip offset={base} start={0} gestures={[[0, 'present'], [close, 'chin'], [sub, 'wave']]} moods={[[0, 'neutral'], [close, 'smug'], [sub, 'grin']]} hopAt={[sub + 4]} />
+      <TypeOn text="कमज़ोर नहीं…" x={W * 0.3} y={H * 0.74} start={notWeak} size={140} color={RC.white} exit={hands} />
+      <TypeOn text="सारी ताक़त ➡️ एक आदमी" x={W * 0.32} y={H * 0.74} start={hands} size={140} color={RC.yellow} exit={close} />
+      <TypeOn text="वो गिरा → देश गिरा" x={W * 0.32} y={H * 0.86} start={falls} size={140} color={RC.danger} exit={close} />
+      <TypeOn text="Loop टूटेगा? ⏳" x={W * 0.32} y={H * 0.74} start={close} size={160} color={RC.white} />
+      <Host x={W * 0.86} y={H * 0.95} height={H * 0.6} flip offset={base} start={0} gestures={[[0, 'present'], [close, 'shrug'], [sub, 'wave']]} moods={[[0, 'neutral'], [close, 'smug'], [sub, 'grin']]} hopAt={[sub + 4]} />
       {frame >= sub && (
         <div style={{ position: 'absolute', left: W * 0.32, top: H * 0.88, transform: `translate(-50%, -50%) scale(${pop(frame, sub, 1.15) * (frame > bell && frame < bell + 10 ? 0.92 : 1)})` }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 30, background: frame > bell ? '#7A7A7A' : '#E62117', borderRadius: 26, padding: '26px 60px', boxShadow: '0 20px 40px rgba(0,0,0,0.45)' }}>
-            <span style={{ fontFamily: '"Anton", sans-serif', fontSize: 110, color: '#fff', letterSpacing: 4 }}>{frame > bell ? 'SUBSCRIBED' : 'SUBSCRIBE'}</span>
-            <span style={{ fontSize: 100, transform: `rotate(${frame > bell + 10 ? Math.sin((frame - bell) / 3) * 20 * Math.exp(-(frame - bell) / 30) : 0}deg)`, display: 'inline-block' }}>🔔</span>
+            <span style={{ fontFamily: '"Anton", sans-serif', fontSize: 140, color: '#fff', letterSpacing: 4 }}>{frame > bell ? 'SUBSCRIBED' : 'SUBSCRIBE'}</span>
+            <span style={{ transform: `rotate(${frame > bell + 10 ? Math.sin((frame - bell) / 3) * 20 * Math.exp(-(frame - bell) / 30) : 0}deg)`, display: 'inline-block' }}><RImg src="props/subscribe_bell.png" w={150} h={150} label="🔔" /></span>
           </div>
         </div>
       )}
