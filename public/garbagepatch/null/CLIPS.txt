@@ -1,0 +1,3 @@
+null_gp_B1.mp4  line 9 ("और यही टुकड़े… हमारी थाली तक पहुँच सकते हैं।"): use 0.0–6.0 s (pinch, three hops, palm up at ~5 s).
+null_gp_C1.mp4  line 13 ("जो ऊपर तैर रहा है, वो तो बस थोड़ा सा हिस्सा है।"): use 0.8–5.3 s (flat hand ~1 s, tiny gap 2–3 s, points down 4–5 s).
+Both: Omni (Gemini), AI-generated, 1080x1920 24 fps, audio muted in the edit, split screen bottom half (1080x960 band round mask and hands; drops the sparkle).
