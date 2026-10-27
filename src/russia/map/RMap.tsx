@@ -501,58 +501,95 @@ export const HANDFONT = HAND;
 export const ShatterFill: React.FC<{ id: string; color: string; center: [number, number]; start: number; breakAt: number; mendAt?: number; pieces?: number; exit?: number; opacity?: number }> = ({
   id, color, center, start, breakAt, mendAt, pieces = 9, exit, opacity = 0.62,
 }) => {
+  // raster version: the territory is drawn ONCE into an image (world coords, half res); each shard is that image
+  // clipped by a CSS polygon and moved — the SVG version re-rasterised a 10 m outline ×(pieces+1) every frame (~40 s/frame)
   const frame = useCurrentFrame();
-  const { path, proj, scale } = useRMap();
+  const audioOnly = useAudioOnly();
+  const { path, proj, scale, view } = useRMap();
   const d = useMemo(() => path(terr(id)), [id, path]);
-  if (frame < start) return null;
-  const o = exit !== undefined ? 1 - ramp(frame, exit, 12, ease.in) : 1;
+  const v = VIEWS[view as ViewName] as { width: number; height: number };
+  const url = useMemo(() => {
+    if (audioOnly || typeof document === 'undefined') return '';
+    const c = document.createElement('canvas');
+    c.width = Math.round(v.width * RASTER_K); c.height = Math.round(v.height * RASTER_K);
+    const g = c.getContext('2d')!;
+    g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
+    const p2 = new Path2D(d);
+    g.globalAlpha = Math.min(0.95, opacity);
+    g.fillStyle = color;
+    g.fill(p2, 'evenodd');
+    g.globalAlpha = 1;
+    g.strokeStyle = 'rgba(255,255,255,0.9)';
+    g.lineWidth = 3.3;
+    g.lineJoin = 'round';
+    g.stroke(p2);
+    return c.toDataURL('image/png');
+  }, [d, color, opacity, v.width, v.height, audioOnly]);
+  const crackPath = useMemo(() => (audioOnly || typeof Path2D === 'undefined' ? null : new Path2D(d)), [d, audioOnly]);
+  const crackRef = React.useRef<HTMLCanvasElement>(null);
   const [cx, cy] = proj(center) as [number, number];
   const R = 40000;
   const angs = Array.from({ length: pieces }, (_, i) => ((i + 0.5 * random(`sa${i}`)) / pieces) * Math.PI * 2);
   const apart = frame < breakAt ? 0 : ramp(frame, breakAt + 6, 26, ease.out) * (mendAt !== undefined ? 1 - ramp(frame, mendAt, 18, ease.inOut) : 1);
   const crackK = frame < breakAt ? 0 : ramp(frame, breakAt, 7, ease.out);
   const crackFade = mendAt !== undefined ? 1 - ramp(frame, mendAt + 10, 12, ease.out) : 1;
+  const showCracks = frame >= start && crackK > 0 && crackFade > 0;
+  React.useLayoutEffect(() => {
+    const c = crackRef.current;
+    if (!c || !crackPath) return;
+    const g = c.getContext('2d')!;
+    g.setTransform(1, 0, 0, 1, 0, 0);
+    g.clearRect(0, 0, c.width, c.height);
+    if (!showCracks) return;
+    g.setTransform(RASTER_K, 0, 0, RASTER_K, 0, 0);
+    g.save();
+    g.clip(crackPath, 'evenodd');
+    g.globalAlpha = crackFade;
+    g.strokeStyle = '#fff';
+    g.lineWidth = (7 / scale) * (1 - apart * 0.5);
+    g.lineJoin = 'bevel';
+    angs.forEach((a, i) => {
+      g.beginPath();
+      g.moveTo(cx, cy);
+      for (let s = 1; s <= 6; s++) {
+        const rr = (s / 6) * (1500 / scale) * crackK * 2.2;
+        const j = (random(`j${i}${Math.min(5, s)}`) - 0.5) * 0.25;
+        g.lineTo(cx + Math.cos(a + j) * rr, cy + Math.sin(a + j) * rr);
+      }
+      g.stroke();
+    });
+    g.restore();
+  });
+  if (frame < start || audioOnly) return null;
+  const o = exit !== undefined ? 1 - ramp(frame, exit, 12, ease.in) : 1;
   return (
-    <g opacity={o}>
-      <defs>
+    <foreignObject x={0} y={0} width={v.width} height={v.height} style={{ overflow: 'visible', pointerEvents: 'none' }}>
+      <div style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, opacity: o }}>
         {angs.map((a, i) => {
           const b = angs[(i + 1) % pieces] + (i === pieces - 1 ? Math.PI * 2 : 0);
-          // jagged wedge edge: a few kinks along each ray
           const ray = (t: number, k: number) => {
             const pts: string[] = [];
             for (let s = 1; s <= 5; s++) {
               const rr = (s / 5) * R * (s === 5 ? 1 : 0.06 * s);
               const j = (random(`j${k}${s}`) - 0.5) * 0.25;
-              pts.push(`${cx + Math.cos(t + j) * rr},${cy + Math.sin(t + j) * rr}`);
+              pts.push(`${cx + Math.cos(t + j) * rr}px ${cy + Math.sin(t + j) * rr}px`);
             }
             return pts;
           };
-          const pts = [`${cx},${cy}`, ...ray(a, i), ...ray(b, (i + 1) % pieces).reverse()];
-          return <clipPath key={i} id={`sh-${id}-${i}`}><polygon points={pts.join(' ')} /></clipPath>;
+          const poly = [`${cx}px ${cy}px`, ...ray(a, i), ...ray(b, (i + 1) % pieces).reverse()].join(', ');
+          const mid = a + Math.PI / pieces;
+          const dist = ((90 + 60 * random(`sd${i}`)) / scale) * apart;
+          const rot = (random(`sr${i}`) - 0.5) * 8 * apart;
+          return (
+            <div key={i} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height,
+              transformOrigin: `${cx}px ${cy}px`, transform: `translate(${Math.cos(mid) * dist}px, ${Math.sin(mid) * dist}px) rotate(${rot}deg)` }}>
+              <img src={url} style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, clipPath: `polygon(${poly})` }} />
+            </div>
+          );
         })}
-      </defs>
-      {angs.map((a, i) => {
-        const mid = a + Math.PI / pieces;
-        const dist = (90 + 60 * random(`sd${i}`)) / scale * apart;
-        const rot = (random(`sr${i}`) - 0.5) * 8 * apart;
-        return (
-          <g key={i} clipPath={`url(#sh-${id}-${i})`} transform={`translate(${Math.cos(mid) * dist} ${Math.sin(mid) * dist}) rotate(${rot} ${cx} ${cy})`}>
-            <path d={d} fill={color} fillOpacity={opacity} stroke="rgba(255,255,255,0.9)" strokeWidth={3 / scale} fillRule="evenodd" />
-          </g>
-        );
-      })}
-      <clipPath id={`shc-${id}`}><path d={d} /></clipPath>
-      <g clipPath={`url(#shc-${id})`}>
-      {crackK > 0 && crackFade > 0 && angs.map((a, i) => {
-        const pts: string[] = [`${cx},${cy}`];
-        for (let s = 1; s <= 6; s++) {
-          const rr = (s / 6) * (1500 / scale) * crackK * 2.2;
-          const j = (random(`j${i}${Math.min(5, s)}`) - 0.5) * 0.25;
-          pts.push(`${cx + Math.cos(a + j) * rr},${cy + Math.sin(a + j) * rr}`);
-        }
-        return <polyline key={i} points={pts.join(' ')} fill="none" stroke="#fff" strokeWidth={(7 / scale) * (1 - apart * 0.5)} opacity={crackFade} strokeLinejoin="bevel" />;
-      })}
-      </g>
-    </g>
+        <canvas ref={crackRef} width={Math.round(v.width * RASTER_K)} height={Math.round(v.height * RASTER_K)}
+          style={{ position: 'absolute', left: 0, top: 0, width: v.width, height: v.height, display: showCracks ? 'block' : 'none' }} />
+      </div>
+    </foreignObject>
   );
 };
