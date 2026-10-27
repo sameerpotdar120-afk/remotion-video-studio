@@ -217,7 +217,15 @@ export const Peg: React.FC<{
     : null;
 
   const faceW = rig.face.w * w;
+  // soft contact shadow on the ground (stays on the floor while hopping, shrinks with height)
+  const lift = Math.min(1, -hop / (height * 0.09));
+  const shadow = legs && opacity > 0 ? (
+    <div style={{ position: 'absolute', left: px - w * 0.5, top: py - w * 0.07, width: w, height: w * 0.14, opacity: opacity * (1 - 0.5 * lift) * (1 - fall),
+      transform: `scale(${s * (1 - 0.3 * lift)})`, borderRadius: '50%', background: 'radial-gradient(closest-side, rgba(20,14,10,0.42), rgba(20,14,10,0.18) 60%, rgba(20,14,10,0))' }} />
+  ) : null;
   return (
+    <>
+    {shadow}
     <div style={{ position: 'absolute', left: px - w / 2 + tremble, top: py - height + walkBob + idleBob + hop, width: w, height, opacity,
       transformOrigin: '50% 100%', transform: `scaleX(${flip ? -1 : 1}) scale(${s}) scale(${1 / sq}, ${sq}) rotate(${fall * 90}deg)` }}>
       <svg width={w} height={height} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>{legNodes}</svg>
@@ -245,6 +253,7 @@ export const Peg: React.FC<{
         {children}
       </div>
     </div>
+    </>
   );
 };
 
