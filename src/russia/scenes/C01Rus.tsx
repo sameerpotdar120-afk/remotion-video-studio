@@ -49,7 +49,7 @@ const A: React.FC<{ base: number }> = ({ base }) => {
             <MapLabel lon={31.5} lat={48.8} text="Ukraine" start={modern + 12} exit={none} size={100} color="rgba(255,255,255,0.9)" />
             <MapLabel lon={28} lat={53.4} text="Belarus" start={modern + 24} exit={none} size={90} color="rgba(255,255,255,0.9)" />
             {[[33, 57.6], [36.5, 53], [30, 60.5], [27, 51.5], [38.5, 56]].map(([lo, la], i) => (
-              <At key={i} lon={lo} lat={la} start={forest + i * 4} bob={4}><Glyph g="🌲" size={90} /></At>
+              <At key={i} lon={lo} lat={la} start={forest + i * 4} bob={4}><Glyph g="🌲" size={130} /></At>
             ))}
             <MapLabel lon={30.4} lat={51.2} text="Slavs" start={tribes} size={110} color={RC.yellow} />
             <MapLabel lon={35.5} lat={61.2} text="Finns" start={tribes + 8} size={110} color={RC.yellow} />
@@ -92,12 +92,12 @@ const B: React.FC<{ base: number }> = ({ base }) => {
       {!inForest ? (
         <GreyStage>
           <Camera from={0}>
-            <Frame x={W * 0.6} y={H * 0.46} w={W * 0.44} h={W * 0.29} start={L(at(6, 'chronicle'))} tilt={-3}>
+            <Frame x={W * 0.6} y={H * 0.46} w={W * 0.44} h={W * 0.29} start={L(at(6, 'कहानी'))} tilt={-3}>
               <RImg src="docs/primary_chronicle_page.png" w={W * 0.44} h={W * 0.29} label="Primary Chronicle (manuscript)" />
             </Frame>
             <TypeOn text="Primary Chronicle · ~1113" x={W * 0.6} y={H * 0.86} start={L(at(6, 'chronicle')) + 14} size={96} color={RC.blue} />
           </Camera>
-          <Host x={W * 0.16} y={H * 0.92} height={H * 0.6} offset={base} start={0} gestures={[[0, 'present'], [L(at(6, 'chronicle')), 'point']]} moods={[[0, 'smile']]} />
+          <Host x={W * 0.16} y={H * 0.92} height={H * 0.6} offset={base} start={0} gestures={[[0, 'fingerUp'], [L(at(6, 'कहानी')), 'present'], [L(at(6, 'chronicle')), 'point']]} moods={[[0, 'smile']]} />
         </GreyStage>
       ) : (
         <AbsoluteFill>
@@ -105,7 +105,7 @@ const B: React.FC<{ base: number }> = ({ base }) => {
           <Camera from={forestAt} drift={0.012}>
             <Char who="slav_elder" x={W * 0.3} y={H * 0.93} height={H * 0.46} start={forestAt + 2} gestures={[[forestAt, 'fist'], [call, 'present'], [come, 'cheer']]} moods={[[forestAt, 'angry'], [call, 'worried'], [come, 'grin']]} shake={[forestAt + 4, call - 4]} talk={[[said, order + 40]]} />
             <Char who="finn_elder" x={W * 0.5} y={H * 0.95} height={H * 0.44} start={forestAt + 6} flip gestures={[[forestAt, 'point'], [call, 'shrug'], [come, 'cheer']]} moods={[[forestAt, 'furious'], [call, 'worried'], [come, 'smile']]} shake={[forestAt + 4, call - 4]} />
-            <Char who="balt_elder" x={W * 0.68} y={H * 0.93} height={H * 0.45} start={forestAt + 10} flip gestures={[[forestAt, 'fist'], [call, 'chin'], [come, 'wave']]} moods={[[forestAt, 'angry'], [call, 'neutral'], [come, 'smile']]} hopAt={[come + 10]} />
+            <Char who="balt_elder" x={W * 0.68} y={H * 0.93} height={H * 0.45} start={forestAt + 10} flip gestures={[[forestAt, 'fist'], [call, 'hips'], [come, 'wave']]} moods={[[forestAt, 'angry'], [call, 'neutral'], [come, 'smile']]} hopAt={[come + 10]} />
             <ShockLines x={W * 0.48} y={H * 0.5} r={H * 0.4} start={forestAt + 4} dur={36} />
             <TypeOn text="ये नदी हमारी है!" x={W * 0.3} y={H * 0.36} start={forestAt + 6} exit={call - 6} size={84} />
             <TypeOn text="नहीं, हमारी!" x={W * 0.52} y={H * 0.29} start={forestAt + 30} exit={call - 6} size={84} />
@@ -137,31 +137,31 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       {!onStage ? (
         <AbsoluteFill>
           <BgPlate src="bg/bg_forest_river_862.png" from={-200} sky="#AFC6CF" ground="#55693A" />
-          <Camera from={0} keys={[{ at: viking2, zoom: 1.28, x: W * 0.05, y: H * 0.02, dur: 10 }]} focus={[W * 0.42, H * 0.6]}>
-            <div style={{ position: 'absolute', left: shipX - W * 0.3, top: H * 0.42 + Math.sin(frame / 18) * 10, transform: `rotate(${Math.sin(frame / 22) * 1.5}deg)` }}>
+          <Camera from={0} keys={[{ at: viking2, zoom: 1.14, x: W * 0.02, y: 0, dur: 14 }]} focus={[W * 0.45, H * 0.62]}>
+            <div style={{ position: 'absolute', left: shipX - W * 0.3, top: H * 0.36 + Math.sin(frame / 18) * 10, transform: `rotate(${Math.sin(frame / 22) * 1.5}deg)` }}>
               <RImg src="props/viking_longship.png" w={W * 0.6} h={W * 0.4} label="viking longship" />
             </div>
             <Char who="rurik_viking" x={W * 0.42} y={H * 0.95} height={H * 0.5} start={L(at(7, 'उसका'))}
               walk={[{ at: 0, x: W * 0.62 }, { at: L(at(7, 'उसका')), x: W * 0.42, dur: 50 }]}
               gestures={[[L(at(7, 'उसका')), 'wave'], [viking2, 'fist']]} moods={[[0, 'smug'], [viking2, 'grin']]} />
-            <Char who="slav_elder" x={W * 0.12} y={H * 0.95} height={H * 0.42} start={0} moods={[[0, 'smile'], [viking2, 'shocked']]} hopAt={[viking2 + 4]} />
+            <Char who="slav_elder" x={W * 0.14} y={H * 0.94} height={H * 0.42} start={0} moods={[[0, 'smile'], [viking2, 'shocked']]} hopAt={[viking2 + 4]} />
+            <TypeOn text="Rurik" x={W * 0.42} y={H * 0.33} start={name} size={150} color={RC.blue} exit={hist - 4} />
+            <TypeOn text="एक Viking!" x={W * 0.68} y={H * 0.22} start={viking2} size={140} color={RC.yellow} exit={hist - 4} />
           </Camera>
-          <TypeOn text="Rurik" x={W * 0.42} y={H * 0.36} start={name} size={150} color={RC.blue} exit={hist - 4} />
-          <TypeOn text="एक Viking!" x={W * 0.66} y={H * 0.2} start={viking2} size={140} color={RC.yellow} exit={hist - 4} />
           <Sfx at={ship} file="whoosh_big.wav" volume={0.5} />
           <Sfx at={ship + 24} file="pop_low.wav" volume={0.6} />
           <Sfx at={viking2} file="timpani_hit.wav" volume={0.5} />
         </AbsoluteFill>
       ) : (
         <GreyStage>
-          <Camera from={hist}>
-            <Char who="rurik_viking" x={W * 0.42} y={H * 0.8} height={H * 0.5} start={hist} moods={[[hist, 'smug'], [L(at(7, 'शायद')), 'worried']]} gestures={[[hist, 'hips']]} />
-            <TypeOn text="Rurik ?" x={W * 0.42} y={H * 0.88} start={hist + 6} size={90} color={RC.blue} />
-            <Stamp text="LEGEND?" x={W * 0.46} y={H * 0.2} start={L(at(7, 'शायद'))} size={130} />
-            <TypeOn text="था भी या नहीं?" x={W * 0.74} y={H * 0.5} start={L(at(7, 'Rurik', 1))} size={100} color={RC.sub} exit={lesson - 4} />
-            <LoopWheel x={W * 0.76} y={H * 0.52} r={H * 0.2} start={lesson} small steps={[[lesson + 4, 0], [L(at(7, 'ख़ुद')), 1]]} />
+          <Camera from={hist} drift={0.003}>
+            <Char who="rurik_viking" x={W * 0.35} y={H * 0.92} height={H * 0.52} start={hist} exit={lesson - 12} moods={[[hist, 'smug'], [L(at(7, 'शायद')), 'worried']]} gestures={[[hist, 'hips']]} />
+            <TypeOn text="Rurik ?" x={W * 0.35} y={H * 0.32} start={hist + 6} size={110} color={RC.blue} exit={lesson - 12} />
+            <Stamp text="LEGEND?" x={W * 0.37} y={H * 0.17} start={L(at(7, 'शायद'))} size={130} exit={lesson - 12} />
+            <TypeOn text="था भी या नहीं?" x={W * 0.64} y={H * 0.5} start={L(at(7, 'Rurik', 1))} size={130} color={RC.sub} exit={lesson - 16} />
+            <LoopWheel x={W * 0.57} y={H * 0.52} r={H * 0.21} start={lesson} small steps={[[lesson + 4, 0], [L(at(7, 'ख़ुद')), 1]]} />
           </Camera>
-          <Host x={W * 0.16} y={H * 0.92} height={H * 0.6} offset={base} start={hist} gestures={[[hist, 'present'], [L(at(7, 'शायद')), 'shrug'], [lesson, 'fingerUp'], [L(at(7, 'ख़ुद')), 'point']]}
+          <Host x={W * 0.16} y={H * 0.92} height={H * 0.6} offset={base} start={hist} gestures={[[hist, 'present'], [L(at(7, 'शायद')), 'shrug'], [lesson, 'fingerUp'], [L(at(7, 'ख़ुद')), 'present']]}
             moods={[[hist, 'smug'], [lesson, 'neutral']]} />
           <Sfx at={L(at(7, 'शायद'))} file="stamp_slam.wav" volume={0.6} />
           <Sfx at={lesson} file="pop.wav" volume={0.5} />
@@ -181,7 +181,12 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <TypeOn text="Russia ≠ Russians का नाम?" x={W * 0.6} y={H * 0.16} start={L(at(8, 'Russia'))} size={96} color={RC.sub} exit={rus - 4} />
+        <TypeOn text="Russia" x={W * 0.46} y={H * 0.3} start={L(at(8, 'मज़ेदार'))} size={260} color={RC.blue} exit={rus - 4} rate={3} />
+        <TypeOn text="नाम किसने दिया?" x={W * 0.46} y={H * 0.46} start={L(at(8, 'नाम'))} size={110} color={RC.sub} exit={L(at(8, 'नहीं')) - 4} />
+        <TypeOn text="Russians ने नहीं!" x={W * 0.46} y={H * 0.46} start={L(at(8, 'नहीं'))} size={120} color={RC.danger} exit={rus - 4} />
+        <Char who="slav_elder" x={W * 0.8} y={H * 0.93} height={H * 0.46} start={L(at(8, 'Russians'))} exit={rus - 4} flip
+          gestures={[[0, 'shrug'], [L(at(8, 'historians')), 'hips']]} moods={[[0, 'worried'], [L(at(8, 'नहीं')), 'shocked']]} />
+        <PopIn x={W * 0.48} y={H * 0.72} start={L(at(8, 'historians'))} exit={rus - 4}><RImg src="props/books_quill.png" w={H * 0.32} h={H * 0.32} label="books" /></PopIn>
         <TypeOn text="Rus" x={W * 0.42} y={H * 0.36} start={rus} size={300} color={RC.blue} />
         <TypeOn text="← Old Norse" x={W * 0.6} y={H * 0.33} start={norse} size={90} color={RC.sub} />
         <PopIn x={W * 0.44} y={H * 0.66} start={rowers} tilt={-8}><RImg src="props/oar_wooden.png" w={W * 0.26} h={W * 0.26} label="oar" /></PopIn>
@@ -189,14 +194,14 @@ const D: React.FC<{ base: number }> = ({ base }) => {
         <Frame x={W * 0.77} y={H * 0.52} w={W * 0.3} h={W * 0.3 * 0.56} start={sweden}>
           <Fit w={W * 0.3} h={W * 0.3 * 0.56}>
             <RMap view="europe_wide" cam={[{ at: 0, lon: 17, lat: 60, zoom: 3.2 }]} drift={0.02} from={sweden}
-              overlay={<Pin lon={18.6} lat={59.8} label="Roslagen" start={sweden + 12} size={110} />}>
+              overlay={<Pin lon={18.6} lat={59.8} label="Roslagen" start={sweden + 12} size={170} />}>
               <Fill id="sweden_modern" color={RC.sweden} start={sweden + 4} opacity={0.4} />
             </RMap>
           </Fit>
         </Frame>
-        <Stamp text="TRUE STORY?" x={W * 0.77} y={H * 0.2} start={sweden + 30} size={100} color={RC.stampGreen} sub="ज़्यादातर historians: हाँ ✓" rotate={-6} />
+        <Stamp text="TRUE STORY?" x={W * 0.77} y={H * 0.26} start={sweden + 30} size={100} color={RC.stampGreen} sub="ज़्यादातर historians: हाँ ✓" rotate={-6} />
       </Camera>
-      <Host x={W * 0.14} y={H * 0.92} height={H * 0.6} offset={base} start={0} gestures={[[0, 'fingerUp'], [rus, 'present'], [rowers, 'point'], [sweden, 'present']]} moods={[[0, 'grin'], [rowers, 'smile']]} />
+      <Host x={W * 0.16} y={H * 0.92} height={H * 0.6} offset={base} start={-30} gestures={[[0, 'fingerUp'], [rus, 'present'], [rowers, 'point'], [sweden, 'present']]} moods={[[0, 'grin'], [rowers, 'smile']]} />
       <Sfx at={rus} file="pen_draw.wav" volume={0.5} />
       <Sfx at={rowers} file="pop.wav" volume={0.5} />
       <Sfx at={sweden + 30} file="stamp_slam.wav" volume={0.55} />
@@ -217,25 +222,25 @@ const E: React.FC<{ base: number }> = ({ base }) => {
   const tradePts: [number, number][] = [[18.1, 59.3], [22.5, 59.8], [30.0, 60.0], [32.4, 60.6], NOV, [31.0, 56.0], [31.4, 53.6], KYIV, [32.6, 47.6], [31.6, 46.6], [30.6, 44.6], [28.98, 41.01]];
   return (
     <AbsoluteFill>
-      <RMap view="ru_west" cam={[{ at: 0, lon: 31, lat: 55, zoom: 1.9 }, { at: trade, lon: 27, lat: 51, zoom: 1.25, dur: 120 }]}
+      <RMap view="ru_west" cam={[{ at: 0, lon: 31, lat: 55, zoom: 1.9 }, { at: trade, lon: 27.5, lat: 50.3, zoom: 1.18, dur: 120 }]}
         overlay={
           <>
             <Pin lon={NOV[0]} lat={NOV[1]} label="Novgorod" start={4} />
             <Pin lon={KYIV[0]} lat={KYIV[1]} label="Kyiv" start={south} side="l" />
             <MapLabel lon={31.5} lat={53.4} text="Kievan Rus" start={rus} size={130} color={RC.yellow} />
             <Pin lon={28.98} lat={41.01} label="Constantinople" start={L(at(9, 'Constantinople'))} />
-            <Traveller pts={tradePts} start={trade + 10} dur={L(at(9, 'तक।')) - trade + 30}>
+            <Traveller pts={[...tradePts.slice(0, -1), [29.6, 42.4]]} start={trade + 10} dur={L(at(9, 'तक।')) - trade + 30}>
               {(dir) => <div style={{ transform: `scaleX(${dir < 0 ? -1 : 1})` }}><RImg src="props/viking_longship.png" w={300} h={200} label="⛵" /></div>}
             </Traveller>
             <At lon={33} lat={49.4} start={trade + 30} bob={6}><Glyph g="💰" size={90} /></At>
-            <At lon={29.6} lat={58.8} start={trade + 50} bob={6}><Glyph g="🧺" size={80} /></At>
+            <At lon={33.6} lat={57.2} start={trade + 50} bob={6}><Glyph g="🧺" size={90} /></At>
           </>
         }>
         <River name="Dnieper" start={0} dur={1} width={6} />
         <River name="Volkhov" start={0} dur={1} width={6} />
         <Route pts={[NOV, [31.6, 56.6], [31.2, 54.2], [30.8, 52.2], KYIV]} start={south} dur={60} width={30} />
         <Fill id="kievan_rus_882" color={RC.rusMustard} start={rus} mode="flood" origin={NOV} dur={70} opacity={0.55} />
-        <Route pts={tradePts} start={trade} dur={L(at(9, 'तक।')) - trade} width={12} dotted color="#FFE9A8" head={false} />
+        <Route pts={tradePts} start={trade} dur={L(at(9, 'तक।')) - trade} width={18} dotted color="#FFE9A8" head={false} />
       </RMap>
       <YearTag text="882" start={tag} />
       <Sfx at={south} file="whoosh_fast.wav" volume={0.5} />
@@ -263,38 +268,39 @@ const FGH: React.FC<{ base: number }> = ({ base }) => {
   const cards = ['props/icon_card_mosque.png', 'props/icon_card_synagogue.png', 'props/icon_card_latin_church.png', 'props/hagia_sophia_model.png'];
   const labels = ['Islam', 'Judaism', 'Latin Church', 'Constantinople'];
   const envoyX = (i: number) => W * (0.48 + i * 0.12);
+  const enter = L(at(10, 'अट्ठासी'));
   const cardAt = [islam, islam + 50, islam + 90, cpl];
   return (
     <AbsoluteFill>
       <BgPlate src="bg/bg_kyiv_hall_988.png" from={0} sky="#6B4A30" ground="#4A3220" />
-      <Camera from={0} keys={[{ at: heaven, zoom: 1.12, x: W * 0.06, y: 0, dur: 50 }, { at: chose, zoom: 1.0, dur: 40 }]}>
-        <PopIn x={W * 0.2} y={H * 0.63} start={vlad - 6}><RImg src="props/throne_wooden.png" w={H * 0.62} h={H * 0.62} label="throne" /></PopIn>
-        <Char who="vladimir_prince" x={W * 0.2} y={H * 0.86} height={H * 0.44} start={vlad}
-          gestures={[[vlad, 'chin'], [shop, 'present'], [islam, 'chin'], [ban, 'handsHead'], [line, 'fist'], [cpl, 'chin'], [chose, 'cheer']]}
-          moods={[[vlad, 'neutral'], [shop, 'grin'], [islam, 'smile'], [ban, 'shocked'], [line, 'angry'], [cpl, 'neutral'], [heaven, 'shocked'], [chose, 'grin']]}
+      <Camera from={0} drift={0.002} focus={[W * 0.5, H * 0.62]}>
+        <PopIn x={W * 0.2} y={H * 0.63} start={enter}><RImg src="props/throne_wooden.png" w={H * 0.62} h={H * 0.62} label="throne" /></PopIn>
+        <Char who="vladimir_prince" x={W * 0.2} y={H * 0.86} height={H * 0.44} start={enter + 8}
+          gestures={[[0, 'wave'], [vlad, 'hips'], [shop, 'present'], [islam, 'fingerUp'], [ban, 'handsHead'], [line, 'fist'], [cpl, 'hips'], [heaven, 'handsHead'], [chose, 'cheer']]}
+          moods={[[0, 'smug'], [vlad, 'neutral'], [shop, 'grin'], [islam, 'smile'], [ban, 'shocked'], [line, 'angry'], [cpl, 'neutral'], [heaven, 'shocked'], [chose, 'grin']]}
           talk={[[line, line + 150]]} hopAt={[chose + 4]} />
         {[0, 1, 2, 3].map((i) => (
-          <Char key={i} who="envoy_kievan" tint={ENVOY_TINT[i]} x={envoyX(i)} y={H * 0.95} height={H * 0.32} start={sent + i * 8} flip seed={`env${i}`}
+          <Char key={i} who="envoy_kievan" tint={ENVOY_TINT[i]} x={envoyX(i)} y={H * 0.93} height={H * 0.32} start={sent + i * 8} flip seed={`env${i}`}
             walk={[{ at: 0, x: envoyX(i) + W * 0.4 }, { at: sent + i * 8, x: envoyX(i), dur: 50 }]}
             gestures={[[sent, 'down'], [cardAt[i], 'hold']]} moods={[[sent, 'smile'], [heaven, i === 3 ? 'shocked' : 'smile']]} />
         ))}
         <TypeOn text="🛒 Religion shopping" x={W * 0.55} y={H * 0.16} start={shop} size={120} color={RC.yellow} exit={islam - 4} />
         {[0, 1, 2, 3].map((i) => (
-          <PopIn key={i} x={envoyX(i)} y={H * 0.44} start={cardAt[i]} exit={i === 0 ? cpl : i === 3 ? undefined : cpl} tilt={i % 2 ? 4 : -4}>
+          <PopIn key={i} x={i === 3 ? W * 0.62 : envoyX(i)} y={i === 3 ? H * 0.42 : H * 0.44} start={cardAt[i]} exit={i === 3 ? undefined : cpl} tilt={i % 2 ? 4 : -4}>
             <div style={{ background: '#F4F1EA', borderRadius: 24, padding: 14, boxShadow: '0 20px 40px rgba(0,0,0,0.4)', textAlign: 'center', position: 'relative' }}>
-              {i === 3 && <Rays x={H * 0.08} y={H * 0.08} r={H * 0.36} start={cpl + 10} />}
-              <RImg src={cards[i]} w={H * 0.16} h={H * 0.16} label={labels[i]} />
-              <div style={{ ...hand(44, '#333'), textShadow: 'none' }}>{labels[i]}</div>
+              {i === 3 && <Rays x={H * 0.135} y={H * 0.15} r={H * 0.42} start={cpl + 10} />}
+              <RImg src={cards[i]} w={H * (i === 3 ? 0.27 : 0.16)} h={H * (i === 3 ? 0.27 : 0.16)} label={labels[i]} />
+              <div style={{ ...hand(i === 3 ? 64 : 44, '#333'), textShadow: 'none' }}>{labels[i]}</div>
             </div>
           </PopIn>
         ))}
         <PopIn x={envoyX(0) + W * 0.06} y={H * 0.2} start={butOne + 10} exit={cpl}>
           <NoSign size={H * 0.18} slashAt={ban}><Glyph g="🍷" size={H * 0.1} /></NoSign>
         </PopIn>
-        <TypeOn text="शराब पर पाबंदी?!" x={W * 0.72} y={H * 0.16} start={ban} size={90} color={RC.danger} exit={line - 4} />
+        <TypeOn text="शराब पर पाबंदी?!" x={W * 0.74} y={H * 0.21} start={ban} size={90} color={RC.danger} exit={line - 4} />
         <TypeOn text="पीना तो Rus की ख़ुशी है!" x={W * 0.24} y={H * 0.2} start={line} size={104} color={RC.yellow} exit={cpl} />
-        <TypeOn text="स्वर्ग या ज़मीन?" x={W * 0.7} y={H * 0.12} start={heaven} size={130} color={RC.yellow} />
-        <TypeOn text="Orthodox Christianity ✓" x={W * 0.3} y={H * 0.16} start={chose + 4} size={100} color={RC.green} />
+        <TypeOn text="स्वर्ग या ज़मीन?" x={W * 0.44} y={H * 0.15} start={heaven} size={130} color={RC.yellow} exit={chose} />
+        <TypeOn text="Orthodox Christianity ✓" x={W * 0.4} y={H * 0.15} start={chose + 4} size={100} color={RC.green} />
       </Camera>
       <YearTag text="988" start={tag} />
       <Iris at={tag + 4} hold={40} />
@@ -318,17 +324,23 @@ const I: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <Stamp text="LEGEND?" x={W * 0.6} y={H * 0.2} start={legend} size={110} exit={deal - 2} />
-        <TypeOn text="political deal 🤝" x={W * 0.6} y={H * 0.2} start={deal} size={120} color={RC.yellow} exit={today - 4} />
-        <PopIn x={W * 0.43} y={H * 0.56} start={deal + 6} exit={today - 4}><div style={{ ...hand(70, RC.blue), textAlign: 'center' }}>Vladimir<br /><span style={{ fontSize: 50, color: RC.sub }}>Kyiv</span></div></PopIn>
-        <PopIn x={W * 0.6} y={H * 0.56} start={L(at(13, 'मदद'))} exit={today - 4}><Glyph g="⚔️ → 🤝" size={110} /></PopIn>
-        <Card src="cards/card_anna_porphyrogenita.png" x={W * 0.8} y={H * 0.52} w={W * 0.17} start={anna - 10} exit={today - 4} name="Anna" tilt={4} />
-        <TypeOn text="Basil II की बहन" x={W * 0.8} y={H * 0.92} start={L(at(13, 'बहन'))} size={70} color={RC.sub} exit={today - 4} />
-        <PopIn x={W * 0.62} y={H * 0.52} start={today} over={1.15}><RImg src="props/onion_church_small.png" w={H * 0.5} h={H * 0.5} label="⛪ Orthodox church" /></PopIn>
-        <TypeOn text="Russia की पहचान" x={W * 0.62} y={H * 0.86} start={L(at(13, 'पहचान'))} size={120} color={RC.yellow} />
+        <Frame x={W * 0.58} y={H * 0.5} w={W * 0.42} h={W * 0.28} start={-20} exit={deal - 4} tilt={-3}>
+          <RImg src="docs/primary_chronicle_page.png" w={W * 0.42} h={W * 0.28} label="Primary Chronicle" />
+        </Frame>
+        <TypeOn text="आधी कहानी…" x={W * 0.58} y={H * 0.15} start={L(at(13, 'कहानी'))} size={110} color={RC.sub} exit={deal - 4} />
+        <Stamp text="LEGEND?" x={W * 0.6} y={H * 0.52} start={legend} size={190} exit={deal - 4} />
+        <TypeOn text="political deal 🤝" x={W * 0.56} y={H * 0.17} start={deal} size={130} color={RC.yellow} exit={today - 4} />
+        <Char who="vladimir_prince" x={W * 0.45} y={H * 0.86} height={H * 0.48} start={deal + 6} exit={today - 4}
+          gestures={[[0, 'present'], [anna, 'cheer']]} moods={[[0, 'smug'], [anna, 'grin']]} />
+        <TypeOn text="Vladimir" x={W * 0.45} y={H * 0.92} start={deal + 12} size={80} color={RC.blue} exit={today - 4} />
+        <PopIn x={W * 0.635} y={H * 0.52} start={L(at(13, 'मदद'))} exit={today - 4}><Glyph g="⚔️ → 🤝" size={130} /></PopIn>
+        <Card src="cards/card_anna_porphyrogenita.png" x={W * 0.82} y={H * 0.52} w={W * 0.17} start={anna - 10} exit={today - 4} name="Anna" tilt={4} />
+        <TypeOn text="Basil II की बहन" x={W * 0.82} y={H * 0.9} start={L(at(13, 'बहन'))} size={70} color={RC.sub} exit={today - 4} />
+        <PopIn x={W * 0.6} y={H * 0.5} start={today} over={1.15}><RImg src="props/onion_church_small.png" w={H * 0.6} h={H * 0.6} label="⛪ Orthodox church" /></PopIn>
+        <TypeOn text="Russia की पहचान" x={W * 0.6} y={H * 0.88} start={L(at(13, 'पहचान'))} size={120} color={RC.yellow} />
       </Camera>
-      <Host x={W * 0.15} y={H * 0.92} height={H * 0.6} offset={base} start={0}
-        gestures={[[0, 'shrug'], [deal, 'fingerUp'], [anna, 'present'], [result, 'fingerUp'], [today, 'present']]} moods={[[0, 'smug'], [deal, 'grin'], [result, 'neutral'], [today, 'smile']]} />
+      <Host x={W * 0.15} y={H * 0.92} height={H * 0.6} offset={base} start={-30}
+        gestures={[[0, 'present'], [legend, 'shrug'], [deal, 'fingerUp'], [anna, 'present'], [result, 'fingerUp'], [today, 'present']]} moods={[[0, 'smug'], [deal, 'grin'], [result, 'neutral'], [today, 'smile']]} />
       <Sfx at={legend} file="stamp_slam.wav" volume={0.45} />
       <Sfx at={anna} file="pop.wav" volume={0.5} />
       <Sfx at={today} file="bell_ding.wav" volume={0.4} />
@@ -352,8 +364,9 @@ const J: React.FC<{ base: number }> = ({ base }) => {
       <RMap view="ru_west" cam={[{ at: 0, lon: 32, lat: 54.5, zoom: 1.7 }, { at: split, lon: 32, lat: 54.5, zoom: 2.0, dur: 200 }]}
         overlay={
           <>
-            <At lon={30.5} lat={52.6} start={dies} exit={split} over={1.2}><Glyph g="👑" size={120} /></At>
-            {EYE_AT.map(([lo, la], i) => <MapEyes key={i} lon={lo} lat={la} start={fight + i * 3} size={40} angry look={i % 2 ? -1 : 1} />)}
+            <MapLabel lon={33} lat={55.2} text="Kievan Rus" start={6} exit={split - 10} size={140} color={RC.yellow} />
+            <At lon={30.5} lat={52.6} start={dies} exit={split} over={1.2}><Glyph g="👑" size={200} /></At>
+            {EYE_AT.map(([lo, la], i) => <MapEyes key={i} lon={lo} lat={la} start={fight + i * 3} size={58} angry look={i % 2 ? -1 : 1} />)}
             <BigNumberAt start={dozens} />
           </>
         }>
@@ -368,7 +381,7 @@ const J: React.FC<{ base: number }> = ({ base }) => {
   );
 };
 const BigNumberAt: React.FC<{ start: number }> = ({ start }) => (
-  <BigNumber x={W * 0.82} y={H * 0.2} to={12} start={start} dur={30} size={190} suffix="+" sub="छोटी-छोटी रियासतें" />
+  <BigNumber x={W * 0.84} y={H * 0.32} to={12} start={start} dur={30} size={190} suffix="+" sub="छोटी-छोटी रियासतें" />
 );
 
 /* ───────────── K · 1237: the Mongols ───────────── */
@@ -382,15 +395,15 @@ const K: React.FC<{ base: number }> = ({ base }) => {
   const vlad = L(at(15, 'Vladimir.'));
   return (
     <AbsoluteFill>
-      <RMap view="ru_west" cam={[{ at: 0, lon: 34, lat: 54, zoom: 1.9 }, { at: 4, lon: 46, lat: 52, zoom: 1.05, dur: 110 }, { at: fall, lon: 39, lat: 55, zoom: 1.8, dur: 90 }]}
+      <RMap view="ru_west" cam={[{ at: 0, lon: 34, lat: 54, zoom: 1.9 }, { at: 4, lon: 39, lat: 52, zoom: 1.2, dur: 110 }, { at: fall, lon: 39, lat: 55, zoom: 1.8, dur: 90 }]}
         overlay={
           <>
-            <MapLabel lon={60} lat={48.5} text="Mongols" start={east + 30} size={150} color="#FFE2B8" />
+            <MapLabel lon={53} lat={47.6} text="Mongols" start={east + 30} exit={fall} size={150} color="#FFE2B8" />
             <Pin lon={39.7} lat={54.6} label="Ryazan" start={ryazan} side="l" />
             <Pin lon={40.4} lat={56.1} label="Vladimir" start={vlad} />
             <At lon={39.7} lat={54.6} start={ryazan + 8}><FireAt /></At>
             <At lon={40.4} lat={56.1} start={vlad + 8}><FireAt /></At>
-            <At lon={60} lat={51.5} start={batu}><div style={{ textAlign: 'center' }}><RImg src="chars/batu_khan.png" w={260} h={300} label="Batu Khan" /><div style={hand(70, RC.yellow)}>Batu Khan</div></div></At>
+            <At lon={53} lat={58} start={batu} exit={fall}><div style={{ textAlign: 'center' }}><RImg src="chars/batu_khan.png" w={620} h={700} label="Batu Khan" /><div style={{ ...hand(120, RC.yellow), marginTop: -60 }}>Batu Khan</div></div></At>
           </>
         }>
         <Fill id="golden_horde" color={RC.horde} start={east} mode="flood" origin={[75, 48]} dur={110} opacity={0.55} />
@@ -423,8 +436,8 @@ const Lx: React.FC<{ base: number }> = ({ base }) => {
     <AbsoluteFill>
       <BgPlate src="bg/bg_kyiv_burning_1240.png" from={0} sky="#4A2A2A" ground="#2A1E1E" push={0.02} />
       <Camera from={0} shake={[{ at: 8, amp: 14, dur: 20 }, { at: first, amp: 22, dur: 24 }]}>
-        {[0.18, 0.36, 0.55, 0.72, 0.86].map((x, i) => <Fire key={i} x={W * x} y={H * (0.62 + (i % 2) * 0.05)} size={H * (0.16 + (i % 3) * 0.04)} start={6 + i * 5} seed={`k${i}`} />)}
-        {[0.25, 0.6, 0.8].map((x, i) => <Smoke key={i} x={W * x} y={H * 0.5} size={H * 0.18} start={i * 6} />)}
+        {[0.12, 0.3, 0.5, 0.7, 0.88].map((x, i) => <Fire key={i} x={W * x} y={H * (0.47 + (i % 2) * 0.03)} size={H * (0.12 + (i % 3) * 0.03)} start={6 + i * 5} seed={`k${i}`} />)}
+        {[0.25, 0.6, 0.8].map((x, i) => <Smoke key={i} x={W * x} y={H * 0.4} size={H * 0.18} start={i * 6} />)}
         <TypeOn text="Kyiv · 1240" x={W * 0.5} y={H * 0.2} start={6} size={150} color={RC.white} />
         <TypeOn text="Kievan Rus ख़त्म" x={W * 0.5} y={H * 0.34} start={end_} size={130} color={RC.danger} />
         <Stamp text="COLLAPSE #1" x={W * 0.5} y={H * 0.6} start={first} size={210} rotate={-7} />
