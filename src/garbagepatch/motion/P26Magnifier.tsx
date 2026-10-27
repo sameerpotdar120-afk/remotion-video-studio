@@ -7,7 +7,7 @@ import { clamp } from './theme';
 // microplastic texture (gp02) shows enlarged 3×, sliding as the lens moves, with a glass highlight. `lens` gives the
 // lens centre and radius inside the prop image as fractions of its width; the lens is drawn over the image's white glass. Transparent, 1080×1920.
 export const P26Magnifier: React.FC<{ glass: string; texture: string; from?: [number, number]; to: [number, number]; w?: number; lens?: [number, number, number]; out?: number }> = ({
-  glass, texture, from = [1300, 1500], to, w = 420, lens = [0.36, 0.36, 0.3], out,
+  glass, texture, from = [1300, 1500], to, w = 420, lens = [0.323, 0.303, 0.24], out,
 }) => {
   const f = useCurrentFrame();
   const t = interpolate(f, [0, 20], [0, 1], { ...clamp, easing: Easing.out(Easing.back(1.3)) });

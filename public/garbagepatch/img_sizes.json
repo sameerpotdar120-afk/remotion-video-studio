@@ -1,0 +1,139 @@
+{
+"gp01_trash_island": {
+"w": 2400,
+"h": 2278
+},
+"gp02_microplastic_texture": {
+"w": 1152,
+"h": 2048,
+"ext": "jpg"
+},
+"gp25_shore_slope": {
+"w": 2000,
+"h": 1285
+},
+"gp24_ocean_cutaway": {
+"w": 1620,
+"h": 2880,
+"ext": "jpg"
+},
+"gp10_sun": {
+"w": 1200,
+"h": 1197
+},
+"gp11_water_drop": {
+"w": 176,
+"h": 300
+},
+"gp12_wave": {
+"w": 900,
+"h": 500
+},
+"gp03_plastic_bottle": {
+"w": 1400,
+"h": 1382
+},
+"gp04_plastic_crate": {
+"w": 900,
+"h": 693
+},
+"gp05_ghost_net": {
+"w": 1000,
+"h": 837
+},
+"gp06_plastic_bag": {
+"w": 900,
+"h": 872
+},
+"gp14_magnifying_glass": {
+"w": 1100,
+"h": 1094,
+"lens": [
+0.3229,
+0.3031,
+0.2425
+]
+},
+"gp15_small_fish": {
+"w": 700,
+"h": 206
+},
+"gp16_big_fish": {
+"w": 700,
+"h": 248
+},
+"gp07_fishing_boat": {
+"w": 900,
+"h": 540
+},
+"gp08_cargo_ship": {
+"w": 1100,
+"h": 578
+},
+"gp09_airplane": {
+"w": 398,
+"h": 400
+},
+"gp17_fish_thali": {
+"w": 900,
+"h": 866
+},
+"gp18_satellite": {
+"w": 1000,
+"h": 495
+},
+"gp19_map_pin": {
+"w": 327,
+"h": 500
+},
+"gp20_city_skyline": {
+"w": 700,
+"h": 551
+},
+"gp23_soup_bowl": {
+"w": 1500,
+"h": 1118
+},
+"gp23b_ladle": {
+"w": 865,
+"h": 900
+},
+"gp21_soup_underwater": {
+"w": 2400,
+"h": 1350,
+"ext": "jpg"
+},
+"gp22_soup_surface": {
+"w": 2400,
+"h": 1350,
+"ext": "jpg"
+},
+"gp13_shard_1": {
+"w": 298,
+"h": 319
+},
+"gp13_shard_2": {
+"w": 266,
+"h": 389
+},
+"gp13_shard_3": {
+"w": 334,
+"h": 562
+},
+"gp13_shard_4": {
+"w": 347,
+"h": 600
+},
+"gp13_shard_5": {
+"w": 298,
+"h": 467
+},
+"gp13_shard_6": {
+"w": 302,
+"h": 474
+},
+"gp13_shard_7": {
+"w": 485,
+"h": 398
+}
+}
