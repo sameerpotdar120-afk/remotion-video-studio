@@ -22,7 +22,7 @@ export type Gesture = 'down' | 'present' | 'point' | 'fingerUp' | 'shrug' | 'chi
 export type Step = { at: number; x: number; y?: number; dur?: number };
 
 type Rig = { aspect: number; face: { x: number; y: number; w: number }; shoulderL: [number, number]; shoulderR: [number, number] };
-const rigOf = (src?: string): Rig | null => (src && has(src) ? ((RIGS as Record<string, Rig>)[src.split('/').pop()!] ?? null) : null);
+const rigOf = (src?: string): Rig | null => (src && has(src) ? ((RIGS as unknown as Record<string, Rig>)[src.split('/').pop()!] ?? null) : null);
 
 const DEFAULT_RIG: Rig = { aspect: 0.62, face: { x: 0.5, y: 0.25, w: 0.62 }, shoulderL: [0.2, 0.55], shoulderR: [0.8, 0.55] };
 
