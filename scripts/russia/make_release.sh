@@ -59,15 +59,20 @@ if [ ! -e "$T/.git" ]; then
 fi
 if [ ! -s "$R/parts.done" ]; then
   sha256sum "$R/$NAME" | cut -d' ' -f1 > "$R/sha.txt"
+  # a re-release updates the branch in place: drop the old manifest first so no push publishes a half-updated set
+  if [ -f "$T/video/manifest.txt" ]; then
+    (cd "$T" && git rm -q video/manifest.txt && git commit -q -m "Video manifest removed: new version uploading" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>")
+  fi
   mkdir -p "$T/video"; rm -f "$T"/video/part_*
   split -b 90M -d -a 2 "$R/$NAME" "$T/video/part_" && echo ok > "$R/parts.done" && rm -f "$R/$NAME"
 fi
 cd "$T"
 for f in video/part_*; do
-  git ls-files --error-unmatch "$f" >/dev/null 2>&1 && continue
+  git ls-files --error-unmatch "$f" >/dev/null 2>&1 && git diff --quiet HEAD -- "$f" && continue
   git add "$f" && git commit -q -m "Video $(basename "$f")" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   n=$(basename "$f"); if [ $(( 10#${n#part_} % 4 )) -eq 3 ]; then for t in 1 2 3 4 5; do git push -q origin "HEAD:$BR" && break; sleep $((2 ** t)); done; fi
 done
+for f in $(git ls-files 'video/part_*'); do [ -e "$f" ] || { git rm -q "$f" && git commit -q -m "Remove stale $(basename "$f")" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"; }; done
 if [ ! -f video/manifest.txt ]; then
   printf "%s\n%s\n" "$NAME" "$(cat "$REPO/$R/sha.txt")" > video/manifest.txt
   git add video/manifest.txt && git commit -q -m "Video manifest: publish the joined MP4" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
