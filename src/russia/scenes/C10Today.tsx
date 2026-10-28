@@ -394,19 +394,40 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
 
 /* ───────────── I · order returns, freedoms shrink ───────────── */
 const I: React.FC<{ base: number }> = ({ base }) => {
+  const frame = useCurrentFrame();
   const L = (f: number) => f - base;
   const order = L(at(93, 'order'));
   const econ = L(at(93, 'economy'));
   const media = L(at(93, 'media'));
+  const plate = (bg: string): React.CSSProperties => ({ background: bg, borderRadius: 36, padding: '40px 70px', boxShadow: '0 30px 60px rgba(0,0,0,0.45)', border: '4px solid rgba(255,255,255,0.25)' });
+  const strike = (at0: number) => (
+    <div style={{ position: 'absolute', left: -24, right: -24, top: '60%', height: 12, borderRadius: 6, background: RC.stampRed, boxShadow: '0 3px 8px rgba(0,0,0,0.5)', transform: `rotate(-3deg) scaleX(${ramp(frame, at0, 12, ease.out)})`, transformOrigin: '0 50%' }} />
+  );
+  const rise = (at0: number): React.CSSProperties => ({ opacity: ramp(frame, at0, 10), transform: `translateY(${(1 - ramp(frame, at0, 14, ease.out)) * 30}px)` });
+  const row: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: 28, height: 150 };
   return (
     <AbsoluteFill>
-      <RMap view="eurasia" cam={[{ at: 0, lon: 80, lat: 58, zoom: 1.3 }]}
-        overlay={<><At lon={60} lat={60} start={econ} bob={6}><div style={{ textAlign: 'center' }}><RImg src="props/oil_barrel.png" w={300} h={300} label="🛢️" style={{ margin: '0 auto' }} /><div style={hand(110, RC.green)}>oil 📈</div></div></At>
-          <At lon={95} lat={62} start={econ + 20} bob={6}><div style={{ ...hand(120, RC.green) }}>💼 salary ✓</div></At>
-          <At lon={80} lat={52} start={media}><div style={{ position: 'relative' }}><div style={{ ...hand(120, RC.white), whiteSpace: 'nowrap' }}>📰 media · 🗳️ विपक्ष</div><RedX x={430} y={75} w={860} h={170} start={media + 20} /></div></At></>}>
+      <RMap view="eurasia" cam={[{ at: 0, lon: 80, lat: 58, zoom: 1.3 }]}>
         <Fill id="russia_modern" color={RC.rusRed} start={0} dur={1} opacity={0.58} />
       </RMap>
-      <TypeOn text="फिर से order चाहिए था" x={W * 0.5} y={H * 0.12} start={order} size={110} color={RC.yellow} />
+      <TypeOn text="फिर से order चाहिए था" x={W * 0.5} y={H * 0.14} start={order} size={120} color={RC.yellow} />
+      {/* gained: money and order */}
+      <PopIn x={W * 0.27} y={H * 0.6} start={econ}>
+        <div style={{ ...plate('rgba(16,48,28,0.85)'), display: 'flex', alignItems: 'center', gap: 50 }}>
+          <RImg src="props/oil_barrel.png" w={240} h={300} label="🛢️" />
+          <div>
+            <div style={row}><span style={hand(110, '#7BE38E')}>✓ oil का पैसा</span><span style={{ fontSize: 96 }}>📈</span></div>
+            <div style={{ ...row, ...rise(econ + 24) }}><span style={hand(110, '#7BE38E')}>✓ salary</span><span style={{ fontSize: 96 }}>💼</span></div>
+          </div>
+        </div>
+      </PopIn>
+      {/* lost: free media and the opposition */}
+      <PopIn x={W * 0.73} y={H * 0.6} start={media}>
+        <div style={{ ...plate('rgba(60,14,14,0.86)'), minHeight: 300, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div style={row}><span style={{ fontSize: 96 }}>📰</span><span style={{ position: 'relative', ...hand(110, RC.white) }}>आज़ाद media{strike(media + 20)}</span></div>
+          <div style={row}><span style={{ fontSize: 96 }}>🗳️</span><span style={{ position: 'relative', ...hand(110, RC.white) }}>विपक्ष{strike(media + 34)}</span></div>
+        </div>
+      </PopIn>
       <Sfx at={econ} file="coin.wav" volume={0.5} />
       <Sfx at={media + 20} file="pluck_down.wav" volume={0.5} />
     </AbsoluteFill>
