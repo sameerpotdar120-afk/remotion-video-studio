@@ -1,12 +1,12 @@
 """
-Russia video — background score from public-domain recordings of Russian classical music
-(Musopen collection on archive.org, Public Domain Mark 1.0; see docs/russia/AUDIO_CREDITS.md).
+Russia video — background score from Kevin MacLeod's orchestral library (incompetech.com, Creative Commons
+Attribution 4.0; credit line in docs/russia/AUDIO_CREDITS.md and the video description).
 
 Each section of the timeline (intro, chapters 1–10, payoff; boundaries from src/russia/vo/video.json) gets one
-piece. From that piece we take the window of the section's length whose quietest moment is loudest (no
-near-silent passages that would vanish under the voice), even out the orchestral dynamics, crossfade sections at
-the chapter cards, fade the ends and normalise the whole bed to −36 LUFS (the level the user approved; the mix
-ducks it further under speech).
+piece chosen for its mood. From that piece we take the window of the section's length whose quietest moment is
+loudest (no near-silent passages that would vanish under the voice), even out the orchestral dynamics, crossfade
+sections at the chapter cards, fade the ends and normalise the whole bed to −36 LUFS (the level the user approved;
+the mix ducks it further under speech).
 
     python3 scripts/russia/build_bgm.py <dir with the downloaded mp3s> public/russia/music/bgm.mp3
 """
@@ -20,30 +20,23 @@ TOTAL = V['total'] / 60
 C = [c['card'] / 60 for c in V['chapters']]
 PAY = V['paragraphs'][96]['f'] / 60 - 0.3
 
-P6 = 'PyotrIlyichTchaikovsky-SymphonyNo.6InBMinorOp.74pathtique-0{}'
-TRACKS = {
-    'pathetique1': P6.format('1-AdagioAllegroNonTroppo.mp3'),
-    'pathetique3': P6.format('3-AllegroMoltoVivace.mp3'),
-    'pathetique4': P6.format('4-FinaleAdagioLamentoso.mp3'),
-    'easter': 'NikolaiRimsky-korsakov-RussianEasterFestivalOvertureOp.36.mp3',
-    'steppes': 'AlexanderBorodin-InTheSteppesOfCentralAsia.mp3',
-    'quartet2_1': 'AlexanderBorodin-StringQuartetNo.2InDMajor-01-AllegroModerato.mp3',
-    'nocturne': 'AlexanderBorodin-StringQuartetNo.2InDMajor-03-NocturneAndante.mp3',
-}
+TRACKS = {k: k + '.mp3' for k in [
+    'Crusade', 'Intrepid', 'Majestic Hills', 'Oppressive Gloom', 'Dark Times', 'Noble Race', 'Court of the Queen',
+    'Colossus', 'Lost Time', 'Crusade - Heavy Industry', 'Night Vigil', 'At Launch']}
 # (section start s, end s, track, search range within the track (s) or None for anywhere)
 SECTIONS = [
-    (0.0, C[0], 'pathetique1', (0, 180)),         # intro: the dark bassoon opening
-    (C[0], C[1], 'easter', (0, 420)),             # 1 Rus: Orthodox chant themes (Kyiv, 988)
-    (C[1], C[2], 'steppes', None),                # 2 Mongols: In the Steppes of Central Asia
-    (C[2], C[3], 'pathetique1', (250, 700)),      # 3 Ivan: the stormy development
-    (C[3], C[4], 'pathetique1', (500, 1000)),     # 4 Troubles
-    (C[4], C[5], 'easter', (380, 800)),           # 5 Peter: the festive allegro
-    (C[5], C[6], 'quartet2_1', None),             # 6 Catherine: court elegance
-    (C[6], C[7], 'pathetique3', None),            # 7 1812: the march
-    (C[7], C[8], 'pathetique4', None),            # 8 the last Tsar: Adagio lamentoso
-    (C[8], C[9], 'pathetique1', (300, 1050)),     # 9 Stalin
-    (C[9], PAY, 'nocturne', None),                # 10 today: Borodin's Nocturne
-    (PAY, TOTAL, 'easter', (700, 940)),           # payoff: the triumphant finale
+    (0.0, C[0], 'Crusade', None),                     # intro: dark, suspenseful
+    (C[0], C[1], 'Intrepid', None),                   # 1 Rus: early-music colour
+    (C[1], C[2], 'Majestic Hills', None),             # 2 Mongols: dark epic
+    (C[2], C[3], 'Oppressive Gloom', None),           # 3 Ivan: a death march
+    (C[3], C[4], 'Dark Times', None),                 # 4 Troubles: low strings, somber
+    (C[4], C[5], 'Noble Race', None),                 # 5 Peter: driving, full orchestra
+    (C[5], C[6], 'Court of the Queen', None),         # 6 Catherine: regal waltz
+    (C[6], C[7], 'Colossus', None),                   # 7 1812: orchestral action
+    (C[7], C[8], 'Lost Time', None),                  # 8 the last Tsar: violas, cellos, basses
+    (C[8], C[9], 'Crusade - Heavy Industry', None),   # 9 Stalin: industry, anvils
+    (C[9], PAY, 'Night Vigil', None),                 # 10 today: choir, somber
+    (PAY, TOTAL, 'At Launch', None),                  # payoff: epic, uplifting
 ]
 XF = 2.5  # crossfade at the chapter cards (s)
 

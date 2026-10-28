@@ -51,4 +51,30 @@ same pizzicato recording). No synthetic sounds.
 
 ## Music
 
-See the section below (filled in when the score is built).
+`public/russia/music/bgm.mp3` is built by `scripts/russia/build_bgm.py`. It uses one piece per section, all
+by Kevin MacLeod from incompetech.com, licensed under Creative Commons Attribution 4.0
+(https://creativecommons.org/licenses/by/4.0/). Each piece's page is
+`https://incompetech.com/music/royalty-free/index.html?isrc=<ISRC>`, or search the title on incompetech.com.
+
+| Section | Piece |
+|---|---|
+| Intro | Crusade |
+| 1 · Rus | Intrepid |
+| 2 · Mongols | Majestic Hills |
+| 3 · Ivan the Terrible | Oppressive Gloom |
+| 4 · Time of Troubles | Dark Times |
+| 5 · Peter the Great | Noble Race |
+| 6 · Catherine the Great | Court of the Queen |
+| 7 · 1812 | Colossus |
+| 8 · The last Tsar | Lost Time |
+| 9 · Stalin | Crusade - Heavy Industry |
+| 10 · Today | Night Vigil |
+| Payoff | At Launch |
+
+**Credit line for the video description (required by CC BY 4.0):**
+
+> Music by Kevin MacLeod (incompetech.com), licensed under Creative Commons: By Attribution 4.0
+> (http://creativecommons.org/licenses/by/4.0/). Tracks: Crusade, Intrepid, Majestic Hills, Oppressive Gloom,
+> Dark Times, Noble Race, Court of the Queen, Colossus, Lost Time, Crusade - Heavy Industry, Night Vigil, At Launch.
+>
+> Sound effects from Mixkit (Mixkit Free License) and Freesound (CC0).
