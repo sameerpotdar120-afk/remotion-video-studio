@@ -247,3 +247,21 @@ Ranges: steps of 6000 frames (0–5999, 6000–11999, … 84000–89541).
   - Exact Commons titles are in the scratchpad `bgmtools/info.py`; also see `scripts/russia/build_bgm.py`.
   - Using CI to download them was refused (network-policy workaround). Ask the user to allow
     `*.archive.org` instead.
+
+## Delivered 2026-10-28 06:42 UTC
+
+- **Release:** private GitHub release `russia-v1` (repo Releases page), asset `Russia_Ki_Kahani_4K60.mp4`.
+  - 1 891 736 578 bytes; 3840×2160 @ 60 fps HEVC (hvc1) + AAC.
+  - 89 542 frames, 1492.4 s.
+  - SHA-256 `16696fd7…12388007`.
+- **Black-band scan:** 0 bands.
+- **Pipeline:**
+  1. `scripts/russia/encode_delivery.sh` (HEVC pieces on `delivery/russia-hevc-eNN`)
+  2. `scripts/russia/make_release.sh` (joins the pieces with the soundtrack, scans and checks, then splits into
+     parts on `release/russia-4k`)
+  3. The workflow on that branch attaches the file to the release.
+- **Music:** Kevin MacLeod, CC BY 4.0. The credit line for the video description is in `AUDIO_CREDITS.md`.
+- **To re-deliver after a change:**
+  1. Re-render the affected 600-frame segments to a new `render/russia-4k-xN` branch (it overrides).
+  2. Delete those pieces from their `delivery/russia-hevc-eNN` branch and re-run `encode_delivery.sh`.
+  3. Delete `out/russia/release` and the `release/russia-4k` branch, then re-run `make_release.sh`.
