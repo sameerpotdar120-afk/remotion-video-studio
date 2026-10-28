@@ -5,7 +5,7 @@ import { ease, ramp } from '../../lib/easing';
 import { Sfx } from '../../lib/fx/particles';
 import { at, para, CHAPTERS } from '../vo/timeline';
 import { BigNumber, Camera, Card, Flash, GreyStage, Iris, PopIn, RC, RImg, Stamp, ra, TypeOn, YearTag, hand } from '../kit/core';
-import { LoopWheel, RedX } from '../kit/devices';
+import { Candle, LoopWheel, RedX } from '../kit/devices';
 import { Host } from '../kit/Host';
 import { Char } from '../kit/cast';
 import { BgPlate, Fire, Glyph, Smoke } from '../kit/scene';
@@ -54,10 +54,14 @@ const A: React.FC<{ base: number }> = ({ base }) => {
       {phase === 0 && (
         <GreyStage>
           <Camera from={0}>
-            <Card src="cards/card_stalin.png" x={W * 0.32} y={H * 0.46} w={W * 0.16} start={2} name="Stalin" nameColor={RC.danger} ribbonAt={tag + 20} grey={tag + 20} />
-            <PopIn x={W * 0.7} y={H * 0.46} start={cold}><div style={{ ...hand(160, '#333'), textShadow: 'none' }}>🇺🇸 ⚔️ ☭</div></PopIn>
-            <TypeOn text="Cold War 🥶 + Space race 🚀" x={W * 0.66} y={H * 0.74} start={cold} size={100} color={RC.blue} />
+            <Card src="cards/card_stalin.png" x={W * 0.4} y={H * 0.44} w={W * 0.2} start={2} name="Stalin" nameColor={RC.danger} ribbonAt={tag + 20} grey={tag + 20} />
+            <Candle x={W * 0.4 + W * 0.13} y={H * 0.74} size={H * 0.16} start={tag + 20} />
+            <TypeOn text="1953 · Stalin की मौत" x={W * 0.4} y={H * 0.12} start={tag + 14} size={120} color={RC.danger} exit={cold - 6} />
+            <PopIn x={W * 0.77} y={H * 0.5} start={cold} tilt={6}><RImg src="props/rocket_vostok.png" w={H * 0.32} h={H * 0.62} /></PopIn>
+            <PopIn x={W * 0.6} y={H * 0.46} start={cold + 8}><div style={{ ...hand(130, '#333'), textShadow: 'none' }}>🇺🇸 ⚔️ ☭</div></PopIn>
+            <TypeOn text="Cold War 🥶 + Space race 🚀" x={W * 0.6} y={H * 0.9} start={cold} size={100} color={RC.blue} />
           </Camera>
+          <Host x={W * 0.12} y={H * 0.95} height={H * 0.56} offset={base} start={0} gestures={[[0, 'present'], [cold, 'point']]} moods={[[0, 'worried'], [cold, 'smile']]} />
           <YearTag text="1953" start={tag} />
         </GreyStage>
       )}
