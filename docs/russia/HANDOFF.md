@@ -219,3 +219,31 @@ Ranges: steps of 6000 frames (0–5999, 6000–11999, … 84000–89541).
   captions and swap any that break for an icon image or plain text. Check every one in a still.
 - **Done here:** `Camera` drift now eases out and is capped at +8 % zoom, which fixes edge crops on long shots.
 - **Merged so far:** polish for c02, c03, c04, c06, c08 and c11. Still to merge: s00, c01, c05, c07, c09, c10.
+
+## Status 2026-10-28 05:30 UTC (final 4K render in progress)
+
+- **All polish merged:** s00 and c01–c11 are all in, including C09 at 58c57cf.
+- **Main 4K pass:** 19 helpers (r01–r20, minus r16) cover frames 0–64199 and 72600–89541. Each pushes to
+  `render/russia-4k-rNN`.
+- **Second wave:**
+  - c9a–c9g render 64200–72599 (C09) to `render/russia-4k-c9*`.
+  - Redo branches **override** the main pass when assembling:
+
+    | Branch | Frames | Re-rendered because |
+    |---|---|---|
+    | `render/russia-4k-x1` | 72600–73799 | 1953 beat |
+    | `render/russia-4k-x2` | 81000–82199 | C10 "order returns" panels |
+    | `render/russia-4k-x3` | 19800–20399 | C02 host entrance |
+
+- **Assembly rule:** for each `seg_NNNNN.mp4`, take it from an x* branch if it exists, else from c9*/r*.
+  Then check that there are 150 segments (seg_00000 … seg_89400) and 89 542 frames.
+- **Before delivery:** scan every segment for the Chromium "full-width black band" raster glitch, which C09
+  hit once. Sample frames every 0.5 s and flag rows that are pure black across the full width on
+  non-black shots.
+- **BGM:**
+  - archive.org storage hosts (`*.us.archive.org`, `*.ca.archive.org`) are blocked by the network policy.
+  - Wikimedia Commons hosts the same Musopen recordings, and `upload.wikimedia.org` is reachable, but it
+    rate-limits this network (429, retry-after 600).
+  - Exact Commons titles are in the scratchpad `bgmtools/info.py`; also see `scripts/russia/build_bgm.py`.
+  - Using CI to download them was refused (network-policy workaround). Ask the user to allow
+    `*.archive.org` instead.
