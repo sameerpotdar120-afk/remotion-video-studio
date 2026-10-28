@@ -1,10 +1,10 @@
 import React from 'react';
-import { AbsoluteFill, Sequence, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Img, Sequence, useCurrentFrame } from 'remotion';
 import { H, W } from '../../lib/constants';
 import { ease, ramp } from '../../lib/easing';
 import { Sfx } from '../../lib/fx/particles';
 import { at, para, CHAPTERS } from '../vo/timeline';
-import { BigNumber, Camera, Card, Flash, GreyStage, Iris, PopIn, RC, RImg, Stamp, TypeOn, YearTag, hand } from '../kit/core';
+import { BigNumber, Camera, Card, Flash, GreyStage, Iris, PopIn, RC, RImg, Stamp, ra, TypeOn, YearTag, hand } from '../kit/core';
 import { LoopWheel, RedX } from '../kit/devices';
 import { Host } from '../kit/Host';
 import { Char } from '../kit/cast';
@@ -47,6 +47,7 @@ const A: React.FC<{ base: number }> = ({ base }) => {
   const minutes = L(at(85, 'एक', 1));
   const phase = frame < L(at(85, 'उन्नीस', 1)) - 10 ? 0 : frame < something - 10 ? 1 : 2;
   const lift = ramp(frame, april - 20, 120, ease.in);
+  const orbit = (frame - gagarin) / 40;
   return (
     <AbsoluteFill>
       {phase === 0 && (
@@ -69,17 +70,24 @@ const A: React.FC<{ base: number }> = ({ base }) => {
         </AbsoluteFill>
       )}
       {phase === 2 && (
-        <AbsoluteFill style={{ background: 'linear-gradient(#0E1A3A, #5E7FB0 60%, #C9A27A 100%)' }}>
+        <AbsoluteFill style={{ background: 'linear-gradient(#0E1A3A, #5E7FB0 55%, #C9A27A 82%, #6E5A44 82.5%, #4A3E30 100%)' }}>
           <Camera from={something} shake={[{ at: april - 20, amp: 14, dur: 100 }]}>
-            <div style={{ position: 'absolute', left: W * 0.3 - 130, top: H * 0.2 - lift * H * 1.1 }}>
-              <RImg src="props/rocket_vostok.png" w={260} h={760} label="🚀 Vostok" />
-              {frame >= april - 20 && <><Smoke x={130} y={760} size={180} start={april - 20} color="230,230,230" wind={0.2} /><Fire x={130} y={820} size={200} start={april - 20} grow={8} seed="rk" /></>}
+            <div style={{ position: 'absolute', left: W * 0.26 - 300, top: H * 0.86 - 1370 - lift * H * 1.6 }}>
+              <RImg src="props/rocket_vostok.png" w={600} h={1370} label="🚀 Vostok" />
+              {frame >= april - 20 && <><Smoke x={300} y={1300} size={320} start={april - 20} color="230,230,230" wind={0.2} /><Fire x={300} y={1400} size={340} start={april - 20} grow={8} seed="rk" /></>}
             </div>
-            <Card src="cards/card_gagarin.png" x={W * 0.66} y={H * 0.46} w={W * 0.21} start={gagarin - 6} name="Yuri Gagarin" />
-            <TypeOn text="12 April 1961" x={W * 0.66} y={H * 0.12} start={april} size={110} color={RC.white} />
-            <TypeOn text="108 minutes · पहला इंसान 🌍" x={W * 0.66} y={H * 0.86} start={minutes} size={96} color={RC.yellow} />
+            <Char who="gagarin_spacesuit" seed="yg" x={W * 0.44} y={H * 0.95} height={H * 0.46} start={0} exit={april - 30} gestures={[[0, 'wave']]} moods={[[0, 'smile']]} />
+            {frame >= gagarin && (
+              <div style={{ position: 'absolute', left: W * 0.26, top: H * 0.42, opacity: ramp(frame, gagarin, 14, ease.out) }}>
+                <div style={{ position: 'absolute', left: -H * 0.2, top: -H * 0.2 }}><Glyph g="🌍" size={H * 0.4} /></div>
+                <div style={{ position: 'absolute', left: Math.cos(orbit) * H * 0.3 - 60, top: Math.sin(orbit) * H * 0.12 - 60, zIndex: Math.sin(orbit) > 0 ? 1 : -1 }}><Glyph g="🛰️" size={120} /></div>
+              </div>
+            )}
+            <Card src="cards/card_gagarin.png" x={W * 0.66} y={H * 0.44} w={W * 0.21} start={gagarin - 6} name="Yuri Gagarin" />
+            <TypeOn text="108 minutes · पहला इंसान 🌍" x={W * 0.26} y={H * 0.78} start={minutes} size={110} color={RC.yellow} />
           </Camera>
-          <Iris at={april} hold={30} cx={W * 0.66} cy={H * 0.12} />
+          <YearTag text="12 April 1961" start={april} />
+          <Iris at={april} hold={30} />
           <Sfx at={april - 20} file="rocket.wav" volume={0.6} />
         </AbsoluteFill>
       )}
@@ -102,22 +110,22 @@ const B: React.FC<{ base: number }> = ({ base }) => {
     <AbsoluteFill>
       <BgPlate src="bg/bg_submarine_1962.png" from={0} sky="#3A1414" ground="#2A1010" tint={`rgba(255,40,40,${0.18 + red * 0.12})`} />
       <Camera from={0} drift={0.014}>
-        <PopIn x={W * 0.5} y={H * 0.62} start={three - 20}>
-          <div style={{ width: 360, height: 220, background: '#2A2A2A', borderRadius: 20, border: '8px solid #555', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <PopIn x={W * 0.57} y={H * 0.6} start={three - 20}>
+          <div style={{ transform: 'scale(1.6)', width: 360, height: 220, background: '#2A2A2A', borderRadius: 20, border: '8px solid #555', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <div style={{ width: 120, height: 120, borderRadius: '50%', background: `radial-gradient(circle, #FF4040, #8A0000)`, boxShadow: `0 0 ${40 * red}px #FF2020` }} />
             <div style={{ ...hand(50, '#FFDADA'), textShadow: 'none' }}>LAUNCH</div>
           </div>
         </PopIn>
-        <Char who="soviet_navy_officer" seed="o1" x={W * 0.22} y={H * 0.97} height={H * 0.48} start={cuba} gestures={[[0, 'down'], [two, 'point']]} moods={[[0, 'worried'], [two, 'angry']]} shake={[two, no]} />
-        <Char who="soviet_navy_officer" seed="o2" tint="#3A5A8A" x={W * 0.38} y={H * 0.97} height={H * 0.46} start={cuba + 6} gestures={[[0, 'down'], [two + 10, 'point']]} moods={[[0, 'worried'], [two + 10, 'angry']]} shake={[two, no]} />
-        <Char who="soviet_navy_officer" seed="arkhipov" tint="#5A6A3A" x={W * 0.78} y={H * 0.97} height={H * 0.5} start={cuba + 12} flip gestures={[[0, 'down'], [no, 'hips']]} moods={[[0, 'neutral'], [no, 'angry'], [saved, 'smile']]} />
-        <TypeOn text="1962 · Cuba के पास 🌊" x={W * 0.5} y={H * 0.1} start={cuba} size={100} color={RC.white} exit={three} />
-        <TypeOn text="3 अफ़सर · 3 हाँ ज़रूरी" x={W * 0.5} y={H * 0.1} start={three} size={100} color={RC.yellow} exit={no} />
+        <Char who="soviet_navy_officer" seed="o1" x={W * 0.22} y={H * 0.97} height={H * 0.48} start={4} gestures={[[0, 'down'], [two, 'point']]} moods={[[0, 'worried'], [two, 'angry']]} shake={[two, no]} />
+        <Char who="soviet_navy_officer" seed="o2" tint="#3A5A8A" x={W * 0.38} y={H * 0.97} height={H * 0.46} start={10} gestures={[[0, 'down'], [two + 10, 'point']]} moods={[[0, 'worried'], [two + 10, 'angry']]} shake={[two, no]} />
+        <Char who="soviet_navy_officer" seed="arkhipov" tint="#5A6A3A" x={W * 0.78} y={H * 0.97} height={H * 0.5} start={16} flip gestures={[[0, 'down'], [no, 'hips']]} moods={[[0, 'neutral'], [no, 'angry'], [saved, 'smile']]} />
         <TypeOn text="✔ ✔" x={W * 0.3} y={H * 0.36} start={two} size={130} color={RC.green} />
         <TypeOn text="✘ NO" x={W * 0.78} y={H * 0.36} start={no} size={150} color={RC.danger} />
-        <TypeOn text="Vasily Arkhipov" x={W * 0.5} y={H * 0.1} start={no + 10} size={130} color={RC.blue} />
-        <TypeOn text="एक “ना” ने दुनिया बचा ली 🌍" x={W * 0.5} y={H * 0.22} start={saved} size={100} color={RC.yellow} />
       </Camera>
+      <TypeOn text="1962 · Cuba के पास 🌊" x={W * 0.5} y={H * 0.1} start={cuba} size={100} color={RC.white} exit={three} />
+      <TypeOn text="3 अफ़सर · 3 हाँ ज़रूरी" x={W * 0.5} y={H * 0.1} start={three} size={100} color={RC.yellow} exit={no} />
+      <TypeOn text="Vasily Arkhipov" x={W * 0.5} y={H * 0.1} start={no + 10} size={130} color={RC.blue} />
+      <TypeOn text="एक “ना” ने दुनिया बचा ली 🌍" x={W * 0.5} y={H * 0.22} start={saved} size={100} color={RC.yellow} />
       <Sfx at={nuclear} file="heartbeat_low.wav" volume={0.6} />
       <Sfx at={no} file="stamp_slam.wav" volume={0.6} />
       <Sfx at={saved} file="sting_shimmer.wav" volume={0.5} />
@@ -136,6 +144,7 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
   const rakesh = L(at(87, 'Rakesh'));
   const indira = L(at(87, 'Indira'));
   const quote = L(at(87, 'सारे'));
+  const sovRocket = L(at(87, 'Soviet', 1));
   const stage = frame >= yr84 - 10;
   return (
     <AbsoluteFill>
@@ -148,10 +157,11 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
       ) : (
         <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 40%, #1E2A55, #04060E)' }}>
           <Camera from={yr84}>
-            <Card src="cards/card_rakesh_sharma.png" x={W * 0.38} y={H * 0.46} w={W * 0.21} start={rakesh - 10} name="Rakesh Sharma" />
-            <TypeOn text="पहले भारतीय अंतरिक्ष यात्री 🚀" x={W * 0.38} y={H * 0.1} start={rakesh} size={96} color={RC.white} />
-            <TypeOn text="Indira Gandhi: “ऊपर से भारत कैसा दिखता है?”" x={W * 0.68} y={H * 0.72} start={indira} size={76} color="#DDD" />
-            <TypeOn text="“सारे जहाँ से अच्छा” 🇮🇳" x={W * 0.68} y={H * 0.84} start={quote} size={130} color={RC.yellow} />
+            <Card src="cards/card_rakesh_sharma.png" x={W * 0.28} y={H * 0.5} w={W * 0.24} start={yr84} name="Rakesh Sharma" />
+            <TypeOn text="Soviet rocket 🚀 → अंतरिक्ष" x={W * 0.68} y={H * 0.3} start={sovRocket} size={110} color={RC.white} exit={rakesh} />
+            <TypeOn text="पहले भारतीय अंतरिक्ष यात्री 🇮🇳" x={W * 0.68} y={H * 0.3} start={rakesh + 8} size={110} color={RC.white} exit={indira} />
+            <TypeOn text="Indira Gandhi: “ऊपर से भारत कैसा दिखता है?”" x={W * 0.68} y={H * 0.42} start={indira} size={88} color="#DDD" />
+            <TypeOn text="“सारे जहाँ से अच्छा” 🇮🇳" x={W * 0.68} y={H * 0.62} start={quote} size={150} color={RC.yellow} />
           </Camera>
         </AbsoluteFill>
       )}
@@ -174,12 +184,12 @@ const D: React.FC<{ base: number }> = ({ base }) => {
     <AbsoluteFill>
       <BgPlate src="bg/bg_soviet_shop_1985.png" from={0} sky="#B8C8B4" ground="#8A8A7A" />
       <Camera from={0}>
-        {[0, 1, 2, 3, 4].map((i) => <Char key={i} who="soviet_citizen_1980s" seed={`q${i}`} x={W * (0.08 + i * 0.09)} y={H * 0.97} height={H * 0.36} start={shops + i * 4} moods={[[0, 'sad']]} gestures={[[0, 'down']]} />)}
-        <TypeOn text="दुकानें ख़ाली 🛒✗ · economy ठप" x={W * 0.3} y={H * 0.14} start={shops} size={90} color={RC.white} />
-        <Card src="cards/card_gorbachev.png" x={W * 0.74} y={H * 0.44} w={W * 0.19} start={gorb - 10} name="Gorbachev" />
-        <Stamp text="Glasnost · खुलापन" x={W * 0.74} y={H * 0.12} start={glas} size={80} color={RC.stampGreen} rotate={-4} />
-        <Stamp text="Perestroika · बदलाव" x={W * 0.74} y={H * 0.84} start={pere} size={80} color={RC.stampGreen} rotate={4} />
+        {[0, 1, 2, 3, 4].map((i) => <Char key={i} who="soviet_citizen_1980s" seed={`q${i}`} x={W * (0.11 + i * 0.085)} y={H * 0.96} height={H * 0.4} start={i * 5} moods={[[0, 'sad']]} gestures={[[0, 'down']]} />)}
+        <Card src="cards/card_gorbachev.png" x={W * 0.78} y={H * 0.46} w={W * 0.19} start={gorb - 10} name="Gorbachev" />
+        <Stamp text="Glasnost · खुलापन" x={W * 0.55} y={H * 0.34} start={glas} size={100} color={RC.stampGreen} rotate={-4} />
+        <Stamp text="Perestroika · बदलाव" x={W * 0.57} y={H * 0.5} start={pere} size={100} color={RC.stampGreen} rotate={4} />
       </Camera>
+      <TypeOn text="दुकानें ख़ाली 🛒✗ · economy ठप" x={W * 0.4} y={H * 0.17} start={shops} size={110} color={RC.white} />
       <YearTag text="1985" start={gorb} />
       <Sfx at={glas} file="stamp_slam.wav" volume={0.45} />
       <Sfx at={pere} file="stamp_slam.wav" volume={0.45} />
@@ -188,6 +198,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
 };
 
 /* ───────────── E · Chernobyl, the Wall ───────────── */
+const SLAB = `polygon(${W * 0.461}px ${H * 0.255}px, ${W * 0.641}px ${H * 0.205}px, ${W * 0.641}px ${H * 0.72}px, ${W * 0.461}px ${H * 0.70}px)`;
 const E: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
@@ -199,6 +210,7 @@ const E: React.FC<{ base: number }> = ({ base }) => {
   const lid = L(at(89, 'ढक्कन'));
   const phase = frame >= wall - 10;
   const fall = ramp(frame, fell, 40, ease.in);
+  const wallT = Math.max(0, frame - (wall - 10)) / 60;
   return (
     <AbsoluteFill>
       {!phase ? (
@@ -214,11 +226,20 @@ const E: React.FC<{ base: number }> = ({ base }) => {
       ) : (
         <AbsoluteFill>
           <BgPlate src="bg/bg_berlin_wall_1989.png" from={wall - 10} sky="#14182A" ground="#3A3A3A" />
+          {/* one painted panel of the photo itself tips over towards camera; the gap shows the lit city behind */}
+          <AbsoluteFill style={{ transform: `translateX(${-6 * wallT}px) scale(${1.04 + 0.012 * wallT})` }}>
+            {fall > 0 && (
+              <AbsoluteFill style={{ clipPath: SLAB, background: 'radial-gradient(ellipse at 55% 75%, rgba(255,200,120,0.55) 0%, rgba(255,200,120,0) 45%), linear-gradient(#121830 0%, #262A48 55%, #6A5048 82%, #2E2828 100%)' }}>
+                {[0, 1, 2].map((i) => (
+                  <Char key={i} who={i % 2 ? 'russian_1990s' : 'soviet_citizen_1980s'} seed={`bw${i}`} x={W * (0.495 + i * 0.055)} y={H * 0.72} height={H * 0.27} start={fell + 14 + i * 4} gestures={[[0, 'wave']]} moods={[[0, 'smile']]} />
+                ))}
+              </AbsoluteFill>
+            )}
+            <AbsoluteFill style={{ clipPath: SLAB, transformOrigin: '55% 71%', transform: `perspective(${W}px) rotateX(${-fall * 78}deg)`, opacity: 1 - ramp(frame, fell + 26, 20, ease.in) }}>
+              <Img src={ra('bg/bg_berlin_wall_1989.png')} style={{ width: W, height: H, objectFit: 'cover' }} />
+            </AbsoluteFill>
+          </AbsoluteFill>
           <Camera from={wall - 10} shake={[{ at: fell + 20, amp: 24, dur: 30 }]}>
-            <div style={{ position: 'absolute', left: W * 0.2, top: H * 0.36, width: W * 0.6, height: H * 0.44, transformOrigin: '50% 100%', transform: `rotateX(${fall * 80}deg)`, opacity: 1 - fall * 0.6,
-              background: 'repeating-linear-gradient(90deg, #9A9A96 0 300px, #7E7E7A 300px 310px)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
-              <div style={{ ...hand(110, '#C83A3A'), padding: 30, textShadow: 'none' }}>🎨 ★ ☮</div>
-            </div>
             {frame >= fell + 20 && <Smoke x={W * 0.5} y={H * 0.8} size={H * 0.24} start={fell + 20} color="180,180,180" />}
             <TypeOn text="Berlin Wall गिरी 🧱" x={W * 0.5} y={H * 0.14} start={fell} size={130} color={RC.white} />
             <TypeOn text="ढक्कन खुला → सब बाहर 🫙" x={W * 0.5} y={H * 0.86} start={lid} size={100} color={RC.yellow} />
@@ -245,11 +266,11 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <RMap view="eurasia" cam={[{ at: 0, lon: 72, lat: 54, zoom: 1.35 }, { at: ended, lon: 65, lat: 52, zoom: 1.25, dur: 120 }]}
-        overlay={<>{split && REP.map((id, i) => <NumberAt key={id} id={id} n={i + 1} start={fifteen + i * 4} />)}<At lon={40} lat={62} start={resign}><div style={{ ...hand(80, RC.white) }}>Gorbachev: इस्तीफ़ा ✍️</div></At></>}>
+        overlay={<>{split && REP.map((id, i) => <NumberAt key={id} id={id} n={i + 1} start={fifteen + i * 4} />)}<At lon={40} lat={62} start={resign} exit={ended - 10}><div style={{ ...hand(110, RC.white) }}>Gorbachev: इस्तीफ़ा ✍️</div></At></>}>
         {!split && <Fill id="ussr_1945" color={RC.sovietRed} start={0} dur={1} opacity={0.62} pulseAt={[resign]} />}
         {split && <Patchwork ids={REP} colors={REP_COL} start={ended - 10} stagger={3} opacity={0.65} spread={{ at: ended + 20, px: 40, center: [65, 52] }} />}
       </RMap>
-      <Stamp text="COLLAPSE #4" x={W * 0.5} y={H * 0.82} start={fourth} size={200} rotate={-6} />
+      <Stamp text="COLLAPSE #4" x={W * 0.74} y={H * 0.8} start={fourth} size={200} rotate={-6} />
       <YearTag text="25 December 1991" start={tag} />
       <Iris at={tag + 2} hold={34} />
       <Sfx at={ended - 10} file="glass_break.wav" volume={0.7} />
@@ -258,15 +279,23 @@ const F: React.FC<{ base: number }> = ({ base }) => {
     </AbsoluteFill>
   );
 };
+/** px nudges so the tiny Baltic / Caucasus badges don't sit on top of each other */
+const NUDGE: Record<string, [number, number]> = {
+  rep_moldova: [-40, 0], rep_lithuania: [-90, -10], rep_estonia: [40, -30],
+  rep_georgia: [-40, -60], rep_armenia: [-80, 30], rep_azerbaijan: [70, 30],
+};
 const NumberAt: React.FC<{ id: string; n: number; start: number }> = ({ id, n, start }) => {
   const [lon, lat] = terr(id).properties.label;
-  return <At lon={lon} lat={lat} start={start} over={1.3}><div style={{ ...hand(80, '#fff'), background: 'rgba(0,0,0,0.45)', borderRadius: 50, width: 110, height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n}</div></At>;
+  const [dx, dy] = NUDGE[id] ?? [0, 0];
+  return <At lon={lon} lat={lat} start={start} over={1.3} dx={dx} dy={dy}><div style={{ ...hand(62, '#fff'), background: 'rgba(0,0,0,0.5)', borderRadius: 44, width: 86, height: 86, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{n}</div></At>;
 };
 
 /* ───────────── G · the 1990s ───────────── */
 const G: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
+  const russia = L(at(91, 'Russia,'));
+  const nineties = L(at(91, 'नब्बे'));
   const chaos = L(at(91, 'chaos'));
   const infl = L(at(91, 'महँगाई,'));
   const tag = L(at(91, 'उन्नीस', 1));
@@ -275,7 +304,11 @@ const G: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <TypeOn text="1990s = फिर CHAOS" x={W * 0.56} y={H * 0.12} start={chaos} size={130} color={RC.danger} />
+        <PopIn x={W * 0.56} y={H * 0.48} start={russia} exit={infl - 10}>
+          <div style={{ position: 'relative', width: 820, height: 830, transform: `rotate(${frame >= chaos ? Math.sin(frame / 3) * 1.5 : 0}deg)` }}>
+            <RImg src="props/double_headed_eagle.png" w={820} h={830} />
+          </div>
+        </PopIn>
         {Array.from({ length: 14 }, (_, i) => {
           const t = frame - infl - i * 6;
           if (t < 0) return null;
@@ -284,7 +317,10 @@ const G: React.FC<{ base: number }> = ({ base }) => {
         <PopIn x={W * 0.56} y={H * 0.5} start={infl} tilt={-8}>
           <div style={{ background: '#F6EBCF', padding: '24px 60px', borderRadius: 16, ...hand(150, '#3A2616'), textShadow: 'none', boxShadow: '0 20px 40px rgba(0,0,0,0.35)', fontVariantNumeric: 'tabular-nums' }}>🏷️ ₽ {price.toLocaleString('en-IN')}</div>
         </PopIn>
-        <TypeOn text="महँगाई · बेरोज़गारी · crime" x={W * 0.56} y={H * 0.74} start={infl} size={96} color={RC.white} />
+        <TypeOn text="महँगाई · बेरोज़गारी · crime" x={W * 0.56} y={H * 0.74} start={infl} size={110} color={RC.white} />
+        <TypeOn text="1990s" x={W * 0.56} y={H * 0.12} start={nineties} size={130} color={RC.danger} exit={chaos - 4} />
+        <TypeOn text="1990s = फिर CHAOS" x={W * 0.56} y={H * 0.12} start={chaos - 4} size={130} color={RC.danger} rate={9} />
+        <Char who="russian_1990s" seed="r90" x={W * 0.88} y={H * 0.95} height={H * 0.46} start={chaos} flip moods={[[0, 'worried'], [def, 'sad']]} gestures={[[0, 'down'], [infl, 'handsHead'], [def, 'shrug']]} />
         <Stamp text="DEFAULT" x={W * 0.6} y={H * 0.3} start={def} size={190} />
       </Camera>
       <Host x={W * 0.14} y={H * 0.92} height={H * 0.52} offset={base} start={0} gestures={[[0, 'handsHead'], [def, 'shrug']]} moods={[[0, 'shocked'], [def, 'sad']]} />
@@ -309,26 +345,24 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
       {!stage ? (
         <AbsoluteFill>
           <BgPlate src="bg/bg_apartment_1999.png" from={0} sky="#3A2E3E" ground="#5A4A3A" />
-          <Camera from={0} keys={[{ at: tv, zoom: 1.3, y: H * 0.04, dur: 60 }]}>
-            <div style={{ position: 'absolute', left: W * 0.5 - 380, top: H * 0.26 }}>
-              <div style={{ position: 'relative', width: 760, height: 620 }}>
-                <div style={{ position: 'absolute', inset: 0, borderRadius: 60, background: 'linear-gradient(#C9C9C9, #8E8E8E)', border: '8px solid #555', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }} />
-                <div style={{ position: 'absolute', left: 120, top: 90, width: 520, height: 400, overflow: 'hidden', borderRadius: 30, background: '#111' }}>
-                  <Card src="cards/card_yeltsin.png" x={260} y={220} w={300} start={tv - 30} tilt={0} />
-                  <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 3px, rgba(0,0,0,0.1) 3px 6px)' }} />
-                </div>
-                
+          <Camera from={0} keys={[{ at: tv, zoom: 1.25, y: H * 0.06, dur: 60 }]}>
+            {/* CRT prop (1600×1429, screen ≈ x 338–1158, y 392–1078) standing on the coffee table */}
+            <div style={{ position: 'absolute', left: W * 0.5 - 600, top: H * 0.635 - 1072, width: 1200, height: 1072 }}>
+              <div style={{ position: 'absolute', inset: 0 }}><RImg src="props/tv_crt_1999.png" w={1200} h={1072} /></div>
+              <div style={{ position: 'absolute', left: 268, top: 308, width: 584, height: 486, overflow: 'hidden', borderRadius: 40, background: '#111', opacity: ramp(frame, tv - 30, 12, ease.out) }}>
+                <Card src="cards/card_yeltsin.png" x={292} y={250} w={320} start={tv - 30} tilt={0} />
+                <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0 3px, rgba(0,0,0,0.1) 3px 6px)' }} />
               </div>
             </div>
-            <TypeOn text="Yeltsin: इस्तीफ़ा 📺" x={W * 0.5} y={H * 0.12} start={tv} size={110} color={RC.white} />
-            <TypeOn text="ताक़त → एक कम-जाना officer" x={W * 0.5} y={H * 0.88} start={handed} size={90} color={RC.yellow} />
           </Camera>
+          <TypeOn text="Yeltsin: इस्तीफ़ा 📺" x={W * 0.5} y={H * 0.12} start={tv} size={120} color={RC.white} />
+          <TypeOn text="ताक़त → एक कम-जाना officer" x={W * 0.5} y={H * 0.88} start={handed} size={110} color={RC.yellow} />
         </AbsoluteFill>
       ) : (
         <GreyStage>
           <Camera from={putin - 20}>
-            <Card src="cards/card_putin.png" x={W * 0.42} y={H * 0.46} w={W * 0.2} start={putin - 10} name="Vladimir Putin" />
-            <LoopWheel x={W * 0.76} y={H * 0.5} r={H * 0.2} start={putin} small steps={[[putin + 2, 0], [putin + 30, 1]]} />
+            <Card src="cards/card_putin.png" x={W * 0.36} y={H * 0.46} w={W * 0.2} start={putin - 10} name="Vladimir Putin" />
+            <LoopWheel x={W * 0.67} y={H * 0.5} r={H * 0.17} start={putin} steps={[[putin + 2, 0], [putin + 30, 1]]} />
           </Camera>
           <Host x={W * 0.13} y={H * 0.92} height={H * 0.5} offset={base} start={putin - 20} gestures={[[putin - 20, 'point']]} moods={[[putin - 20, 'neutral']]} />
         </GreyStage>
@@ -348,9 +382,9 @@ const I: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <RMap view="eurasia" cam={[{ at: 0, lon: 80, lat: 58, zoom: 1.3 }]}
-        overlay={<><At lon={60} lat={60} start={econ} bob={6}><div style={{ textAlign: 'center' }}><RImg src="props/oil_barrel.png" w={150} h={150} label="🛢️" /><div style={hand(70, RC.green)}>oil 📈</div></div></At>
-          <At lon={95} lat={62} start={econ + 20} bob={6}><div style={{ ...hand(90, RC.green) }}>💼 salary ✓</div></At>
-          <At lon={80} lat={52} start={media}><div style={{ position: 'relative' }}><div style={{ ...hand(90, RC.white) }}>📰 media · 🗳️ विपक्ष</div><RedX x={260} y={50} w={560} h={120} start={media + 20} /></div></At></>}>
+        overlay={<><At lon={60} lat={60} start={econ} bob={6}><div style={{ textAlign: 'center' }}><RImg src="props/oil_barrel.png" w={300} h={300} label="🛢️" style={{ margin: '0 auto' }} /><div style={hand(110, RC.green)}>oil 📈</div></div></At>
+          <At lon={95} lat={62} start={econ + 20} bob={6}><div style={{ ...hand(120, RC.green) }}>💼 salary ✓</div></At>
+          <At lon={80} lat={52} start={media}><div style={{ position: 'relative' }}><div style={{ ...hand(120, RC.white), whiteSpace: 'nowrap' }}>📰 media · 🗳️ विपक्ष</div><RedX x={430} y={75} w={860} h={170} start={media + 20} /></div></At></>}>
         <Fill id="russia_modern" color={RC.rusRed} start={0} dur={1} opacity={0.58} />
       </RMap>
       <TypeOn text="फिर से order चाहिए था" x={W * 0.5} y={H * 0.12} start={order} size={110} color={RC.yellow} />
@@ -382,11 +416,13 @@ const J: React.FC<{ base: number }> = ({ base }) => {
       ) : (
         <GreyStage>
           <Camera from={yr20 - 10}>
-            <TypeOn text="2020 · संविधान बदला 📜" x={W * 0.56} y={H * 0.16} start={yr20} size={110} color={RC.white} />
-            <TypeOn text="2024" x={W * 0.42} y={H * 0.5} start={yr20 + 20} size={240} color={RC.white} />
-            <RedX x={W * 0.42} y={H * 0.5} w={W * 0.2} h={H * 0.2} start={y2036 - 30} />
-            <TypeOn text="→ 2036" x={W * 0.7} y={H * 0.5} start={y2036} size={240} color={RC.danger} />
+            <PopIn x={W * 0.56} y={H * 0.36} start={L(at(94, 'संविधान'))} tilt={-4}><RImg src="props/pact_document.png" w={520} h={560} /></PopIn>
+            <TypeOn text="2020 · संविधान बदला 📜" x={W * 0.56} y={H * 0.12} start={yr20} size={110} color={RC.white} />
+            <TypeOn text="2024" x={W * 0.44} y={H * 0.7} start={yr20 + 10} size={240} color={RC.white} />
+            <RedX x={W * 0.44} y={H * 0.7} w={W * 0.17} h={H * 0.18} start={y2036 - 30} />
+            <TypeOn text="→ 2036" x={W * 0.7} y={H * 0.7} start={y2036} size={240} color={RC.danger} />
           </Camera>
+          <Host x={W * 0.14} y={H * 0.93} height={H * 0.5} offset={base} start={yr20 - 10} gestures={[[yr20 - 10, 'present'], [y2036, 'point']]} moods={[[yr20 - 10, 'neutral'], [y2036, 'shocked']]} />
         </GreyStage>
       )}
       <YearTag text={stage ? '2020' : '18 March 2014'} start={stage ? yr20 : tag} />
