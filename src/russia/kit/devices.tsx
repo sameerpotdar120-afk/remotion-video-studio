@@ -143,14 +143,25 @@ export const LoopWheel: React.FC<{
         const align = Math.abs(cxa) < 0.2 ? 'center' : cxa > 0 ? 'left' : 'right';
         const at = labelsAt ? labelsAt[i] : start + 6;
         const on = i === node;
-        return <TypeOn key={i} text={txt} x={lx} y={ly} start={at} size={fs * (on ? 1.12 : 1)} color={on ? LOOP_COL[i] : '#2B2B2B'} rate={0.8} align={align} />;
+        const size = fs * (on ? 1.12 : 1);
+        // long labels wrap onto two lines (split at the space nearest the middle) so they stay inside the frame
+        const words = txt.split(' ');
+        let lines = [txt];
+        if (txt.length > 12 && words.length > 1) {
+          let best = 1, bd = 1e9;
+          for (let k = 1; k < words.length; k++) { const dd = Math.abs(words.slice(0, k).join(' ').length - txt.length / 2); if (dd < bd) { bd = dd; best = k; } }
+          lines = [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+        }
+        return lines.map((ln, j) => (
+          <TypeOn key={`${i}-${j}`} text={ln} x={lx} y={ly + (j - (lines.length - 1) / 2) * size * 1.08} start={at + j * 6} size={size} color={on ? LOOP_COL[i] : '#2B2B2B'} rate={0.8} align={align} />
+        ));
       })}
       {againAt !== undefined && frame >= againAt && (
         <div style={{ position: 'absolute', left: Math.cos((ang(0) * Math.PI) / 180) * r * 0.05 - r * 0.85, top: -r * 1.45, transform: `rotate(-10deg) scale(${pop(frame, againAt, 1.2)})`,
           ...hand(fs * 1.3, RC.danger) }}>AGAIN ↻</div>
       )}
       {center && frame >= center.at && (
-        <div style={{ position: 'absolute', left: 0, top: r * 0.3, transform: `translate(-50%, -50%) scale(${pop(frame, center.at, 1.15)})`, ...hand(r * 0.36, center.color ?? RC.danger) }}>{center.text}</div>
+        <div style={{ position: 'absolute', left: 0, top: r * 0.48, transform: `translate(-50%, -50%) scale(${pop(frame, center.at, 1.15)})`, ...hand(r * 0.32, center.color ?? RC.danger) }}>{center.text}</div>
       )}
     </div>
   );
@@ -275,8 +286,8 @@ export const Calendar: React.FC<{ x: number; y: number; size: number; start: num
 };
 
 /** Grid of person icons that turn grey row by row (losses, §2.9). */
-export const PeopleGrid: React.FC<{ x: number; y: number; cols: number; rows: number; size: number; start: number; greyFrom?: number; perRow?: number; color?: string; exit?: number }> = ({
-  x, y, cols, rows, size, start, greyFrom, perRow = 8, color = '#F2EFE8', exit,
+export const PeopleGrid: React.FC<{ x: number; y: number; cols: number; rows: number; size: number; start: number; greyFrom?: number; perRow?: number; greyCount?: number; color?: string; exit?: number }> = ({
+  x, y, cols, rows, size, start, greyFrom, perRow = 8, greyCount, color = '#F2EFE8', exit,
 }) => {
   const frame = useCurrentFrame();
   if (frame < start) return null;
@@ -286,7 +297,8 @@ export const PeopleGrid: React.FC<{ x: number; y: number; cols: number; rows: nu
     for (let c = 0; c < cols; c++) {
       const i = r * cols + c;
       const s = pop(frame, start + i * 0.6, 1.1);
-      const g = greyFrom !== undefined ? ramp(frame, greyFrom + r * perRow, 8, ease.out) : 0;
+      // greyCount: only the first N figures grey, one after another (2 f apart); else whole rows, perRow frames apart
+      const g = greyFrom === undefined ? 0 : greyCount !== undefined ? (i < greyCount ? ramp(frame, greyFrom + i * 2, 8, ease.out) : 0) : ramp(frame, greyFrom + r * perRow, 8, ease.out);
       const col = interpolateColors(g, [0, 1], [color, '#5B5B5B']);
       nodes.push(
         <svg key={i} width={size} height={size * 1.4} viewBox="0 0 20 28" style={{ position: 'absolute', left: c * size * 1.15, top: r * size * 1.55, transform: `scale(${s})` }}>

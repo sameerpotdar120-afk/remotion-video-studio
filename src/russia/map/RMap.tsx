@@ -95,9 +95,12 @@ export const RMap: React.FC<{
   const proj = useMemo(() => projOf(view), [view]);
   const pathGen = useMemo(() => geoPath(proj), [proj]);
   const c = camAt(frame, cam);
-  const zoom = c.zoom * (1 + drift * Math.max(0, frame - from) / 60);
+  // the tilted board must always cover the frame: a floor on zoom, and the camera centre kept inside the terrain
+  const zoom = Math.max(1.14, c.zoom * (1 + drift * Math.max(0, frame - from) / 60));
   const scale = (W / v.width) * zoom;
-  const [cx, cy] = proj([c.lon, c.lat]) as [number, number];
+  const [px0, py0] = proj([c.lon, c.lat]) as [number, number];
+  const hw = (W * 0.62) / scale, hh = (H * 0.62) / scale;
+  const cx = Math.min(Math.max(px0, hw), v.width - hw), cy = Math.min(Math.max(py0, hh), v.height - hh);
   const tx = W / 2 - cx * scale;
   const ty = H / 2 - cy * scale;
   const ctx: Ctx = {
