@@ -22,11 +22,15 @@ const useTexture = (src: string) => {
   useEffect(() => {
     new THREE.TextureLoader().load(staticFile(src), (t) => {
       t.colorSpace = THREE.SRGBColorSpace;
-      t.anisotropy = 8;
+      t.anisotropy = 4;
       setTex(t);
-      continueRender(handle);
     });
   }, [src, handle]);
+  // release the frame only after the textured mesh has been committed (and painted on the next frame)
+  useEffect(() => {
+    if (!tex) return;
+    requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle)));
+  }, [tex, handle]);
   return tex;
 };
 
@@ -63,6 +67,8 @@ const useOverlay = (ids: string[], color: string) =>
     t.colorSpace = THREE.SRGBColorSpace;
     return t;
   }, [ids.join(','), color]);
+
+const GQ = 2 / 3;
 
 const ATMO_VS = `varying vec3 vN; varying vec3 vP; void main(){ vN = normalize(normalMatrix*normal); vec4 p = modelViewMatrix*vec4(position,1.0); vP = p.xyz; gl_Position = projectionMatrix*p; }`;
 const ATMO_FS = `varying vec3 vN; varying vec3 vP; void main(){ float f = pow(1.0 - abs(dot(normalize(-vP), vN)), 3.0); gl_FragColor = vec4(0.45,0.72,1.0,1.0)*f*1.3; }`;
@@ -113,7 +119,10 @@ export const Globe: React.FC<{
   }
   const popS = highlight && frame >= highlight.start ? 1 + 0.012 * Math.sin(Math.min(1, (frame - highlight.start) / 12) * Math.PI) : 1;
   return (
-    <ThreeCanvas width={W} height={H} camera={{ fov: 30, position: [0, 0, cur.dist], near: 0.05, far: 200 }} style={{ background: '#02040A' }}>
+    // the GL canvas renders at 2/3 resolution (software GL at full 4K costs ~10 s/frame) and is scaled up by CSS;
+    // the globe is a soft photographic texture, so the upscale is invisible
+    <div style={{ position: 'absolute', left: 0, top: 0, width: W * GQ, height: H * GQ, transform: `scale(${1 / GQ})`, transformOrigin: '0 0' }}>
+    <ThreeCanvas width={W * GQ} height={H * GQ} camera={{ fov: 30, position: [0, 0, cur.dist], near: 0.05, far: 200 }} style={{ background: '#02040A' }}>
       <ambientLight intensity={0.55} />
       <directionalLight position={[-4, 3, 5]} intensity={2.1} />
       <Stars />
@@ -138,5 +147,6 @@ export const Globe: React.FC<{
         <shaderMaterial vertexShader={ATMO_VS} fragmentShader={ATMO_FS} blending={THREE.AdditiveBlending} side={THREE.BackSide} transparent depthWrite={false} />
       </mesh>
     </ThreeCanvas>
+    </div>
   );
 };

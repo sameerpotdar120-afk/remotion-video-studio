@@ -4,7 +4,7 @@ import { H, W } from '../../lib/constants';
 import { ease, ramp } from '../../lib/easing';
 import { Sfx } from '../../lib/fx/particles';
 import { at, para, CHAPTERS } from '../vo/timeline';
-import { BigNumber, Camera, Card, Flash, GreyStage, Iris, PopIn, RC, RImg, Stamp, TypeOn, YearTag, hand } from '../kit/core';
+import { BigNumber, Camera, Card, Flash, GreyStage, Iris, PopIn, RC, RImg, Stamp, TypeOn, YearTag, hand, has } from '../kit/core';
 import { LoopWheel, PeopleGrid } from '../kit/devices';
 import { Host } from '../kit/Host';
 import { Char } from '../kit/cast';
@@ -68,15 +68,16 @@ const AB: React.FC<{ base: number }> = ({ base }) => {
         <AbsoluteFill>
           <BgPlate src="bg/bg_borodino_1812.png" from={bloody} sky="#B8B4A8" ground="#7A7A52" />
           <Camera from={bloody} shake={[{ at: bloody + 4, amp: 24, dur: 30 }, { at: bloody + 60, amp: 16, dur: 20 }]}>
+            {[0.3, 0.5, 0.7].map((x, i) => <Smoke key={i} x={W * x} y={H * 0.6} size={H * 0.16} start={bloody + i * 8} color="150,145,135" />)}
             {[0, 1, 2].map((i) => <Char key={`r${i}`} who="russian_soldier_1812" seed={`rs${i}`} x={W * (0.14 + i * 0.1)} y={H * 0.96} height={H * 0.38} start={bloody + i * 3} gestures={[[0, 'fist']]} moods={[[0, 'angry'], [noWin, 'worried']]} />)}
             {[0, 1, 2].map((i) => <Char key={`f${i}`} who="french_soldier" seed={`fs${i}`} x={W * (0.66 + i * 0.1)} y={H * 0.96} height={H * 0.38} start={bloody + i * 3} flip gestures={[[0, 'fist']]} moods={[[0, 'angry'], [noWin, 'worried']]} />)}
-            {[0.3, 0.5, 0.7].map((x, i) => <Smoke key={i} x={W * x} y={H * 0.7} size={H * 0.22} start={bloody + i * 8} color="230,230,225" />)}
             <PopIn x={W * 0.5} y={H * 0.56} start={bloody + 30}><RImg src="props/cannon_1812.png" w={H * 0.36} h={H * 0.3} label="💣" /></PopIn>
+            <PopIn x={W * 0.5 + H * 0.2} y={H * 0.5} start={bloody + 60} exit={bloody + 74}><Glyph g="💥" size={170} /></PopIn>
+            <Smoke x={W * 0.5 + H * 0.2} y={H * 0.5} size={H * 0.1} start={bloody + 62} color="120,115,108" exit={bloody + 200} />
             <TypeOn text="Borodino" x={W * 0.5} y={H * 0.12} start={bloody} size={150} color={RC.blue} />
             <TypeOn text="कोई साफ़ विजेता नहीं 🤷" x={W * 0.5} y={H * 0.26} start={noWin} size={110} color={RC.yellow} />
           </Camera>
           <Flash at={bloody + 4} dur={6} />
-          <Flash at={bloody + 60} dur={4} />
           <Sfx at={bloody + 4} file="impact_boom.wav" volume={0.6} />
           <Sfx at={bloody + 60} file="musket_volley.wav" volume={0.4} />
         </AbsoluteFill>
@@ -103,20 +104,20 @@ const Cc: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <BgPlate src="bg/bg_moscow_skyline_1812.png" from={0} sky="#C8B89A" ground="#6E5A3E" tint={glow > 0 ? `rgba(255,120,40,${glow * 0.5})` : undefined} />
-      <Camera from={0}>
+      <Camera from={0} focus={[W * 0.5, H * 0.88]}>
         {Array.from({ length: 9 }, (_, i) => (
           <React.Fragment key={i}>
             <Smoke x={W * (0.06 + i * 0.11)} y={H * 0.5} size={H * 0.2} start={fire + i * 7} color="50,40,36" />
             <Fire x={W * (0.06 + i * 0.11)} y={H * (0.56 + (i % 3) * 0.03)} size={H * (0.14 + (i % 2) * 0.06)} start={fire + i * 7} seed={`mf${i}`} />
           </React.Fragment>
         ))}
-        <Rider horse="horse_white" who="napoleon" x={W * (0.2 + 0.35 * ramp(frame, reached - 40, 90, ease.out))} y={H * 0.98} height={H * 0.5} start={reached - 40}
+        <Rider horse="horse_white" who="napoleon" x={W * (0.22 + 0.3 * ramp(frame, reached - 40, 90, ease.out))} y={H * 0.9} height={H * 0.38} start={reached - 40}
           gallop={frame < reached + 50} moods={[[0, 'smug'], [thought, 'grin'], [empty, 'worried'], [fire, 'shocked']]} gestures={[[0, 'hips'], [fire, 'handsHead']]} seed="nap" />
-        <TypeOn text="अब Tsar हार मानेगा 😏" x={W * 0.45} y={H * 0.16} start={thought} size={100} exit={empty} />
-        <TypeOn text="…Moscow ख़ाली! 🏚️" x={W * 0.45} y={H * 0.16} start={empty} size={110} color={RC.yellow} exit={fire} />
-        <TypeOn text="Moscow जल रहा है" x={W * 0.5} y={H * 0.14} start={fire + 10} size={150} color={RC.danger} />
-        <Stamp text="आग किसने लगाई? ❓" x={W * 0.76} y={H * 0.32} start={who} size={90} />
       </Camera>
+      <TypeOn text="अब Tsar हार मानेगा 😏" x={W * 0.45} y={H * 0.16} start={thought} size={100} exit={empty} />
+      <TypeOn text="…Moscow ख़ाली! 🏚️" x={W * 0.45} y={H * 0.16} start={empty} size={110} color={RC.yellow} exit={fire} />
+      <TypeOn text="Moscow जल रहा है" x={W * 0.5} y={H * 0.14} start={fire + 10} size={150} color={RC.danger} />
+      <Stamp text="आग किसने लगाई? ❓" x={W * 0.76} y={H * 0.32} start={who} size={90} />
       <Sfx at={reached - 40} file="whoosh_soft.wav" volume={0.4} />
       <Sfx at={fire} file="impact_boom.wav" volume={0.4} />
       <Sfx at={who} file="stamp_slam.wav" volume={0.5} />
@@ -133,7 +134,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   const melt = L(at(61, 'पिघलती'));
   const few = L(at(61, 'बहुत'));
   const stopped = L(at(61, 'जिस'));
-  const frost = ramp(frame, winter - 20, 120, ease.out);
+  const frost = ramp(frame, 0, Math.max(120, winter + 100), ease.out);
   const RET: [number, number][] = [...INVASION].reverse();
   return (
     <AbsoluteFill>
@@ -141,17 +142,18 @@ const D: React.FC<{ base: number }> = ({ base }) => {
         overlay={
           <>
             <Pin lon={MOSCOW[0]} lat={MOSCOW[1]} label="Moscow" start={0} />
-            {[[33, 56.2], [29.5, 55.6], [26, 55.8], [35, 54.4]].map(([lo, la], i) => <At key={i} lon={lo} lat={la} start={winter + i * 10} bob={6}><Glyph g="❄️" size={90} /></At>)}
+            <At lon={MOSCOW[0] + 1.6} lat={MOSCOW[1] - 1.1} start={4} exit={back + 30} bob={5}><RImg src="chars/napoleon.png" w={260} h={300} label="Napoleon" /></At>
+            {[[33, 56.2], [29.5, 55.6], [26, 55.8], [35, 54.4]].map(([lo, la], i) => <At key={i} lon={lo} lat={la} start={Math.min(winter, 30) + i * 10} bob={6}><Glyph g="❄️" size={90} /></At>)}
           </>
         }>
         <Fill id="russia_1812" color={RC.empireGold} start={0} dur={1} opacity={0.45} />
         <Route pts={RET} start={back} dur={few - back + 60} width={60} endWidth={6} />
       </RMap>
       <AbsoluteFill style={{ pointerEvents: 'none', background: `radial-gradient(ellipse at 50% 50%, rgba(255,255,255,0) ${70 - frost * 35}%, rgba(235,245,255,${0.92 * frost}) 100%)` }} />
-      <Snow start={winter} density={140} wind={-4} />
+      <Snow start={0} density={140} wind={-4} />
       <TypeOn text="बिना खाना · बिना छत · सर्दी ❄️" x={W * 0.5} y={H * 0.12} start={L(at(61, 'बिना'))} size={100} color="#1E2A44" exit={melt} />
       <TypeOn text="फ़ौज पिघलती गई…" x={W * 0.5} y={H * 0.12} start={melt} size={120} color="#1E2A44" exit={stopped} />
-      <PeopleGrid x={W * 0.78} y={H * 0.78} cols={10} rows={3} size={44} start={melt} greyFrom={melt + 10} perRow={14} color="#2F4E8C" />
+      <PeopleGrid x={W * 0.78} y={H * 0.8} cols={10} rows={3} size={64} start={melt} greyFrom={melt + 10} perRow={14} color="#2F4E8C" />
       <TypeOn text="ज़मीन 🌲 + सर्दी ❄️ = रोक दिया" x={W * 0.45} y={H * 0.12} start={stopped} size={120} color={RC.danger} />
       <Sfx at={winter} file="whoosh_soft.wav" volume={0.5} />
       <Sfx at={stopped} file="sting_hit.wav" volume={0.5} />
@@ -176,7 +178,7 @@ const E: React.FC<{ base: number }> = ({ base }) => {
         <GreyStage>
           <Camera from={0}>
             <TypeOn text="Side effect 💭" x={W * 0.5} y={H * 0.1} start={side} size={110} color={RC.yellow} />
-            {[0, 1].map((i) => <Char key={i} who="decembrist_officer" seed={`do${i}`} x={W * (0.3 + i * 0.14)} y={H * 0.96} height={H * 0.46} start={side + 10 + i * 6} gestures={[[0, 'chin']]} moods={[[0, 'neutral'], [saw, 'shocked']]} look2={0.8} />)}
+            {[0, 1].map((i) => <Char key={i} who="decembrist_officer" seed={`do${i}`} x={W * (0.28 + i * 0.15)} y={H * 0.95} height={H * 0.5} start={2 + i * 6} gestures={[[0, 'down'], [paris + 10, 'point'], [saw, 'shrug']]} moods={[[0, 'neutral'], [saw, 'shocked']]} look2={0.8} />)}
             <PopIn x={W * 0.7} y={H * 0.42} start={paris}>
               <div style={{ position: 'relative' }}>
                 <svg width={W * 0.4} height={H * 0.48} viewBox="0 0 100 60" style={{ position: 'absolute', left: -W * 0.2, top: -H * 0.24 }}><ellipse cx={50} cy={28} rx={48} ry={27} fill="#fff" stroke="#333" strokeWidth={0.8} /><circle cx={10} cy={58} r={3} fill="#fff" stroke="#333" strokeWidth={0.6} /></svg>
@@ -191,8 +193,10 @@ const E: React.FC<{ base: number }> = ({ base }) => {
           <BgPlate src="bg/bg_senate_square_1825.png" from={tag - 6} sky="#AEB8C4" ground="#D8DEE6" />
           <Snow start={tag} density={70} />
           <Camera from={tag} shake={[{ at: crushed + 6, amp: 26, dur: 24 }]}>
-            {[0, 1, 2, 3].map((i) => <Char key={i} who="decembrist_officer" seed={`dc${i}`} x={W * (0.56 + i * 0.1)} y={H * 0.96} height={H * 0.4} start={tag + i * 4} flip gestures={[[0, 'fist'], [crushed + 6, 'handsHead']]} moods={[[0, 'angry'], [crushed + 6, 'shocked']]} fallAt={i % 2 ? crushed + 10 : undefined} />)}
+            {[0, 1, 2].map((i) => <Char key={i} who="decembrist_officer" seed={`dc${i}`} x={W * (0.56 + i * 0.15)} y={H * 0.94} height={H * 0.42} start={tag + i * 4} flip gestures={[[0, 'fist'], [crushed + 6, 'handsHead']]} moods={[[0, 'angry'], [crushed + 6, 'shocked']]} shake={[crushed + 6, crushed + 70]} hopAt={[crushed + 8 + i * 3]} />)}
             <PopIn x={W * 0.18} y={H * 0.84} start={revolt}><RImg src="props/cannon_1812.png" w={H * 0.4} h={H * 0.3} label="💣 cannon" /></PopIn>
+            <PopIn x={W * 0.18 + H * 0.22} y={H * 0.76} start={crushed + 6} exit={crushed + 20}><Glyph g="💥" size={180} /></PopIn>
+            <Smoke x={W * 0.18 + H * 0.22} y={H * 0.76} size={H * 0.12} start={crushed + 8} color="110,110,115" />
             <TypeOn text="Decembrists" x={W * 0.5} y={H * 0.12} start={tag + 4} size={150} color={RC.blue} />
             <TypeOn text="तोपों से कुचला" x={W * 0.5} y={H * 0.25} start={crushed + 8} size={110} color={RC.danger} />
           </Camera>
@@ -207,6 +211,7 @@ const E: React.FC<{ base: number }> = ({ base }) => {
 };
 
 /* ───────────── F · 1861 serfs freed ───────────── */
+const SERFS = ['serf_worker', 'serf_woman', 'serf_worker'];
 const F: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
@@ -217,16 +222,23 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   const lincoln = L(at(63, 'America'));
   return (
     <GreyStage>
-      <Camera from={0}>
-        <Char who="alexander_ii" x={W * 0.2} y={H * 0.96} height={H * 0.56} start={alex - 10} gestures={[[0, 'hold'], [ended, 'cheer']]} moods={[[0, 'neutral'], [ended, 'grin']]} />
-        <TypeOn text="Alexander II" x={W * 0.2} y={H * 0.32} start={alex} size={100} color={RC.blue} />
-        <PeopleGrid x={W * 0.62} y={H * 0.56} cols={14} rows={3} size={70} start={tag} color="#7A7A7A" />
-        {Array.from({ length: 6 }, (_, i) => frame >= ended + i * 6 && (
-          <div key={i} style={{ position: 'absolute', left: W * (0.42 + i * 0.075), top: H * 0.66 - ramp(frame, ended + i * 6, 30, ease.out) * H * 0.1, opacity: 1 - ramp(frame, ended + i * 6 + 20, 20), transform: `rotate(${(i % 2 ? 1 : -1) * ramp(frame, ended + i * 6, 30) * 40}deg)` }}><Glyph g="⛓️" size={90} /></div>
+      <Camera from={0} drift={0.005} focus={[W * 0.5, H * 0.92]}>
+        <Char who="alexander_ii" x={W * 0.19} y={H * 0.94} height={H * 0.54} start={4} gestures={[[0, 'down'], [alex, 'present'], [ended, 'cheer']]} moods={[[0, 'neutral'], [ended, 'grin']]} />
+        <TypeOn text="Alexander II" x={W * 0.19} y={H * 0.33} start={alex} size={100} color={RC.blue} />
+        <PeopleGrid x={W * 0.65} y={H * 0.6} cols={16} rows={3} size={54} start={tag + 30} color="#8A8A8A" />
+        {SERFS.map((who, i) => (
+          <React.Fragment key={i}>
+            <Char who={who} seed={`sf${i}`} x={W * (0.48 + i * 0.15)} y={H * 0.94} height={H * 0.42} start={10 + i * 8} flip={i === 2}
+              gestures={[[0, 'down'], [ended + 6 + i * 6, 'cheer']]} moods={[[0, 'worried'], [ended + 6 + i * 6, 'grin']]} hopAt={[ended + 10 + i * 6]} />
+            {frame >= 18 + i * 8 && (
+              <div style={{ position: 'absolute', left: W * (0.48 + i * 0.15) - 60, top: H * 0.8 - ramp(frame, ended + i * 6, 30, ease.out) * H * 0.14,
+                opacity: ramp(frame, 18 + i * 8, 10) * (1 - ramp(frame, ended + i * 6 + 24, 20)), transform: `rotate(${(i % 2 ? 1 : -1) * ramp(frame, ended + i * 6, 30) * 40}deg)` }}><Glyph g="⛓️" size={120} /></div>
+            )}
+          </React.Fragment>
         ))}
-        <BigNumber x={W * 0.62} y={H * 0.2} to={23000000} start={n} dur={50} size={190} suffix="+" sub="काग़ज़ पर आज़ाद" />
-        <TypeOn text="🇺🇸 Lincoln से 2 साल पहले" x={W * 0.62} y={H * 0.88} start={lincoln} size={100} color={RC.yellow} />
       </Camera>
+      <BigNumber x={W * 0.63} y={H * 0.2} to={23000000} start={n} dur={50} size={190} suffix="+" sub="काग़ज़ पर आज़ाद" />
+      <TypeOn text="🇺🇸 Lincoln से 2 साल पहले" x={W * 0.63} y={H * 0.36} start={lincoln} size={90} color={RC.yellow} />
       <YearTag text="1861" start={tag} />
       <Sfx at={ended} file="paper_tear.wav" volume={0.5} />
       <Sfx at={ended + 2} file="sting_crown.wav" volume={0.45} />
@@ -247,11 +259,13 @@ const G: React.FC<{ base: number }> = ({ base }) => {
   return (
     <AbsoluteFill>
       <RMap view="eurasia" cam={[{ at: 0, lon: 120, lat: 60, zoom: 1.2 }, { at: 4, lon: 185, lat: 62, zoom: 2.3, dur: 100 }]}
-        overlay={<><MapLabel lon={205} lat={66} text="Alaska" start={alaska} size={110} /><At lon={200} lat={57} start={acre}><div style={{ ...hand(84, RC.yellow) }}>≈ 2¢ / acre 🤯</div></At></>}>
+        overlay={<MapLabel lon={205} lat={66} text="Alaska" start={alaska} size={110} />}>
         <Fill id="russia_1812" color={RC.empireGold} start={0} dur={1} opacity={0.5} />
         <Fill id="alaska" color={RC.empireGold} colors={[[sold + 30, '#3D6FD8']]} start={0} dur={1} opacity={0.6} pulseAt={[alaska]} offset={[slide * 120, slide * 30]} />
       </RMap>
+      <TypeOn text="पैसे की तंगी 💸" x={W * 0.5} y={H * 0.12} start={8} size={110} color={RC.yellow} exit={sold} />
       <Stamp text="SOLD" x={W * 0.62} y={H * 0.36} start={sold + 20} size={200} />
+      <TypeOn text="≈ 2¢ / acre 🤯" x={W * 0.68} y={H * 0.56} start={acre} size={100} color={RC.yellow} />
       <BigNumber x={W * 0.3} y={H * 0.8} to={7200000} start={price} dur={40} size={170} prefix="$" sub="1867 में · America को" />
       <YearTag text="1867" start={tag} />
       <Sfx at={sold + 20} file="stamp_slam.wav" volume={0.7} />
@@ -261,6 +275,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
 };
 
 /* ───────────── H · 1881 ───────────── */
+const CARD_A2 = 'cards/card_alexander_ii.png';
 const Hh: React.FC<{ base: number }> = ({ base }) => {
   const frame = useCurrentFrame();
   const L = (f: number) => f - base;
@@ -276,15 +291,17 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0} shake={[{ at: bomb, amp: 30, dur: 26 }]}>
         {!card ? (
           <>
-            <div style={{ position: 'absolute', left: W * (0.1 + 0.45 * ramp(frame, tag - 30, bomb - tag + 30, ease.linear)) - W * 0.13, top: H * 0.58 + Math.abs(Math.sin(frame / 5)) * 6 }}>
+            <div style={{ position: 'absolute', left: W * (0.17 + 0.41 * ramp(frame, tag - 30, bomb - tag + 30, ease.linear)) - W * 0.13, top: H * 0.58 + Math.abs(Math.sin(frame / 5)) * 6 }}>
               <RImg src="props/carriage_1881.png" w={W * 0.26} h={H * 0.3} label="🛷 carriage" />
             </div>
             <PopIn x={W * 0.62} y={H * 0.62} start={bomb - 20} exit={bomb}><Glyph g="💣" size={120} /></PopIn>
-            {frame >= bomb && <><Smoke x={W * 0.56} y={H * 0.7} size={H * 0.3} start={bomb} color="70,70,70" /><Fire x={W * 0.56} y={H * 0.82} size={H * 0.2} start={bomb} grow={6} exit={bomb + 40} /></>}
           </>
         ) : (
-          <Card src="cards/card_alexander_ii.png" x={W * 0.5} y={H * 0.46} w={W * 0.2} start={bomb + 30} name="Alexander II" ribbonAt={bomb + 40} grey={bomb + 40} />
+          <Card src={CARD_A2} x={W * 0.5} y={H * 0.46} w={W * 0.2} start={bomb + 30} name="Alexander II" ribbonAt={bomb + 40} grey={bomb + 40}>
+            {!has(CARD_A2) && <Char who="alexander_ii" x={W * 0.1} y={W * 0.29} height={W * 0.27} legs={false} noArms start={0} />}
+          </Card>
         )}
+        {frame >= bomb && <><Smoke x={W * 0.56} y={H * 0.7} size={H * 0.3} start={bomb} color="70,70,70" exit={bomb + 120} /><Fire x={W * 0.56} y={H * 0.82} size={H * 0.2} start={bomb} grow={6} exit={bomb + 40} /></>}
         <TypeOn text="reformer का अंजाम… 😬" x={W * 0.5} y={H * 0.12} start={strange} size={110} exit={same} />
         <TypeOn text="वही Tsar जिसने serfs को आज़ाद किया" x={W * 0.5} y={H * 0.12} start={same} size={100} color={RC.yellow} />
       </Camera>
@@ -309,9 +326,9 @@ const I: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <LoopWheel x={W * 0.56} y={H * 0.52} r={H * 0.27} start={0} steps={[[0, 2], [tsars, 1]]} center={{ text: 'फिर सख़्ती ✊', at: strict }} />
-        {frame >= count && <PopIn x={W * 0.86} y={H * 0.5} start={count} key={c}><div style={{ ...hand(320, RC.danger) }}>{c > 0 ? c : '💥'}</div></PopIn>}
-        <TypeOn text="तबाही की उलटी गिनती…" x={W * 0.56} y={H * 0.92} start={count} size={100} color={RC.danger} />
+        <LoopWheel x={W * 0.49} y={H * 0.5} r={H * 0.27} start={0} steps={[[0, 2], [tsars, 1]]} center={{ text: 'फिर सख़्ती ✊', at: strict }} />
+        {frame >= count && <PopIn x={W * 0.84} y={H * 0.86} start={count} key={c}><div style={{ ...hand(260, RC.danger) }}>{c > 0 ? c : '💥'}</div></PopIn>}
+        <TypeOn text="तबाही की उलटी गिनती…" x={W * 0.49} y={H * 0.92} start={count} size={100} color={RC.danger} />
       </Camera>
       <Host x={W * 0.13} y={H * 0.92} height={H * 0.52} offset={base} start={0} gestures={[[0, 'present'], [none, 'fist'], [count, 'handsHead']]} moods={[[0, 'neutral'], [none, 'angry'], [count, 'shocked']]} />
       {[0, 1, 2].map((i) => <Sfx key={i} at={count + i * 18} file="tick.wav" volume={0.6} />)}

@@ -207,9 +207,9 @@ export const Stamp: React.FC<{ text: string; x: number; y: number; start: number
 
 /** Big outlined number counting up (§2.9) + small handwritten unit / sub-caption. */
 export const BigNumber: React.FC<{
-  x: number; y: number; to: number; start: number; dur?: number; size?: number; prefix?: string; suffix?: string; sub?: string; exit?: number;
+  x: number; y: number; to: number; start: number; dur?: number; size?: number; prefix?: string; suffix?: string; sub?: string; subSize?: number; exit?: number;
   color?: string; format?: (v: number) => string; hollow?: boolean;
-}> = ({ x, y, to, start, dur = 50, size = 260, prefix = '', suffix = '', sub, exit, color = RC.white, format, hollow = true }) => {
+}> = ({ x, y, to, start, dur = 50, size = 260, prefix = '', suffix = '', sub, subSize, exit, color = RC.white, format, hollow = true }) => {
   const frame = useCurrentFrame();
   if (frame < start) return null;
   const out = exit !== undefined ? 1 - ramp(frame, exit, 10, ease.in) : 1;
@@ -227,7 +227,7 @@ export const BigNumber: React.FC<{
       }}>
         {prefix}{txt}{suffix}
       </div>
-      {sub && <div style={{ ...hand(size * 0.24, RC.white, 700), marginTop: size * 0.04 }}>{sub}</div>}
+      {sub && <div style={{ ...hand(subSize ?? Math.max(64, size * 0.42), RC.white, 700), marginTop: size * 0.04 }}>{sub}</div>}
     </div>
   );
 };
@@ -314,7 +314,8 @@ export const Camera: React.FC<{
     prev = { zoom: k.zoom, x: k.x ?? 0, y: k.y ?? 0 };
     if (frame < k.at + dur) break;
   }
-  const d = 1 + drift * t;
+  // slow push-in that eases out and never exceeds +8 % (long shots used to crop at the edges)
+  const d = 1 + 0.08 * (1 - Math.exp(-(drift * t) / 0.08));
   let sx = 0, sy = 0;
   for (const s of shake) {
     const u = frame - s.at;

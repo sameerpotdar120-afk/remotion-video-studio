@@ -21,7 +21,7 @@ export type Look = { coat: string; trim?: string; hat?: Hat; hatColor?: string; 
 export type Gesture = 'down' | 'present' | 'point' | 'fingerUp' | 'shrug' | 'chin' | 'handsHead' | 'wave' | 'hold' | 'fist' | 'cheer' | 'hips';
 export type Step = { at: number; x: number; y?: number; dur?: number };
 
-type Rig = { aspect: number; face: { x: number; y: number; w: number }; shoulderL: [number, number]; shoulderR: [number, number] };
+type Rig = { aspect: number; face: { x: number; y: number; w: number }; shoulderL: [number, number]; shoulderR: [number, number]; sleeve?: string };
 const rigOf = (src?: string): Rig | null => (src && has(src) ? ((RIGS as unknown as Record<string, Rig>)[src.split('/').pop()!] ?? null) : null);
 
 const DEFAULT_RIG: Rig = { aspect: 0.62, face: { x: 0.5, y: 0.25, w: 0.62 }, shoulderL: [0.2, 0.55], shoulderR: [0.8, 0.55] };
@@ -120,6 +120,14 @@ const FallbackBody: React.FC<{ look: Look; w: number; h: number }> = ({ look, w,
 };
 
 const GLOVE: Record<string, string> = { open: 'props/glove_open.png', point: 'props/glove_point.png', pointUp: 'props/glove_point.png', fist: 'props/glove_fist.png', hold: 'props/glove_hold.png' };
+/** where each glove image's wrist cuff is (fraction of the square image) and which way its fingers point (deg, y down) */
+const CUFF: Record<string, { x: number; y: number; dir: number }> = {
+  open: { x: 0.27, y: 0.84, dir: -64 },
+  point: { x: 0.12, y: 0.5, dir: 0 },
+  pointUp: { x: 0.12, y: 0.5, dir: 0 },
+  fist: { x: 0.1, y: 0.47, dir: 0 },
+  hold: { x: 0.13, y: 0.53, dir: 0 },
+};
 
 export const Peg: React.FC<{
   src?: string; // russia asset, e.g. 'chars/rurik_viking.png'
@@ -194,10 +202,12 @@ export const Peg: React.FC<{
     const a = (ang * Math.PI) / 180;
     const hx = sx + Math.cos(a) * len, hy = sy + Math.sin(a) * len;
     const mx = (sx + hx) / 2 - Math.sin(a) * len * 0.16, my = (sy + hy) / 2 + Math.cos(a) * len * 0.16;
-    return { d: `M ${sx} ${sy} Q ${mx} ${my} ${hx} ${hy}`, hx, hy, ang, hand };
+    return { d: `M ${sx} ${sy} Q ${mx} ${my} ${hx} ${hy}`, hx, hy, ang, hand, cx: mx, cy: my };
   };
   const arms = noArms ? [] : [arm('L'), arm('R')];
-  const gs = bodyH * 0.16;
+  const gs = bodyH * 0.125;
+  const tube = bodyH * 0.052;
+  const sleeve = rig.sleeve ?? look.coat;
 
   // legs: hips at the body's bottom edge
   const hipY = bodyH - bodyH * 0.02;
@@ -241,13 +251,21 @@ export const Peg: React.FC<{
           <Face size={faceW} mood={mood} look={flip ? -look2 : look2} talk={talk} blinkSeed={seed.length * 7} />
         </div>
         <svg width={w} height={bodyH} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-          {arms.map((a, i) => <path key={i} d={a.d} fill="none" stroke={RC.ink} strokeWidth={bodyH * 0.016} strokeLinecap="round" />)}
+          {/* sleeves: coat-coloured tubes with an ink outline, the glove cuff covers the end */}
+          {arms.map((a, i) => <path key={`o${i}`} d={a.d} fill="none" stroke={RC.ink} strokeWidth={tube * 1.32} strokeLinecap="round" />)}
+          {arms.map((a, i) => <path key={`s${i}`} d={a.d} fill="none" stroke={sleeve} strokeWidth={tube} strokeLinecap="round" />)}
+          {arms.map((a, i) => <path key={`h${i}`} d={a.d} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={tube * 0.28} strokeLinecap="round" transform={`translate(${-tube * 0.18} ${-tube * 0.18})`} />)}
         </svg>
         {arms.map((a, i) => {
-          const rot = a.hand === 'pointUp' ? -90 : a.hand === 'open' ? a.ang + 90 : a.ang;
+          // the glove's cuff sits exactly on the end of the sleeve and the fingers continue the arm's direction
+          const c = CUFF[a.hand];
+          const G = gs * 2;
+          const left = i === 0; // left arm: mirrored glove (thumb on the other side)
+          const dir = left ? -c.dir : c.dir;
+          const end = Math.atan2(a.hy - a.cy, a.hx - a.cx) * 180 / Math.PI; // tangent of the sleeve at the hand
           return (
-            <Img key={i} src={aa(GLOVE[a.hand])} style={{ position: 'absolute', left: a.hx - gs, top: a.hy - gs, width: gs * 2, height: gs * 2,
-              transform: `rotate(${rot}deg) scaleY(${i === 0 ? -1 : 1})`, transformOrigin: '50% 50%' }} />
+            <Img key={i} src={aa(GLOVE[a.hand])} style={{ position: 'absolute', left: a.hx - c.x * G, top: a.hy - c.y * G, width: G, height: G,
+              transformOrigin: `${c.x * 100}% ${c.y * 100}%`, transform: `rotate(${end - dir}deg) scaleY(${left ? -1 : 1})` }} />
           );
         })}
         {children}
