@@ -192,7 +192,10 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   const time = L(at(79, 'वक़्त'));
   const meet = ramp(frame, deal - 10, 30, ease.inOut);
   const tear = ramp(frame, split, 20, ease.out);
+  // the whole shot sits in its own compositor layer: on the base layer Chromium intermittently dropped the
+  // top raster tile row here (a full-width black band over the stage and the first card)
   return (
+    <AbsoluteFill style={{ willChange: 'transform' }}>
     <GreyStage>
       <Camera from={0} drift={0.006}>
         <Card src="cards/card_stalin.png" x={W * (0.2 + meet * 0.16)} y={H * 0.42} w={W * 0.19} start={4} name="Stalin" nameColor={RC.danger} tilt={-3} />
@@ -210,6 +213,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
       <Sfx at={noAttack} file="stamp_slam.wav" volume={0.6} />
       <Sfx at={split} file="paper_tear.wav" volume={0.7} />
     </GreyStage>
+    </AbsoluteFill>
   );
 };
 
@@ -329,7 +333,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
         {frame >= tag - 10 && (
           <>
             <Char who="german_general_surrender" x={W * 0.72} y={H * 0.93} height={H * 0.5} start={tag - 10} flip gestures={[[0, 'down'], [surrender, 'cheer']]} moods={[[0, 'sad'], [surrender, 'worried']]} />
-            {[0, 1, 2].map((i) => <Char key={i} who="soviet_soldier_ww2" seed={`ss${i}`} x={W * (0.2 + i * 0.12)} y={H * 0.93} height={H * 0.4} start={tag - 10 + i * 4} gestures={[[0, 'point'], [surrender + 20, 'cheer']]} moods={[[0, 'angry'], [surrender + 20, 'grin']]} hopAt={[surrender + 30]} />)}
+            {[0, 1, 2].map((i) => <Char key={i} who="soviet_soldier_ww2" seed={`ss${i}`} x={W * (0.16 + i * 0.135)} y={H * 0.93} height={H * 0.4} start={tag - 10 + i * 4} gestures={[[0, 'point'], [surrender + 20, 'cheer']]} moods={[[0, 'angry'], [surrender + 20, 'grin']]} hopAt={[surrender + 30]} />)}
           </>
         )}
       </Camera>
