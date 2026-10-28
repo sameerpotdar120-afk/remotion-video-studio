@@ -31,8 +31,11 @@ const PlateText: React.FC<{ text: string; x: number; y: number; start: number; s
   if (frame < start) return null;
   const o = ramp(frame, start, 8, ease.out) * (exit !== undefined ? 1 - ramp(frame, exit, 10, ease.in) : 1);
   if (o <= 0) return null;
+  // the plate unrolls with the type-on (TypeOn writes 0.45 graphemes per frame)
+  const k = Math.min(1, 0.12 + ((frame - start) * 0.45) / Array.from(text).length);
   return (
-    <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%, -50%)', padding: `${size * 0.14}px ${size * 0.42}px`, borderRadius: size * 0.3, background: 'rgba(24,16,10,0.58)', opacity: o }}>
+    <div style={{ position: 'absolute', left: x, top: y, transform: 'translate(-50%, -50%)', padding: `${size * 0.14}px ${size * 0.42}px`, borderRadius: size * 0.3, background: 'rgba(24,16,10,0.58)', opacity: o,
+      clipPath: `inset(0 ${(1 - k) * 100}% 0 0 round ${size * 0.3}px)` }}>
       <span style={{ ...hand(size, color), visibility: 'hidden' }}>{text}</span>
       <div style={{ position: 'absolute', left: '50%', top: '50%', width: 0, height: 0 }}>
         <TypeOn text={text} x={0} y={0} start={start} size={size} color={color} />
@@ -153,6 +156,7 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   const enemies = L(at(54, 'दुश्मनों'));
   const still = L(at(54, 'phrase', 1));
   const behind = ramp(frame, myth - 10, 40, ease.inOut);
+  const potX = W * (0.15 + 0.06 * ramp(frame, myth - 10, 40, ease.inOut)); // room for the shrug once the barge has gone
   // the barge sails in on the river, stops beside the village while Catherine admires it, then leaves
   const bargeX = W * (-0.32 + 0.51 * ramp(frame, tour, 150, ease.out) - 0.5 * ramp(frame, myth - 10, 60, ease.in));
   return (
@@ -172,8 +176,8 @@ const D: React.FC<{ base: number }> = ({ base }) => {
           <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden' }}><RImg src="props/potemkin_facade_front.png" w={W * 0.54} h={H * 0.5} label="🏠🏠🏠 pretty village" /></div>
           <div style={{ position: 'absolute', inset: 0, backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}><RImg src="props/potemkin_facade_back.png" w={W * 0.54} h={H * 0.5} label="🪵 just planks!" /></div>
         </div>
-        <Char who="potemkin" x={W * 0.13} y={H * 0.94} height={H * 0.5} start={phrase - 30} gestures={[[0, 'down'], [potemkin, 'present'], [fake, 'wave'], [myth, 'shrug']]} moods={[[potemkin, 'grin'], [myth, 'worried']]} />
-        <TypeOn text="Potemkin" x={W * 0.13} y={H * 0.38} start={potemkin + 4} size={90} color={RC.blue} />
+        <Char who="potemkin" x={W * 0.15} y={H * 0.94} height={H * 0.5} start={phrase - 30} walk={[{ at: 0, x: W * 0.15 }, { at: myth - 10, x: W * 0.21, dur: 40 }]} gestures={[[0, 'down'], [potemkin, 'present'], [fake, 'wave'], [myth, 'shrug']]} moods={[[potemkin, 'grin'], [myth, 'worried']]} />
+        <TypeOn text="Potemkin" x={potX} y={H * 0.38} start={potemkin + 4} size={90} color={RC.blue} />
         <TypeOn text="सब ख़ुशहाल है! 😁" x={W * 0.68} y={H * 0.22} start={show} size={100} color={RC.white} exit={myth} />
         <Stamp text="EXAGGERATED?" x={W * 0.62} y={H * 0.2} start={myth + 20} size={120} />
         <PlateText text="दुश्मनों ने बढ़ा-चढ़ाकर फैलाई" x={W * 0.62} y={H * 0.32} start={enemies} size={84} color={RC.white} />
