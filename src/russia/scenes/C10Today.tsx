@@ -10,6 +10,7 @@ import { Host } from '../kit/Host';
 import { Char } from '../kit/cast';
 import { BgPlate, Fire, Glyph, Smoke } from '../kit/scene';
 import { SputnikOrbit } from '../three/Sputnik';
+import { Globe } from '../three/Globe';
 import { At, Fill, MapLabel, Patchwork, Pin, RMap, Route, terr } from '../map/RMap';
 
 /**
@@ -77,15 +78,29 @@ const A: React.FC<{ base: number }> = ({ base }) => {
               {frame >= april - 20 && <><Smoke x={300} y={1300} size={320} start={april - 20} color="230,230,230" wind={0.2} /><Fire x={300} y={1400} size={340} start={april - 20} grow={8} seed="rk" /></>}
             </div>
             <Char who="gagarin_spacesuit" seed="yg" x={W * 0.44} y={H * 0.95} height={H * 0.46} start={0} exit={april - 30} gestures={[[0, 'wave']]} moods={[[0, 'smile']]} />
-            {frame >= gagarin && (
-              <div style={{ position: 'absolute', left: W * 0.26, top: H * 0.42, opacity: ramp(frame, gagarin, 14, ease.out) }}>
-                <div style={{ position: 'absolute', left: -H * 0.2, top: -H * 0.2 }}><Glyph g="🌍" size={H * 0.4} /></div>
-                <div style={{ position: 'absolute', left: Math.cos(orbit) * H * 0.3 - 60, top: Math.sin(orbit) * H * 0.12 - 60, zIndex: Math.sin(orbit) > 0 ? 1 : -1 }}><Glyph g="🛰️" size={120} /></div>
-              </div>
-            )}
-            <Card src="cards/card_gagarin.png" x={W * 0.66} y={H * 0.44} w={W * 0.21} start={gagarin - 6} name="Yuri Gagarin" />
-            <TypeOn text="108 minutes · पहला इंसान 🌍" x={W * 0.26} y={H * 0.78} start={minutes} size={110} color={RC.yellow} />
           </Camera>
+          {frame >= gagarin && (
+            // into orbit: the real 3D Earth in space (outside the launch camera), Gagarin's single orbit as a glowing path
+            <AbsoluteFill style={{ opacity: ramp(frame, gagarin, 16, ease.out), background: '#02040A' }}>
+              <div style={{ position: 'absolute', left: -W * 0.2, top: 0, width: W, height: H }}>
+                <Globe keys={[{ at: 0, lon: 62, lat: 40, dist: 4.3 }]} spinBias={3} />
+              </div>
+              <svg width={W} height={H} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+                <defs>
+                  <filter id="orbGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation={10} /></filter>
+                </defs>
+                <g transform={`translate(${W * 0.3} ${H * 0.5}) rotate(-16)`}>
+                  <ellipse rx={H * 0.42} ry={H * 0.12} fill="none" stroke="rgba(255,220,140,0.3)" strokeWidth={5} strokeDasharray="16 14" />
+                  <ellipse rx={H * 0.42} ry={H * 0.12} fill="none" stroke="#FFD27A" strokeWidth={7}
+                    strokeDasharray={`${Math.PI * H * 0.56 * Math.min(1, ramp(frame, gagarin, 300))} 99999`} />
+                  <circle cx={Math.cos(orbit) * H * 0.42} cy={Math.sin(orbit) * H * 0.12} r={24} fill="#FFF3D0" filter="url(#orbGlow)" />
+                  <circle cx={Math.cos(orbit) * H * 0.42} cy={Math.sin(orbit) * H * 0.12} r={12} fill="#FFFFFF" />
+                </g>
+              </svg>
+            </AbsoluteFill>
+          )}
+          <Card src="cards/card_gagarin.png" x={W * 0.66} y={H * 0.44} w={W * 0.21} start={gagarin - 6} name="Yuri Gagarin" />
+          <TypeOn text="108 minutes · पहला इंसान 🌍" x={W * 0.3} y={H * 0.86} start={minutes} size={110} color={RC.yellow} />
           <YearTag text="12 April 1961" start={april} />
           <Iris at={april} hold={30} />
           <Sfx at={april - 20} file="rocket.wav" volume={0.6} />
