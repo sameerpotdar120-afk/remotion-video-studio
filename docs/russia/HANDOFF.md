@@ -265,3 +265,18 @@ Ranges: steps of 6000 frames (0–5999, 6000–11999, … 84000–89541).
   1. Re-render the affected 600-frame segments to a new `render/russia-4k-xN` branch (it overrides).
   2. Delete those pieces from their `delivery/russia-hevc-eNN` branch and re-run `encode_delivery.sh`.
   3. Delete `out/russia/release` and the `release/russia-4k` branch, then re-run `make_release.sh`.
+
+## Update 2026-10-28 10:37 UTC (QA pass)
+
+- **QA:** full-video review, one frame every 6 s.
+- **Fixed in C04 (commit 807b4c0):**
+  - the empty stage before the false-Dmitry beat (8:33);
+  - the Romanov dynasty caption running off the frame (9:33).
+- **Redo:**
+  - Re-rendered on `render/russia-4k-x4` (30600) and `render/russia-4k-x5` (34200).
+  - Re-encoded on `delivery/russia-hevc-z1`. A later delivery branch name wins in `make_release.sh`.
+- **Re-released:** `russia-v1` asset replaced.
+  - SHA-256 `8185ec46ca7f35dfea9c339454ea5f43441e013a3a4fc41d72f3deb2f49b7183`.
+  - 1 891 647 127 bytes, 89 542 frames, 0 bands.
+- **Release branch:** the proxy refuses branch deletion, so `make_release.sh` now updates `release/russia-4k` in
+  place. It removes the manifest, commits changed parts, then writes the new manifest.
