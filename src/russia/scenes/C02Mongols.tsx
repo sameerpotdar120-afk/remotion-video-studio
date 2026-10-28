@@ -393,7 +393,7 @@ const Hh: React.FC<{ base: number }> = ({ base }) => {
         <PopIn x={W * 0.75} y={H * 0.45} start={tsar}><div style={{ position: 'relative' }}><RImg src="props/cap_of_monomakh.png" w={H * 0.3} h={H * 0.3} label="👑" /><div style={{ position: 'absolute', right: -40, top: -40, ...hand(180, RC.yellow) }}>?</div></div></PopIn>
         <TypeOn text="अब बस एक Tsar चाहिए…" x={W * 0.72} y={H * 0.8} start={tsar + 6} size={100} />
       </Camera>
-      <Host x={W * 0.14} y={H * 0.92} height={H * 0.56} offset={base} start={0} gestures={[[0, 'present'], [ivan, 'hips'], [chaosEnd, 'fingerUp'], [tsar, 'hips']]} moods={[[0, 'smile'], [tsar, 'smug']]} />
+      <Host x={W * 0.14} y={H * 0.92} height={H * 0.56} offset={base} start={-30} gestures={[[-30, 'present'], [ivan, 'hips'], [chaosEnd, 'fingerUp'], [tsar, 'hips']]} moods={[[0, 'smile'], [tsar, 'smug']]} />
       <Sfx at={ivan} file="sting_crown.wav" volume={0.45} />
       <Sfx at={joined + 20} file="riser.wav" volume={0.35} />
       <Sfx at={tsar} file="pop.wav" volume={0.5} />
