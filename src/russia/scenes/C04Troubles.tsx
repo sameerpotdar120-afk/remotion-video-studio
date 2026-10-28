@@ -157,8 +157,8 @@ const D: React.FC<{ base: number }> = ({ base }) => {
   return (
     <GreyStage>
       <Camera from={0}>
-        <TypeOn text="सबसे अजीब दौर 🤨" x={W * 0.56} y={H * 0.14} start={weird} size={120} color={RC.yellow} exit={son - 10} />
-        <Bouncy x={W * 0.56} y={H * 0.5} start={weird + 10} size={420} color={RC.yellow} exit={son - 10} />
+        <TypeOn text="सबसे अजीब दौर 🤨" x={W * 0.56} y={H * 0.14} start={Math.min(weird, 6)} size={120} color={RC.yellow} exit={son - 10} />
+        <Bouncy x={W * 0.56} y={H * 0.5} start={Math.min(weird, 6) + 10} size={420} color={RC.yellow} exit={son - 10} />
         <Char who="ivan_iv_child" x={W * 0.56} y={H * 0.9} height={H * 0.46} start={son} exit={man - 4} opacity={1 - 0.55 * ramp(frame, died, 30)}
           moods={[[son, 'smile'], [died, 'sad']]} gestures={[[son, 'wave'], [died, 'down']]} />
         <TypeOn text="Dmitry · Ivan का छोटा बेटा" x={W * 0.56} y={H * 0.14} start={son + 6} size={96} color={RC.blue} exit={dead - 10} />
@@ -273,11 +273,11 @@ const HI: React.FC<{ base: number }> = ({ base }) => {
       <Camera from={0}>
         {!loopPhase ? (
           <>
-            <PopIn x={W * 0.56} y={H * 0.58} start={4}><RImg src="props/throne_gold.png" w={H * 0.78} h={H * 0.78} label="throne" /></PopIn>
-            <Char who="michael_romanov" x={W * 0.56} y={H * 0.74} height={H * 0.4} start={chose} legs={false} moods={[[chose, 'worried'], [dyn, 'smile']]} gestures={[[chose, 'down'], [dyn, 'wave']]} shake={[chose, dyn]} />
-            <TypeOn text="Michael Romanov" x={W * 0.56} y={H * 0.12} start={michael} size={130} color={RC.blue} />
-            <TypeOn text="उम्र 16 😰" x={W * 0.82} y={H * 0.36} start={sixteen} size={110} color={RC.yellow} />
-            <BigNumber x={W * 0.84} y={H * 0.64} to={300} start={dyn + 20} dur={40} size={240} hollow={false} color={RC.yellow} sub="साल · Romanov dynasty" />
+            <PopIn x={W * 0.5} y={H * 0.58} start={4}><RImg src="props/throne_gold.png" w={H * 0.78} h={H * 0.78} label="throne" /></PopIn>
+            <Char who="michael_romanov" x={W * 0.5} y={H * 0.74} height={H * 0.4} start={chose} legs={false} moods={[[chose, 'worried'], [dyn, 'smile']]} gestures={[[chose, 'down'], [dyn, 'wave']]} shake={[chose, dyn]} />
+            <TypeOn text="Michael Romanov" x={W * 0.5} y={H * 0.12} start={michael} size={130} color={RC.blue} />
+            <TypeOn text="उम्र 16 😰" x={W * 0.8} y={H * 0.36} start={sixteen} size={110} color={RC.yellow} />
+            <BigNumber x={W * 0.82} y={H * 0.62} to={300} start={dyn + 20} dur={40} size={240} subSize={84} hollow={false} color={RC.yellow} sub="साल · Romanov dynasty" />
           </>
         ) : (
           <LoopWheel x={W * 0.56} y={H * 0.54} r={H * 0.2} start={loop - 4} steps={[[loop - 4, 4], [loop + 6, 0], [centre, 1]]} />
