@@ -254,8 +254,8 @@ const E: React.FC<{ base: number }> = ({ base }) => {
       <BgPlate src="bg/bg_kulikovo_field_1380.png" from={0} sky="#C9D8DE" ground="#9AA05A" />
       <Camera from={0} shake={[{ at: 30, amp: 10, dur: 60 }]}>
         {[0, 1, 2].map((i) => (
-          <Char key={`m${i}`} who="moscow_soldier" x={W * (0.14 + i * 0.1)} y={H * (0.92 - i * 0.02)} height={H * 0.36} start={4 + i * 4} seed={`ms${i}`}
-            walk={[{ at: 0, x: W * (0.04 + i * 0.1) }, { at: 10, x: W * (0.2 + i * 0.1), dur: 60 }]} gestures={[[0, 'fist'], [win, 'cheer']]} moods={[[0, 'angry'], [win, 'grin']]} hopAt={[win + 4, win + 30]} />
+          <Char key={`m${i}`} who="moscow_soldier" x={W * (0.16 + i * 0.12)} y={H * (0.92 - i * 0.02)} height={H * 0.36} start={4 + i * 4} seed={`ms${i}`}
+            walk={[{ at: 0, x: W * (0.02 + i * 0.12) }, { at: 10, x: W * (0.16 + i * 0.12), dur: 60 }]} gestures={[[0, 'fist'], [win, 'cheer']]} moods={[[0, 'angry'], [win, 'grin']]} hopAt={[win + 4, win + 30]} />
         ))}
         {[0, 1, 2].map((i) => (
           <Char key={`t${i}`} who="mongol_warrior" x={W * (0.7 + i * 0.1)} y={H * (0.92 - i * 0.02)} height={H * 0.36} start={4 + i * 4} flip seed={`mw${i}`}
@@ -289,7 +289,7 @@ const F: React.FC<{ base: number }> = ({ base }) => {
   const old = L(at(22, 'यानी'));
   return (
     <AbsoluteFill>
-      <RMap view="india_route" cam={[{ at: 0, lon: 58, lat: 34.03, zoom: 1.0 }, { at: tver, lon: 41.68, lat: 53.47, zoom: 3.4, dur: 60 }, { at: walk, lon: 58, lat: 33, zoom: 1.15, dur: 260 }]}
+      <RMap view="india_route" cam={[{ at: 0, lon: 58, lat: 34.03, zoom: 1.18 }, { at: tver, lon: 41.68, lat: 53.47, zoom: 3.4, dur: 60 }, { at: walk, lon: 58, lat: 35.5, zoom: 1.15, dur: 260 }]}
         overlay={
           <>
             <Pin lon={35.9} lat={56.86} label="Tver" start={tver + 50} side="l" />
@@ -351,7 +351,7 @@ const G: React.FC<{ base: number }> = ({ base }) => {
           <svg width={260} height={260} viewBox="0 0 100 100"><circle cx={50} cy={50} r={44} fill="#FBF8F1" stroke="#333" strokeWidth={6} /><line x1={50} y1={50} x2={50} y2={18} stroke="#333" strokeWidth={6} strokeLinecap="round" transform={`rotate(${spin} 50 50)`} /><line x1={50} y1={50} x2={72} y2={50} stroke="#C8352B" strokeWidth={5} strokeLinecap="round" transform={`rotate(${spin / 12} 50 50)`} /></svg>
         </PopIn>
         <TypeOn text="हफ़्तों तक… घूरते रहे 👀" x={W * 0.5} y={H * 0.12} start={weeks} size={100} exit={then} />
-        <TypeOn text="Ugra नदी 🌊" x={W * 0.86} y={H * 0.6} start={ugra} size={100} color="#CFE7FF" />
+        <TypeOn text="Ugra नदी 🌊" x={W * 0.8} y={H * 0.6} start={ugra} size={100} color="#CFE7FF" />
         <TypeOn text="कोई लड़ाई नहीं हुई" x={W * 0.5} y={H * 0.16} start={noBattle} size={130} color={RC.yellow} />
         <Stamp text="250 साल का राज ख़त्म" x={W * 0.5} y={H * 0.33} start={endRule} size={130} color={RC.stampGreen} rotate={-5} />
       </Camera>
