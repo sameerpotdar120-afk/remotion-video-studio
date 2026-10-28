@@ -33,6 +33,8 @@ if [ ! -s "$R/parts.done" ] && [ ! -s "$R/$NAME" ]; then
   done
   rm -rf "$C"
   [ $miss -eq 0 ] || { echo "RELEASE waiting for pieces"; exit 1; }
+  python3 -I scripts/russia/scan_bands.py "$R/pieces" | tee "$R/bands.txt" | tail -3
+  grep -q "^BANDS 0$" "$R/bands.txt" || [ "${ALLOW_BANDS:-}" = 1 ] || { echo "RELEASE stopped: black bands found (see $R/bands.txt)"; exit 1; }
   ffmpeg -v error -y -f concat -safe 0 -i "$R/list.txt" -i "$AUDIO" -map 0:v -map 1:a -c:v copy -tag:v hvc1 -c:a copy \
     -movflags +faststart "$R/$NAME.tmp.mp4" && mv "$R/$NAME.tmp.mp4" "$R/$NAME" || exit 1
   frames=$(ffprobe -v error -count_packets -select_streams v:0 -show_entries stream=nb_read_packets -of default=nk=1:nw=1 "$R/$NAME")
