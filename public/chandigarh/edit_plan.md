@@ -64,7 +64,7 @@ Times are estimates at 2.6 words per second; they get re-timed to the real VO. *
 | 75.3 | सब अंदर ही। | All three cards shrink into the tile and it glows (c12). |
 | 76.4 | शहर का दिल बना Sector 17, | Zoom out; Sector 17 turns red with the heart (cg17) beating in it; the leader and the "Sector 17" label type (c12, c13). **Null B begins** (split screen). |
 | 78.6 | जहाँ गाड़ियाँ नहीं, | A car (cg24) drives toward the tile and is stopped by a red ✕ (p29, p24 stamp). |
-| 80.0 | सिर्फ़ लोग पैदल घूमते हैं। | Cut to the satellite spotlight on Sector 17: everything outside goes dark, a glowing rounded frame, and walking dots move along its paths (c15). |
+| 80.0 | सिर्फ़ लोग पैदल घूमते हैं। | Cut to the Sector 17 aerial (cg25) as a spotlight: everything outside goes dark, a glowing rounded frame, and walking dots move along its paths (c15). |
 | 82.3 | इसे Pedestrians' Paradise भी कहा जाता है। | The neon green "PEDESTRIANS' PARADISE" pill types on, and the Sector 17 plaza (cg06) pops in a card (c07, card). **Null B ends.** |
 | 84.7 | इसकी नसें बनीं | Back to the plan, which fades pale (c12 pale). |
 | 85.9 | V1 से V7 तक की सात सड़कें। | Roads draw on in three colours from the edges, with a 1–7 counter ticking (c14, p07). |
@@ -79,7 +79,7 @@ Times are estimates at 2.6 words per second; they get re-timed to the real VO. *
 | 108.6 | और High Court की मुड़ी हुई छत | Cut to the High Court: the curved roof is highlighted in purple, outlined and lifted (c18 roof). |
 | 110.6 | धूप को रोकती है। | The sun (gp10) slides in, its rays bend over the roof and break off, and the "मुड़ी हुई छत" label types (c16). |
 | 113.1 | इसी design की वजह से | Paper tear back to the plan; the Capitol block glows (c11, c12). |
-| 114.7 | 2016 में UNESCO ने | A gold "2016" counts in, and a gold heritage seal (code, no UNESCO logo) drops and stamps on the Capitol with a shockwave (c20, p32). |
+| 114.7 | 2016 में UNESCO ने | A gold "2016" counts in, and the gold heritage seal (cg26, no UNESCO logo, text in code) drops and stamps on the Capitol with a shockwave (c20, p32). |
 | 117.0 | Capitol Complex को World Heritage Site घोषित किया। | The "WORLD HERITAGE SITE" pill types on, and confetti-gold sparkles burst from the seal (c07, c17 sparkle). **Null D** (about 3 s, an approving gesture). |
 | 119.9 | Le Corbusier ने इसे सिर्फ़ नक्शे पर नहीं, | The plan pulls back, and the body outline fades in over it, fitting the plan (c09 overlay). |
 | 122.6 | एक ज़िंदा शरीर की तरह सोचा था। | Heart, brain and lungs pulse on the body together (c05 ×3). |

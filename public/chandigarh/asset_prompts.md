@@ -575,3 +575,55 @@
   "output": "largest size available (4K if possible)"
 }
 ```
+
+---
+
+## Added with the motion pieces
+
+The satellite can't show Sector 17 close up (Sentinel-2 is 10 m per pixel), so the spotlight needs an aerial image. The heritage seal can't use the UNESCO emblem, so it's a blank gold medal and the text is drawn in code.
+
+**cg25_sector_aerial.jpg** (9:16, for the Sector 17 spotlight, line 8)
+```json
+{
+  "type": "full-frame scene, tall 9:16",
+  "subject": "a straight top-down aerial view of a planned Indian city sector in the style of Chandigarh's Sector 17: a large open paved pedestrian plaza in the middle with a fountain, low modernist concrete buildings with flat roofs around it in a rectangle, tree-lined walkways, small groups of people walking, no cars inside the plaza, a wide road with trees all round the sector's edge",
+  "camera": "satellite-style view straight down from high above, the whole sector in frame, the plaza centred",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (raw concrete, paving stones, tree canopies, water)",
+  "lighting": "soft late-morning sun, short shadows",
+  "background": "none, the scene fills the whole frame",
+  "avoid": [
+    "text",
+    "signboards",
+    "logos",
+    "map labels",
+    "watermark"
+  ],
+  "aspect_ratio": "9:16",
+  "output": "largest size available (4K if possible)"
+}
+```
+
+---
+
+**cg26_gold_seal.png** (1:1, for the 2016 heritage seal, line 12)
+```json
+{
+  "type": "single prop on a plain white background, for cutting out",
+  "subject": "one round polished gold medal seal with a raised laurel-leaf border and a smooth, completely blank flat centre (text is added later)",
+  "camera": "straight-on front view, the whole seal fully in frame with empty space around it",
+  "style": "Unreal Engine 5 cinematic render, photoreal with a light stylised touch, Lumen global illumination, physically based materials, soft ray-traced shadows, real surface detail (brushed and polished gold, engraved leaves)",
+  "lighting": "soft studio light from the upper left with a bright highlight on the rim",
+  "background": "plain pure white, no shadow",
+  "avoid": [
+    "text",
+    "letters",
+    "numbers",
+    "logos",
+    "UNESCO emblem",
+    "any real organisation's symbol",
+    "watermark"
+  ],
+  "aspect_ratio": "1:1",
+  "output": "largest size available (4K if possible)"
+}
+```
