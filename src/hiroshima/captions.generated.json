@@ -1,0 +1,1425 @@
+[
+ {
+  "text": "BEFORE THE *NUKE*/DETONATES",
+  "words": [
+   {
+    "t": "BEFORE",
+    "line": 0,
+    "red": false,
+    "at": 52
+   },
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 65
+   },
+   {
+    "t": "NUKE",
+    "line": 0,
+    "red": true,
+    "at": 70,
+    "redOut": 118
+   },
+   {
+    "t": "DETONATES",
+    "line": 1,
+    "red": false,
+    "at": 82
+   }
+  ],
+  "start": 52,
+  "end": 127
+ },
+ {
+  "text": "AN OLD COUPLE/IN *HIROSHIMA*",
+  "words": [
+   {
+    "t": "AN",
+    "line": 0,
+    "red": false,
+    "at": 127
+   },
+   {
+    "t": "OLD",
+    "line": 0,
+    "red": false,
+    "at": 131
+   },
+   {
+    "t": "COUPLE",
+    "line": 0,
+    "red": false,
+    "at": 142
+   },
+   {
+    "t": "IN",
+    "line": 1,
+    "red": false,
+    "at": 158
+   },
+   {
+    "t": "HIROSHIMA",
+    "line": 1,
+    "red": true,
+    "at": 162
+   }
+  ],
+  "start": 127,
+  "end": 200
+ },
+ {
+  "text": "IS FINISHING/BREAKFAST",
+  "words": [
+   {
+    "t": "IS",
+    "line": 0,
+    "red": false,
+    "at": 200
+   },
+   {
+    "t": "FINISHING",
+    "line": 0,
+    "red": false,
+    "at": 217
+   },
+   {
+    "t": "BREAKFAST",
+    "line": 1,
+    "red": false,
+    "at": 238
+   }
+  ],
+  "start": 200,
+  "end": 286
+ },
+ {
+  "text": "THE SIREN",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 286
+   },
+   {
+    "t": "SIREN",
+    "line": 0,
+    "red": false,
+    "at": 290
+   }
+  ],
+  "start": 286,
+  "end": 319
+ },
+ {
+  "text": "HAD GONE OFF",
+  "words": [
+   {
+    "t": "HAD",
+    "line": 0,
+    "red": false,
+    "at": 319
+   },
+   {
+    "t": "GONE",
+    "line": 0,
+    "red": false,
+    "at": 335
+   },
+   {
+    "t": "OFF",
+    "line": 0,
+    "red": false,
+    "at": 344
+   }
+  ],
+  "start": 319,
+  "end": 361
+ },
+ {
+  "text": "AN HOUR EARLIER",
+  "words": [
+   {
+    "t": "AN",
+    "line": 0,
+    "red": false,
+    "at": 361
+   },
+   {
+    "t": "HOUR",
+    "line": 0,
+    "red": false,
+    "at": 367
+   },
+   {
+    "t": "EARLIER",
+    "line": 0,
+    "red": false,
+    "at": 379
+   }
+  ],
+  "start": 361,
+  "end": 414
+ },
+ {
+  "text": "BUT",
+  "words": [
+   {
+    "t": "BUT",
+    "line": 0,
+    "red": false,
+    "at": 414
+   }
+  ],
+  "start": 414,
+  "end": 439
+ },
+ {
+  "text": "IT STOPPED",
+  "words": [
+   {
+    "t": "IT",
+    "line": 0,
+    "red": false,
+    "at": 439
+   },
+   {
+    "t": "STOPPED",
+    "line": 0,
+    "red": false,
+    "at": 444
+   }
+  ],
+  "start": 439,
+  "end": 484
+ },
+ {
+  "text": "THE ARMY NOTICED A PLANE",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 484
+   },
+   {
+    "t": "ARMY",
+    "line": 0,
+    "red": false,
+    "at": 491
+   },
+   {
+    "t": "NOTICED",
+    "line": 0,
+    "red": false,
+    "at": 506
+   },
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 527
+   },
+   {
+    "t": "PLANE",
+    "line": 0,
+    "red": false,
+    "at": 532
+   }
+  ],
+  "start": 484,
+  "end": 558
+ },
+ {
+  "text": "BUT",
+  "words": [
+   {
+    "t": "BUT",
+    "line": 0,
+    "red": false,
+    "at": 558
+   }
+  ],
+  "start": 558,
+  "end": 587
+ },
+ {
+  "text": "ONE PLANE WASN'T WORTH/A CITY WIDE EVACUATION",
+  "words": [
+   {
+    "t": "ONE",
+    "line": 0,
+    "red": false,
+    "at": 587
+   },
+   {
+    "t": "PLANE",
+    "line": 0,
+    "red": false,
+    "at": 603
+   },
+   {
+    "t": "WASN'T",
+    "line": 0,
+    "red": false,
+    "at": 625
+   },
+   {
+    "t": "WORTH",
+    "line": 0,
+    "red": false,
+    "at": 642
+   },
+   {
+    "t": "A",
+    "line": 1,
+    "red": false,
+    "at": 656
+   },
+   {
+    "t": "CITY",
+    "line": 1,
+    "red": false,
+    "at": 659
+   },
+   {
+    "t": "WIDE",
+    "line": 1,
+    "red": false,
+    "at": 679
+   },
+   {
+    "t": "EVACUATION",
+    "line": 1,
+    "red": false,
+    "at": 692
+   }
+  ],
+  "start": 587,
+  "end": 749
+ },
+ {
+  "text": "THE HUSBAND",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 805
+   },
+   {
+    "t": "HUSBAND",
+    "line": 0,
+    "red": false,
+    "at": 813
+   }
+  ],
+  "start": 805,
+  "end": 841
+ },
+ {
+  "text": "FOLDS HIS NEWSPAPER",
+  "words": [
+   {
+    "t": "FOLDS",
+    "line": 0,
+    "red": false,
+    "at": 841
+   },
+   {
+    "t": "HIS",
+    "line": 0,
+    "red": false,
+    "at": 859
+   },
+   {
+    "t": "NEWSPAPER",
+    "line": 0,
+    "red": false,
+    "at": 868
+   }
+  ],
+  "start": 841,
+  "end": 907
+ },
+ {
+  "text": "AND HIS WIFE",
+  "words": [
+   {
+    "t": "AND",
+    "line": 0,
+    "red": false,
+    "at": 907
+   },
+   {
+    "t": "HIS",
+    "line": 0,
+    "red": false,
+    "at": 915
+   },
+   {
+    "t": "WIFE",
+    "line": 0,
+    "red": false,
+    "at": 924
+   }
+  ],
+  "start": 907,
+  "end": 946
+ },
+ {
+  "text": "HUMS WHILE CLEARING/THE TABLE",
+  "words": [
+   {
+    "t": "HUMS",
+    "line": 0,
+    "red": false,
+    "at": 946
+   },
+   {
+    "t": "WHILE",
+    "line": 0,
+    "red": false,
+    "at": 967
+   },
+   {
+    "t": "CLEARING",
+    "line": 0,
+    "red": false,
+    "at": 977
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 992
+   },
+   {
+    "t": "TABLE",
+    "line": 1,
+    "red": false,
+    "at": 998
+   }
+  ],
+  "start": 946,
+  "end": 1030
+ },
+ {
+  "text": "OUTSIDE",
+  "words": [
+   {
+    "t": "OUTSIDE",
+    "line": 0,
+    "red": false,
+    "at": 1030
+   }
+  ],
+  "start": 1030,
+  "end": 1066
+ },
+ {
+  "text": "KIDS ARE WALKING TO SCHOOL",
+  "words": [
+   {
+    "t": "KIDS",
+    "line": 0,
+    "red": false,
+    "at": 1066
+   },
+   {
+    "t": "ARE",
+    "line": 0,
+    "red": false,
+    "at": 1087
+   },
+   {
+    "t": "WALKING",
+    "line": 0,
+    "red": false,
+    "at": 1091
+   },
+   {
+    "t": "TO",
+    "line": 0,
+    "red": false,
+    "at": 1109
+   },
+   {
+    "t": "SCHOOL",
+    "line": 0,
+    "red": false,
+    "at": 1114
+   }
+  ],
+  "start": 1066,
+  "end": 1143
+ },
+ {
+  "text": "IT'S A BEAUTIFUL DAY",
+  "words": [
+   {
+    "t": "IT'S",
+    "line": 0,
+    "red": false,
+    "at": 1143
+   },
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 1166
+   },
+   {
+    "t": "BEAUTIFUL",
+    "line": 0,
+    "red": false,
+    "at": 1174
+   },
+   {
+    "t": "DAY",
+    "line": 0,
+    "red": false,
+    "at": 1202
+   }
+  ],
+  "start": 1143,
+  "end": 1227
+ },
+ {
+  "text": "A FAINT ENGINE HUM",
+  "words": [
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 1296
+   },
+   {
+    "t": "FAINT",
+    "line": 0,
+    "red": false,
+    "at": 1298
+   },
+   {
+    "t": "ENGINE",
+    "line": 0,
+    "red": false,
+    "at": 1330
+   },
+   {
+    "t": "HUM",
+    "line": 0,
+    "red": false,
+    "at": 1350
+   }
+  ],
+  "start": 1296,
+  "end": 1370
+ },
+ {
+  "text": "DRIFTS OVER THE CITY",
+  "words": [
+   {
+    "t": "DRIFTS",
+    "line": 0,
+    "red": false,
+    "at": 1370
+   },
+   {
+    "t": "OVER",
+    "line": 0,
+    "red": false,
+    "at": 1396
+   },
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 1410
+   },
+   {
+    "t": "CITY",
+    "line": 0,
+    "red": false,
+    "at": 1415
+   }
+  ],
+  "start": 1370,
+  "end": 1435
+ },
+ {
+  "text": "THE HUSBAND PAUSES",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 1435
+   },
+   {
+    "t": "HUSBAND",
+    "line": 0,
+    "red": false,
+    "at": 1454
+   },
+   {
+    "t": "PAUSES",
+    "line": 0,
+    "red": false,
+    "at": 1477
+   }
+  ],
+  "start": 1435,
+  "end": 1522
+ },
+ {
+  "text": "LISTENING",
+  "words": [
+   {
+    "t": "LISTENING",
+    "line": 0,
+    "red": false,
+    "at": 1522
+   }
+  ],
+  "start": 1522,
+  "end": 1549
+ },
+ {
+  "text": "PROBABLY JUST ANOTHER/RECONNAISSANCE PLANE",
+  "words": [
+   {
+    "t": "PROBABLY",
+    "line": 0,
+    "red": false,
+    "at": 1549
+   },
+   {
+    "t": "JUST",
+    "line": 0,
+    "red": false,
+    "at": 1588
+   },
+   {
+    "t": "ANOTHER",
+    "line": 0,
+    "red": false,
+    "at": 1606
+   },
+   {
+    "t": "RECONNAISSANCE",
+    "line": 1,
+    "red": false,
+    "at": 1622
+   },
+   {
+    "t": "PLANE",
+    "line": 1,
+    "red": false,
+    "at": 1667
+   }
+  ],
+  "start": 1549,
+  "end": 1703
+ },
+ {
+  "text": "THE SOUND GROWS LOUDER",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 1762
+   },
+   {
+    "t": "SOUND",
+    "line": 0,
+    "red": false,
+    "at": 1766
+   },
+   {
+    "t": "GROWS",
+    "line": 0,
+    "red": false,
+    "at": 1788
+   },
+   {
+    "t": "LOUDER",
+    "line": 0,
+    "red": false,
+    "at": 1807
+   }
+  ],
+  "start": 1762,
+  "end": 1837
+ },
+ {
+  "text": "SO THE HUSBAND LOOKS UP/THROUGH THE WINDOW",
+  "words": [
+   {
+    "t": "SO",
+    "line": 0,
+    "red": false,
+    "at": 1837
+   },
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 1845
+   },
+   {
+    "t": "HUSBAND",
+    "line": 0,
+    "red": false,
+    "at": 1849
+   },
+   {
+    "t": "LOOKS",
+    "line": 0,
+    "red": false,
+    "at": 1868
+   },
+   {
+    "t": "UP",
+    "line": 0,
+    "red": false,
+    "at": 1880
+   },
+   {
+    "t": "THROUGH",
+    "line": 1,
+    "red": false,
+    "at": 1894
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 1901
+   },
+   {
+    "t": "WINDOW",
+    "line": 1,
+    "red": false,
+    "at": 1904
+   }
+  ],
+  "start": 1837,
+  "end": 1936
+ },
+ {
+  "text": "A SINGLE B-29",
+  "words": [
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 1936
+   },
+   {
+    "t": "SINGLE",
+    "line": 0,
+    "red": false,
+    "at": 1939
+   },
+   {
+    "t": "B-29",
+    "line": 0,
+    "red": false,
+    "at": 1967
+   }
+  ],
+  "start": 1936,
+  "end": 2041
+ },
+ {
+  "text": "ALONE",
+  "words": [
+   {
+    "t": "ALONE",
+    "line": 0,
+    "red": false,
+    "at": 2041
+   }
+  ],
+  "start": 2041,
+  "end": 2074
+ },
+ {
+  "text": "CUTTING ACROSS THE SKY",
+  "words": [
+   {
+    "t": "CUTTING",
+    "line": 0,
+    "red": false,
+    "at": 2074
+   },
+   {
+    "t": "ACROSS",
+    "line": 0,
+    "red": false,
+    "at": 2088
+   },
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 2110
+   },
+   {
+    "t": "SKY",
+    "line": 0,
+    "red": false,
+    "at": 2113
+   }
+  ],
+  "start": 2074,
+  "end": 2148
+ },
+ {
+  "text": "HE WONDERS WHY/A BOMBER PLANE",
+  "words": [
+   {
+    "t": "HE",
+    "line": 0,
+    "red": false,
+    "at": 2219
+   },
+   {
+    "t": "WONDERS",
+    "line": 0,
+    "red": false,
+    "at": 2224
+   },
+   {
+    "t": "WHY",
+    "line": 0,
+    "red": false,
+    "at": 2246
+   },
+   {
+    "t": "A",
+    "line": 1,
+    "red": false,
+    "at": 2262
+   },
+   {
+    "t": "BOMBER",
+    "line": 1,
+    "red": false,
+    "at": 2265
+   },
+   {
+    "t": "PLANE",
+    "line": 1,
+    "red": false,
+    "at": 2284
+   }
+  ],
+  "start": 2219,
+  "end": 2304
+ },
+ {
+  "text": "IS FLYING ALONE/OVER THE CITY",
+  "words": [
+   {
+    "t": "IS",
+    "line": 0,
+    "red": false,
+    "at": 2304
+   },
+   {
+    "t": "FLYING",
+    "line": 0,
+    "red": false,
+    "at": 2315
+   },
+   {
+    "t": "ALONE",
+    "line": 0,
+    "red": false,
+    "at": 2333
+   },
+   {
+    "t": "OVER",
+    "line": 1,
+    "red": false,
+    "at": 2351
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 2362
+   },
+   {
+    "t": "CITY",
+    "line": 1,
+    "red": false,
+    "at": 2366
+   }
+  ],
+  "start": 2304,
+  "end": 2386
+ },
+ {
+  "text": "BUT",
+  "words": [
+   {
+    "t": "BUT",
+    "line": 0,
+    "red": false,
+    "at": 2386
+   }
+  ],
+  "start": 2386,
+  "end": 2422
+ },
+ {
+  "text": "HIS WIFE TELLS HIM TO SIT",
+  "words": [
+   {
+    "t": "HIS",
+    "line": 0,
+    "red": false,
+    "at": 2422
+   },
+   {
+    "t": "WIFE",
+    "line": 0,
+    "red": false,
+    "at": 2436
+   },
+   {
+    "t": "TELLS",
+    "line": 0,
+    "red": false,
+    "at": 2453
+   },
+   {
+    "t": "HIM",
+    "line": 0,
+    "red": false,
+    "at": 2468
+   },
+   {
+    "t": "TO",
+    "line": 0,
+    "red": false,
+    "at": 2471
+   },
+   {
+    "t": "SIT",
+    "line": 0,
+    "red": false,
+    "at": 2477
+   }
+  ],
+  "start": 2422,
+  "end": 2510
+ },
+ {
+  "text": "IF IT WERE A REAL DANGER",
+  "words": [
+   {
+    "t": "IF",
+    "line": 0,
+    "red": false,
+    "at": 2510
+   },
+   {
+    "t": "IT",
+    "line": 0,
+    "red": false,
+    "at": 2516
+   },
+   {
+    "t": "WERE",
+    "line": 0,
+    "red": false,
+    "at": 2522
+   },
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 2539
+   },
+   {
+    "t": "REAL",
+    "line": 0,
+    "red": false,
+    "at": 2545
+   },
+   {
+    "t": "DANGER",
+    "line": 0,
+    "red": false,
+    "at": 2559
+   }
+  ],
+  "start": 2510,
+  "end": 2591
+ },
+ {
+  "text": "THE OFFICIALS WOULD BE/SOUNDING THE ALARM",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 2591
+   },
+   {
+    "t": "OFFICIALS",
+    "line": 0,
+    "red": false,
+    "at": 2605
+   },
+   {
+    "t": "WOULD",
+    "line": 0,
+    "red": false,
+    "at": 2639
+   },
+   {
+    "t": "BE",
+    "line": 0,
+    "red": false,
+    "at": 2646
+   },
+   {
+    "t": "SOUNDING",
+    "line": 1,
+    "red": false,
+    "at": 2654
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 2678
+   },
+   {
+    "t": "ALARM",
+    "line": 1,
+    "red": false,
+    "at": 2687
+   }
+  ],
+  "start": 2591,
+  "end": 2719
+ },
+ {
+  "text": "SOMETHING SMALL/DROPS FROM THE PLANE",
+  "words": [
+   {
+    "t": "SOMETHING",
+    "line": 0,
+    "red": false,
+    "at": 2783
+   },
+   {
+    "t": "SMALL",
+    "line": 0,
+    "red": false,
+    "at": 2812
+   },
+   {
+    "t": "DROPS",
+    "line": 1,
+    "red": false,
+    "at": 2837
+   },
+   {
+    "t": "FROM",
+    "line": 1,
+    "red": false,
+    "at": 2856
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 2864
+   },
+   {
+    "t": "PLANE",
+    "line": 1,
+    "red": false,
+    "at": 2868
+   }
+  ],
+  "start": 2783,
+  "end": 2899
+ },
+ {
+  "text": "JUST A...",
+  "words": [
+   {
+    "t": "JUST",
+    "line": 0,
+    "red": false,
+    "at": 2899
+   },
+   {
+    "t": "A...",
+    "line": 0,
+    "red": false,
+    "at": 2915
+   }
+  ],
+  "start": 2899,
+  "end": 2940
+ },
+ {
+  "text": "...DARK SPECK/AGAINST THE SUNLIGHT",
+  "words": [
+   {
+    "t": "...DARK",
+    "line": 0,
+    "red": false,
+    "at": 2940
+   },
+   {
+    "t": "SPECK",
+    "line": 0,
+    "red": false,
+    "at": 2956
+   },
+   {
+    "t": "AGAINST",
+    "line": 1,
+    "red": false,
+    "at": 2978
+   },
+   {
+    "t": "THE",
+    "line": 1,
+    "red": false,
+    "at": 2998
+   },
+   {
+    "t": "SUNLIGHT",
+    "line": 1,
+    "red": false,
+    "at": 3001
+   }
+  ],
+  "start": 2940,
+  "end": 3046
+ },
+ {
+  "text": "THE OLD MAN SQUINTS",
+  "words": [
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 3046
+   },
+   {
+    "t": "OLD",
+    "line": 0,
+    "red": false,
+    "at": 3050
+   },
+   {
+    "t": "MAN",
+    "line": 0,
+    "red": false,
+    "at": 3061
+   },
+   {
+    "t": "SQUINTS",
+    "line": 0,
+    "red": false,
+    "at": 3070
+   }
+  ],
+  "start": 3046,
+  "end": 3119
+ },
+ {
+  "text": "HE IS",
+  "words": [
+   {
+    "t": "HE",
+    "line": 0,
+    "red": false,
+    "at": 3119
+   },
+   {
+    "t": "IS",
+    "line": 0,
+    "red": false,
+    "at": 3127
+   }
+  ],
+  "start": 3119,
+  "end": 3142
+ },
+ {
+  "text": "CONFUSED",
+  "words": [
+   {
+    "t": "CONFUSED",
+    "line": 0,
+    "red": false,
+    "at": 3142
+   }
+  ],
+  "start": 3142,
+  "end": 3187
+ },
+ {
+  "text": "IT'S FALLING FAST NOW",
+  "words": [
+   {
+    "t": "IT'S",
+    "line": 0,
+    "red": false,
+    "at": 3231
+   },
+   {
+    "t": "FALLING",
+    "line": 0,
+    "red": false,
+    "at": 3241
+   },
+   {
+    "t": "FAST",
+    "line": 0,
+    "red": false,
+    "at": 3258
+   },
+   {
+    "t": "NOW",
+    "line": 0,
+    "red": false,
+    "at": 3280
+   }
+  ],
+  "start": 3231,
+  "end": 3303
+ },
+ {
+  "text": "\"HONEY",
+  "words": [
+   {
+    "t": "\"HONEY",
+    "line": 0,
+    "red": false,
+    "at": 3303
+   }
+  ],
+  "start": 3303,
+  "end": 3328
+ },
+ {
+  "text": "I THINK IT'S/BETTER TO GO-\"",
+  "words": [
+   {
+    "t": "I",
+    "line": 0,
+    "red": false,
+    "at": 3328
+   },
+   {
+    "t": "THINK",
+    "line": 0,
+    "red": false,
+    "at": 3341
+   },
+   {
+    "t": "IT'S",
+    "line": 0,
+    "red": false,
+    "at": 3362
+   },
+   {
+    "t": "BETTER",
+    "line": 1,
+    "red": false,
+    "at": 3371
+   },
+   {
+    "t": "TO",
+    "line": 1,
+    "red": false,
+    "at": 3386
+   },
+   {
+    "t": "GO-\"",
+    "line": 1,
+    "red": false,
+    "at": 3395
+   }
+  ],
+  "start": 3328,
+  "end": 3411
+ },
+ {
+  "text": "HE REACHES FOR HER HAND",
+  "words": [
+   {
+    "t": "HE",
+    "line": 0,
+    "red": false,
+    "at": 3438
+   },
+   {
+    "t": "REACHES",
+    "line": 0,
+    "red": false,
+    "at": 3444
+   },
+   {
+    "t": "FOR",
+    "line": 0,
+    "red": false,
+    "at": 3467
+   },
+   {
+    "t": "HER",
+    "line": 0,
+    "red": false,
+    "at": 3478
+   },
+   {
+    "t": "HAND",
+    "line": 0,
+    "red": false,
+    "at": 3481
+   }
+  ],
+  "start": 3438,
+  "end": 3505
+ },
+ {
+  "text": "A BIG BALL OF LIGHT",
+  "words": [
+   {
+    "t": "A",
+    "line": 0,
+    "red": false,
+    "at": 3539
+   },
+   {
+    "t": "BIG",
+    "line": 0,
+    "red": false,
+    "at": 3543
+   },
+   {
+    "t": "BALL",
+    "line": 0,
+    "red": false,
+    "at": 3556
+   },
+   {
+    "t": "OF",
+    "line": 0,
+    "red": false,
+    "at": 3568
+   },
+   {
+    "t": "LIGHT",
+    "line": 0,
+    "red": false,
+    "at": 3575
+   }
+  ],
+  "start": 3539,
+  "end": 3599
+ },
+ {
+  "text": "CLAIMS THE LIVES OF",
+  "words": [
+   {
+    "t": "CLAIMS",
+    "line": 0,
+    "red": false,
+    "at": 3599
+   },
+   {
+    "t": "THE",
+    "line": 0,
+    "red": false,
+    "at": 3616
+   },
+   {
+    "t": "LIVES",
+    "line": 0,
+    "red": false,
+    "at": 3620
+   },
+   {
+    "t": "OF",
+    "line": 0,
+    "red": false,
+    "at": 3646
+   }
+  ],
+  "start": 3599,
+  "end": 3653
+ },
+ {
+  "text": "140,000 CITIZENS",
+  "words": [
+   {
+    "t": "140,000",
+    "line": 0,
+    "red": false,
+    "at": 3653
+   },
+   {
+    "t": "CITIZENS",
+    "line": 0,
+    "red": false,
+    "at": 3724
+   }
+  ],
+  "start": 3653,
+  "end": 3769
+ },
+ {
+  "text": "INCLUDING AMERICAN/PRISONERS OF WAR",
+  "words": [
+   {
+    "t": "INCLUDING",
+    "line": 0,
+    "red": false,
+    "at": 3769
+   },
+   {
+    "t": "AMERICAN",
+    "line": 0,
+    "red": false,
+    "at": 3796
+   },
+   {
+    "t": "PRISONERS",
+    "line": 1,
+    "red": false,
+    "at": 3818
+   },
+   {
+    "t": "OF",
+    "line": 1,
+    "red": false,
+    "at": 3861
+   },
+   {
+    "t": "WAR",
+    "line": 1,
+    "red": false,
+    "at": 3874
+   }
+  ],
+  "start": 3769,
+  "end": 3901
+ }
+]
