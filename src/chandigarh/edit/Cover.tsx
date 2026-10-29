@@ -15,16 +15,17 @@ export const ChandigarhCover: React.FC = () => {
   const g = planGeom(BOX);
   const mb: [number, number, number, number] = [g.ox - 24, g.oy - 24, g.gw + 48, g.gh + 48];
   const head: [number, number] = [mb[0] + mb[2] * 0.5, mb[1] + mb[3] * 0.08], chest: [number, number] = [mb[0] + mb[2] * 0.53, mb[1] + mb[3] * 0.27];
-  const organ = (k: string, [x, y]: [number, number], s: number) => (
-    <Img src={IMG(k)} style={{ position: 'absolute', left: x - s / 2, top: y - s / 2, width: s, height: s, objectFit: 'contain', filter: 'drop-shadow(0 0 18px rgba(255,220,120,0.9)) drop-shadow(0 10px 12px rgba(0,0,0,0.5))' }} />
+  const organ = (k: string, [x, y]: [number, number], s: number, clip = 0) => (
+    <Img src={IMG(k)} style={{ clipPath: `inset(0 0 ${clip}% 0)`, position: 'absolute', left: x - s / 2, top: y - s / 2, width: s, height: s, objectFit: 'contain', filter: 'drop-shadow(0 0 18px rgba(255,220,120,0.9)) drop-shadow(0 10px 12px rgba(0,0,0,0.5))' }} />
   );
   const stroke = { WebkitTextStroke: '10px #000', paintOrder: 'stroke fill' as const, textShadow: '0 8px 16px rgba(0,0,0,0.7)' };
   return (
     <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 55%, #FBF8F1 40%, #CFC8BB 100%)', overflow: 'hidden' }}>
       <Img src={IMG('cg21_paper_texture')} style={{ position: 'absolute', inset: 0, width: 1080, height: 1920, objectFit: 'cover', opacity: 0.9, mixBlendMode: 'multiply' }} />
-      <C12SectorPlan box={BOX} jute={IMG('cg19_jute_texture')} heart={IMG('cg17_heart')} brain={IMG('cg16_brain')} reveal={-300} revealDur={100} capitol={-300} s17={-300} valley={-300} gardens={-300} />
+      <C12SectorPlan box={BOX} jute={IMG('cg19_jute_texture')} heart={IMG('cg17_heart')} reveal={-300} revealDur={100} capitol={-300} s17={-300} valley={-300} gardens={-300} />
       <C09LineMorph shapes={[BODY]} keys={[[-300, 0]]} box={mb} width={9} color="#C8102E" glow={14} />
-      {organ('cg16_brain', [head[0], head[1] + 10], 190)}
+      {/* the brain's soft contact shadow is clipped off */}
+      {organ('cg16_brain', [head[0], head[1] + 10], 190, 14)}
       {organ('cg17_heart', chest, 200)}
       {organ('cg18_lungs', [chest[0] - 150, chest[1] + 60], 170)}
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(20,8,0,0.7), rgba(0,0,0,0) 30%, rgba(0,0,0,0) 80%, rgba(20,8,0,0.55))' }} />
