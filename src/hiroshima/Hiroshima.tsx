@@ -363,7 +363,7 @@ const S21: React.FC = () => {
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: '#9fd0ff' }}>
       <WhipBlur amount={w * 1.6}>
-        <AbsoluteFill style={{ transform: `translateY(${-w * HH * 0.6}px)` }}>
+        <AbsoluteFill style={{ transform: `translateY(${-w * HH * 0.12}px) scale(${1 + 0.3 * w})` }}>
           <Plate p="bg/bg_sky_plain.jpg" scale={1.15} oy={-(f - 3228) * 1.5} />
           <CloudStream f={f - 3228} speed={34} />
           <Art p="props/bomb_falling.png" x={HW * 0.5 + wave(f, 70) * 20} y={HH * (0.42 + (f - 3228) * 0.0004)} h={HH * 0.5} anchor={[0.5, 0.5]} rot={wave(f, 46) * 3} />
@@ -380,7 +380,7 @@ const S22: React.FC = () => {
   const talk = f >= 3303 && f < 3405 ? Math.abs(Math.sin(f * 0.55)) * 5 : 0;
   return (
     <WhipBlur amount={w * 1.6}>
-      <AbsoluteFill style={{ transform: `translateY(${w * HH * 0.5}px)` }}>
+      <AbsoluteFill style={{ transform: `translateY(${w * HH * 0.12}px) scale(${1 + 0.3 * w})`, overflow: 'hidden' }}>
         <Shot z={[[3323, 1], [3410, 1.05]]} e={ease.soft}>
           <Layer depth={0.6}><Plate p="bg/bg_window_wall.jpg" scale={1.1} filter="blur(6px)" /></Layer>
           <Layer depth={1}>
