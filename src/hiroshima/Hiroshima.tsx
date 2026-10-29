@@ -132,13 +132,16 @@ const S3: React.FC = () => {
         {/* sky panel */}
         <AbsoluteFill style={{ transform: `translateY(${-tilt * HH}px)` }}>
           <Plate p="bg/bg_sky_plain.jpg" scale={1.02} />
+          {/* mirrored sky below the panel, so the crossfade into the soldiers never shows an edge */}
+          <AbsoluteFill style={{ top: HH, transform: 'scaleY(-1)' }}><Plate p="bg/bg_sky_plain.jpg" scale={1.02} /></AbsoluteFill>
           <Art p="props/b29_side.png" x={HW * (0.42 + (f - 483) * 0.0009)} y={HH * 0.3} h={HH * 0.095} anchor={[0.5, 0.5]} rot={-4} />
         </AbsoluteFill>
         <AbsoluteFill style={{ transform: `translateY(${-tilt * HH * 1.35 + HH * 0.06}px)` }}>
-          <Art p="props/pine_trees_fg.png" x={HW * 0.5} y={HH * 1.08} h={HH * 0.4} sx={1.3} />
+          <Art p="props/pine_trees_fg.png" x={HW * 0.5} y={HH * 1.08} h={HH * 0.4} sx={1.3}
+            style={{ WebkitMaskImage: 'linear-gradient(to bottom, #000 72%, transparent 100%)' }} />
         </AbsoluteFill>
         {/* soldiers panel, one frame height below */}
-        <AbsoluteFill style={{ transform: `translateY(${(1 - tilt) * HH}px)` }}>
+        <AbsoluteFill style={{ transform: `translateY(${(1 - tilt) * HH}px)`, WebkitMaskImage: `linear-gradient(to bottom, transparent 0px, #000 ${HH * 0.28}px)` }}>
           <Plate p="bg/bg_watch_post.jpg" scale={1.04} />
           <Art p="chars/soldier_thinking.png" x={HW * 0.3} y={HH * 1.02} h={HH * 0.66} rot={wave(f, 90) * 0.8} pivot={[0.5, 1]} />
           <Art p="chars/soldier_dismiss.png" x={HW * 0.74} y={HH * 1.03} h={HH * 0.68} rot={wav} pivot={[0.5, 1]} />
