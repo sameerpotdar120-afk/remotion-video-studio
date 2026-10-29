@@ -133,3 +133,39 @@ beats; the story itself is told through illustrated scenes with word-by-word cap
   - the audio.
 - **New:** every character, prop and background design, with original art matching the role of each shot. No
   reuse of the reference artwork.
+
+## 9 · Audio (from the version with sound)
+
+- **Mix:** −17.6 LUFS integrated, LRA 4 LU, stereo 44.1 kHz.
+- **Separation:**
+  - Voice and music were split with the MDX-Net Kim Vocal 2 model (`/home/user/ref/tools/mdx.py`).
+  - The voice alone measures −17.9 LUFS; the music and effects bed measures −28.8 LUFS, so the bed sits about
+    **11 LU under the voice**.
+  - The clean voice is saved as `public/hiroshima/vo.wav`, with a 70 Hz high-pass.
+- **Voice-over:**
+  - One male narrator: calm, documentary delivery with clear pauses between phrases.
+  - **The countdown numbers are spoken:** "sixty seconds…" opens the video, then "fifty seconds", "forty
+    seconds", "thirty seconds", "twenty seconds", "ten seconds", "five", "two", "one".
+  - **Each card cuts in on the frame its number is spoken** (e.g. "fifty" at 12.49 s, card at 12.48 s).
+- **Captions:**
+  - **every caption word pops on the frame its spoken word starts** (e.g. "before" 0.87 s, "old" 2.18 s / 2.20 s);
+  - the captions do not show the spoken countdown numbers ("sixty seconds", "fifty seconds", …);
+  - word timings from forced alignment are in `docs/hiroshima/vo_words.json` (163 words).
+- **Bed:**
+  - continuous cinematic score: sustained string pads around 220–400 Hz with heavy sub-bass;
+  - **low end enters with the plane (8–12 s), builds 22–56 s, drops away 56–60 s, and surges at the explosion
+    60–64 s**;
+  - light highs (birds and ambience) on the kids' shot (17–20 s);
+  - a siren wind-down sweep around 5 s;
+  - no hard SFX hits on the cuts.
+- **Our version:** the reference's voice-over, plus our own free-licence score and sound effects following the
+  same curve:
+  - a warm morning;
+  - a siren wind-down;
+  - a distant plane drone that builds;
+  - ticks or heartbeat under the cards;
+  - the bomb whistle;
+  - the whip whoosh;
+  - a riser to the white-out;
+  - a muffled blast and ringing;
+  - silence at the end.
