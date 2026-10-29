@@ -20,8 +20,8 @@ export const C18Highlight: React.FC<{ points: [number, number][]; color?: string
       <AbsoluteFill style={{ opacity: o }}>
         <AbsoluteFill style={{ clipPath: poly, background: 'rgba(0,0,0,0.35)', transform: `translate(6px, ${10}px)`, filter: 'blur(6px)', opacity: lift / 8 }} />
         <AbsoluteFill style={{ clipPath: poly, transform: `translateY(${-lift}px)` }}>
-          <div style={{ position: 'absolute', left: x0, top: 0, width: (x1 - x0) * t, height: 1920, background: color, opacity: 0.72, mixBlendMode: 'multiply' }} />
-          <div style={{ position: 'absolute', left: x0, top: 0, width: (x1 - x0) * t, height: 1920, background: color, opacity: 0.3 }} />
+          <div style={{ position: 'absolute', left: x0, top: 0, width: (x1 - x0) * t, height: 1920, background: color, opacity: 0.55, mixBlendMode: 'multiply' }} />
+          <div style={{ position: 'absolute', left: x0, top: 0, width: (x1 - x0) * t, height: 1920, background: color, opacity: 0.14 }} />
         </AbsoluteFill>
         <svg width={1080} height={1920} style={{ position: 'absolute', overflow: 'visible', transform: `translateY(${-lift}px)` }}>
           <path d={d} fill="none" stroke="#fff" strokeWidth={3} pathLength={1} strokeDasharray={`${t} 2`} style={{ filter: `drop-shadow(0 0 6px ${color})` }} />

@@ -93,12 +93,15 @@ const Stamp: React.FC<{ at: P; size?: number }> = ({ at, size = 150 }) => {
   );
 };
 /** A full-frame photo with a slow push and drift (cover fit). */
-const Photo: React.FC<{ id: string; t: number; t0: number; t1: number; z0?: number; z1?: number; ox?: number }> = ({ id, t, t0, t1, z0 = 1.04, z1 = 1.14, ox = 0 }) => {
+const Photo: React.FC<{ id: string; t: number; t0: number; t1: number; z0?: number; z1?: number; ox?: number; children?: React.ReactNode }> = ({ id, t, t0, t1, z0 = 1.04, z1 = 1.14, ox = 0, children }) => {
   if (!has(id)) return <AbsoluteFill style={{ background: '#15120f' }} />;
   const u = ramp(t, t0, t1, linear);
   return (
     <AbsoluteFill style={{ overflow: 'hidden', background: '#000' }}>
-      <Img src={IMG(id)} style={{ width: 1080, height: 1920, objectFit: 'cover', transform: `scale(${lerp(z0, z1, u)}) translateX(${ox * u}px)` }} />
+      <AbsoluteFill style={{ transform: `scale(${lerp(z0, z1, u)}) translateX(${ox * u}px)` }}>
+        <Img src={IMG(id)} style={{ width: 1080, height: 1920, objectFit: 'cover' }} />
+        {children}
+      </AbsoluteFill>
     </AbsoluteFill>
   );
 };
@@ -266,8 +269,9 @@ const SecrShot: React.FC<{ t: number }> = ({ t }) => {
   const src = facade.reduce((a, p) => [a[0] + p[0] / facade.length, a[1] + p[1] / facade.length], [0, 0]) as P;
   return (
     <AbsoluteFill>
-      <Photo id="cg04" t={t} t0={C.imaraten11 - 0.25} t1={C.highcourt11} z0={1.02} z1={1.1} />
-      {has('cg04') && <At t0={C.secretariat11 - 0.1} t1={C.highcourt11}><C18Highlight points={facade} color="#D42AB0" mode="strips" strips={6} /></At>}
+      <Photo id="cg04" t={t} t0={C.imaraten11 - 0.25} t1={C.highcourt11} z0={1.02} z1={1.1}>
+        {has('cg04') && <At t0={C.secretariat11 - 0.1} t1={C.highcourt11}><C18Highlight points={facade} color="#D42AB0" mode="strips" strips={6} /></At>}
+      </Photo>
       <At t0={C.mausam11 - 0.1} t1={C.garmi11}><Row y={560}><C07Pill text="☀ 45°C" size={60} color="#FFB347" out={sec(C.mausam11 - 0.1, C.garmi11 - 0.3)} /></Row></At>
       <At t0={C.garmi11 - 0.1} t1={C.highcourt11}><C17Particles mode="cool" at={src} amount={1.2} /></At>
       <At t0={C.garmi11} t1={C.highcourt11}><Row y={560}><C07Pill text="गर्मी → ठंडक" size={60} color="#9BE8FF" /></Row></At>
@@ -281,9 +285,10 @@ const HcShot: React.FC<{ t: number }> = ({ t }) => {
   const line: [P, P] = [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.min(...ys)]];
   return (
     <AbsoluteFill>
-      <Photo id="cg05" t={t} t0={C.highcourt11} t1={C.isi12} z0={1.03} z1={1.12} />
-      {has('cg05') && <At t0={C.mudi11 - 0.1} t1={C.isi12 + 0.4}><C18Highlight points={roof} color="#8A1FC8" mode="roof" /></At>}
-      <At t0={C.dhoop11 - 0.4} t1={C.isi12 + 0.4}><C16SunRays sun={IMG('gp10')} roof={line} rays={5} /></At>
+      <Photo id="cg05" t={t} t0={C.highcourt11} t1={C.isi12} z0={1.03} z1={1.12}>
+        {has('cg05') && <At t0={C.mudi11 - 0.1} t1={C.isi12 + 0.4}><C18Highlight points={roof} color="#8A1FC8" mode="roof" /></At>}
+        <At t0={C.dhoop11 - 0.4} t1={C.isi12 + 0.4}><C16SunRays sun={IMG('gp10')} roof={line} rays={5} /></At>
+      </Photo>
       <At t0={C.mudi11 + 0.2} t1={C.isi12 + 0.4}><Row y={1380}><C07Pill text="मुड़ी हुई छत" size={62} /></Row></At>
     </AbsoluteFill>
   );
@@ -381,9 +386,9 @@ const PaperShot: React.FC<{ t: number }> = ({ t }) => {
         {has('cg18') && <At t0={C.saaf10 - 0.3} t1={C.imaraten11}><C05Badge at={valley} to={[valley[0] + 230, valley[1] - 260]} items={[[0, IMG('cg18'), 'फेफड़े']]} breathe /></At>}
         {/* line 12: the Capitol glows, the seal stamps on it */}
         <At t0={C.isi12 + 0.2} t1={C.corb13}><Glow at={cap} r={160} color="#FFE14D" /></At>
-        {has('cg26') && <At t0={C.unesco12 - 0.25} t1={C.corb13 + 0.3}><Box x={cap[0]} y={cap[1] - 60} w={340} h={340}><C20Seal src={IMG('cg26')} size={300} /></Box></At>}
-        <At t0={C.unesco12 - 0.05} t1={C.unesco12 + 1}><P32Shock at={[cap[0], cap[1] - 60]} r={260} color="#FFD45A" /></At>
-        <At t0={C.world12} t1={C.corb13 + 0.3}><C17Particles mode="sparkle" at={[cap[0], cap[1] - 60]} /></At>
+        {has('cg26') && <At t0={C.unesco12 - 0.25} t1={C.corb13 + 0.3}><Box x={cap[0]} y={cap[1] + 150} w={340} h={340}><C20Seal src={IMG('cg26')} size={300} /></Box></At>}
+        <At t0={C.unesco12 - 0.05} t1={C.unesco12 + 1}><P32Shock at={[cap[0], cap[1] + 150]} r={260} color="#FFD45A" /></At>
+        <At t0={C.world12} t1={C.corb13 + 0.3}><C17Particles mode="sparkle" at={[cap[0], cap[1] + 150]} /></At>
         {/* line 13: the body over the plan; brain, heart and lungs pulse on it together */}
         <At t0={C.corb13 + 0.2} t1={DURATION_S}><C09LineMorph shapes={[BODY]} keys={[[0, 0]]} box={MORPH_BOX} width={6} color="#B3202E" glow={8} drawDur={40} /></At>
         {has('cg16') && <At t0={C.zinda13 - 0.15} t1={DURATION_S}><C05Badge at={head} to={[head[0] - 230, head[1] - 60]} items={[[0, IMG('cg16'), 'सिर']]} size={150} beat /></At>}

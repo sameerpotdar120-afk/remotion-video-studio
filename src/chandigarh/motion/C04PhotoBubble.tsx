@@ -19,7 +19,9 @@ export const C04PhotoBubble: React.FC<{ at: [number, number]; shots: [number, st
   for (let i = 0; i < shots.length; i++) if (f >= shots[i][0]) k = i;
   const swap = shots[k][0] > 0 ? interpolate(f, [shots[k][0], shots[k][0] + 8], [0.85, 1], { ...clamp, easing: Easing.out(Easing.back(2.5)) }) : 1;
   const [ix, iy] = idle(f, 2, 0.35);
-  const st = stamp !== undefined ? interpolate(f, [stamp, stamp + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.back(1.6)) }) : 0;
+  // the ✕ clears on the next swap after it (the computer is crossed out, the body is not)
+  const clear = stamp !== undefined ? shots.find(([sf]) => sf > stamp)?.[0] : undefined;
+  const st = stamp !== undefined && (clear === undefined || f < clear) ? interpolate(f, [stamp, stamp + 8], [0, 1], { ...clamp, easing: Easing.out(Easing.back(1.6)) }) : 0;
   const shake = stamp !== undefined && f >= stamp && f < stamp + 12 ? Math.sin(f * 2.8) * 10 * (1 - (f - stamp) / 12) : 0;
   const r = size / 2, x = at[0] + (fly ? fly[1] * fl : 0) + shake, y = at[1] + (fly ? fly[2] * fl : 0);
   const blur = (1 - s) * 14 + q * 12;

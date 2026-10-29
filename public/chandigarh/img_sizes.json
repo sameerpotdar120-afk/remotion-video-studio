@@ -1,12 +1,238 @@
 {
- "gp10_sun": {
-  "w": 1200,
-  "h": 1197,
-  "ext": "png"
- },
- "gp19_map_pin": {
-  "w": 327,
-  "h": 500,
-  "ext": "png"
- }
+"gp10_sun": {
+"w": 1200,
+"h": 1197,
+"ext": "png"
+},
+"gp19_map_pin": {
+"w": 327,
+"h": 500,
+"ext": "png"
+},
+"cg11_retro_computer": {
+"w": 1000,
+"h": 978,
+"ext": "png"
+},
+"cg13_icon_drainage": {
+"w": 700,
+"h": 636,
+"ext": "png"
+},
+"cg14_icon_fertile_soil": {
+"w": 700,
+"h": 641,
+"ext": "png"
+},
+"cg15_icon_water": {
+"w": 700,
+"h": 659,
+"ext": "png"
+},
+"cg16_brain": {
+"w": 740,
+"h": 900,
+"ext": "png"
+},
+"cg17_heart": {
+"w": 606,
+"h": 900,
+"ext": "png"
+},
+"cg18_lungs": {
+"w": 799,
+"h": 900,
+"ext": "png"
+},
+"cg24_car": {
+"w": 900,
+"h": 490,
+"ext": "png"
+},
+"cg26_blank_gold_seal": {
+"w": 1000,
+"h": 985,
+"ext": "png"
+},
+"cg01_chandi_temple": {
+"w": 2160,
+"h": 3840,
+"ext": "jpg"
+},
+"cg02_le_corbusier": {
+"w": 2160,
+"h": 3840,
+"ext": "jpg"
+},
+"cg03_palace_of_assembly": {
+"w": 2160,
+"h": 3840,
+"ext": "jpg"
+},
+"cg04_secretariat": {
+"w": 2160,
+"h": 3840,
+"ext": "jpg",
+"pts": {
+"facade": [
+[
+1880,
+40
+],
+[
+1880,
+2280
+],
+[
+1500,
+2380
+],
+[
+1000,
+2480
+],
+[
+520,
+2560
+],
+[
+520,
+1880
+],
+[
+800,
+1500
+],
+[
+1200,
+1000
+],
+[
+1600,
+450
+]
+]
+}
+},
+"cg05_high_court": {
+"w": 2160,
+"h": 3840,
+"ext": "jpg",
+"pts": {
+"roof": [
+[
+0,
+580
+],
+[
+770,
+300
+],
+[
+1100,
+800
+],
+[
+1500,
+1350
+],
+[
+1800,
+1700
+],
+[
+2080,
+1780
+],
+[
+2060,
+1840
+],
+[
+1800,
+1960
+],
+[
+1600,
+1880
+],
+[
+1300,
+1520
+],
+[
+900,
+1060
+],
+[
+400,
+820
+],
+[
+0,
+880
+]
+]
+}
+},
+"cg06_sector17_plaza": {
+"w": 1400,
+"h": 1400,
+"ext": "jpg"
+},
+"cg07_sector_homes": {
+"w": 1000,
+"h": 750,
+"ext": "jpg"
+},
+"cg08_sector_school": {
+"w": 1000,
+"h": 750,
+"ext": "jpg"
+},
+"cg09_sector_hospital": {
+"w": 1000,
+"h": 750,
+"ext": "jpg"
+},
+"cg10_lahore_badshahi": {
+"w": 1100,
+"h": 1100,
+"ext": "jpg"
+},
+"cg12_human_body_glow": {
+"w": 788,
+"h": 1400,
+"ext": "jpg"
+},
+"cg19_jute_texture": {
+"w": 1600,
+"h": 1600,
+"ext": "jpg"
+},
+"cg20_water_ribbon_texture": {
+"w": 1200,
+"h": 1200,
+"ext": "jpg"
+},
+"cg21_paper_texture": {
+"w": 2400,
+"h": 2400,
+"ext": "jpg"
+},
+"cg22_red_glitter_texture": {
+"w": 2400,
+"h": 2400,
+"ext": "jpg"
+},
+"cg23_gold_glitter_texture": {
+"w": 1600,
+"h": 1600,
+"ext": "jpg"
+},
+"cg25_sector17_aerial": {
+"w": 2400,
+"h": 2400,
+"ext": "jpg"
+}
 }

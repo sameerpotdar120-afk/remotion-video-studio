@@ -22,7 +22,7 @@ export const C20Seal: React.FC<{ src: string; size?: number; year?: string }> = 
       <div style={{ position: 'relative', width: size, height: size, transform: `translate(${ix}px, ${iy + (1 - t) * -300}px) scale(${sc * (2 - sq)}, ${sc * sq})`, opacity: Math.min(1, t * 3) }}>
         <Img src={src} style={{ width: size, height: size, objectFit: 'contain', filter: 'drop-shadow(0 18px 20px rgba(0,0,0,0.55))' }} />
         <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: txt, transform: `scale(${0.6 + 0.4 * txt})` }}>
-          <div style={{ fontFamily: GEO, fontWeight: 800, fontSize: size * 0.075, letterSpacing: 3, color: '#5A3A08' }}>WORLD HERITAGE</div>
+          <div style={{ fontFamily: GEO, fontWeight: 800, fontSize: size * 0.058, letterSpacing: 1.5, color: '#5A3A08' }}>WORLD HERITAGE</div>
           <div style={{ fontFamily: NUM, fontSize: size * 0.24, color: '#4A2E04', lineHeight: 1 }}>{year}</div>
         </div>
         <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: `linear-gradient(120deg, rgba(255,255,255,0) ${glint * 140 - 20}%, rgba(255,255,255,0.55) ${glint * 140}%, rgba(255,255,255,0) ${glint * 140 + 20}%)`, mixBlendMode: 'screen' }} />
