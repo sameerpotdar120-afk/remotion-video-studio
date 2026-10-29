@@ -51,7 +51,7 @@ export const C12SectorPlan: React.FC<{
   const sweep = rv * 1.4;
   const wipe = (at: number | undefined) => (at !== undefined ? interpolate(f, [at, at + 20], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) }) : 0);
   const eduT = wipe(edu), indT = wipe(ind);
-  const vT = valley !== undefined ? interpolate(f, [valley, valley + 40], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) }) : 0;
+  const vT = valley !== undefined ? interpolate(f, [valley, valley + 26], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) }) : 0;
   const vx = g.ox + 2 * g.w;
   const vd = `M${vx},${y0 - g.h * 0.3} C${vx + g.w * 0.3},${y0 + g.h * 1.5} ${vx - g.w * 0.35},${y0 + g.h * 3.5} ${vx + g.w * 0.1},${y0 + g.h * 5} S${vx - g.w * 0.1},${y1} ${vx},${y1 + g.h * 0.2}`;
   return (

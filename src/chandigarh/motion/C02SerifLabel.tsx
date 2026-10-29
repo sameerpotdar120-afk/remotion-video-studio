@@ -18,7 +18,7 @@ export const C02SerifLabel: React.FC<{ text: string; size?: number; tone?: 'ligh
     <AbsoluteFill style={{ alignItems: 'center', justifyContent: 'center', opacity: o }}>
       <div style={{ whiteSpace: 'nowrap', filter: `drop-shadow(0 ${size / 18}px ${size / 10}px rgba(0,0,0,${tone === 'dark' ? 0.25 : 0.6}))` }}>
         {ch.map((c, i) => {
-          const s = interpolate(f, [i * step, i * step + 20], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+          const s = interpolate(f, [i * step, i * step + 12], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
           return (
             <span key={i} style={{ display: 'inline-block', whiteSpace: 'pre', fontFamily: latin ? SERIF : UI, fontWeight: latin ? 600 : 800, fontSize: size, letterSpacing: latin ? size * (0.08 + 0.3 * (1 - s)) : 0,
               opacity: s, transform: `translateY(${(1 - s) * size * 0.15}px)`, backgroundImage: grad, WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>{c}</span>

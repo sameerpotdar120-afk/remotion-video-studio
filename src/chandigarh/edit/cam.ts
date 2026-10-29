@@ -1,4 +1,8 @@
-import { Ease, inOut, kick, lerp, linear } from '../../darien/anim';
+import { Easing } from 'remotion';
+import { Ease, kick, lerp, linear } from '../../darien/anim';
+
+/** A snappy in-out: the moves get where they're going faster (the creator wants a quicker pace). */
+const inOut: Ease = Easing.bezier(0.7, 0, 0.18, 1);
 import timing from './timing.json';
 import { Cam, merc } from '../motion/MapView';
 
@@ -26,16 +30,16 @@ const keys = (): Key[] => [
   { t: C.design1, at: at(80.5, 23.6), mpp: 2900, e: linear },
   { t: C.jee2 - 0.2, at: NORTH, mpp: 1500, e: inOut },
   // line 2: on the city for the head, heart, lungs and veins
-  { t: C.sir2 - 0.3, at: CHD_UP, mpp: 520, e: inOut },
-  { t: C.hum2, at: CHD_UP, mpp: 430, e: linear },
+  { t: C.sir2 - 0.3, at: CHD_UP, mpp: 540, e: inOut },
+  { t: C.hum2, at: CHD_UP, mpp: 390, e: linear },
   // "हम बात कर रहे हैं, Chandigarh की": back out to all of India
   { t: C.chd2 - 0.1, at: at(80, 23.5), mpp: 3100, e: inOut },
   { t: C.bantwara3 - 0.3, at: at(79.5, 24.5), mpp: 2850, e: linear },
   // line 3: partition (Pakistan, Punjab, Lahore), then the push in on Indian Punjab and the "?" pin
   { t: C.lahore3 - 0.2, at: PB, mpp: 1350, e: inOut },
   { t: C.azaad3, at: PB, mpp: 1250, e: linear },
-  { t: C.chahiye3, at: PB_IN, mpp: 880, e: inOut },
-  { t: C.zameen4 - 0.1, at: PB_IN, mpp: 800, e: linear },
+  { t: C.chahiye3, at: PB_IN, mpp: 900, e: inOut },
+  { t: C.zameen4 - 0.1, at: at(75.9, 30.95), mpp: 680, e: linear },
   // line 4: down onto the foothills, the site, the icons, the temple
   { t: C.shivalik4, at: HILLS, mpp: 600, e: inOut },
   { t: C.neeche4 + 0.3, at: SITE, mpp: 430, e: inOut },
@@ -72,8 +76,8 @@ export const camAt = (t: number): Cam => {
   const k = camRaw(t);
   let punch = 0;
   for (const h of HITS()) if (t > h) punch += 0.05 * Math.exp(-7 * (t - h)) * Math.cos((t - h) * 9);
-  const breathe = (1 + 0.012 * Math.sin(t * LOOPF(29)) + 0.006 * Math.sin(t * LOOPF(53) + 1.3)) * (1 - punch);
-  const drift = k.mpp * 5;
+  const breathe = (1 + 0.016 * Math.sin(t * LOOPF(41)) + 0.008 * Math.sin(t * LOOPF(73) + 1.3)) * (1 - punch);
+  const drift = k.mpp * 7;
   return { x: k.x + Math.sin(t * LOOPF(31)) * drift, y: k.y + Math.sin(t * LOOPF(27)) * drift, mpp: k.mpp * breathe };
 };
 export const toS = (c: Cam, p: number[]): P => [540 + (p[0] - c.x) / c.mpp, 960 - (p[1] - c.y) / c.mpp];

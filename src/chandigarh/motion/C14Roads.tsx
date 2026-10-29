@@ -20,7 +20,7 @@ export const C14Roads: React.FC<{ roads: Road[]; step?: number; out?: number; wa
     <AbsoluteFill style={{ opacity: o }}>
       <svg width={1080} height={1920} style={{ overflow: 'visible' }}>
         {roads.map((r, i) => {
-          const t = interpolate(f, [i * step, i * step + 22], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+          const t = interpolate(f, [i * step, i * step + 14], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
           if (t <= 0) return null;
           const w = r.width ?? 6;
           return (

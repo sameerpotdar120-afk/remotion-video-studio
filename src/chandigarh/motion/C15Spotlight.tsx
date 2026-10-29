@@ -8,7 +8,7 @@ import { clamp } from './theme';
 // plaza's paths inside it. Opaque, 1080×1920.
 export const C15Spotlight: React.FC<{ src: string; rect?: [number, number, number, number]; walkers?: number }> = ({ src, rect = [240, 420, 600, 1000], walkers = 26 }) => {
   const f = useCurrentFrame();
-  const t = interpolate(f, [6, 30], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
+  const t = interpolate(f, [4, 18], [0, 1], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   const [x, y, w, h] = rect, r = 40;
   const push = 1.04 + 0.05 * interpolate(f, [0, 300], [0, 1], clamp);
   return (

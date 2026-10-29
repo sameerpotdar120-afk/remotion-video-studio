@@ -1,5 +1,5 @@
 import React from 'react';
-import { AbsoluteFill, Audio, Img, OffthreadVideo, Sequence, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
+import { AbsoluteFill, Audio, Easing, Img, OffthreadVideo, Sequence, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Watermark } from '../../brand/Watermark';
 import { useMontserrat } from '../../darien/Brand';
 import { clamp01, easeOut, inOut, lerp, linear, pop, ramp } from '../../darien/anim';
@@ -141,8 +141,8 @@ const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const d = (r: number[][][]) => ringsD(c, r);
   const chd = pt(c, ...CHD_LL), site = pt(c, 76.78, 30.76), lahore = toS(c, town('Lahore'));
   const pin = IMG('gp19');
-  const bubble: [number, string][] = [['cg03', 0], ['cg11', sec(C.shahar1, C.computer1)], ['cg12', sec(C.shahar1, C.balki1)]]
-    .filter(([id]) => has(id as string)).map(([id, f]) => [f as number, IMG(id as string)]);
+  const bubble: [number, string, ('cover' | 'contain')?][] = [['cg03', 0], ['cg11', sec(C.shahar1, C.computer1)], ['cg12', sec(C.shahar1, C.balki1)]]
+    .filter(([id]) => has(id as string)).map(([id, f]) => [f as number, IMG(id as string), id === 'cg12' ? 'contain' : 'cover']);
   if (bubble.length) bubble[0][0] = 0;
   const hop: P[] = [toS(c, town('Amritsar')), toS(c, town('Patiala')), pt(c, 75.85, 30.9), toS(c, town('Ambala')), site];
   const slope0 = pt(c, 76.95, 31.05), slope1 = pt(c, 76.62, 30.5);
@@ -150,16 +150,16 @@ const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   return (
     <AbsoluteFill>
       {/* India red from frame 0 (the loop); Pakistan, Punjab and the split on line 3; everything dissolves on "ज़मीन चुनी गई" */}
-      <At t0={0} t1={C.zameen4 + 0.7}><AbsoluteFill style={{ opacity: 0.45 + 0.55 * clamp01((c.mpp - 450) / 1100) }}><C01EmbossFill d={d(G.countries.India)} color={COL.india} mode="fade" dur={0} out={F(C.zameen4)} outDur={30} /></AbsoluteFill></At>
-      <At t0={C.bantwara3 - 0.1} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.countries.Pakistan)} color={COL.pakistan} mode="wipe" angle={0} dur={30} out={sec(C.bantwara3 - 0.1, C.zameen4)} outDur={30} /></At>
+      <At t0={0} t1={C.zameen4 + 0.7}><AbsoluteFill style={{ opacity: 0.45 + 0.55 * clamp01((c.mpp - 450) / 1100) }}><C01EmbossFill d={d(G.countries.India)} color={COL.india} mode="fade" dur={0} out={F(C.zameen4)} outDur={18} /></AbsoluteFill></At>
+      <At t0={C.bantwara3 - 0.1} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.countries.Pakistan)} color={COL.pakistan} mode="wipe" angle={0} dur={18} out={sec(C.bantwara3 - 0.1, C.zameen4)} outDur={18} /></At>
       <At t0={C.punjab3 - 0.1} t1={C.lahore3 + 0.3}><C01EmbossFill d={d(G.states.PunjabUndivided)} color="#FFFFFF" mode="fade" dur={12} blend="normal" strength={0.55} out={sec(C.punjab3 - 0.1, C.lahore3 + 0.05)} outDur={10} /></At>
-      <At t0={C.lahore3 - 0.1} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.states.PunjabPK)} color={COL.punjabPK} mode="wipe" angle={180} dur={18} out={sec(C.lahore3 - 0.1, C.zameen4)} outDur={30} /></At>
-      <At t0={C.lahore3 + 0.15} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.states.PunjabIN)} color={COL.punjabIN} mode="wipe" angle={0} dur={18} out={sec(C.lahore3 + 0.15, C.zameen4)} outDur={30} /></At>
+      <At t0={C.lahore3 - 0.1} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.states.PunjabPK)} color={COL.punjabPK} mode="wipe" angle={180} dur={12} out={sec(C.lahore3 - 0.1, C.zameen4)} outDur={18} /></At>
+      <At t0={C.lahore3 + 0.15} t1={C.zameen4 + 0.7}><C01EmbossFill d={d(G.states.PunjabIN)} color={COL.punjabIN} mode="wipe" angle={0} dur={12} out={sec(C.lahore3 + 0.15, C.zameen4)} outDur={18} /></At>
 
       {/* line 1: the pin, its ripple, the bubble (Capitol → computer ✕ → the body), the heartbeat */}
       <At t0={C.shahar1 - 0.1} t1={C.jee2}><P24PinDrop src={pin} at={[chd[0], chd[1]]} h={120} ask={false} /></At>
       <At t0={C.shahar1 + 0.15} t1={C.shahar1 + 1.2}><P32Shock at={chd} r={160} color="#FFFFFF" /></At>
-      {bubble.length > 0 && <At t0={C.shahar1 + 0.35} t1={C.design1 + 1.0}><C04PhotoBubble at={[chd[0], chd[1] - 130]} shots={bubble.map(([f, s]) => [Math.max(0, f - F(0.35)), s] as [number, string])} size={380}
+      {bubble.length > 0 && <At t0={C.shahar1 + 0.35} t1={C.design1 + 1.0}><C04PhotoBubble at={[chd[0], chd[1] - 130]} shots={bubble.map(([f, s, fit]) => [Math.max(0, f - F(0.35)), s, fit] as [number, string, ('cover' | 'contain')?])} size={380}
         stamp={has('cg11') ? sec(C.shahar1 + 0.35, C.computer1 + 0.75) : undefined} out={sec(C.shahar1 + 0.35, C.design1 + 0.55)} /></At>}
       <At t0={C.zinda1} t1={C.zinda1 + 1.4}><P32Shock at={[chd[0], chd[1] - 330]} r={260} color="#FF5A6A" repeat={36} /></At>
 
@@ -180,7 +180,7 @@ const MapFx: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       <At t0={C.chahiye3 - 0.1} t1={C.zameen4}><C26PinHop src={pin} pts={hop} step={Math.round(sec(C.chahiye3 - 0.1, C.zameen4 - 0.4) / hop.length)} h={120} /></At>
 
       {/* line 4: the Shivalik ribbon, the gold site, "✓", the slope, the three icons, rain, ripples; the temple reveal */}
-      <At t0={C.shivalik4 - 0.15} t1={C.paas4 + 0.6}><C03Ribbon d={lineD(c, G.shivalik)} texture={has('cg20') ? IMG('cg20') : undefined} dur={70} /></At>
+      <At t0={C.shivalik4 - 0.15} t1={C.paas4 + 0.6}><C03Ribbon d={lineD(c, G.shivalik)} texture={has('cg20') ? IMG('cg20') : undefined} dur={42} /></At>
       <At t0={C.neeche4 - 0.1} t1={C.paas4 + 0.2}><C06Blob at={site} r={86} texture={has('cg23') ? IMG('cg23') : undefined} /></At>
       <At t0={C.ittefaq4 + 0.1} t1={C.dhalaan4 + 0.2}><Box x={site[0] + 150} y={site[1] - 140} w={300} h={140}><Row y={30}><C07Pill text="✓" size={70} color={COL.neon} out={sec(C.ittefaq4 + 0.1, C.dhalaan4 - 0.1)} /></Row></Box></At>
       <At t0={C.dhalaan4 - 0.1} t1={C.mitti4}><P03HandArrow from={slope0} to={slope1} bend={0.25} out={sec(C.dhalaan4 - 0.1, C.mitti4 - 0.3)} /></At>
@@ -219,14 +219,14 @@ const MapShot: React.FC<{ t: number; blur: number }> = ({ t, blur }) => {
 // ------------------------------------------------------------------ photo shots
 const TempleShot: React.FC<{ t: number }> = ({ t }) => (
   <AbsoluteFill>
-    <Photo id="cg01" t={t} t0={C.paas4 + 0.3} t1={C.chd4} z0={1.05} z1={1.16} />
+    <Photo id="cg01" t={t} t0={C.paas4 + 0.3} t1={C.chd4} z0={1.04} z1={1.26} ox={-30} />
     <C17Particles mode="petals" amount={0.9} />
     <At t0={C.paas4 + 0.55} t1={C.chd4 + 0.2}><Row y={1380}><C07Pill text="माँ चंडी मंदिर" size={60} out={sec(C.paas4 + 0.55, C.chd4 - 0.4)} /></Row></At>
   </AbsoluteFill>
 );
 const CorbShot: React.FC<{ t: number }> = ({ t }) => (
   <AbsoluteFill>
-    <Photo id="cg02" t={t} t0={C.design5 + 0.5} t1={C.unhone5 + 0.3} z0={1.12} z1={1.02} />
+    <Photo id="cg02" t={t} t0={C.design5 + 0.5} t1={C.unhone5 + 0.3} z0={1.26} z1={1.04} ox={25} />
     <At t0={C.corb5 - 0.3} t1={C.unhone5 + 0.4}><Row y={1360}><C07Pill text="LE CORBUSIER" size={62} sub="French architect" /></Row></At>
   </AbsoluteFill>
 );
@@ -252,7 +252,7 @@ const PhotosShot: React.FC<{ t: number }> = ({ t }) => {
   const [label, t0] = id === 'cg03' ? ['विधानसभा', C.vidhan6] : id === 'cg04' ? ['SECRETARIAT', C.secretariat6] : ['HIGH COURT', C.highcourt6];
   return (
     <AbsoluteFill>
-      <Photo id={id} t={t} t0={C.jahan6} t1={C.poora7} z0={1.06} z1={1.14} ox={id === 'cg04' ? -30 : 20} />
+      <Photo id={id} t={t} t0={id === 'cg03' ? C.jahan6 : id === 'cg04' ? C.secretariat6 - 0.05 : C.highcourt6 - 0.05} t1={id === 'cg03' ? C.secretariat6 : id === 'cg04' ? C.highcourt6 : C.poora7} z0={1.04} z1={1.16} ox={id === 'cg04' ? -30 : 20} />
       {t >= t0 - 0.1 && <At t0={t0 - 0.1} t1={C.poora7}><Row y={1380}><C07Pill text={label} size={62} /></Row></At>}
     </AbsoluteFill>
   );
@@ -269,7 +269,7 @@ const SecrShot: React.FC<{ t: number }> = ({ t }) => {
   const src = facade.reduce((a, p) => [a[0] + p[0] / facade.length, a[1] + p[1] / facade.length], [0, 0]) as P;
   return (
     <AbsoluteFill>
-      <Photo id="cg04" t={t} t0={C.imaraten11 - 0.25} t1={C.highcourt11} z0={1.02} z1={1.1}>
+      <Photo id="cg04" t={t} t0={C.imaraten11 - 0.25} t1={C.highcourt11} z0={1.02} z1={1.18} ox={-25}>
         {has('cg04') && <At t0={C.secretariat11 - 0.1} t1={C.highcourt11}><C18Highlight points={facade} color="#D42AB0" mode="strips" strips={6} /></At>}
       </Photo>
       <At t0={C.mausam11 - 0.1} t1={C.garmi11}><Row y={560}><C07Pill text="☀ 45°C" size={60} color="#FFB347" out={sec(C.mausam11 - 0.1, C.garmi11 - 0.3)} /></Row></At>
@@ -285,7 +285,7 @@ const HcShot: React.FC<{ t: number }> = ({ t }) => {
   const line: [P, P] = [[Math.min(...xs), Math.min(...ys)], [Math.max(...xs), Math.min(...ys)]];
   return (
     <AbsoluteFill>
-      <Photo id="cg05" t={t} t0={C.highcourt11} t1={C.isi12} z0={1.03} z1={1.12}>
+      <Photo id="cg05" t={t} t0={C.highcourt11} t1={C.isi12} z0={1.02} z1={1.18} ox={20}>
         {has('cg05') && <At t0={C.mudi11 - 0.1} t1={C.isi12 + 0.4}><C18Highlight points={roof} color="#8A1FC8" mode="roof" /></At>}
         <At t0={C.dhoop11 - 0.4} t1={C.isi12 + 0.4}><C16SunRays sun={IMG('gp10')} roof={line} rays={5} /></At>
       </Photo>
@@ -296,6 +296,7 @@ const HcShot: React.FC<{ t: number }> = ({ t }) => {
 
 // ------------------------------------------------------------------ look B: the paper plan (lines 5–13)
 const BOX: [number, number, number, number] = [80, 380, 920, 1300];
+const SNAP = Easing.bezier(0.7, 0, 0.18, 1);
 const PG = planGeom(BOX);
 const MORPH_BOX: [number, number, number, number] = [PG.ox - 26, PG.oy - 26, PG.gw + 52, PG.gh + 52];
 const HI: [number, number] = [5, 4];
@@ -309,8 +310,8 @@ const PLANZ = (): Z[] => {
     { t: C.sabse6 - 0.2, s: 1.0, at: mid },
     { t: C.capitol6 + 0.2, s: 1.12, at: cap },
     { t: C.poora7 + 0.2, s: 1.0, at: mid },
-    { t: C.sector7 + 0.5, s: 2.0, at: hcc },
-    { t: C.sab7 + 0.3, s: 2.1, at: hcc },
+    { t: C.sector7 + 0.45, s: 1.85, at: hcc },
+    { t: C.sab7 + 0.3, s: 2.35, at: hcc },
     { t: C.s17 - 0.1, s: 1.05, at: mid },
     { t: C.gaadiyan8, s: 1.35, at: s17c },
     { t: C.nasen9 - 0.1, s: 1.0, at: mid },
@@ -329,7 +330,7 @@ const planCam = (t: number) => {
   const K = PLANZ();
   let i = 1;
   while (i < K.length - 1 && t > K[i].t) i++;
-  const a = K[i - 1], b = K[i], u = inOut(clamp01((t - a.t) / Math.max(1e-3, b.t - a.t)));
+  const a = K[i - 1], b = K[i], u = SNAP(clamp01((t - a.t) / Math.max(1e-3, b.t - a.t)));
   const s = Math.exp(lerp(Math.log(a.s), Math.log(b.s), u));
   const at: P = [lerp(a.at[0], b.at[0], u), lerp(a.at[1], b.at[1], u)];
   const breathe = 1 + 0.008 * Math.sin(t * LOOPF(41));
@@ -361,12 +362,12 @@ const PaperShot: React.FC<{ t: number }> = ({ t }) => {
         <C09LineMorph shapes={[UT_SHAPE, BODY, SQUARE]} keys={[[F(C.jism5 - 0.35), 0], [F(C.jism5 + 0.15), 1], [F(C.sabse6 + 1.15), 2]]} box={MORPH_BOX} width={5} />
         <At t0={C.sabse6 - 0.1} t1={C.sabse6 + 1.2}><Glow at={[MORPH_BOX[0] + MORPH_BOX[2] * 0.5, MORPH_BOX[1] + MORPH_BOX[3] * 0.07]} r={110} color="#FFC93C" /></At>
         <C12SectorPlan box={BOX} jute={has('cg19') ? IMG('cg19') : undefined} brain={has('cg16') ? IMG('cg16') : undefined} heart={has('cg17') ? IMG('cg17') : undefined}
-          reveal={F(C.poora7)} revealDur={100} capitol={F(C.capitol6 - 0.1)} s17={F(C.s17 - 0.1)} hi={[F(C.sector7 + 0.2), HI[0], HI[1]]} pale={[F(C.nasen9 + 0.1), 30]}
+          reveal={F(C.poora7)} revealDur={60} capitol={F(C.capitol6 - 0.1)} s17={F(C.s17 - 0.1)} hi={[F(C.sector7 + 0.2), HI[0], HI[1]]} pale={[F(C.nasen9 + 0.1), 30]}
           edu={F(C.school7 + 2.8)} ind={F(C.school7 + 3.0)} valley={F(C.leisure10 - 0.2)} gardens={F(C.leisure10 + 0.5)} />
         <At t0={C.capitol6 + 0.1} t1={C.jahan6 + 0.5}><C13Leader at={[PG.capitol.x + PG.capitol.w, PG.capitol.y + 20]} to={[PG.capitol.x + PG.capitol.w + 150, PG.capitol.y - 100]} text="Capitol Complex" size={36} /></At>
         <At t0={C.poora7 + 0.9} t1={C.sector7 + 0.2}><C13Leader at={[x0 + PG.w * 0.5, y0 + PG.h * 2.5]} to={[x0 - 10, y0 - 70]} text="Sectors" size={40} side="right" /></At>
-        <At t0={C.m800 - 0.15} t1={C.dil8}><C13Dim from={[hc.x, hc.y - 12]} to={[hc.x + hc.w, hc.y - 12]} value={800} side="above" size={22} dur={36} /></At>
-        <At t0={C.m1200 - 0.1} t1={C.dil8}><C13Dim from={[hc.x + hc.w + 12, hc.y]} to={[hc.x + hc.w + 12, hc.y + hc.h]} value={1200} side="right" size={22} dur={36} /></At>
+        <At t0={C.m800 - 0.15} t1={C.dil8}><C13Dim from={[hc.x, hc.y - 12]} to={[hc.x + hc.w, hc.y - 12]} value={800} side="above" size={22} dur={22} /></At>
+        <At t0={C.m1200 - 0.1} t1={C.dil8}><C13Dim from={[hc.x + hc.w + 12, hc.y]} to={[hc.x + hc.w + 12, hc.y + hc.h]} value={1200} side="right" size={22} dur={22} /></At>
         <At t0={C.apne7} t1={C.dil8}><Glow at={[hc.x + hc.w / 2, hc.y + hc.h / 2]} r={hc.h * 0.75} color="#FFC93C" ring /></At>
         {(['cg07', 'cg08', 'cg09'] as const).map((id, i) => has(id) && (
           <At key={id} t0={[C.ghar7, C.school7, C.hospital7][i] - 0.15} t1={C.sab7 + 0.5}>

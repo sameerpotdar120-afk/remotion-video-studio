@@ -13,7 +13,7 @@ export const C13Leader: React.FC<{ at: [number, number]; to: [number, number]; t
   const l = interpolate(f, [0, 8], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
   const o = out !== undefined ? interpolate(f, [out, out + 10], [1, 0], clamp) : 1;
   const ch = graphemes(text);
-  const shown = Math.floor(interpolate(f, [8, 8 + ch.length * 2], [0, ch.length], clamp));
+  const shown = Math.floor(interpolate(f, [6, 6 + ch.length * 1.2], [0, ch.length], clamp));
   const ex = at[0] + (to[0] - at[0]) * l, ey = at[1] + (to[1] - at[1]) * l;
   const latin = /^[\x00-\x7F]*$/.test(text);
   const pos: React.CSSProperties = side === 'right' ? { left: to[0] + 14, top: to[1], transform: 'translateY(-50%)' } : side === 'left' ? { left: to[0] - 14, top: to[1], transform: 'translate(-100%, -50%)' }

@@ -14,7 +14,7 @@ export const C18Highlight: React.FC<{ points: [number, number][]; color?: string
   const poly = `polygon(${points.map(([x, y]) => `${x}px ${y}px`).join(',')})`;
   const d = 'M' + points.map(([x, y]) => `${x},${y}`).join('L') + 'Z';
   if (mode === 'roof') {
-    const t = interpolate(f, [0, 16], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+    const t = interpolate(f, [0, 11], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
     const lift = 8 * interpolate(f, [12, 24], [0, 1], { ...clamp, easing: Easing.out(Easing.back(2)) });
     return (
       <AbsoluteFill style={{ opacity: o }}>
@@ -33,7 +33,7 @@ export const C18Highlight: React.FC<{ points: [number, number][]; color?: string
   return (
     <AbsoluteFill style={{ opacity: o, clipPath: poly }}>
       {Array.from({ length: strips }, (_, i) => {
-        const a = interpolate(f, [i * 12, i * 12 + 8, i * 12 + 30, i * 12 + 44], [0, 1, 1, 0.25], clamp);
+        const a = interpolate(f, [i * 8, i * 8 + 6, i * 8 + 22, i * 8 + 34], [0, 1, 1, 0.25], clamp);
         return (
           <React.Fragment key={i}>
             <div style={{ position: 'absolute', left: x0 + i * w, top: 0, width: w + 1, height: 1920, background: color, opacity: 0.62 * a, mixBlendMode: 'multiply' }} />

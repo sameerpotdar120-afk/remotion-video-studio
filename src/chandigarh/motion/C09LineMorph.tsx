@@ -40,7 +40,7 @@ export const unit = (ring: number[][], flipY = false) => {
   return ring.map(([x, y]) => [(x - x0) / s, flipY ? 1 - (y - y0) / s : (y - y0) / s]);
 };
 export const C09LineMorph: React.FC<{ shapes: number[][][]; keys: [number, number][]; box: [number, number, number, number]; width?: number; drawDur?: number; morph?: number; color?: string; glow?: number }> = ({
-  shapes, keys, box, width = 4, drawDur = 24, morph = 30, color = '#111', glow = 0,
+  shapes, keys, box, width = 4, drawDur = 16, morph = 20, color = '#111', glow = 0,
 }) => {
   const f = useCurrentFrame();
   const R = React.useMemo(() => shapes.map((s) => resample(s)), [shapes]);

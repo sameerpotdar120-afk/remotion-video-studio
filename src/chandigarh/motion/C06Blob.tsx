@@ -14,12 +14,12 @@ const blobPts = (cx: number, cy: number, r: number, f: number, rough: number) =>
 });
 export const C06Blob: React.FC<{ at: [number, number]; r?: number; mode?: 'gold' | 'reveal'; texture?: string; image?: string; grow?: number; out?: number }> = ({ at, r = 110, mode = 'gold', texture, image, grow = 20, out }) => {
   const f = useCurrentFrame();
-  const a = interpolate(f, [0, 10, 30], [0, 0.35, 1], clamp) * (out !== undefined ? interpolate(f, [out, out + 12], [1, 0], clamp) : 1);
+  const a = interpolate(f, [0, 6, 18], [0, 0.35, 1], clamp) * (out !== undefined ? interpolate(f, [out, out + 12], [1, 0], clamp) : 1);
   if (a <= 0) return null;
-  const g = mode === 'reveal' ? interpolate(f, [grow, grow + 28], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) }) : 0;
+  const g = mode === 'reveal' ? interpolate(f, [grow, grow + 22], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) }) : 0;
   const fillIn = mode === 'reveal' ? interpolate(f, [0, grow], [0, 1], clamp) : 0;
   const R = r * (1 + g * 16);
-  const settle = interpolate(f, [0, 30], [1.8, 1], clamp);
+  const settle = interpolate(f, [0, 18], [1.8, 1], clamp);
   const pts = blobPts(at[0], at[1], R, f, settle + g * 1.5);
   const poly = `polygon(${pts.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(',')})`;
   const shadow = pts.map(([x, y]) => `${(x + 6).toFixed(1)}px ${(y + 10).toFixed(1)}px`).join(',');

@@ -8,7 +8,7 @@ import { clamp } from './theme';
 // off upward instead of reaching the building, flickering. `out` slides the sun out. Transparent, 1080×1920.
 export const C16SunRays: React.FC<{ sun: string; roof: [[number, number], [number, number]]; rays?: number; out?: number }> = ({ sun, roof, rays = 4, out }) => {
   const f = useCurrentFrame();
-  const s = interpolate(f, [0, 18], [0, 1], { ...clamp, easing: Easing.out(Easing.back(1.4)) }) * (out !== undefined ? 1 - interpolate(f, [out, out + 14], [0, 1], clamp) : 1);
+  const s = interpolate(f, [0, 12], [0, 1], { ...clamp, easing: Easing.out(Easing.back(1.4)) }) * (out !== undefined ? 1 - interpolate(f, [out, out + 14], [0, 1], clamp) : 1);
   const sx = 60 + 150 * s, sy = 60 + 140 * s;
   const [[ax, ay], [bx, by]] = roof;
   return (
@@ -16,7 +16,7 @@ export const C16SunRays: React.FC<{ sun: string; roof: [[number, number], [numbe
       <AbsoluteFill style={{ background: `radial-gradient(circle at ${(sx / 1080) * 100}% ${(sy / 1920) * 100}%, rgba(255,226,120,${0.4 * s}), rgba(255,200,80,0) 45%)`, mixBlendMode: 'screen' }} />
       <svg width={1080} height={1920} style={{ position: 'absolute', overflow: 'visible' }}>
         {Array.from({ length: rays }, (_, i) => {
-          const t = interpolate(f, [18 + i * 7, 34 + i * 7], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
+          const t = interpolate(f, [12 + i * 5, 24 + i * 5], [0, 1], { ...clamp, easing: Easing.out(Easing.cubic) });
           if (t <= 0) return null;
           const u = (i + 1) / (rays + 1), hx = ax + (bx - ax) * u, hy = ay + (by - ay) * u;
           const d = `M${sx},${sy} L${hx},${hy} Q${hx + 40},${hy - 10} ${hx + 140},${hy - 120}`;
