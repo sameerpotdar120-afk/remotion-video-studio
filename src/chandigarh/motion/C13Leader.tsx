@@ -46,7 +46,7 @@ export const C13Dim: React.FC<{ from: [number, number]; to: [number, number]; va
         <line x1={from[0] - nx} y1={from[1] - ny} x2={from[0] + nx} y2={from[1] + ny} stroke="#141414" strokeWidth={4} opacity={l} />
         {l >= 1 && <line x1={to[0] - nx} y1={to[1] - ny} x2={to[0] + nx} y2={to[1] + ny} stroke="#141414" strokeWidth={4} />}
       </svg>
-      {f > 6 && <div style={{ position: 'absolute', ...pos, fontFamily: NUM, fontSize: size, color: '#141414', whiteSpace: 'nowrap', transformOrigin: '50% 50%' }}>{v.toLocaleString('en-IN')}{unit}</div>}
+      {f > 6 && <div style={{ position: 'absolute', ...pos, fontFamily: NUM, fontSize: size, color: '#141414', whiteSpace: 'nowrap', transformOrigin: '50% 50%' }}>{v}{unit}</div>}
     </AbsoluteFill>
   );
 };
