@@ -1,0 +1,33 @@
+name: Publish Hiroshima 4K video
+# Lives on branch release/hiroshima-4k (copied there by scripts/hiroshima/make_release.sh). Joins the <95 MB parts in video/
+# (GitHub rejects bigger files in git) into one MP4, checks its SHA-256 and attaches it to release hiroshima-v1, so the
+# whole video downloads from one link. Runs only once video/manifest.txt lists the file.
+on:
+  push:
+    branches: [release/hiroshima-4k]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Join the parts and check them
+        id: join
+        run: |
+          [ -f video/manifest.txt ] || { echo "no manifest yet, nothing to publish"; exit 0; }
+          name=$(head -1 video/manifest.txt)
+          sha=$(sed -n 2p video/manifest.txt)
+          cat video/part_* > "$name"
+          echo "$sha  $name" | sha256sum -c -
+          echo "file=$name" >> "$GITHUB_OUTPUT"
+      - name: Attach to the release
+        if: steps.join.outputs.file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f="${{ steps.join.outputs.file }}"
+          gh release view hiroshima-v1 >/dev/null 2>&1 || gh release create hiroshima-v1 --target "$GITHUB_SHA" --title "Hiroshima short · 4K 60fps" --notes "Vertical short, 1:05, 2160x3840, 60 fps, H.264. Click the .mp4 below to download."
+          gh release upload hiroshima-v1 "$f" --clobber
