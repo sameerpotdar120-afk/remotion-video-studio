@@ -14,7 +14,7 @@ type Key = { t: number; at: P; mpp: number; e?: Ease };
 const at = (lon: number, lat: number): P => merc(lon, lat);
 
 /** Frame 0 (and the loop's last frame): India big and red on the warm relief map. */
-export const CAM0: Cam = { x: merc(82, 21.5)[0], y: merc(82, 21.5)[1], mpp: 3500 };
+export const CAM0: Cam = { x: merc(82, 22)[0], y: merc(82, 22)[1], mpp: 3200 };
 const INDIA0: P = [CAM0.x, CAM0.y], NORTH = at(78.5, 27.5), CHD = at(76.78, 30.74), CHD_UP = at(76.8, 30.62);
 const PB = at(74.9, 30.9), PB_IN = at(75.6, 30.9), HILLS = at(76.65, 31.0), SITE = at(76.78, 30.76);
 
