@@ -497,7 +497,7 @@ export const Hiroshima: React.FC<{ noAudio?: boolean }> = ({ noAudio }) => {
       {CARDS.map(([n, a, b]) => <Seg key={n} a={a} b={b}><CardAt n={n} a={a} /></Seg>)}
       <Seg a={3505} b={3600}><CardAt n={1} a={3505} o={oneFade} /></Seg>
       <Captions />
-      {!noAudio && <Audio src={staticFile('hiroshima/vo.wav')} />}
+      {!noAudio && <Audio src={staticFile('hiroshima/soundtrack.wav')} />}
     </AbsoluteFill>
   );
 };
