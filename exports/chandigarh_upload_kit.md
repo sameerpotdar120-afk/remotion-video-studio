@@ -1,8 +1,8 @@
 # Chandigarh: upload kit
 
-**Upload file:** `chandigarh_4k60_master.mp4` (4K 60 fps, 2160×3840, 2:07; in the repo through Git LFS on the `chandigarh-render` branch). Shorts allow up to 3 minutes, so 2:07 fits.
+**Upload file:** `chandigarh_4k60_master.mp4` (4K 60 fps, 2160×3840, 2:07; in the repo through Git LFS; download: https://media.githubusercontent.com/media/sameerpotdar120-afk/remotion-video-studio/ccr-38fc62dc-jjdmrk/exports/chandigarh_4k60_master.mp4). Shorts allow up to 3 minutes, so 2:07 fits.
 
-**Thumbnail:** `chandigarh_thumbnail.jpg` (1080×1920) and `chandigarh_thumbnail_4k.jpg` (2160×3840). It shows the paper plan in jute with the glowing red body drawn over it, with your brain, heart and lungs on the body and Sector 17 in red. The title reads "ज़िंदा शरीर जैसा शहर · CHANDIGARH". All of it sits inside the 3:4 crop.
+**Thumbnail:** `chandigarh_thumbnail.jpg` (1080×1920) and `chandigarh_thumbnail_4k.jpg` (2160×3840). It shows the paper plan in jute with the glowing red body drawn over it, with your brain, heart and lungs on it. The title reads "ज़िंदा शरीर जैसा शहर · CHANDIGARH". All of it sits inside the 3:4 crop.
 
 The video is a seamless loop: "इसीलिए तो…" runs straight back into "भारत के नक्शे पर एक ऐसा शहर है…", and the last frame matches frame 0, picture and sound both. So there's no end card and no CTA.
 
