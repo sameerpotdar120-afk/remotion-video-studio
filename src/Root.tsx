@@ -14,6 +14,9 @@ import { RigSheet } from './scenes/RigSheet';
 import { Thumbnail } from './thumb/Thumbnail';
 import { RussiaFinal, RUSSIA_TOTAL } from './russia/RussiaFinal';
 import { Hiroshima, TOTAL as HIROSHIMA_TOTAL } from './hiroshima/Hiroshima';
+import { CastSheet } from './horse/CastSheet';
+import { Test3D } from './horse/Test3D';
+import { Horse, HORSE_TOTAL } from './horse/Horse';
 
 loadFonts();
 
@@ -24,6 +27,9 @@ export const RemotionRoot: React.FC = () => {
       <Composition id="Final-4K" component={Final} durationInFrames={TOTAL_FRAMES} fps={FPS} width={W} height={H} />
       <Composition id="Russia-4K" component={RussiaFinal} durationInFrames={RUSSIA_TOTAL} fps={FPS} width={W} height={H} />
       <Composition id="Russia-Audio" component={RussiaFinal} durationInFrames={RUSSIA_TOTAL} fps={FPS} width={640} height={360} defaultProps={{ audioOnly: true }} />
+      <Composition id="Horse-4K" component={Horse} durationInFrames={HORSE_TOTAL} fps={60} width={2160} height={3840} />
+      <Composition id="Horse-Test3D" component={Test3D} durationInFrames={300} fps={60} width={2160} height={3840} />
+      <Composition id="Horse-CastSheet" component={CastSheet} durationInFrames={60} fps={60} width={2160} height={3840} />
       <Composition id="Hiroshima-4K" component={Hiroshima} durationInFrames={HIROSHIMA_TOTAL} fps={60} width={2160} height={3840} />
       <Composition id="Thumb-4K" component={Thumbnail} durationInFrames={60} fps={FPS} width={W} height={H} />
       <Composition id="Preview-Hook10s" component={PreviewHook} durationInFrames={600} fps={FPS} width={W} height={H} />

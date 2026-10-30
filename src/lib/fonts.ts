@@ -26,6 +26,9 @@ const FILES: { family: string; file: string; weight: string; unicodeRange?: stri
   { family: 'Hind', file: 'hind-latin-700-normal.woff2', weight: '700' },
   { family: 'Nunito', file: 'nunito-latin-800-normal.woff2', weight: '800' },
   { family: 'Nunito', file: 'nunito-latin-900-normal.woff2', weight: '900' },
+  { family: 'Poppins', file: 'poppins-latin-600-normal.woff2', weight: '600' },
+  { family: 'Poppins', file: 'poppins-latin-700-normal.woff2', weight: '700' },
+  { family: 'Ma Shan Zheng', file: 'ma-shan-zheng-horse-subset.woff2', weight: '400' },
   { family: 'Hind', file: 'hind-devanagari-700-normal.woff2', weight: '700', unicodeRange: 'U+0900-097F' },
 ];
 

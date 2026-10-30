@@ -70,15 +70,16 @@ export const earthTex = () => make('earth', 512, 512, (g, w, h) => {
   }
 }, [1, 1]);
 
-/** Vertical wood planks with grain and dark seams. */
-export const plankTex = (base = PAL.wood) => make(`plank${base}`, 512, 512, (g, w, h) => {
-  const n = 6, pw = w / n;
+/** Horizontal wooden boards (light, as on the reference's stable and shelter walls) with grain and dark seams. */
+export const plankTex = (base = '#c08a5a') => make(`plank${base}`, 512, 512, (g, w, h) => {
+  const n = 7, ph = h / n;
   for (let i = 0; i < n; i++) {
-    g.fillStyle = base; g.fillRect(i * pw, 0, pw, h);
-    g.fillStyle = `rgba(255,220,180,${0.06 + rnd(i) * 0.1})`; g.fillRect(i * pw, 0, pw, h);
-    g.strokeStyle = 'rgba(60,25,10,0.35)'; g.lineWidth = 2;
-    for (let k = 0; k < 4; k++) { const x = i * pw + 8 + rnd(i * 5 + k) * (pw - 16); g.beginPath(); g.moveTo(x, 0); g.bezierCurveTo(x + 6, h * 0.3, x - 6, h * 0.7, x + 3, h); g.stroke(); }
-    g.fillStyle = PAL.ink; g.fillRect(i * pw, 0, 4, h);
+    g.fillStyle = base; g.fillRect(0, i * ph, w, ph);
+    g.fillStyle = `rgba(${rnd(i) > 0.5 ? '255,230,200' : '90,45,20'},${0.05 + rnd(i + 3) * 0.08})`; g.fillRect(0, i * ph, w, ph);
+    g.strokeStyle = 'rgba(90,45,20,0.35)'; g.lineWidth = 2;
+    for (let k = 0; k < 3; k++) { const y = i * ph + 6 + rnd(i * 5 + k) * (ph - 12); g.beginPath(); g.moveTo(0, y); g.bezierCurveTo(w * 0.3, y + 4, w * 0.7, y - 4, w, y + 2); g.stroke(); }
+    g.fillStyle = 'rgba(42,28,18,0.85)'; g.fillRect(0, i * ph, w, 4);
+    g.fillStyle = 'rgba(42,28,18,0.6)'; g.fillRect(rnd(i + 9) * w, i * ph, 4, ph);
   }
 }, [1, 1]);
 

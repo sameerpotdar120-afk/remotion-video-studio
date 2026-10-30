@@ -4,6 +4,7 @@ import { useThree } from '@react-three/fiber';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
 import * as THREE from 'three';
 import { CAST, drawChar, drawFx, type Look, type Pose } from './chars';
+import { HORSES, drawHorse, type HorsePose } from './horse';
 import { PAL, brickTex, earthTex, plankTex, rep, roofTex, sandTex } from './tex';
 
 /* ───────────── camera ───────────── */
@@ -31,7 +32,18 @@ const CameraRig: React.FC = () => {
 
 /* ───────────── stage: canvas, sky, light ───────────── */
 export type Light = { sun: [number, number, number]; sunColor?: string; sunI?: number; hemiSky?: string; hemiGround?: string; hemiI?: number; ambient?: number; sky: [string, string]; fog?: string; fogNear?: number; fogFar?: number };
-export const DAY: Light = { sun: [-14, 22, 16], sunColor: '#fff3df', sunI: 2.2, hemiSky: '#e6f0ff', hemiGround: '#d9c49a', hemiI: 1.25, sky: ['#9fc8e6', '#eef4f2'], fog: '#e9eee8', fogNear: 40, fogFar: 140 };
+export const DAY: Light = { sun: [-18, 15, 12], sunColor: '#fff0d8', sunI: 2.6, hemiSky: '#e6f0ff', hemiGround: '#d9c49a', hemiI: 1.05, sky: ['#8fc0e4', '#eaf3f4'], fog: '#e9eee8', fogNear: 40, fogFar: 140 };
+export const DUSK: Light = { sun: [-22, 8, 10], sunColor: '#ffb98a', sunI: 1.6, hemiSky: '#f6c9b4', hemiGround: '#a88a74', hemiI: 1.0, sky: ['#d9a7a8', '#f4d7b8'], fog: '#efcdb6', fogNear: 40, fogFar: 140 };
+export const NIGHT: Light = { sun: [10, 20, 12], sunColor: '#9fb4e8', sunI: 0.55, hemiSky: '#4b5d93', hemiGround: '#2c2f45', hemiI: 0.75, sky: ['#0d1430', '#2b3a66'], fog: '#28345a', fogNear: 30, fogFar: 120 };
+export const SUNSET: Light = { sun: [-20, 9, -8], sunColor: '#ffb070', sunI: 2.3, hemiSky: '#ffc49a', hemiGround: '#a7604a', hemiI: 1.05, sky: ['#c4655a', '#f6b47a'], fog: '#f0a77c', fogNear: 35, fogFar: 130 };
+export const OVERCAST: Light = { sun: [-8, 20, 14], sunColor: '#ffffff', sunI: 1.5, hemiSky: '#f0f4f8', hemiGround: '#b9bcc0', hemiI: 1.45, sky: ['#d8e3ec', '#f4f6f8'], fog: '#eef1f4', fogNear: 30, fogFar: 120 };
+const lc = (a: string, b: string, t: number) => '#' + new THREE.Color(a).lerp(new THREE.Color(b), t).getHexString();
+/** Blend two lighting setups (sky, sun, fill) - drives the day/night time-lapses and the dissolves between grades. */
+export const lerpLight = (A: Light, B: Light, t: number): Light => ({
+  sun: A.sun.map((v, i) => v + (B.sun[i] - v) * t) as [number, number, number], sunColor: lc(A.sunColor ?? '#ffffff', B.sunColor ?? '#ffffff', t), sunI: (A.sunI ?? 2) + ((B.sunI ?? 2) - (A.sunI ?? 2)) * t,
+  hemiSky: lc(A.hemiSky ?? '#ffffff', B.hemiSky ?? '#ffffff', t), hemiGround: lc(A.hemiGround ?? '#c8b48a', B.hemiGround ?? '#c8b48a', t), hemiI: (A.hemiI ?? 1.2) + ((B.hemiI ?? 1.2) - (A.hemiI ?? 1.2)) * t,
+  sky: [lc(A.sky[0], B.sky[0], t), lc(A.sky[1], B.sky[1], t)], fog: lc(A.fog ?? '#ffffff', B.fog ?? '#ffffff', t), fogNear: A.fogNear, fogFar: A.fogFar,
+});
 
 const SkyBg: React.FC<{ sky: [string, string] }> = ({ sky }) => {
   const { scene } = useThree();
@@ -105,8 +117,8 @@ export const Path: React.FC<{ pts: [number, number][]; width?: number; tint?: st
     const c = document.createElement('canvas'); c.width = 256; c.height = 512; const g = c.getContext('2d')!;
     const gr = g.createLinearGradient(0, 0, 256, 0); gr.addColorStop(0, 'rgba(240,223,183,0)'); gr.addColorStop(0.18, tint); gr.addColorStop(0.82, tint); gr.addColorStop(1, 'rgba(240,223,183,0)');
     g.fillStyle = gr; g.fillRect(0, 0, 256, 512);
-    g.strokeStyle = 'rgba(150,115,70,0.55)'; g.lineWidth = 5;
-    for (const x0 of [86, 170]) { g.beginPath(); for (let y = 0; y <= 512; y += 8) g.lineTo(x0 + Math.sin(y * 0.03) * 6, y); g.stroke(); }
+    g.strokeStyle = 'rgba(150,115,70,0.38)'; g.lineWidth = 3;
+    for (const x0 of [92, 164]) { g.beginPath(); for (let y = 0; y <= 512; y += 8) g.lineTo(x0 + Math.sin(y * 0.02) * 3, y); g.stroke(); }
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapT = THREE.RepeatWrapping; return t;
   }, [tint]);
   return <mesh geometry={geo} receiveShadow><meshLambertMaterial map={map} transparent depthWrite={false} /></mesh>;
@@ -171,7 +183,7 @@ export const House: React.FC<{ p: V3; w?: number; d?: number; h?: number; ry?: n
   const sideTex = useMemo(() => rep(earthTex(), d / 2.5, h / 2.5), [d, h]);
   const wm = useMemo(() => lam({ map: wallTex }), [wallTex]);
   const sm = useMemo(() => lam({ map: sideTex }), [sideTex]);
-  const doorTex = useMemo(() => plankTex('#a8643a'), []);
+  const doorTex = useMemo(() => plankTex('#a8643a'), []);  // door boards
   return (
     <group position={p} rotation-y={ry}>
       <Box s={[w, h, d]} p={[0, h / 2, 0]} m={[sm, sm, wm, wm, wm, wm]} />
@@ -200,8 +212,8 @@ export const House: React.FC<{ p: V3; w?: number; d?: number; h?: number; ry?: n
 
 /** Open timber shelter / stable front: posts, a beam and a single-pitch tiled roof; plank back wall optional. */
 export const Shelter: React.FC<{ p: V3; w?: number; d?: number; h?: number; ry?: number; back?: boolean; sides?: boolean }> = ({ p, w = 5, d = 3, h = 2.7, ry = 0, back = true, sides = false }) => {
-  const pt = useMemo(() => lam({ map: rep(plankTex(), w / 1.6, 1) }), [w]);
-  const st = useMemo(() => lam({ map: rep(plankTex(), d / 1.6, 1) }), [d]);
+  const pt = useMemo(() => lam({ map: rep(plankTex(), w / 2.2, h / 2.2) }), [w, h]);
+  const st = useMemo(() => lam({ map: rep(plankTex(), d / 2.2, h / 2.2) }), [d, h]);
   return (
     <group position={p} rotation-y={ry}>
       {[-1, 1].flatMap((sx) => [-1, 1].map((sz) => <Box key={`${sx}${sz}`} s={[0.26, h, 0.26]} p={[sx * w / 2, h / 2, sz * d / 2]} m={mats.post()} />))}
@@ -264,37 +276,52 @@ export const Hay: React.FC<{ p: V3; s?: number }> = ({ p, s = 1 }) => (
   <mesh position={p} scale={[s * 1.3, s * 0.75, s]} castShadow receiveShadow material={mats.hay()}><sphereGeometry args={[0.8, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2]} /></mesh>
 );
 
-/* ───────────── characters in 3D: flat drawn billboards ───────────── */
-const PX_UNIT = 1.7 / 100; // 100 drawing units = 1.7 m
-/** A drawn character standing at (x, z) on the ground. pose is evaluated per frame by the caller. Faces the camera (yaw only). */
-export const Figure: React.FC<{ look: Look | keyof typeof CAST; pose: Pose; x: number; z: number; y?: number; s?: number; res?: number; flip?: boolean; fx?: boolean; rot?: number }> = ({ look, pose, x, z, y = 0, s = 1, res = 10, flip, fx = true, rot = 0 }) => {
-  const f = useCurrentFrame();
+/* ───────────── drawn things in 3D: flat billboards (characters, horses, fx) ───────────── */
+export const PX_UNIT = 1.7 / 100; // 100 drawing units = 1.7 m (a character's height)
+type DrawBox = { x0: number; x1: number; y0: number; y1: number };
+/** A canvas-drawn flat sprite standing at (x, y, z), facing the camera (yaw only). The drawing's ground line is y = 100
+ *  (units); `draw` paints in drawing units. res = canvas pixels per unit. */
+export const Sprite: React.FC<{ draw: (g: CanvasRenderingContext2D) => void; dep: string; box: DrawBox; x: number; z: number; y?: number; s?: number; res?: number; flip?: boolean; rot?: number; shadow?: boolean; yawOff?: number; renderOrder?: number }> = ({ draw, dep, box, x, z, y = 0, s = 1, res = 10, flip, rot = 0, shadow = true, yawOff = 0, renderOrder }) => {
   const cam = useCam();
-  const L = typeof look === 'string' ? CAST[look] : look;
-  const box = { x0: -40, x1: 40, y0: -40, y1: 104 }; // drawing units covered by the canvas (room for raised arms / spears / fx)
-  const W = Math.round((box.x1 - box.x0) * res), H = Math.round((box.y1 - box.y0) * res);
+  const W = Math.min(4096, Math.round((box.x1 - box.x0) * res)), H = Math.min(4096, Math.round((box.y1 - box.y0) * res));
+  const r = Math.min(W / (box.x1 - box.x0), H / (box.y1 - box.y0));
   const { canvas, tex } = useMemo(() => {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;
     return { canvas: c, tex: t };
   }, [W, H]);
-  const key = JSON.stringify(pose) + f;
   useLayoutEffect(() => {
     const g = canvas.getContext('2d')!;
     g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, W, H);
-    g.setTransform(res * (flip ? -1 : 1), 0, 0, res, flip ? W + box.x0 * res : -box.x0 * res, -box.y0 * res);
-    drawChar(g, L, pose); if (fx) drawFx(g, pose, f);
+    g.setTransform(r * (flip ? -1 : 1), 0, 0, r, flip ? W + box.x0 * r : -box.x0 * r, -box.y0 * r);
+    draw(g);
     tex.needsUpdate = true;
-  }, [key, L, W, H]);
-  const yaw = Math.atan2(cam.pos[0] - x, cam.pos[2] - z);
+  }, [dep, W, H, flip]);
+  const yaw = Math.atan2(cam.pos[0] - x, cam.pos[2] - z) + yawOff;
   const w = (box.x1 - box.x0) * PX_UNIT * s, h = (box.y1 - box.y0) * PX_UNIT * s;
-  const cy = (100 - (box.y0 + box.y1) / 2) * PX_UNIT * s; // feet on the ground
+  const cx = ((flip ? -1 : 1) * (box.x0 + box.x1) / 2) * PX_UNIT * s, cy = (100 - (box.y0 + box.y1) / 2) * PX_UNIT * s;
   return (
     <group position={[x, y, z]} rotation-y={yaw}>
-      <mesh position={[((box.x0 + box.x1) / 2) * PX_UNIT * s, cy - 0 + (0), 0]} rotation-z={rot} castShadow>
-        <planeGeometry args={[w, h]} />
-        <meshBasicMaterial map={tex} transparent alphaTest={0.5} side={THREE.DoubleSide} toneMapped={false} />
-      </mesh>
+      <group rotation-z={rot} position={[0, 0, 0]}>
+        <mesh position={[cx, cy, 0]} castShadow={shadow} renderOrder={renderOrder}>
+          <planeGeometry args={[w, h]} />
+          <meshBasicMaterial map={tex} transparent alphaTest={0.45} side={THREE.DoubleSide} toneMapped={false} />
+        </mesh>
+      </group>
     </group>
   );
 };
+
+const CHAR_BOX = { x0: -42, x1: 42, y0: -42, y1: 104 };
+/** A drawn character standing at (x, z). pose is evaluated per frame by the caller. */
+export const Figure: React.FC<{ look: Look | keyof typeof CAST; pose: Pose; x: number; z: number; y?: number; s?: number; res?: number; flip?: boolean; fx?: boolean; rot?: number; box?: DrawBox; shadow?: boolean }> = ({ look, pose, x, z, y, s, res = 10, flip, fx = true, rot, box = CHAR_BOX, shadow }) => {
+  const f = useCurrentFrame();
+  const L = typeof look === 'string' ? CAST[look] : look;
+  return <Sprite draw={(g) => { drawChar(g, L, pose); if (fx) drawFx(g, pose, f); }} dep={JSON.stringify(pose) + (fx ? f : '') + JSON.stringify(L)} box={box} x={x} z={z} y={y} s={s} res={res} flip={flip} rot={rot} shadow={shadow} />;
+};
+
+const HORSE_BOX = { x0: -62, x1: 62, y0: -20, y1: 104 };
+/** A drawn horse; facing +x on screen unless flip. Scale 1 = a horse ~1.6 m at the withers. */
+export const HorseFig: React.FC<{ look: keyof typeof HORSES; pose: HorsePose; x: number; z: number; y?: number; s?: number; res?: number; flip?: boolean; rot?: number }> = ({ look, pose, x, z, y, s = 1.35, res = 8, flip, rot }) => (
+  <Sprite draw={(g) => { g.translate(0, 0); drawHorse(g, HORSES[look], pose); }} dep={JSON.stringify(pose) + look} box={HORSE_BOX} x={x} z={z} y={y} s={s} res={res} flip={flip} rot={rot} />
+);
