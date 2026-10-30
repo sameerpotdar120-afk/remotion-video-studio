@@ -1,7 +1,7 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
 import { CAST, drawChar, drawFx, type Pose } from './chars';
-import { HORSES, drawHorse, type HorsePose } from './horse';
+import { HORSES, drawHorse, type HorsePose } from './animals';
 
 /** Dev sheet: every look in a few poses/expressions, to check the drawing at a glance. */
 const ROWS: [string, Pose][][] = [

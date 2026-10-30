@@ -14,7 +14,7 @@ import { RigSheet } from './scenes/RigSheet';
 import { Thumbnail } from './thumb/Thumbnail';
 import { RussiaFinal, RUSSIA_TOTAL } from './russia/RussiaFinal';
 import { Hiroshima, TOTAL as HIROSHIMA_TOTAL } from './hiroshima/Hiroshima';
-import { CastSheet } from './horse/CastSheet';
+import { CastSheet } from './styles/stickman3d/CastSheet';
 import { Test3D } from './horse/Test3D';
 import { Horse, HORSE_TOTAL } from './horse/Horse';
 

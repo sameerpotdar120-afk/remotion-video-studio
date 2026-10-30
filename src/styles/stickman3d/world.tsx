@@ -4,7 +4,7 @@ import { useThree } from '@react-three/fiber';
 import { useCurrentFrame, useVideoConfig } from 'remotion';
 import * as THREE from 'three';
 import { CAST, drawChar, drawFx, type Look, type Pose } from './chars';
-import { HORSES, drawHorse, type HorsePose } from './horse';
+import { HORSES, drawHorse, type HorsePose } from './animals';
 import { PAL, brickTex, earthTex, plankTex, rep, roofTex, sandTex } from './tex';
 
 /* ───────────── camera ───────────── */

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from 'remotion';
 import HANZI from './hanzi.generated.json';
+import { Hanzi as HanziCore } from '../styles/stickman3d/HanziWriter';
 
 type Glyph = { strokes: string[]; medians: [number, number][][] };
 const G = HANZI as unknown as Record<string, Glyph>;
@@ -9,36 +10,7 @@ const sm = (t: number) => t * t * (3 - 2 * t);
 
 /** Writing order and frame windows, from the reference: 塞 3520–3546, 翁 –3564, 失 –3578, 马 –3592. */
 const TITLE: [string, number, number][] = [['塞', 3520, 3546], ['翁', 3546, 3564], ['失', 3564, 3578], ['马', 3578, 3592]];
-const mlen = (m: [number, number][]) => m.slice(1).reduce((s, p, i) => s + Math.hypot(p[0] - m[i][0], p[1] - m[i][1]), 0);
-
-/** One character drawn stroke by stroke (Make Me a Hanzi stroke data): each stroke is revealed along its median. */
-const Hanzi: React.FC<{ ch: string; a: number; b: number; size: number; color?: string; id: string }> = ({ ch, a, b, size, color = '#1d1814', id }) => {
-  const f = useCurrentFrame();
-  const g = G[ch];
-  const lens = useMemo(() => g.medians.map((m) => mlen(m) + 60), [ch]);
-  const total = lens.reduce((s, l) => s + l, 0);
-  const prog = clamp01((f - a) / Math.max(1, b - a)) * total;
-  let acc = 0;
-  return (
-    <svg width={size} height={size} viewBox="0 0 1024 1024">
-      <g transform="scale(1,-1) translate(0,-900)">
-        {g.strokes.map((s, i) => {
-          const start = acc; acc += lens[i];
-          const p = clamp01((prog - start) / lens[i]);
-          if (p <= 0) return null;
-          const m = g.medians[i];
-          const d = 'M' + m.map(([x, y]) => `${x} ${y}`).join(' L');
-          return (
-            <g key={i}>
-              <clipPath id={`${id}-${i}`}><path d={s} /></clipPath>
-              <path d={d} fill="none" stroke={color} strokeWidth={150} strokeLinecap="round" strokeLinejoin="round" strokeDasharray={`${lens[i]} ${lens[i] + 10}`} strokeDashoffset={lens[i] * (1 - sm(p))} clipPath={`url(#${id}-${i})`} />
-            </g>
-          );
-        })}
-      </g>
-    </svg>
-  );
-};
+const Hanzi: React.FC<{ ch: string; a: number; b: number; size: number; color?: string; id: string }> = ({ ch, ...p }) => <HanziCore glyph={G[ch]} {...p} />;
 
 /** The ending: a hanging scroll on a plaster wall unrolls and 塞翁失马 is brushed on, then pinyin, a red seal and 焉知非福. */
 export const ScrollEnd: React.FC = () => {

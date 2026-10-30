@@ -1,10 +1,10 @@
 import React from 'react';
 import { AbsoluteFill, Audio, staticFile, useCurrentFrame } from 'remotion';
-import { DAY, DUSK, NIGHT, OVERCAST, SUNSET, Figure, HorseFig, Stage, camAt, lerpLight, type CamKey, type Light } from './world';
-import { BusStopSet, CorralSet, EmptyStreetSet, GateSet, PartySet, StableSet, StreetSet } from './sets';
-import { Cloud, Dust, Leaves } from './props';
-import { idle, walk, type Pose } from './chars';
-import { Captions } from './Captions';
+import {
+  DAY, DUSK, NIGHT, OVERCAST, SUNSET, Figure, HorseFig, Stage, camAt, lerpLight, type CamKey, type Light,
+  BusStopSet, CorralSet, EmptyStreetSet, GateSet, PartySet, StableSet, StreetSet, Cloud, Dust, Leaves, idle, walk, type Pose, WordCaptions, type CapWord,
+} from '../styles/stickman3d';
+import CAPS from './captions.json';
 import { ScrollEnd } from './ScrollEnd';
 
 export const HORSE_TOTAL = 3680;
@@ -339,7 +339,7 @@ export const Horse: React.FC<{ noAudio?: boolean }> = ({ noAudio }) => {
       <Seg a={3490} b={HORSE_TOTAL} fi={10}><ScrollEnd /></Seg>
       {flash > 0 && <AbsoluteFill style={{ background: '#fffaf0', opacity: flash }} />}
       <Grade />
-      <Captions />
+      <WordCaptions words={CAPS as CapWord[]} />
       {!noAudio && <Audio src={staticFile('horse/audio.wav')} />}
     </AbsoluteFill>
   );

@@ -1,8 +1,6 @@
 import React from 'react';
 import { AbsoluteFill, useCurrentFrame } from 'remotion';
-import { Figure, Stage, camAt, type CamKey } from './world';
-import { StreetSet } from './sets';
-import { idle, walk } from './chars';
+import { Figure, Stage, camAt, type CamKey, StreetSet, idle, walk } from '../styles/stickman3d';
 
 const CAM: CamKey[] = [[0, [1.6, 1.7, 11], [1.2, 1.6, -4], 34], [300, [1.6, 1.7, 9.5], [1.2, 1.5, -4], 34]];
 

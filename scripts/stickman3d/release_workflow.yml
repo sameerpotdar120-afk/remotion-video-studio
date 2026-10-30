@@ -1,0 +1,34 @@
+name: Publish Stickman3D video
+# Lives on branch release/<slug> (copied there by scripts/stickman3d/make_release.sh). Joins the <95 MB parts in video/
+# into one MP4, checks its SHA-256 and attaches it to the release named in video/manifest.txt
+# (line 1 file name, 2 sha256, 3 tag, 4 title). Runs only once the manifest exists.
+on:
+  push:
+    branches: ['release/**']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Join the parts and check them
+        id: join
+        run: |
+          [ -f video/manifest.txt ] || { echo "no manifest yet, nothing to publish"; exit 0; }
+          name=$(sed -n 1p video/manifest.txt); sha=$(sed -n 2p video/manifest.txt)
+          cat video/part_* > "$name"
+          echo "$sha  $name" | sha256sum -c -
+          echo "file=$name" >> "$GITHUB_OUTPUT"
+          echo "tag=$(sed -n 3p video/manifest.txt)" >> "$GITHUB_OUTPUT"
+          echo "title=$(sed -n 4p video/manifest.txt)" >> "$GITHUB_OUTPUT"
+      - name: Attach to the release
+        if: steps.join.outputs.file != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          f="${{ steps.join.outputs.file }}"; tag="${{ steps.join.outputs.tag }}"
+          gh release view "$tag" >/dev/null 2>&1 || gh release create "$tag" --target "$GITHUB_SHA" --title "${{ steps.join.outputs.title }}" --notes "Vertical short, 2160x3840, 60 fps, H.264. Click the .mp4 below to download."
+          gh release upload "$tag" "$f" --clobber
