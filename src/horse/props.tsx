@@ -150,4 +150,22 @@ export const Cloud: React.FC<{ x: number; y: number; z: number; s?: number; tint
   }} />
 );
 
+/** Straw broom leaning against something (tilt about z). */
+export const Broom: React.FC<{ p: V3; tilt?: number; ry?: number }> = ({ p, tilt = 0.18, ry = 0 }) => (
+  <group position={p} rotation={[0, ry, tilt]}>
+    <mesh position={[0, 0.95, 0]} material={mats.wood()} castShadow><cylinderGeometry args={[0.025, 0.03, 1.5, 8]} /></mesh>
+    <mesh position={[0, 0.18, 0]} material={M('broomStraw', () => lam({ color: '#d8b763' }))} castShadow><coneGeometry args={[0.16, 0.42, 14]} /></mesh>
+    <mesh position={[0, 0.33, 0]} material={mats.red()}><torusGeometry args={[0.05, 0.012, 6, 16]} /></mesh>
+  </group>
+);
+
+/** Small white wine jar with a blue band. */
+export const Jar: React.FC<{ p: V3; s?: number }> = ({ p, s = 1 }) => (
+  <group position={p} scale={s}>
+    <mesh position={[0, 0.16, 0]} material={M('jarW', () => lam({ color: '#f1efe8' }))} castShadow><cylinderGeometry args={[0.08, 0.1, 0.3, 14]} /></mesh>
+    <mesh position={[0, 0.34, 0]} material={M('jarW', () => lam({ color: '#f1efe8' }))} castShadow><cylinderGeometry args={[0.035, 0.06, 0.08, 12]} /></mesh>
+    <mesh position={[0, 0.2, 0]} material={M('jarB', () => lam({ color: '#c8352d' }))}><cylinderGeometry args={[0.101, 0.101, 0.035, 14]} /></mesh>
+  </group>
+);
+
 export const _p = PAL;

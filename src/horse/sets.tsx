@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import * as THREE from 'three';
 import { Backdrop, Fence, Ground, Hay, House, Path, Shelter, Tower, Tree, Wall, mats } from './world';
-import { Bench, Flag, Lanterns, StrawHat, Table, Trough } from './props';
+import { Bench, Broom, Flag, Jar, Lanterns, StrawHat, Table, Trough } from './props';
 import { rep, sandTex } from './tex';
 
 /** A big smooth sand dune (squashed sphere cap) the road climbs over. */
@@ -42,6 +42,9 @@ export const StreetSet: React.FC<{ tint?: string }> = ({ tint }) => (
     <Tree p={[3.6, 0, -15]} s={1.0} />
     <Tower p={[15, 0, -26]} h={12} />
     <Hay p={[3.0, 0, -1.2]} s={0.6} />
+    <Broom p={[3.68, 0, 2.95]} tilt={-0.2} />
+    <Jar p={[-1.3, 0, 3.4]} />
+    <Jar p={[4.3, 0, 3.6]} s={0.8} />
   </group>
 );
 
