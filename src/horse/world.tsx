@@ -283,8 +283,9 @@ type DrawBox = { x0: number; x1: number; y0: number; y1: number };
  *  (units); `draw` paints in drawing units. res = canvas pixels per unit. */
 export const Sprite: React.FC<{ draw: (g: CanvasRenderingContext2D) => void; dep: string; box: DrawBox; x: number; z: number; y?: number; s?: number; res?: number; flip?: boolean; rot?: number; shadow?: boolean; yawOff?: number; renderOrder?: number }> = ({ draw, dep, box, x, z, y = 0, s = 1, res = 10, flip, rot = 0, shadow = true, yawOff = 0, renderOrder }) => {
   const cam = useCam();
-  const W = Math.min(4096, Math.round((box.x1 - box.x0) * res)), H = Math.min(4096, Math.round((box.y1 - box.y0) * res));
-  const r = Math.min(W / (box.x1 - box.x0), H / (box.y1 - box.y0));
+  // canvas px per unit, capped so neither side exceeds 4096 px; both sides use the same scale so the drawing fills the plane exactly
+  const r = Math.min(res, 4096 / (box.x1 - box.x0), 4096 / (box.y1 - box.y0));
+  const W = Math.round((box.x1 - box.x0) * r), H = Math.round((box.y1 - box.y0) * r);
   const { canvas, tex } = useMemo(() => {
     const c = document.createElement('canvas'); c.width = W; c.height = H;
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8;

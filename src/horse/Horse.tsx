@@ -73,7 +73,7 @@ const S1: React.FC = () => {
     <Stage cam={camAt(STREET_WIDE, f)}>
       <StreetSet />
       {f < 80 && <HorseFig look="brown" pose={{ mode: 'gallop', t: (f % 24) / 24 }} x={hx} z={hz} y={duneY(hx, hz)} s={1.25} res={5} flip={false} />}
-      <Figure look="oldman" pose={OLD(f, f >= 288 ? shrug(ramp(f, 288, 10) * (1 - ramp(f, 322, 10))) : {})} x={3.15} z={3.1} res={14} />
+      <Figure look="oldman" pose={OLD(f, f >= 288 ? shrug(ramp(f, 288, 10) * (1 - ramp(f, 322, 10))) : {})} x={3.15} z={3.85} res={14} />
       <Neighbours f={f} mood="calm" enter />
     </Stage>
   );
@@ -89,13 +89,13 @@ const OldCloseUp: React.FC<{ cam: CamKey[]; talkA: [number, number][]; pointAt?:
   return (
     <Stage cam={camAt(cam, f)} light={light}>
       <StreetSet />
-      <Figure look="oldman" box={CU_BOX} pose={OLD(f, { mouth: open > 0.15 ? 'open' : 'line', open, brows: raised ? 'raised' : 'flat', eyes: 'sleepy', ...point(pk) })} x={3.15} z={3.1} res={46} />
+      <Figure look="oldman" box={CU_BOX} pose={OLD(f, { mouth: open > 0.15 ? 'open' : 'line', open, brows: raised ? 'raised' : 'flat', eyes: 'sleepy', ...point(pk) })} x={3.15} z={3.85} res={46} />
       <Neighbours f={f} mood="calm" />
     </Stage>
   );
 };
-const CU1: CamKey[] = [[330, [1.6, 1.4, 8.6], [2.4, 1.6, 0], 46], [346, [3.38, 1.44, 4.55], [3.42, 1.4, 3.1], 46], [463, [3.38, 1.44, 4.5], [3.42, 1.4, 3.1], 46]];
-const PULL1: CamKey[] = [[463, [3.38, 1.44, 4.5], [3.42, 1.4, 3.1], 46], [494, [1.9, 1.3, 8.4], [1.4, 1.5, -2], 46], [596, [1.9, 1.3, 8.1], [1.4, 1.5, -2], 46]];
+const CU1: CamKey[] = [[330, [1.6, 1.4, 8.6], [2.4, 1.6, 0], 46], [346, [3.2, 1.44, 5.3], [3.3, 1.4, 3.85], 46], [463, [3.2, 1.44, 5.25], [3.3, 1.4, 3.85], 46]];
+const PULL1: CamKey[] = [[463, [3.2, 1.44, 5.25], [3.3, 1.4, 3.85], 46], [494, [1.9, 1.3, 8.4], [1.4, 1.5, -2], 46], [596, [1.9, 1.3, 8.1], [1.4, 1.5, -2], 46]];
 
 /* ───────────── 3/4 · "they thought he'd lost his mind", time-lapse (464–660) ───────────── */
 const lapse = (f: number, a: number, b: number): Light => {
@@ -110,7 +110,7 @@ const S3: React.FC = () => {
   return (
     <Stage cam={camAt(PULL1, f)} light={L}>
       <StreetSet />
-      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.1} res={14} />
+      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.85} res={14} />
       <Neighbours f={f} mood="puzzled" />
       {f >= 596 && [0, 1, 2].map((i) => <Cloud key={i} x={lerp(-30, 40, clamp01((f - 596 - i * 9) / 30))} y={14 + i * 2} z={-40 - i * 4} s={7} />)}
     </Stage>
@@ -159,7 +159,7 @@ const S6: React.FC = () => {
 };
 
 /* ───────────── 8/9 · he shrugs; "good luck? maybe. who knows" (1265–1470) ───────────── */
-const MED: CamKey[] = [[1265, [2.9, 1.15, 6.6], [3.12, 1.0, 3.1], 46], [1334, [2.95, 1.15, 6.3], [3.12, 1.0, 3.1], 46], [1348, [3.38, 1.44, 4.55], [3.42, 1.4, 3.1], 46], [1470, [3.38, 1.44, 4.5], [3.42, 1.4, 3.1], 46]];
+const MED: CamKey[] = [[1265, [2.9, 1.15, 7.35], [3.12, 1.0, 3.85], 46], [1334, [2.95, 1.15, 7.05], [3.12, 1.0, 3.85], 46], [1348, [3.2, 1.44, 5.3], [3.3, 1.4, 3.85], 46], [1470, [3.2, 1.44, 5.25], [3.3, 1.4, 3.85], 46]];
 const S8: React.FC = () => {
   const f = useCurrentFrame();
   const k = ramp(f, 1290, 10) * (1 - ramp(f, 1328, 10));
@@ -167,7 +167,7 @@ const S8: React.FC = () => {
     return (
       <Stage cam={camAt(MED, f)}>
         <StreetSet />
-        <Figure look="oldman" pose={OLD(f, shrug(k))} x={3.15} z={3.1} res={22} />
+        <Figure look="oldman" pose={OLD(f, shrug(k))} x={3.15} z={3.85} res={22} />
       </Stage>
     );
   }
@@ -222,19 +222,19 @@ const S14: React.FC = () => {
   return (
     <Stage cam={camAt(SAD, f)}>
       <StreetSet />
-      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.1} res={14} />
+      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.85} res={14} />
       <Neighbours f={f} mood="sad" />
     </Stage>
   );
 };
-const CU2: CamKey[] = [[2058, [3.33, 1.42, 4.8], [3.4, 1.38, 3.1], 46], [2112, [3.38, 1.44, 4.55], [3.42, 1.4, 3.1], 46]];
-const ANNOY: CamKey[] = [[2112, [3.38, 1.44, 4.55], [3.42, 1.4, 3.1], 46], [2140, [1.9, 1.3, 8.4], [1.4, 1.5, -2], 46], [2265, [1.85, 1.3, 8.0], [1.4, 1.5, -2], 46]];
+const CU2: CamKey[] = [[2058, [3.17, 1.42, 5.55], [3.28, 1.38, 3.85], 46], [2112, [3.2, 1.44, 5.3], [3.3, 1.4, 3.85], 46]];
+const ANNOY: CamKey[] = [[2112, [3.2, 1.44, 5.3], [3.3, 1.4, 3.85], 46], [2140, [1.9, 1.3, 8.4], [1.4, 1.5, -2], 46], [2265, [1.85, 1.3, 8.0], [1.4, 1.5, -2], 46]];
 const S16: React.FC = () => {
   const f = useCurrentFrame();
   return (
     <Stage cam={camAt(ANNOY, f)}>
       <StreetSet />
-      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.1} res={f < 2125 ? 40 : 14} />
+      <Figure look="oldman" pose={OLD(f)} x={3.15} z={3.85} res={f < 2125 ? 40 : 14} />
       <Neighbours f={f} mood={f > 2150 ? 'angry' : 'sad'} />
     </Stage>
   );
