@@ -265,7 +265,7 @@ const S17: React.FC = () => {
 };
 
 /* ───────────── 18/19 · empty street; except his son (2604–2930) ───────────── */
-const EMPTY: CamKey[] = [[2604, [2.4, 1.2, 12.5], [0.2, 1.7, -6], 50], [2726, [2.5, 1.2, 12.2], [0.4, 1.7, -6], 50], [2770, [2.7, 1.3, 7.4], [2.6, 1.2, 1.5], 46], [2930, [2.75, 1.3, 7.1], [2.65, 1.2, 1.5], 46]];
+const EMPTY: CamKey[] = [[2604, [2.4, 1.2, 12.5], [0.2, 1.7, -6], 50], [2726, [2.5, 1.2, 12.2], [0.4, 1.7, -6], 50], [2770, [1.6, 1.35, 9.2], [1.55, 1.25, 2.0], 46], [2930, [1.65, 1.35, 8.9], [1.6, 1.25, 2.0], 46]];
 const S18: React.FC = () => {
   const f = useCurrentFrame();
   return (
@@ -273,9 +273,9 @@ const S18: React.FC = () => {
       <EmptyStreetSet />
       <Leaves x={1} z={5} n={7} span={9} />
       {f > 2720 && <>
-        <Figure look="soldier" pose={{ ...idle(f, 5), eyes: 'angry', brows: 'angry', mouth: 'flat', spear: true, look: 0.8 }} x={1.55} z={3.3} res={12} />
-        <Figure look="oldman" pose={OLD(f, { eyes: 'sleepy' })} x={2.55} z={2.7} res={12} />
-        <Figure look="son" pose={{ ...idle(f, 2), eyes: 'dot', mouth: 'smile', bandage: true, crutch: true, sweat: f > 2800 }} x={3.55} z={2.45} res={12} />
+        <Figure look="soldier" pose={{ ...idle(f, 5), eyes: 'angry', brows: 'angry', mouth: 'flat', spear: true, look: 0.8 }} x={0.55} z={3.6} res={12} />
+        <Figure look="oldman" pose={OLD(f, { eyes: 'sleepy' })} x={1.5} z={3.3} res={12} />
+        <Figure look="son" pose={{ ...idle(f, 2), eyes: 'dot', mouth: 'smile', bandage: true, crutch: true, sweat: f > 2800 }} x={2.45} z={3.2} res={12} />
       </>}
     </Stage>
   );
