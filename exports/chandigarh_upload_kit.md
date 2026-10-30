@@ -1,8 +1,8 @@
 # Chandigarh: upload kit
 
-**Upload file:** `chandigarh_4k60_master.mp4` (4K 60 fps, 2160×3840, 2:07; in the repo through Git LFS; download: https://media.githubusercontent.com/media/sameerpotdar120-afk/remotion-video-studio/ccr-38fc62dc-jjdmrk/exports/chandigarh_4k60_master.mp4). Shorts allow up to 3 minutes, so 2:07 fits.
+**Upload file:** `chandigarh_4k60_master.mp4`, version 2: full body in the bubble, faster pace, bitrate capped for smooth phone playback (4K 60 fps, 2160×3840, 2:07, 626 MB; in the repo through Git LFS; download: https://media.githubusercontent.com/media/sameerpotdar120-afk/remotion-video-studio/ccr-38fc62dc-jjdmrk/exports/chandigarh_4k60_master.mp4). Shorts allow up to 3 minutes, so 2:07 fits.
 
-**Thumbnail:** `chandigarh_thumbnail.jpg` (1080×1920) and `chandigarh_thumbnail_4k.jpg` (2160×3840). It shows the paper plan in jute with the glowing red body drawn over it, with your brain, heart and lungs on it. The title reads "ज़िंदा शरीर जैसा शहर · CHANDIGARH". All of it sits inside the 3:4 crop.
+**Thumbnail:** being remade from your GPT art (`thumbnail_prompts.md`, prompt B: send `cg27_thumbnail_art.jpg`); the title on it will read "ज़िंदा शरीर जैसा शहर · CHANDIGARH".
 
 The video is a seamless loop: "इसीलिए तो…" runs straight back into "भारत के नक्शे पर एक ऐसा शहर है…", and the last frame matches frame 0, picture and sound both. So there's no end card and no CTA.
 
@@ -12,19 +12,19 @@ The video is a seamless loop: "इसीलिए तो…" runs straight back 
 2. `le corbusier chandigarh` / `chandigarh sector system` / `sector 17 chandigarh`
 3. `india planned city` / `capitol complex unesco`
 
-The title and the first two description lines carry words from all three.
+The title and the first two description lines carry words from all three: Chandigarh, design, planned city (title); 1947, Punjab, Le Corbusier, planned city (line 2). "Chandigarh" leads the title so it survives truncation in search.
 
 ## YouTube
 
 **Title**
 ```
-इंसान के शरीर की तरह design किया गया शहर 🫀 Chandigarh
+Chandigarh: इंसान के शरीर की तरह design किया गया planned city 🫀
 ```
 
 Backup titles:
 ```
-Chandigarh का सिर, दिल और फेफड़े 🧠 Le Corbusier का planned city
-भारत का वो शहर जो एक ज़िंदा शरीर की तरह बना है 😳 Chandigarh
+Chandigarh का सिर, दिल और फेफड़े 🧠 Le Corbusier ने ऐसे design किया ये शहर
+Chandigarh कैसे बना? भारत का वो शहर जो ज़िंदा शरीर की तरह बना 😳
 ```
 
 **Description**
