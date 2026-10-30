@@ -25,6 +25,11 @@ This is the default house style for story shorts.
 - Deliver 2160×3840 at 60 fps through a private GitHub release link.
 - Show stills and previews as you go, and say plainly what is done and what isn't.
 
+## 0. The style evolves per video
+
+When the user wants a video edited or enhanced beyond the current style, build the new parts into the core kit and
+record them in `STYLE.md` §5 (changelog). Don't fork the style per episode; the user decides what becomes core.
+
 ## 1. Intake and analysis (don't rush; this sets the quality)
 
 1. Probe the reference with `ffprobe`. Extract a lossless H.264 copy of the video (`ref.mp4`) and the audio as

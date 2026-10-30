@@ -73,3 +73,21 @@ later episode can use them.
   a private GitHub release `<slug>-v1` with one download link.
 - Speed on one 4-CPU machine: about 8 minutes per 150-frame piece, so about 3.5 hours for a 60 s short. To go
   faster, run workers on separate machines; see the skill's "Render" section.
+
+## 5. A living style
+
+Stickman3D is the base, not a fixed template. Each new video can edit or enhance it: new looks, sets, animals, light
+presets, transitions, caption tweaks. When it does:
+
+- Put reusable additions in the core kit (`src/styles/stickman3d`), not only in the episode, so later videos get them.
+- Keep changes backward compatible, or update the older episodes that use them. Re-render a still of
+  `src/horse` to confirm.
+- Add a line to the changelog below: the episode, what was added or changed, and why.
+- If a video needs a one-off look, such as a different caption position or a different grade, give the kit a
+  parameter for it instead of forking the code.
+
+### Changelog
+
+| Episode | Change |
+|---|---|
+| horse (`horse-v1`) | Style created: cast, horses, village sets, props and effects, light presets, one-word captions, Hanzi brush writer, camera and transition grammar. |
