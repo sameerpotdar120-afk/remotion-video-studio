@@ -14,7 +14,7 @@ if [ ! -s "$R/parts.done" ] && [ ! -s "$R/$NAME" ]; then
   for ref in $REFS; do git -C "$C" fetch -q --filter=blob:none origin "+$ref:refs/d/${ref##*/}"; done
   ORDER="$(echo "$REFS" | grep -v -- '-x[0-9]*$') $(echo "$REFS" | grep -- '-x[0-9]*$')"
   : > "$R/list.txt"; miss=0; mkdir -p "$R/pieces"
-  for ((a = 0; a < FRAMES; a += 300)); do
+  for ((a = 0; a < FRAMES; a += 150)); do
     s=seg_$(printf %05d $a).mp4; src=""
     for r in $ORDER; do [ -n "$(git -C "$C" ls-tree "refs/d/${r##*/}" "renders/horse-4k/$s")" ] && src=${r##*/}; done
     [ -n "$src" ] || { echo "MISSING piece $s"; miss=1; continue; }

@@ -1,11 +1,11 @@
 #!/bin/bash
-# Resumable FINAL 4K60 render of a frame range of Horse-4K, in 300-frame (5 s) segments, video only (the soundtrack
+# Resumable FINAL 4K60 render of a frame range of Horse-4K, in 150-frame (2.5 s) segments, video only (the soundtrack
 # is muxed at the end from public/horse/audio.wav). Each segment is re-encoded to the delivery format
 # (60 Mbit/s H.264, GOP 120, so all segments concat by stream copy), committed and pushed to render/horse-4k-<name>
 # at once; a rerun skips segments already on that branch.
 # usage: scripts/horse/render_4k.sh <first> <last> <name>
 set -uo pipefail
-FIRST=$1; LAST=$2; NAME=$3; SEG=300
+FIRST=$1; LAST=$2; NAME=$3; SEG=150
 cd "$(dirname "$0")/../.."
 [ -d node_modules ] || npm ci --no-audit --no-fund
 CHROME=$(ls -d /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell /opt/pw-browsers/chromium_headless_shell-*/chrome-headless-shell-linux64/chrome-headless-shell 2>/dev/null | head -1 || true)
