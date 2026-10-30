@@ -117,13 +117,13 @@ const Train: React.FC<{ curve: THREE.CatmullRomCurve3; at: number; cars?: number
   return (
     <group>
       {Array.from({ length: cars }, (_, i) => {
-        const u = Math.max(0, Math.min(1, at - (i * 0.23) / len));
+        const u = Math.max(0, Math.min(1, at - (i * 0.17) / len));
         const p = curve.getPointAt(u), t = curve.getTangentAt(u);
         const yaw = Math.atan2(t.x, t.z);
         return (
           <group key={i} position={[p.x, p.y + 0.05, p.z]} rotation={[0, yaw, 0]}>
-            <mesh><boxGeometry args={[0.07, 0.07, 0.2]} /><meshStandardMaterial color={i === 0 ? '#e8b520' : '#b9c0c8'} roughness={0.5} /></mesh>
-            <mesh position={[0, 0.02, 0]}><boxGeometry args={[0.072, 0.012, 0.19]} /><meshBasicMaterial color={i === 0 ? '#2b2b2b' : '#38506b'} /></mesh>
+            <mesh><boxGeometry args={[0.06, 0.06, 0.15]} /><meshBasicMaterial color={i === 0 ? '#ffc72e' : '#e9eef2'} /></mesh>
+            <mesh position={[0, 0.031, 0]}><boxGeometry args={[0.062, 0.006, 0.14]} /><meshBasicMaterial color={i === 0 ? '#3a2a10' : '#2c6f8a'} /></mesh>
             {i === 0 && <pointLight position={[0, 0, 0.12]} intensity={0.6} distance={1.2} color="#fff3c4" />}
           </group>
         );

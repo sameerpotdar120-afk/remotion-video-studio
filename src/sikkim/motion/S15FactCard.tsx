@@ -20,7 +20,7 @@ export const S15FactCard: React.FC<{ kicker: string; lines: string[]; key1?: num
         background: 'linear-gradient(180deg, #121B22, #0A1015)', borderRadius: 22, padding: '40px 46px 46px', boxShadow: '0 40px 90px rgba(0,0,0,0.75)', border: '1.5px solid rgba(255,255,255,0.1)' }}>
         <div style={{ fontFamily: LABEL, fontWeight: 800, fontSize: 30, letterSpacing: 5, color: C.cyan, marginBottom: 22 }}>{kicker}</div>
         {lines.map((l, i) => (
-          <div key={i} style={{ position: 'relative', fontFamily: UI, fontWeight: 600, fontSize: 52, lineHeight: 1.45, color: i === key1 ? '#fff' : 'rgba(235,242,246,0.78)', marginBottom: 8 }}>
+          <div key={i} style={{ position: 'relative', fontFamily: UI, fontWeight: 600, fontSize: 44, lineHeight: 1.45, color: i === key1 ? '#fff' : 'rgba(235,242,246,0.78)', marginBottom: 8 }}>
             {i === key1 && <span style={{ position: 'absolute', left: -10, right: -10, top: 6, bottom: 2, background: C.cyanDeep, transformOrigin: '0 50%', transform: `scaleX(${H})`, borderRadius: 6, zIndex: 0 }} />}
             <span style={{ position: 'relative' }}>{l}</span>
           </div>
