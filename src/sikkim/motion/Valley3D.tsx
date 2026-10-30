@@ -112,16 +112,16 @@ const Route: React.FC<{ curve: THREE.CatmullRomCurve3; draw: number; color: stri
 };
 
 /** A small passenger train: a yellow locomotive and grey coaches, following the curve. */
-const Train: React.FC<{ curve: THREE.CatmullRomCurve3; at: number; cars?: number }> = ({ curve, at, cars = 5 }) => {
+const Train: React.FC<{ curve: THREE.CatmullRomCurve3; at: number; cars?: number; k?: number }> = ({ curve, at, cars = 5, k = 1 }) => {
   const len = curve.getLength();
   return (
     <group>
       {Array.from({ length: cars }, (_, i) => {
-        const u = Math.max(0, Math.min(1, at - (i * 0.17) / len));
+        const u = Math.max(0, Math.min(1, at - (i * 0.17 * k) / len));
         const p = curve.getPointAt(u), t = curve.getTangentAt(u);
         const yaw = Math.atan2(t.x, t.z);
         return (
-          <group key={i} position={[p.x, p.y + 0.05, p.z]} rotation={[0, yaw, 0]}>
+          <group key={i} position={[p.x, p.y + 0.05 * k, p.z]} rotation={[0, yaw, 0]} scale={k}>
             <mesh><boxGeometry args={[0.06, 0.06, 0.15]} /><meshBasicMaterial color={i === 0 ? '#ffc72e' : '#e9eef2'} /></mesh>
             <mesh position={[0, 0.031, 0]}><boxGeometry args={[0.062, 0.006, 0.14]} /><meshBasicMaterial color={i === 0 ? '#3a2a10' : '#2c6f8a'} /></mesh>
             {i === 0 && <pointLight position={[0, 0, 0.12]} intensity={0.6} distance={1.2} color="#fff3c4" />}
@@ -153,9 +153,9 @@ const CamRig: React.FC<{ cam: Cam3 }> = ({ cam }) => {
 
 export type ValleyProps = {
   cam: Cam3; width: number; height: number; t: number;
-  draw?: number; color?: string; xray?: number; train?: number | null; station?: number; rain?: number; mist?: number; dusk?: number;
+  draw?: number; color?: string; xray?: number; train?: number | null; trainScale?: number; station?: number; rain?: number; mist?: number; dusk?: number;
 };
-export const Valley3D: React.FC<ValleyProps> = ({ cam, width, height, t, draw = 0, color = '#ff4fd8', xray = 0, train = null, station = 0, rain = 0, mist = 0.6, dusk = 0 }) => {
+export const Valley3D: React.FC<ValleyProps> = ({ cam, width, height, t, draw = 0, color = '#ff4fd8', xray = 0, train = null, trainScale = 1, station = 0, rain = 0, mist = 0.6, dusk = 0 }) => {
   const [h, setH] = useState<Float32Array | null>(null);
   const [tex, setTex] = useState<THREE.Texture | null>(null);
   const [handle] = useState(() => delayRender('sikkim valley'));
@@ -190,7 +190,7 @@ export const Valley3D: React.FC<ValleyProps> = ({ cam, width, height, t, draw = 
       <directionalLight position={[-20, 18, -14]} intensity={2.0 - 1.1 * dusk} color={sun} />
       <Ground h={h} tex={tex} xray={xray} />
       {draw > 0 && <Route curve={curve} draw={draw} color={color} xray={xray} />}
-      {train !== null && <Train curve={curve} at={train} />}
+      {train !== null && <Train curve={curve} at={train} k={trainScale} />}
       {station > 0 && <Station at={end} yaw={yawEnd} lights={station} />}
       {mist > 0 && puffs.map((p, i) => (
         <sprite key={i} position={[p.x, p.y, p.z]} scale={[p.s * 2.2, p.s, 1]}>

@@ -105,7 +105,7 @@ const dusk = (u: number): Cam3 => ({ pos: lerp3([R1[0] + 3.6, 3.4, R1[1] + 4.2],
 /** The ending: a high three-quarter view that follows the train up the valley (`at` = the train's place on the route). */
 const train = (at: number, u: number): Cam3 => {
   const k = Math.min(routeLL.length - 1, Math.round(at * (routeLL.length - 1))), p = ll3(routeLL[k][0], routeLL[k][1]);
-  return { pos: [p[0] + 0.6 - 0.4 * u, 3.4 - 0.6 * u, p[1] + 2.8 - 0.5 * u], look: [p[0], 0.35, p[1] - 0.3], fov: 40 };
+  return { pos: [p[0] + 0.5, 4.5 - 0.6 * u, p[1] + 2.5 - 0.3 * u], look: [p[0], 0.3, p[1]], fov: 40 };
 };
 
 // ------------------------------------------------------------------ the shots (backgrounds plus their graphics)
@@ -119,7 +119,9 @@ const Map1: React.FC<{ t: number }> = ({ t }) => {
       <Clouds t={t} a={1 - 0.6 * lin(t, 3.2, 4.6)} />
       <At a={a0} b={4.2}><S01RailWeb c={c} build={90} out={r(2.9, a0)} /></At>
       <At a={C.n7000 - 0.1} b={4}><Counter x={540} y={1540} to={7000} t0={0} dur={60} plus caption="RAILWAY STATIONS" out={r(3.2, C.n7000 - 0.1)} /></At>
-      <At a={3.9} b={30.8}><S02StateGlow c={c} lit={r(C.rajya1 + 0.3, 3.9)} borders={r(5.3, 3.9)} /></At>
+      <At a={3.9} b={13.9}><S02StateGlow c={c} lit={r(C.rajya1 + 0.3, 3.9)} borders={r(5.3, 3.9)} out={r(13.5, 3.9)} /></At>
+      <At a={13.5} b={30.8}><S02StateGlow c={c} borders={-60} dim={0} /></At>
+      <At a={23.0} b={30.8}><S02StateGlow c={c} lit={0} /></At>
       <At a={C.sikkim1 - 0.15} b={12.6}><AbsoluteFill style={{ top: -600 }}><S03Title3D text="SIKKIM" size={180} out={r(12.3, C.sikkim1 - 0.15)} /></AbsoluteFill></At>
       <At a={C.kyon2 + 0.2} b={13.3}><S04Track c={c} from={merc(88.3, 25.75)} to={G.towns.Rangpo} stopAt={0.7} grow={[0, 70]} q={r(C.koshish2, C.kyon2 + 0.2)} out={r(12.9, C.kyon2 + 0.2)} /></At>
       <At a={C.siliguri3 - 0.2} b={23.2}><Pin c={c} at={G.towns.Siliguri} text="Siliguri" t0={0} side="l" out={r(22.9, C.siliguri3 - 0.2)} /></At>
@@ -220,7 +222,7 @@ const TrainShot: React.FC<{ t: number }> = ({ t }) => {
   const u = lin(t, C.har13, C.isiliye13), at = 0.1 + 0.12 * u;
   return (
     <AbsoluteFill>
-      <Valley3D width={1080} height={1920} t={t} cam={train(at, sm(u))} draw={1} train={at} mist={0.35} color={COL.cyanGlow} />
+      <Valley3D width={1080} height={1920} t={t} cam={train(at, sm(u))} draw={1} train={at} trainScale={1.9} mist={0.35} color={COL.cyanGlow} />
       <Vignette k={0.8} />
     </AbsoluteFill>
   );
