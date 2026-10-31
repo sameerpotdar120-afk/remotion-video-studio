@@ -913,7 +913,7 @@ def build_dust(rocks):
     at.attribute_name = "density"
     mul = nt.nodes.new("ShaderNodeMath")
     mul.operation = "MULTIPLY"
-    mul.inputs[1].default_value = float(arg("--ddens", 1, 1.1))
+    mul.inputs[1].default_value = float(arg("--ddens", 1, 0.4))
     link(nt, at.outputs["Fac"], mul.inputs[0])
     link(nt, mul.outputs[0], pv.inputs["Density"])
     link(nt, pv.outputs[0], out.inputs["Volume"])
@@ -1193,10 +1193,21 @@ def setup_render(res=1.0, samples=64):
     mix.blend_type = "MIX"
     nt.links.new(rl.outputs["Image"], mix.inputs[1])
     mix.inputs[2].default_value = (0.50, 0.60, 0.74, 1)
+    # haze from the depth pass (the mist pass counts the dust volume as far away and whitens it)
+    vl.use_pass_z = True
+    mr = nt.nodes.new("CompositorNodeMapRange")
+    mr.inputs["From Min"].default_value = 120
+    mr.inputs["From Max"].default_value = sc.world.mist_settings.depth
+    mr.use_clamp = True
+    nt.links.new(rl.outputs["Depth"], mr.inputs["Value"])
+    sq = nt.nodes.new("CompositorNodeMath")
+    sq.operation = "POWER"
+    sq.inputs[1].default_value = 2.0
+    nt.links.new(mr.outputs[0], sq.inputs[0])
     mul = nt.nodes.new("CompositorNodeMath")
     mul.operation = "MULTIPLY"
-    mul.inputs[1].default_value = float(arg("--haze", 1, 0.8))
-    nt.links.new(rl.outputs["Mist"], mul.inputs[0])
+    mul.inputs[1].default_value = 0.0  # haze is in the materials now (add_aerial_haze)
+    nt.links.new(sq.outputs[0], mul.inputs[0])
     nt.links.new(mul.outputs[0], mix.inputs[0])
     sa = nt.nodes.new("CompositorNodeSetAlpha")
     sa.mode = "REPLACE_ALPHA"
@@ -1220,6 +1231,49 @@ def setup_render(res=1.0, samples=64):
 
 
 # ---------------------------------------------------------------- build
+HAZE = (0.5, 0.6, 0.74)
+
+
+def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8))):
+    """Aerial perspective on every surface seen by the camera: blend toward the haze colour with view distance
+    (quadratic from 120 m). Done in the shaders, not the compositor, so the dust volume isn't hazed as if far away."""
+    for m in bpy.data.materials:
+        if m.name == "dust" or not m.use_nodes or m.get("hazed"):
+            continue
+        nt = m.node_tree
+        out = next((n for n in nt.nodes if n.type == "OUTPUT_MATERIAL" and n.is_active_output), None)
+        if out is None or not out.inputs["Surface"].links:
+            continue
+        src = out.inputs["Surface"].links[0].from_socket
+        cd = nt.nodes.new("ShaderNodeCameraData")
+        mr = nt.nodes.new("ShaderNodeMapRange")
+        mr.inputs["From Min"].default_value = 120
+        mr.inputs["From Max"].default_value = depth
+        mr.clamp = True
+        nt.links.new(cd.outputs["View Distance"], mr.inputs["Value"])
+        sq = nt.nodes.new("ShaderNodeMath")
+        sq.operation = "POWER"
+        sq.inputs[1].default_value = 2.0
+        nt.links.new(mr.outputs[0], sq.inputs[0])
+        lp = nt.nodes.new("ShaderNodeLightPath")
+        k = nt.nodes.new("ShaderNodeMath")
+        k.operation = "MULTIPLY"
+        nt.links.new(sq.outputs[0], k.inputs[0])
+        nt.links.new(lp.outputs["Is Camera Ray"], k.inputs[1])
+        k2 = nt.nodes.new("ShaderNodeMath")
+        k2.operation = "MULTIPLY"
+        k2.inputs[1].default_value = amount
+        nt.links.new(k.outputs[0], k2.inputs[0])
+        em = nt.nodes.new("ShaderNodeEmission")
+        em.inputs["Color"].default_value = (*HAZE, 1)
+        mx = nt.nodes.new("ShaderNodeMixShader")
+        nt.links.new(k2.outputs[0], mx.inputs[0])
+        nt.links.new(src, mx.inputs[1])
+        nt.links.new(em.outputs[0], mx.inputs[2])
+        nt.links.new(mx.outputs[0], out.inputs["Surface"])
+        m["hazed"] = 1
+
+
 def build():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     terr = build_terrain()
@@ -1235,6 +1289,7 @@ def build():
     build_world()
     build_camera()
     setup_render(float(arg("--res", 1, 1.0)), int(arg("--samples", 1, 64)))
+    add_aerial_haze()
     return terr, rocks
 
 
