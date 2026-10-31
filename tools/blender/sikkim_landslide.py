@@ -953,6 +953,148 @@ def build_dust(rocks):
     return dom
 
 
+# ---------------------------------------------------------------- the rock animation as data, and dust as volume puffs
+def export_anim(rocks, path):
+    """Rock world matrices for every frame (so render workers replay the exact same fall without simulating)."""
+    import json
+    sc = bpy.context.scene
+    out = {"frames": FRAMES + PRE, "rocks": {}}
+    for ob in rocks:
+        out["rocks"][ob.name] = []
+    for f in range(1, FRAMES + PRE + 1):
+        sc.frame_set(f)
+        for ob in rocks:
+            m = ob.matrix_world
+            out["rocks"][ob.name].append([round(v, 4) for row in m for v in row][:12])
+    Path(path).write_text(json.dumps(out, separators=(",", ":")))
+
+
+def apply_anim(rocks, path):
+    """Replace the rigid-body sim with keyframes from export_anim's file."""
+    import json
+    from mathutils import Matrix
+    d = json.loads(Path(path).read_text())
+    sc = bpy.context.scene
+    if sc.rigidbody_world:
+        for ob in rocks:
+            if ob.rigid_body:
+                bpy.context.view_layer.objects.active = ob
+                with bpy.context.temp_override(object=ob, active_object=ob, selected_objects=[ob]):
+                    bpy.ops.rigidbody.object_remove()
+        bpy.ops.rigidbody.world_remove()
+    for ob in rocks:
+        seq = d["rocks"][ob.name]
+        for f, m in enumerate(seq, start=1):
+            M = Matrix((m[0:4], m[4:8], m[8:12], (0, 0, 0, 1)))
+            ob.matrix_world = M
+            ob.keyframe_insert("location", frame=f)
+            ob.keyframe_insert("rotation_euler", frame=f)
+            ob.keyframe_insert("scale", frame=f)
+    return d
+
+
+def build_puffs(d):
+    """Dust as soft volume puffs shed by fast rocks: each grows, rises, drifts down-valley and thins out.
+    Deterministic from the animation data, so every render worker builds the same dust."""
+    import json
+    from mathutils import Matrix
+    sc = bpy.context.scene
+    r = np.random.default_rng(SEED + 7)
+    m, nt = node_mat("puff")
+    N = nt.nodes.new
+    out = N("ShaderNodeOutputMaterial")
+    pv = N("ShaderNodeVolumePrincipled")
+    pv.inputs["Color"].default_value = (0.72, 0.6, 0.45, 1)
+    pv.inputs["Anisotropy"].default_value = 0.3
+    pv.inputs["Density Attribute"].default_value = ""
+    tc, oi = N("ShaderNodeTexCoord"), N("ShaderNodeObjectInfo")
+    at = N("ShaderNodeAttribute")
+    at.attribute_type = "OBJECT"
+    at.attribute_name = '["dens"]'
+    ln = N("ShaderNodeVectorMath")
+    ln.operation = "LENGTH"
+    link(nt, tc.outputs["Object"], ln.inputs[0])
+    fall = N("ShaderNodeMapRange")
+    fall.inputs["From Min"].default_value = 1.0
+    fall.inputs["From Max"].default_value = 0.2
+    link(nt, ln.outputs["Value"], fall.inputs["Value"])
+    nz = N("ShaderNodeTexNoise")
+    nz.noise_dimensions = "4D"
+    nz.inputs["Scale"].default_value = 1.6
+    nz.inputs["Detail"].default_value = 6
+    nz.inputs["Roughness"].default_value = 0.6
+    link(nt, tc.outputs["Object"], nz.inputs["Vector"])
+    wv = N("ShaderNodeMath")
+    wv.operation = "MULTIPLY"
+    wv.inputs[1].default_value = 37.0
+    link(nt, oi.outputs["Random"], wv.inputs[0])
+    link(nt, wv.outputs[0], nz.inputs["W"])
+    nr = N("ShaderNodeMapRange")
+    nr.inputs["From Min"].default_value = 0.47
+    nr.inputs["From Max"].default_value = 0.7
+    link(nt, nz.outputs["Fac"], nr.inputs["Value"])
+    m1 = N("ShaderNodeMath")
+    m1.operation = "MULTIPLY"
+    link(nt, fall.outputs[0], m1.inputs[0])
+    link(nt, nr.outputs[0], m1.inputs[1])
+    m2 = N("ShaderNodeMath")
+    m2.operation = "MULTIPLY"
+    link(nt, m1.outputs[0], m2.inputs[0])
+    link(nt, at.outputs["Fac"], m2.inputs[1])
+    link(nt, m2.outputs[0], pv.inputs["Density"])
+    link(nt, pv.outputs[0], out.inputs["Volume"])
+    me = bpy.data.meshes.new("puff")
+    bm = bmesh.new()
+    bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+    bm.to_mesh(me)
+    bm.free()
+    me.materials.append(m)
+    col = bpy.data.collections.new("Dust")
+    sc.collection.children.link(col)
+    # where and when: every 4 frames, each moving rock may shed a puff; keep the fastest
+    names = sorted(d["rocks"])
+    cand = []
+    for nm in names:
+        seq = d["rocks"][nm]
+        size = math.sqrt(seq[0][0] ** 2 + seq[0][4] ** 2 + seq[0][8] ** 2)
+        for f in range(5, len(seq) - 1, 4):
+            a, b = seq[f - 4], seq[f]
+            v = math.dist((a[3], a[7], a[11]), (b[3], b[7], b[11])) / 4 * FPS
+            if v > 3.0:
+                cand.append((v * size, f, b[3], b[7], b[11], size, v))
+    cand.sort(reverse=True)
+    keep = cand[: int(arg("--puffs", 1, 300))]
+    LIFE = 75
+    for k, (_, f0, x, y, z, size, v) in enumerate(keep):
+        ob = bpy.data.objects.new(f"Puff{k:03d}", me)
+        col.objects.link(ob)
+        ob.visible_shadow = False  # sunlit through, and no shadow rays marching every puff
+        r0 = 1.6 + size * 1.1 + r.uniform(0, 1.5)
+        wind = r.uniform(1.0, 2.2)
+        rise = r.uniform(1.2, 2.6)
+        rot0 = r.uniform(0, 6.28, 3)
+        for af in range(0, LIFE + 1, 5):
+            fr = f0 + af
+            t = af / FPS
+            g = 1 - math.exp(-af / 18.0)
+            ob.location = (x + wind * t + r.uniform(-0.3, 0.3), y - 0.8 * t, z + 0.6 * size + rise * t * (1 - 0.25 * t))
+            sc_ = r0 * (0.55 + 2.4 * g)
+            ob.scale = (sc_ * 1.15, sc_, sc_ * 0.85)
+            ob.rotation_euler = tuple(rot0 + np.array([0.05, 0.08, 0.03]) * af)
+            dens = min(1.0, af / 6.0) * max(0.0, 1 - af / LIFE) ** 1.3 * float(arg("--pdens", 1, 0.07)) * min(1.6, v / 8.0)
+            ob["dens"] = dens
+            for p in ("location", "scale", "rotation_euler", '["dens"]'):
+                ob.keyframe_insert(p, frame=fr)
+        # hidden outside its life so idle puffs cost nothing
+        ob.hide_render = True
+        ob.keyframe_insert("hide_render", frame=1)
+        ob.hide_render = False
+        ob.keyframe_insert("hide_render", frame=f0)
+        ob.hide_render = True
+        ob.keyframe_insert("hide_render", frame=f0 + LIFE + 1)
+    print("puffs", len(keep), flush=True)
+
+
 # ---------------------------------------------------------------- the real Teesta valley behind (AWS terrain + EOX Sentinel-2)
 def build_backdrop():
     import json
@@ -1299,6 +1441,8 @@ def build():
 
 if __name__ == "__main__":
     terr, rocks = build()
+    if arg("--anim", 1):
+        build_puffs(apply_anim(rocks, arg("--anim", 1)))
     if arg("--bake", 0):
         import time
         t = time.time()
@@ -1306,6 +1450,8 @@ if __name__ == "__main__":
         with bpy.context.temp_override(scene=sc, point_cache=sc.rigidbody_world.point_cache):
             bpy.ops.ptcache.bake(bake=True)
         print("RB_BAKE_S", round(time.time() - t, 1), flush=True)
+        if arg("--export", 1):
+            export_anim(rocks, arg("--export", 1))
         if arg("--dust", 0):
             dom = build_dust(rocks)
             t = time.time()
