@@ -884,15 +884,15 @@ def build_dust(rocks):
     mod.fluid_type = "DOMAIN"
     ds = mod.domain_settings
     ds.domain_type = "GAS"
-    ds.resolution_max = int(arg("--dres", 1, 128))
+    ds.resolution_max = int(arg("--dres", 1, 80))
     ds.use_adaptive_domain = True
     ds.adapt_threshold = 0.004
     ds.adapt_margin = 6
     ds.alpha = 0.0
-    ds.beta = 1.6             # but the turbulence still lifts it in billows
-    ds.vorticity = 0.6
+    ds.beta = 1.0             # but the turbulence still lifts it in billows
+    ds.vorticity = 0.5
     ds.use_dissolve_smoke = True
-    ds.dissolve_speed = int(arg("--dissolve", 1, 120))
+    ds.dissolve_speed = int(arg("--dissolve", 1, 70))
     ds.use_dissolve_smoke_log = True
     ds.use_noise = bool(int(arg("--dnoise", 1, 1)))
     ds.noise_scale = 2
@@ -948,7 +948,7 @@ def build_dust(rocks):
             v = 0.0 if q is None else (p - q).length / 2 * FPS
             prev[ob.name] = p
             fs = ob.modifiers["Fluid"].flow_settings
-            fs.density = float(min(1.0, max(0.0, (v - 2.0) / 12.0))) * min(1.0, ob.scale[0] / 1.5) * float(arg("--demit", 1, 0.6))
+            fs.density = float(min(1.0, max(0.0, (v - 2.0) / 12.0))) * min(1.0, ob.scale[0] / 1.5) * float(arg("--demit", 1, 0.35))
             fs.keyframe_insert("density", frame=f)
     return dom
 
