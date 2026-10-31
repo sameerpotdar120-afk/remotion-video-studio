@@ -9,6 +9,8 @@ Shots (VO times from public/sikkim/vo_words.json):
   xray     line 7, 35.06-40.40 s  "इसलिए यहाँ रेलवे पहाड़ के ऊपर से नहीं, पहाड़ के अंदर से बनाई जा रही है": the real alignment
            glows along the valley; a red line over the ridge draws and dies ("ऊपर से नहीं"); the hill turns see-through and
            the line runs inside it ("अंदर से")
+  train    line 14, 95.38-101.84 s "पर हर इंच बहुत सावधानी से बनाना होगा, क्योंकि हिमालय ग़लतियाँ माफ़ नहीं करता": golden evening;
+           a train's lamps grow in the Tunnel 7 portal, it rolls out along the bench, the camera pulls back over the valley
 """
 import math
 import sys
@@ -23,7 +25,7 @@ import sikkim_landslide as L  # noqa: E402
 
 FPS = 30
 SHOT = L.arg("--shot", 1, "gorge")
-SHOTS = {"gorge": (30.0, 35.06), "xray": (35.06, 40.4)}
+SHOTS = {"gorge": (30.0, 35.06), "xray": (35.06, 40.4), "train": (95.38, 101.84)}
 T0, T1 = SHOTS[SHOT]
 FRAMES = int(round((T1 - T0) * FPS))
 L.FRAMES, L.PRE, L.FPS = FRAMES, 0, FPS
@@ -256,8 +258,169 @@ def key_value_prop(idb, prop, frames_values):
         idb.keyframe_insert(prop, frame=f)
 
 
+# ---------------------------------------------------------------- line 14: a train comes out of the tunnel
+def train_mats():
+    def paint(name, lower, upper, band):
+        m, nt = L.node_mat(name)
+        N = nt.nodes.new
+        out, bs = N("ShaderNodeOutputMaterial"), N("ShaderNodeBsdfPrincipled")
+        tc = N("ShaderNodeTexCoord")
+        sep = N("ShaderNodeSeparateXYZ")
+        nt.links.new(tc.outputs["Object"], sep.inputs[0])
+        # local z runs -0.5..0.5 over the body's height: lower colour, a thin band, upper colour, dark windows
+        c0 = N("ShaderNodeValToRGB")
+        nt.links.new(sep.outputs[2], c0.inputs[0])
+        el = c0.color_ramp.elements
+        el[0].position, el[0].color = 0.0, (*lower, 1)
+        el[1].position, el[1].color = 0.0, (*lower, 1)
+        c0.color_ramp.interpolation = "CONSTANT"
+        e = el.new(0.0)
+        for pos, col in ((-0.08 + 0.5, band), (-0.03 + 0.5, upper)):
+            k = el.new(pos)
+            k.color = (*col, 1)
+        e.position = 0.0
+        e.color = (*lower, 1)
+        nt.links.new(c0.outputs[0], bs.inputs["Base Color"])
+        bs.inputs["Roughness"].default_value = 0.32
+        bs.inputs["Coat Weight"].default_value = 0.4
+        nt.links.new(bs.outputs[0], out.inputs[0])
+        return m
+    return {
+        "loco": paint("loco_paint", (0.42, 0.05, 0.035), (0.78, 0.76, 0.72), (0.9, 0.62, 0.1)),
+        "coach": paint("coach_paint", (0.30, 0.05, 0.04), (0.62, 0.6, 0.57), (0.85, 0.85, 0.82)),
+        "glass": L.mat_simple("train_glass", (0.02, 0.025, 0.03), 0.05),
+        "under": L.mat_simple("train_under", (0.035, 0.033, 0.03), 0.7, metal=0.6),
+        "roof": L.mat_simple("train_roof", (0.32, 0.32, 0.31), 0.45, metal=0.3),
+    }
+
+
+def car_mesh(name, length, loco, mats):
+    import bmesh
+    from mathutils import Matrix
+    W, H = 3.2, 3.9
+    bm = bmesh.new()
+    res = bmesh.ops.create_cube(bm, size=1)
+    bmesh.ops.scale(bm, vec=(length, W, H), verts=res["verts"])
+    if loco:
+        # a sloped cab nose at +x
+        for v in res["verts"]:
+            if v.co.x > 0 and v.co.z > 0:
+                v.co.x -= 1.4
+    bmesh.ops.bevel(bm, geom=bm.edges[:], offset=0.32, segments=3, affect="EDGES")
+    for f in bm.faces:
+        f.material_index = 0
+    me = bpy.data.meshes.new(name)
+    bm.to_mesh(me)
+    bm.free()
+    me.materials.append(mats["loco" if loco else "coach"])
+    me.polygons.foreach_set("use_smooth", np.ones(len(me.polygons), bool))
+    ob = bpy.data.objects.new(name, me)
+    bpy.context.scene.collection.objects.link(ob)
+    # window strip, roof, bogies (separate pieces parented to the body)
+    parts = [("win", (length - 2.2 if not loco else 2.2, W + 0.02, 0.85), (0 if not loco else length / 2 - 2.6, 0, 0.55), "glass"),
+             ("roof", (length - 0.6, W - 0.5, 0.35), (-0.3 if loco else 0, 0, H / 2 + 0.05), "roof"),
+             ("bogieA", (3.4, W - 0.6, 0.9), (length / 2 - 3.2, 0, -H / 2 - 0.35), "under"),
+             ("bogieB", (3.4, W - 0.6, 0.9), (-length / 2 + 3.2, 0, -H / 2 - 0.35), "under"),
+             ("skirt", (length - 1.0, W - 0.3, 0.45), (0, 0, -H / 2 + 0.05), "under")]
+    for nm, dim, off, mk in parts:
+        bm = bmesh.new()
+        bmesh.ops.create_cube(bm, size=1, matrix=Matrix.Translation(off) @ Matrix.Diagonal((*dim, 1)))
+        pm = bpy.data.meshes.new(name + nm)
+        bm.to_mesh(pm)
+        bm.free()
+        pm.materials.append(mats[mk])
+        po = bpy.data.objects.new(name + nm, pm)
+        bpy.context.scene.collection.objects.link(po)
+        po.parent = ob
+    if loco:
+        # headlights: two warm-white lamps and the light they throw
+        for dy in (-0.9, 0.9):
+            lm, em = glow_mat("glow_head", (1.0, 0.92, 0.75), 60.0)
+            bm = bmesh.new()
+            bmesh.ops.create_uvsphere(bm, u_segments=12, v_segments=8, radius=0.22,
+                                      matrix=Matrix.Translation((length / 2 + 0.02, dy, -0.6)))
+            hm = bpy.data.meshes.new(name + "lamp")
+            bm.to_mesh(hm)
+            bm.free()
+            hm.materials.append(lm)
+            ho = bpy.data.objects.new(name + "lamp", hm)
+            bpy.context.scene.collection.objects.link(ho)
+            ho.parent = ob
+        sp = bpy.data.lights.new("HeadBeam", "SPOT")
+        sp.energy = 60000
+        sp.spot_size = math.radians(38)
+        sp.spot_blend = 0.6
+        sp.color = (1.0, 0.9, 0.72)
+        so = bpy.data.objects.new("HeadBeam", sp)
+        bpy.context.scene.collection.objects.link(so)
+        so.parent = ob
+        so.location = (length / 2 + 0.4, 0, -0.3)
+        so.rotation_euler = (0, math.radians(95), 0)
+    return ob, H
+
+
+def shot_train():
+    import tunnel7 as T7
+    L.FRAMES = FRAMES
+    L.SCAR_D0, L.SCAR_D1 = 3000.0, 3001.0  # no slide scar in the ending: the slope has healed
+    L.CLEAR_BAND = (57.0, 73.0, -75.0)      # trees right down to the bench, cleared only on it
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    terr = L.build_terrain()
+    terr.data.materials.append(L.mat_terrain())
+    leaf, bark = L.mat_leaf(), L.mat_simple("bark", (0.06, 0.045, 0.03), 0.9)
+    L.build_forest(terr, leaf, bark)
+    L.build_structures(None)
+    yc = T7.build_rail_and_portal()
+    T7.build_wall(yc)
+    # a longer bore so the lamps can be seen coming from deep inside
+    for mn in ("portal_concrete", "wall_blocks"):
+        bs = next(n for n in bpy.data.materials[mn].node_tree.nodes if n.type == "BSDF_PRINCIPLED")
+        if bs.inputs["Base Color"].links:
+            r = bs.inputs["Base Color"].links[0].from_node
+            for e in getattr(getattr(r, "color_ramp", None), "elements", []):
+                e.color = (e.color[0] * 0.62, e.color[1] * 0.6, e.color[2] * 0.58, 1)
+    tube = bpy.data.objects["Tube"].data
+    back = T7.PORTAL_X - 2.2
+    for v in tube.vertices:
+        v.co.x = back + (v.co.x - back) * 4.0
+    L.build_scree(terr, L.mat_rock())
+    L.build_backdrop()
+    L.build_clouds()
+    L.argv += ["--sundir", "0.78", "-0.5", "0.24"]
+    L.build_world()
+    sun = bpy.data.lights["Sun"]
+    sun.energy, sun.color = 4.2, (1.0, 0.72, 0.46)  # golden hour
+    L.build_camera()
+    L.setup_render(1.0, 20)
+    # the train: a locomotive and eight coaches, rolling east out of the portal along the bench
+    mats = train_mats()
+    rail_top = T7.BENCH_Z + 0.71
+    cars = []
+    x = 0.0
+    for i in range(9):
+        loco = i == 0
+        ln = 20.5 if loco else 23.0
+        ob, Hc = car_mesh(f"Car{i}", ln, loco, mats)
+        cars.append((ob, x - ln / 2))
+        x -= ln + 1.2
+    head = [(F(95.38), T7.PORTAL_X - 70.0), (F(96.3), T7.PORTAL_X - 30.0), (F(101.84), T7.PORTAL_X + 120.0)]
+    for ob, off in cars:
+        for f, hx in head:
+            ob.location = (hx + off, yc, rail_top + 1.15 + Hc / 2)
+            ob.keyframe_insert("location", frame=f)
+        for fc in ob.animation_data.action.fcurves:
+            for k in fc.keyframe_points:
+                k.interpolation = "LINEAR"
+    P = T7.PORTAL_X
+    keys([
+        (F(95.38), (P + 34.0, yc - 13.0, T7.BENCH_Z + 4.0), (P - 4.0, yc + 1.0, T7.BENCH_Z + 4.5), 32.0),     # at the portal, lamps growing
+        (F(97.7), (P + 46.0, yc - 22.0, T7.BENCH_Z + 9.0), (P + 10.0, yc, T7.BENCH_Z + 3.5), 30.0),           # it rolls past
+        (F(101.84), (P + 150.0, yc - 150.0, T7.BENCH_Z + 75.0), (P + 30.0, yc + 30.0, T7.BENCH_Z + 12.0), 28.0),  # pulled back over the valley
+    ])
+
+
 if __name__ == "__main__":
-    {"gorge": shot_gorge, "xray": shot_xray}[SHOT]()
+    {"gorge": shot_gorge, "xray": shot_xray, "train": shot_train}[SHOT]()
     if SHOT in ("gorge", "xray"):
         L.add_aerial_haze(depth=14000.0, amount=0.85, power=1.15)
     else:
