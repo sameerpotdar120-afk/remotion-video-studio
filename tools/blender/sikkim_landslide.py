@@ -1238,7 +1238,8 @@ def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8))):
     """Aerial perspective on every surface seen by the camera: blend toward the haze colour with view distance
     (quadratic from 120 m). Done in the shaders, not the compositor, so the dust volume isn't hazed as if far away."""
     for m in bpy.data.materials:
-        if m.name == "dust" or not m.use_nodes or m.get("hazed"):
+        # only opaque surfaces far enough to show it: hazing the leaf and cloud cards makes their cut-outs opaque
+        if m.name not in ("terrain", "backdrop", "water") or not m.use_nodes or m.get("hazed"):
             continue
         nt = m.node_tree
         out = next((n for n in nt.nodes if n.type == "OUTPUT_MATERIAL" and n.is_active_output), None)
