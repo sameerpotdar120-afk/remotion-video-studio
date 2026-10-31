@@ -174,6 +174,9 @@ def build_terrain():
     dens = dens * np.clip(0.75 + 0.9 * fbm(xs / 30.0, ys / 30.0, 3, 12), 0.35, 1)
     # trees only where the camera can see them (beyond ~1.1 km a tree is a few pixels; the ground shader carries it)
     dens = dens * sstep(-520, -420, xs) * (1 - sstep(520, 620, xs)) * sstep(-90, -50, ys) * (1 - sstep(1000, 1150, ys))
+    if CLEAR_BAND:  # a cleared strip (a rail cut and its lip) where no trees grow
+        d0, d1, x0 = CLEAR_BAND
+        dens = dens * (1 - ((d > d0) & (d < d1) & (xs > x0)).astype(np.float32))
     a = me.attributes.new("forest", "FLOAT", "POINT")
     a.data.foreach_set("value", np.clip(dens, 0, 1).ravel().astype(np.float32))
     ob = bpy.data.objects.new("Terrain", me)
@@ -787,6 +790,7 @@ def grid_mesh(name, gx, gy, zf):
     return me
 
 
+CLEAR_BAND = None  # (d0, d1, x0): no trees for d0 < d < d1 and x > x0
 ROCK_D_MIN = 75.0  # lowest start of the falling rocks up the scar
 SLIDE_BOX = (-110.0, 130.0, -40.0, 290.0)  # x0, x1, y0, y1 of the region the rocks can reach
 

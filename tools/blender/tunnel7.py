@@ -33,6 +33,7 @@ BENCH_Z, BENCH_D0, BENCH_D1 = 54.0, 60.0, 71.5
 WALL_D, WALL_H = 70.8, 6.25  # the wall's back face and height: it retains the slope above the bench
 PORTAL_X = -40.0
 L.SCAR_D0 = 74.0
+L.CLEAR_BAND = (44.0, 76.0, -75.0)
 L.ROCK_D_MIN = float(L.arg("--dmin", 1, 115))
 _height0 = L.height
 
@@ -162,7 +163,7 @@ def build_rail_and_portal():
 def build_wall(yc):
     """The protection wall along the cut face beside the portal: precast blocks in a running bond, four courses."""
     sc = bpy.context.scene
-    m = concrete_mat("wall_blocks", (0.36, 0.35, 0.33), 0.8)
+    m = concrete_mat("wall_blocks", (0.24, 0.235, 0.22), 0.8)
     col = bpy.data.collections.new("WallBlocks")
     sc.collection.children.link(col)
     bw, bd, bh = 2.4, 1.1, 1.25
@@ -255,8 +256,8 @@ def camera(yc):
             mdf.target = tgt
     keys = [
         (1, (120.0, -150.0, 118.0), (-10.0, 140.0, 108.0), 26.0),                          # the valley in the rain
-        (int((65.9 - T0) * FPS), (36.0, 6.0, 62.0), (-16.0, yc + 2, 66.0), 40.0),          # over the river, at the portal
-        (FRAMES, (31.0, 14.0, 61.0), (-15.0, yc + 2, 68.0), 42.0),                         # holding through the fall
+        (int((65.9 - T0) * FPS), (42.0, 2.0, 84.0), (-22.0, yc + 4, 66.0), 34.0),          # over the river, at the portal
+        (FRAMES, (38.0, 10.0, 82.0), (-20.0, yc + 4, 70.0), 36.0),                         # holding through the fall
     ]
     for f, p, l, lens in keys:
         co.location = p
@@ -364,6 +365,10 @@ def build():
     overcast()
     camera(yc)
     L.add_aerial_haze()
+    sc = bpy.context.scene
+    sc.view_settings.exposure = 0.55
+    sc.cycles.volume_step_rate = 4.0
+    sc.cycles.volume_max_steps = 96
     return rocks + blocks
 
 
