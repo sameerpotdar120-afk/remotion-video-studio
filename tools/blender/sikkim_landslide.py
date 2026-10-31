@@ -173,7 +173,8 @@ def build_terrain():
     dens = np.where(dn > 6, sstep(6, 14, dn), dens)
     dens = dens * np.clip(0.75 + 0.9 * fbm(xs / 30.0, ys / 30.0, 3, 12), 0.35, 1)
     # trees only where the camera can see them (beyond ~1.1 km a tree is a few pixels; the ground shader carries it)
-    dens = dens * sstep(-520, -420, xs) * (1 - sstep(520, 620, xs)) * sstep(-90, -50, ys) * (1 - sstep(1000, 1150, ys))
+    fx0, fx1, fy0, fy1 = FOREST_BOX
+    dens = dens * sstep(fx0 - 50, fx0 + 50, xs) * (1 - sstep(fx1 - 50, fx1 + 50, xs)) * sstep(fy0 - 20, fy0 + 20, ys) * (1 - sstep(fy1 - 75, fy1 + 75, ys))
     if CLEAR_BAND:  # a cleared strip (a rail cut and its lip) where no trees grow
         d0, d1, x0 = CLEAR_BAND
         dens = dens * (1 - ((d > d0) & (d < d1) & (xs > x0)).astype(np.float32))
@@ -527,7 +528,7 @@ def build_forest(terrain, leaf, bark):
         for i in range(12):
             ob = base.copy()
             ob.name = f"Tree{i}"
-            k = 2.6 + 0.12 * i
+            k = (2.6 + 0.12 * i) * TREE_SCALE
             ob.scale = (k, k, k * (0.9 + 0.03 * (i % 5)))
             ob.location = (0, 0, 0)
             col.objects.link(ob)
@@ -559,11 +560,14 @@ def build_forest(terrain, leaf, bark):
     ng = bpy.data.node_groups.new("forest", "GeometryNodeTree")
     ng.interface.new_socket("Geometry", in_out="INPUT", socket_type="NodeSocketGeometry")
     ng.interface.new_socket("Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry")
+    # a sphere that clears trees (keyed per shot: the x-ray reveal)
+    ng.interface.new_socket("Clear Centre", in_out="INPUT", socket_type="NodeSocketVector")
+    ng.interface.new_socket("Clear Radius", in_out="INPUT", socket_type="NodeSocketFloat")
     N = ng.nodes.new
     gi, go = N("NodeGroupInput"), N("NodeGroupOutput")
     dist = N("GeometryNodeDistributePointsOnFaces")
     dist.distribute_method = "POISSON"
-    dist.inputs["Distance Min"].default_value = 3.6 if arg("--trees", 1, "proc") == "proc" else 5.5
+    dist.inputs["Distance Min"].default_value = 3.6 if arg("--trees", 1, "proc") == "proc" else TREE_GAP
     dist.inputs["Density Max"].default_value = 0.09
     dist.inputs["Seed"].default_value = 3
     na = N("GeometryNodeInputNamedAttribute")
@@ -602,14 +606,28 @@ def build_forest(terrain, leaf, bark):
     tr.inputs["Translation"].default_value = (0, 0, -1.2)
     ng.links.new(inst.outputs[0], tr.inputs["Instances"])
     j = N("GeometryNodeJoinGeometry")
-    ng.links.new(tr.outputs[0], j.inputs[0])
+    pos = N("GeometryNodeInputPosition")
+    dd = N("ShaderNodeVectorMath")
+    dd.operation = "DISTANCE"
+    ng.links.new(pos.outputs[0], dd.inputs[0])
+    ng.links.new(gi.outputs["Clear Centre"], dd.inputs[1])
+    lt = N("FunctionNodeCompare")
+    lt.data_type = "FLOAT"
+    lt.operation = "LESS_THAN"
+    ng.links.new(dd.outputs["Value"], lt.inputs[0])
+    ng.links.new(gi.outputs["Clear Radius"], lt.inputs[1])
+    dl = N("GeometryNodeDeleteGeometry")
+    dl.domain = "INSTANCE"
+    ng.links.new(tr.outputs[0], dl.inputs["Geometry"])
+    ng.links.new(lt.outputs[0], dl.inputs["Selection"])
+    ng.links.new(dl.outputs[0], j.inputs[0])
     # undergrowth: the same crowns shrunk to bushes, filling the gaps between trunks
     ud = N("GeometryNodeDistributePointsOnFaces")
     ud.distribute_method = "RANDOM"
     ud.inputs["Seed"].default_value = 21
     um = N("ShaderNodeMath")
     um.operation = "MULTIPLY"
-    um.inputs[1].default_value = 0.035
+    um.inputs[1].default_value = UNDERGROWTH
     ng.links.new(na.outputs["Attribute"], um.inputs[0])
     ng.links.new(um.outputs[0], ud.inputs["Density"])
     ng.links.new(gi.outputs[0], ud.inputs["Mesh"])
@@ -790,6 +808,9 @@ def grid_mesh(name, gx, gy, zf):
     return me
 
 
+TREE_GAP, TREE_SCALE = 5.5, 1.0  # Poisson spacing (m) and size of the CC0 trees
+UNDERGROWTH = 0.035  # bush density (per m2, scaled by the forest attribute)
+FOREST_BOX = (-470.0, 570.0, -70.0, 1075.0)  # trees only where the camera looks (x0, x1, y0, y1)
 CLEAR_BAND = None  # (d0, d1, x0): no trees for d0 < d < d1 and x > x0
 ROCK_D_MIN = 75.0  # lowest start of the falling rocks up the scar
 SLIDE_BOX = (-110.0, 130.0, -40.0, 290.0)  # x0, x1, y0, y1 of the region the rocks can reach
@@ -1383,7 +1404,7 @@ def setup_render(res=1.0, samples=64):
 HAZE = (0.5, 0.6, 0.74)
 
 
-def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8))):
+def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8)), power=2.0):
     """Aerial perspective on every surface seen by the camera: blend toward the haze colour with view distance
     (quadratic from 120 m). Done in the shaders, not the compositor, so the dust volume isn't hazed as if far away."""
     for m in bpy.data.materials:
@@ -1403,7 +1424,7 @@ def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8))):
         nt.links.new(cd.outputs["View Distance"], mr.inputs["Value"])
         sq = nt.nodes.new("ShaderNodeMath")
         sq.operation = "POWER"
-        sq.inputs[1].default_value = 2.0
+        sq.inputs[1].default_value = power
         nt.links.new(mr.outputs[0], sq.inputs[0])
         lp = nt.nodes.new("ShaderNodeLightPath")
         k = nt.nodes.new("ShaderNodeMath")
