@@ -172,6 +172,8 @@ def build_terrain():
     dens = (1 - sstep(0.03, 0.3, scar)) * (1 - road) * np.maximum(sstep(ROAD_D1 + 0.5, ROAD_D1 + 4, d), 0.7 * sstep(3, 9, d) * (1 - sstep(ROAD_D0 - 6, ROAD_D0 - 1, d)))
     dens = np.where(dn > 6, sstep(6, 14, dn), dens)
     dens = dens * np.clip(0.75 + 0.9 * fbm(xs / 30.0, ys / 30.0, 3, 12), 0.35, 1)
+    # trees only where the camera can see them (beyond ~1.1 km a tree is a few pixels; the ground shader carries it)
+    dens = dens * sstep(-520, -420, xs) * (1 - sstep(520, 620, xs)) * sstep(-90, -50, ys) * (1 - sstep(1000, 1150, ys))
     a = me.attributes.new("forest", "FLOAT", "POINT")
     a.data.foreach_set("value", np.clip(dens, 0, 1).ravel().astype(np.float32))
     ob = bpy.data.objects.new("Terrain", me)
@@ -288,7 +290,7 @@ def mat_terrain():
     wet = ramp(noise(1.0, 4, streak_v.outputs[0]), [(0.5, (0, 0, 0)), (0.7, (1, 1, 1))])
     soil = mix(wet, soil, mix(1.0, soil, (0.55, 0.5, 0.48), "MULTIPLY"))
     rock = mix(1.0, rk["diff"], (0.62, 0.6, 0.58), "MULTIPLY")
-    ground = mix(1.0, fl["diff"], (0.35, 0.33, 0.25), "MULTIPLY")
+    ground = mix(1.0, fl["diff"], (0.2, 0.26, 0.12), "MULTIPLY")
     asphalt = ramp(noise(3.0, 10), [(0.4, (0.035, 0.035, 0.038)), (0.6, (0.075, 0.075, 0.075))])
     rockfac = ramp(slope.outputs[0], [(0.72, (0, 0, 0)), (0.85, (1, 1, 1))])
     sc = ramp(att["scar"].outputs["Fac"], [(0.02, (0, 0, 0)), (0.25, (1, 1, 1))])
@@ -604,7 +606,7 @@ def build_forest(terrain, leaf, bark):
     ud.inputs["Seed"].default_value = 21
     um = N("ShaderNodeMath")
     um.operation = "MULTIPLY"
-    um.inputs[1].default_value = 0.22
+    um.inputs[1].default_value = 0.035
     ng.links.new(na.outputs["Attribute"], um.inputs[0])
     ng.links.new(um.outputs[0], ud.inputs["Density"])
     ng.links.new(gi.outputs[0], ud.inputs["Mesh"])
@@ -872,7 +874,7 @@ def build_rockfall(rmat, n=int(arg("--rocks", 1, 340))):
 # ---------------------------------------------------------------- dust: Mantaflow smoke shed by the moving rocks
 def build_dust(rocks):
     sc = bpy.context.scene
-    x0, x1, y0, y1, z0, z1 = -85.0, 105.0, -15.0, 265.0, -5.0, 300.0
+    x0, x1, y0, y1, z0, z1 = -95.0, 135.0, -15.0, 265.0, -5.0, 330.0
     bpy.ops.mesh.primitive_cube_add(size=1)
     dom = bpy.context.active_object
     dom.name = "DustDomain"
@@ -886,11 +888,11 @@ def build_dust(rocks):
     ds.use_adaptive_domain = True
     ds.adapt_threshold = 0.004
     ds.adapt_margin = 6
-    ds.alpha = -0.02          # dust is heavier than smoke
-    ds.beta = 0.7             # but the turbulence still lifts it in billows
-    ds.vorticity = 0.35
+    ds.alpha = 0.0
+    ds.beta = 1.6             # but the turbulence still lifts it in billows
+    ds.vorticity = 0.6
     ds.use_dissolve_smoke = True
-    ds.dissolve_speed = int(arg("--dissolve", 1, 95))
+    ds.dissolve_speed = int(arg("--dissolve", 1, 120))
     ds.use_dissolve_smoke_log = True
     ds.use_noise = bool(int(arg("--dnoise", 1, 1)))
     ds.noise_scale = 2
@@ -913,7 +915,7 @@ def build_dust(rocks):
     at.attribute_name = "density"
     mul = nt.nodes.new("ShaderNodeMath")
     mul.operation = "MULTIPLY"
-    mul.inputs[1].default_value = float(arg("--ddens", 1, 0.4))
+    mul.inputs[1].default_value = float(arg("--ddens", 1, 0.3))
     link(nt, at.outputs["Fac"], mul.inputs[0])
     link(nt, mul.outputs[0], pv.inputs["Density"])
     link(nt, pv.outputs[0], out.inputs["Volume"])
@@ -933,9 +935,9 @@ def build_dust(rocks):
         fs.flow_source = "MESH"
         fs.surface_distance = 1.1
         fs.smoke_color = (0.5, 0.42, 0.32)
-        fs.temperature = 1.0
+        fs.temperature = 1.6
         fs.use_initial_velocity = True
-        fs.velocity_factor = 0.22
+        fs.velocity_factor = 0.08
         fs.density = 0.0
     prev = {ob.name: None for ob in rocks}
     for f in range(1, FRAMES + PRE + 1, 2):
@@ -1272,6 +1274,7 @@ def add_aerial_haze(depth=16000.0, amount=float(arg("--haze", 1, 0.8))):
         nt.links.new(src, mx.inputs[1])
         nt.links.new(em.outputs[0], mx.inputs[2])
         nt.links.new(mx.outputs[0], out.inputs["Surface"])
+        m.cycles.emission_sampling = "NONE"  # the haze glow must not turn the terrain into a light source
         m["hazed"] = 1
 
 
