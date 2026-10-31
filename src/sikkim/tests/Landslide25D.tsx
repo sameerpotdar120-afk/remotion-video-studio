@@ -12,6 +12,8 @@ import * as THREE from 'three';
  *  `path` is the scar's centre line in plate pixels, top to bottom: [x, y, half-width px, px per metre]. */
 export type SlidePath = { w: number; h: number; path: [number, number, number, number][]; sun: [number, number] };
 
+/** Boulders drawn larger than true scale so they read on a phone (a 2 m rock is ~7 px from this far). */
+const SCALE = 2.6;
 const rnd = (i: number) => {
   const v = Math.sin(i * 127.13 + 41.2) * 43758.5453;
   return v - Math.floor(v);
@@ -151,7 +153,7 @@ const Scene: React.FC<{ t: number; data: SlidePath; tex: Record<string, THREE.Te
     const bounce = Math.abs(Math.sin(u * (2.4 + rnd(i) * 2.2) + i)) * (0.35 + r.size * 0.25) * Math.min(1, v * 8);
     const px = p.x + p.nx * lane * p.hw;
     const py = p.y + p.ny * lane * p.hw - bounce * p.k;
-    const sz = r.size * p.k;
+    const sz = r.size * p.k * SCALE;
     const [X, Y] = S(px, py);
     const roll = (u * v * 260 * r.spin) / Math.max(0.4, r.size);
     // depth: further down the slope is nearer the camera
@@ -178,8 +180,8 @@ const Scene: React.FC<{ t: number; data: SlidePath; tex: Record<string, THREE.Te
       const pe = at(se);
       const le = r.lane * (0.55 + 0.45 * Math.min(1, se * 1.6));
       const grow = 1 - Math.exp(-age * 1.6);
-      const size = (r.size * 1.4 + 3 + grow * 9 + age * 3) * pe.k * (r.big ? 1 : 0.6);
-      const a = Math.min(1, age * 5) * Math.max(0, 1 - age / 3.2) * Math.min(1, (ve - 0.12) * 6) * (r.big ? 0.32 : 0.2);
+      const size = (r.size * SCALE * 1.4 + 4 + grow * 12 + age * 4) * pe.k * (r.big ? 1 : 0.6);
+      const a = Math.min(1, age * 5) * Math.max(0, 1 - age / 3.2) * Math.min(1, (ve - 0.12) * 6) * (r.big ? 0.5 : 0.32);
       const seed = i * 31 + e;
       dust.push({
         x: pe.x + pe.nx * le * pe.hw + age * (6 + rnd(seed) * 6) * pe.k + Math.sin(age * 1.3 + seed) * 2 * pe.k,
