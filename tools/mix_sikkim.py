@@ -33,7 +33,8 @@ MUSIC_PAUSE, MUSIC_TALK = -7.0, -14.0
 SFX_DUCK = 4.0
 HPF = {"drum_hit_big": 35, "braam": 35, "boom": 35, "subdrop": 30, "wh_wind_gust": 120, "rain_light": 120, "heartbeat": 30, "amb_jungle_thunderstorm": 90,
        "thunder": 40, "thunder_crash": 40}
-CUT_ROUTE, CUT_RUSH = C["sevoke7"], 57.3
+CUT_ROUTE = C["sevoke7"]
+CUT_GORGE, CUT_STORM, CUT_T7, FALL, CUT_TRAIN = 30.0, 58.6, 60.78, 69.62, 95.38  # v2 cuts (Blender shots)
 
 CUES = [
     # line 1: the push on India, the rail web building (gold pops), the count, the lines out; the swing; Sikkim lights; the title
@@ -54,11 +55,12 @@ CUES = [
     # line 5: the slope card, the ✓, the steep profile, the slip and the ✕
     (C["train5"] - 0.1, "card_flip", -14, {}), (C["chadhai5"] - 0.4, "tram", -24, {"dur": 1.6, "align": "start"}), (C["mod5"] - 0.4, "chime_hit", -18, {}),
     (C["lekin5"] - 0.2, "ui_wipe", -15, {}), (C["lekin5"] + 0.6, "wh_fast", -18, {}), (C["lekin5"] + 0.75, "pen_cross", -13, {}), (C["lekin5"] + 0.77, "metal_thud", -15, {}),
-    # the hard cut to the 3D valley, the rise, the hex badges; the x-ray push, the line inside the mountain
-    (C["zameen5"] - 0.05, "impact_whoosh_deep", -14, {}), (C["zameen5"], "wh_wind_gust", -19, {"dur": 3.5, "align": "start"}),
-    (C["zameen5"] + 0.9, "ui_glassy_snap", -15, {}), (C["ghati5"] - 0.1, "ui_glassy_snap", -15, {}),
+    # the cut to the Blender gorge (line 6): wind up the Teesta, the two tags; line 7: the red line over the ridge, the
+    # hill turning to glass, the line inside
+    (CUT_GORGE - 0.05, "impact_whoosh_deep", -14, {}), (CUT_GORGE, "wh_wind_gust", -18, {"dur": 5.0, "align": "start"}),
+    (C["zameen5"] + 0.6, "ui_pop", -16, {}), (C["ghati5"] - 0.1, "ui_pop", -16, {}),
     (C["isliye6"], "whoosh_cinematic_fast", -14, {}), (C["isliye6"] + 0.5, "riser", -20, {"dur": 3.0, "align": "start"}), (C["upar6"], "light_transition_magic", -17, {}),
-    (C["andar6"] - 0.1, "ui_snap", -15, {}), (C["andar6"] - 0.05, "subdrop", -16, {}),
+    (C["upar6"] + 0.9, "pen_cross", -15, {}), (C["andar6"] - 0.1, "ui_snap", -15, {}), (C["andar6"] - 0.05, "subdrop", -16, {}),
     # line 7: the tear to the map, the route draws, stations pop, 45 km, the ring to 86%, 38 km
     (CUT_ROUTE - 0.1, "paper_quick_move", -12, {}), (CUT_ROUTE + 0.4, "light_sweep_magic", -17, {}),
     *[(CUT_ROUTE + 0.4 + i * 0.42, "pop_high", -18, {}) for i in range(5)],
@@ -69,26 +71,25 @@ CUES = [
     *[(C["surang7"] + i * 0.05, "ui_pop", -23, {}) for i in range(14)], (C["t14"] - 0.1, "ui_snap", -15, {}),
     *[(C["b22"] + i * 0.027, "pop_light", -24, {}) for i in range(10)], (C["b22"] - 0.05, "ui_snap", -15, {}), (C["s5"] - 0.05, "ui_snap", -15, {}),
     (C["longest8"] + 0.25, "light_transition_magic", -15, {}), (C["longest8"] + 0.4, "wh_big_tonal", -16, {}), (C["km53"] - 0.1, "impact_chord", -16, {}),
-    # the tunnel rush insert
-    (CUT_RUSH - 0.05, "whoosh_cinematic_fast", -12, {}), (CUT_RUSH, "wind_howl", -18, {"dur": 1.7, "align": "start"}), (CUT_RUSH + 0.6, "drum_hit_big", -18, {}),
-    # line 9: the storm rolls in, rain, thunder, tunnel 7 pulses, the landslide card and its slide
-    (C["mushkil9"] - 0.05, "impact_whoosh_deep", -14, {}), (C["mushkil9"], "amb_jungle_thunderstorm", -20, {"dur": 11.3, "align": "start"}),
-    (C["baarish9"], "thunder_crash", -14, {}), (C["khisak9"] + 0.4, "thunder", -16, {}), (C["tunnel7"] - 0.1, "ui_pop", -15, {}),
-    (C["tunnel7"] - 0.25, "wh_fast", -15, {}), (C["tunnel7"], "card_flip", -14, {}), (C["deewar9"], "metal_thud", -15, {}), (C["landslide9"], "thunder_crash", -13, {}),
-    (C["landslide9"] + 0.05, "boom", -15, {}),
+    # line 9: the storm rolls over the map, then the cut to Tunnel 7 in the rain: thunder, the slope moving, the wall going
+    (CUT_STORM - 0.05, "impact_whoosh_deep", -14, {}), (CUT_STORM, "amb_jungle_thunderstorm", -19, {"dur": 12.0, "align": "start"}),
+    (CUT_T7 - 0.05, "whoosh_cinematic_fast", -14, {}), (CUT_T7, "rain_light", -17, {"dur": 9.8, "align": "start"}),
+    (C["baarish9"], "thunder_crash", -14, {}), (63.1, "subdrop", -16, {}), (C["khisak9"] + 0.4, "thunder", -17, {}),
+    (C["tunnel7"] - 0.5, "ui_pop", -15, {}), (C["landslide9"] - 0.1, "ui_pop", -15, {}),
+    (FALL - 0.25, "drum_hit_big", -14, {}), (FALL - 0.2, "boom", -13, {}), (FALL - 0.1, "impact_blow", -14, {}), (FALL + 0.2, "metal_thud", -16, {}),
     # line 10: the cut to the quake, the rings, ZONE IV stamps, the shakes
     (C["upar10"] - 0.05, "whoosh_cinematic_fast", -13, {}), (C["bhukamp10"] - 0.1, "subdrop", -14, {}), (C["bhukamp10"], "heartbeat", -17, {"dur": 3.5, "align": "start"}),
     (C["zone10"], "impact_blow", -13, {}), (C["zone10"] + 0.02, "boom", -15, {}), (C["risk10"], "drum_hit_big", -15, {}),
-    # line 11: the cut to the tunnel portal, the labels, Null
-    (C["yani11"] - 0.05, "wh_fast", -14, {}), (C["yani11"] + 0.05, "drum_hit_big", -18, {}),
-    *[(C["yani11"] + d, "ui_glassy_snap", -18, {}) for d in (0.4, 1.0, 1.6, 2.2)], (C["bhaari11"], "stinger", -18, {}),
+    # line 11: the cut into the bore, its hum, stones dropping from the crown on "भारी", Null
+    (C["yani11"] - 0.05, "wh_fast", -14, {}), (C["yani11"] + 0.05, "drum_hit_big", -18, {}), (C["yani11"], "wind_howl", -24, {"dur": 4.9, "align": "start"}),
+    (79.75, "metal_thud", -18, {}), (80.0, "impact_blow", -19, {}), (C["bhaari11"], "stinger", -18, {}),
     # line 12: the fact card whips in, the highlight sweep, the ring to 85%, DEC 2027
     (C["phir12"] - 0.05, "whoosh_cinematic_fast", -13, {}), (C["phir12"] + 0.05, "paper_quick_move", -16, {}),
     (C["p85"] - 0.1, "counter_ticking", -19, {"dur": 0.6}), (C["p85"] + 0.5, "chime_hit", -18, {}), (C["plan12"], "light_sweep_magic", -16, {}),
     (C["rangpo12"] - 0.1, "whoosh_sparkle", -16, {}), (C["rangpo12"] + 0.15, "pop_high", -15, {}), *[(C["rangpo12"] + 0.25 + i * 0.05, "typewriter_click", -22, {}) for i in range(6)],
-    (C["pehla12"] - 0.1, "ui_glassy_snap", -15, {}),
-    # line 13: the cut to the train on the valley, the cloud wipe back to India, the pull out to frame 0
-    (C["har13"] - 0.05, "wh_wind_gust", -18, {"dur": 2.5, "align": "start"}), (C["har13"] + 0.2, "tram", -21, {"dur": 3.0, "align": "start"}),
+    (C["pehla12"] - 0.1, "ui_glassy_snap", -15, {}), (92.5, "light_sweep_magic", -18, {}),
+    # line 13: the train out of the tunnel, the cloud wipe back to India, the pull out to frame 0
+    (CUT_TRAIN - 0.05, "wh_wind_gust", -18, {"dur": 2.5, "align": "start"}), (CUT_TRAIN + 0.6, "tram", -19, {"dur": 5.5, "align": "start"}),
     (C["himalaya13"], "braam", -17, {}), (C["isiliye13"] - 0.5, "whoosh_cinematic_fast", -13, {}), (DURATION - 0.9, "wh_fast", -17, {}),
 ]
 
