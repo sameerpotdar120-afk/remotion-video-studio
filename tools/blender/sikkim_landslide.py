@@ -1083,7 +1083,7 @@ def build_puffs(d):
             t = af / FPS
             g = 1 - math.exp(-af / 18.0)
             ob.location = (x + wind * t + r.uniform(-0.3, 0.3), y - 0.8 * t, z + 0.6 * size + rise * t * (1 - 0.25 * t))
-            sc_ = r0 * (0.55 + 2.4 * g)
+            sc_ = r0 * (0.55 + float(arg("--pgrow", 1, 2.4)) * g)
             ob.scale = (sc_ * 1.15, sc_, sc_ * 0.85)
             ob.rotation_euler = tuple(rot0 + np.array([0.05, 0.08, 0.03]) * af)
             dens = min(1.0, af / 6.0) * max(0.0, 1 - af / LIFE) ** 1.3 * float(arg("--pdens", 1, 0.07)) * min(1.6, v / 8.0)

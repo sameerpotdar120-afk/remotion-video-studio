@@ -40,7 +40,7 @@ _height0 = L.height
 
 def height_t7(x, y):
     z, d, dn, scar = _height0(x, y)
-    on = L.sstep(PORTAL_X - 1.5, PORTAL_X + 1.5, x)
+    on = L.sstep(PORTAL_X - 5.0, PORTAL_X - 2.6, x)  # the cut runs just past the portal face, into the spur
     # front lip, flat shelf, a wall-high step (the protection wall holds it) and a 50-degree slope above
     above = BENCH_Z + WALL_H + np.maximum(d - WALL_D, 0) * 1.2
     shelf = np.where(d < BENCH_D0, BENCH_Z - (BENCH_D0 - d) * 1.9, np.where(d <= WALL_D, BENCH_Z, above))
@@ -50,7 +50,7 @@ def height_t7(x, y):
     cut = np.where(band, lo, z)
     z = z + (cut - z) * on
     # a little spur over the tunnel so the portal has cover
-    z = z + (1 - on) * 7.0 * L.sstep(BENCH_D0 - 10, BENCH_D0, d) * (1 - L.sstep(BENCH_D1 + 20, BENCH_D1 + 60, d)) * L.sstep(PORTAL_X + 1, PORTAL_X - 25, x)
+    z = z + (1 - on) * 7.0 * L.sstep(BENCH_D0 - 10, BENCH_D0, d) * (1 - L.sstep(BENCH_D1 + 20, BENCH_D1 + 60, d)) * L.sstep(PORTAL_X - 4, PORTAL_X - 25, x)
     return z, d, dn, scar
 
 
@@ -69,7 +69,7 @@ def concrete_mat(name, col, rough=0.75):
 
 def build_rail_and_portal():
     sc = bpy.context.scene
-    conc = concrete_mat("portal_concrete", (0.32, 0.31, 0.29))
+    conc = concrete_mat("portal_concrete", (0.55, 0.53, 0.5))
     steel = L.mat_simple("rail_steel", (0.32, 0.3, 0.28), 0.35, metal=1.0)
     sleeper_m = L.mat_simple("sleeper", (0.25, 0.24, 0.23), 0.85)
     ballast = L.mat_simple("ballast", (0.16, 0.15, 0.14), 0.95, noise_scale=6.0)
@@ -100,7 +100,7 @@ def build_rail_and_portal():
     sc.collection.objects.link(so)
     sl.materials.append(sleeper_m)
     # the portal: a concrete face with a horseshoe opening, wing walls, and a dark lined tube behind it
-    W, H, T = 14.0, 12.5, 2.2
+    W, H, T = 18.0, 13.5, 2.2
     bm = bmesh.new()
     bmesh.ops.create_cube(bm, size=1, matrix=Matrix.Translation((PORTAL_X - T / 2, yc, BENCH_Z + H / 2)) @ Matrix.Diagonal((T, W, H, 1)))
     face = bpy.data.meshes.new("portal_face")
@@ -109,25 +109,33 @@ def build_rail_and_portal():
     pf = bpy.data.objects.new("Portal", face)
     sc.collection.objects.link(pf)
     pf.data.materials.append(conc)
-    # opening: half-cylinder arch on a box
-    bm = bmesh.new()
+    # opening: a half-cylinder arch on a box, cut with two separate (manifold) cutters
     ow, oh = 7.2, 4.2
-    bmesh.ops.create_cube(bm, size=1, matrix=Matrix.Translation((PORTAL_X - T / 2, yc, BENCH_Z + oh / 2)) @ Matrix.Diagonal((T * 3, ow, oh, 1)))
-    bmesh.ops.create_cone(bm, cap_ends=True, segments=40, radius1=ow / 2, radius2=ow / 2, depth=T * 3,
-                          matrix=Matrix.Translation((PORTAL_X - T / 2, yc, BENCH_Z + oh)) @ Matrix.Rotation(math.pi / 2, 4, "Y"))
-    cut = bpy.data.meshes.new("portal_cut")
-    bm.to_mesh(cut)
-    bm.free()
-    co = bpy.data.objects.new("PortalCut", cut)
-    sc.collection.objects.link(co)
-    mod = pf.modifiers.new("open", "BOOLEAN")
-    mod.operation = "DIFFERENCE"
-    mod.object = co
-    mod.solver = "EXACT"
+    cutters = []
+    for k, mk in enumerate((
+        lambda bm: bmesh.ops.create_cube(bm, size=1, matrix=Matrix.Translation((PORTAL_X - T / 2, yc, BENCH_Z + oh / 2 - 0.5)) @ Matrix.Diagonal((T * 3, ow, oh + 1.0, 1))),
+        lambda bm: bmesh.ops.create_cone(bm, cap_ends=True, segments=48, radius1=ow / 2, radius2=ow / 2, depth=T * 3,
+                                         matrix=Matrix.Translation((PORTAL_X - T / 2, yc, BENCH_Z + oh)) @ Matrix.Rotation(math.pi / 2, 4, "Y")),
+    )):
+        bm = bmesh.new()
+        mk(bm)
+        cm = bpy.data.meshes.new(f"portal_cut{k}")
+        bm.to_mesh(cm)
+        bm.free()
+        co = bpy.data.objects.new(f"PortalCut{k}", cm)
+        sc.collection.objects.link(co)
+        mod = pf.modifiers.new(f"open{k}", "BOOLEAN")
+        mod.operation = "DIFFERENCE"
+        mod.object = co
+        mod.solver = "EXACT"
+        cutters.append(co)
     bpy.context.view_layer.objects.active = pf
-    with bpy.context.temp_override(object=pf, active_object=pf):
-        bpy.ops.object.modifier_apply(modifier="open")
-    bpy.data.objects.remove(co)
+    for k in range(len(cutters)):
+        with bpy.context.temp_override(object=pf, active_object=pf):
+            bpy.ops.object.modifier_apply(modifier=f"open{k}")
+    for co in cutters:
+        bpy.data.objects.remove(co)
+    print("portal polys", len(pf.data.polygons), flush=True)
     # a coping band and a parapet on top, the portal's number plate left blank (labels come in Remotion)
     for z, h, d in ((BENCH_Z + H, 0.8, 0.6), (BENCH_Z + H + 0.8, 1.1, 0.3)):
         bpy.ops.mesh.primitive_cube_add(size=1)
@@ -256,8 +264,8 @@ def camera(yc):
             mdf.target = tgt
     keys = [
         (1, (120.0, -150.0, 118.0), (-10.0, 140.0, 108.0), 26.0),                          # the valley in the rain
-        (int((65.9 - T0) * FPS), (42.0, 2.0, 84.0), (-22.0, yc + 4, 66.0), 34.0),          # over the river, at the portal
-        (FRAMES, (38.0, 10.0, 82.0), (-20.0, yc + 4, 70.0), 36.0),                         # holding through the fall
+        (int((65.9 - T0) * FPS), (40.0, 0.0, 82.0), (-26.0, yc + 4, 72.0), 34.0),          # over the river, at the portal
+        (FRAMES, (36.0, 8.0, 80.0), (-24.0, yc + 4, 74.0), 36.0),                         # holding through the fall
     ]
     for f, p, l, lens in keys:
         co.location = p
