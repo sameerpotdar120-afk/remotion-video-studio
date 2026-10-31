@@ -787,6 +787,7 @@ def grid_mesh(name, gx, gy, zf):
     return me
 
 
+ROCK_D_MIN = 75.0  # lowest start of the falling rocks up the scar
 SLIDE_BOX = (-110.0, 130.0, -40.0, 290.0)  # x0, x1, y0, y1 of the region the rocks can reach
 
 
@@ -832,7 +833,7 @@ def build_rockfall(rmat, n=int(arg("--rocks", 1, 340))):
         size = float(np.clip(r.lognormal(np.log(1.25), 0.5), 0.45, 3.8))
         if i < 6:
             size = r.uniform(3.2, 4.5)  # big blocks off the head scarp
-        d = SCAR_D1 - 5 - (SCAR_D1 - 75) * r.uniform(0, 1) ** 1.6 if len(rocks) >= 6 else r.uniform(SCAR_D1 - 14, SCAR_D1 - 4)
+        d = SCAR_D1 - 5 - (SCAR_D1 - ROCK_D_MIN) * r.uniform(0, 1) ** 1.6 if len(rocks) >= 6 else r.uniform(SCAR_D1 - 14, SCAR_D1 - 4)
         hw = float(scar_half(np.array([d]))[0]) * 0.75
         x = float(scar_cx(np.array([d]))[0]) + r.uniform(-hw, hw)
         y = yr + RIVER_HW + d
@@ -1004,7 +1005,7 @@ def build_puffs(d):
     N = nt.nodes.new
     out = N("ShaderNodeOutputMaterial")
     pv = N("ShaderNodeVolumePrincipled")
-    pv.inputs["Color"].default_value = (0.72, 0.6, 0.45, 1)
+    pv.inputs["Color"].default_value = tuple(float(v) for v in arg("--pcol", 3, (0.72, 0.6, 0.45))) + (1,)
     pv.inputs["Anisotropy"].default_value = 0.3
     pv.inputs["Density Attribute"].default_value = ""
     tc, oi = N("ShaderNodeTexCoord"), N("ShaderNodeObjectInfo")
