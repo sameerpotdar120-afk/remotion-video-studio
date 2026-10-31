@@ -17,7 +17,7 @@ const LAYERS: Layer[] = [
 ];
 const ANGLE = (9 * Math.PI) / 180;
 
-const Rain: React.FC<{ f: number; width: number; height: number }> = ({ f, width, height }) => {
+export const Rain: React.FC<{ f: number; width: number; height: number }> = ({ f, width, height }) => {
   const ref = useRef<HTMLCanvasElement>(null);
   useLayoutEffect(() => {
     const c = ref.current!.getContext('2d')!;
