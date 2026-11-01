@@ -1,6 +1,6 @@
 # कनाडा की झीलों के अजीब नाम: upload kit
 
-Upload file: `canadalakes_4k60_master.mp4` (4K 60 fps, 2160×3840, 1:19; in the repo through Git LFS once the helpers finish).
+Upload file: `canadalakes_4k60_master.mp4` (4K 60 fps, 2160×3840, 4,737 frames, 1:19, 401 MB; in the repo through Git LFS).
 Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/canadalakes_4k60_master.mp4
 Thumbnail: `canadalakes_thumbnail.jpg` (1080×1920) and `canadalakes_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram (CanadaCover: all of Canada in red with its lakes lit cyan, a pin on Stupid Lake, "20 लाख झीलें" and "नाम ख़त्म!"). Everything that matters sits inside the 3:4 crop.
 
