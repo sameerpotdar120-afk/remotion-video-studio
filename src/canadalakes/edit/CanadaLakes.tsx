@@ -23,13 +23,13 @@ const At: React.FC<{ t0: number; t1: number; children: React.ReactNode }> = ({ t
 const win = (t: number, a: number, b: number, fi = 0.25, fo = 0.25) => Math.min(ramp(t, a, a + fi, linear), 1 - ramp(t, b - fo, b, linear));
 
 // ------------------------------------------------------------------ labels (the reference's two-tone boxed labels)
-const TwoTone: React.FC<{ a: string; b: string; size?: number }> = ({ a, b, size = 64 }) => (
+export const TwoTone: React.FC<{ a: string; b: string; size?: number }> = ({ a, b, size = 64 }) => (
   <div style={{ display: 'inline-block', fontFamily: TITLE, fontSize: size, lineHeight: 1.05, color: '#fff', whiteSpace: 'nowrap', letterSpacing: 1,
     WebkitTextStroke: `${Math.round(size / 9)}px #0A0F16`, paintOrder: 'stroke fill', textShadow: '0 6px 16px rgba(0,0,0,0.6)' }}>
     {a} <span style={{ color: GOLD }}>{b}</span>
   </div>
 );
-const Pin: React.FC<{ t: number; t0: number; x: number; y: number; size?: number; label?: React.ReactNode; side?: 1 | -1 }> = ({ t, t0, x, y, size = 110, label, side = 1 }) => {
+export const Pin: React.FC<{ t: number; t0: number; x: number; y: number; size?: number; label?: React.ReactNode; side?: 1 | -1 }> = ({ t, t0, x, y, size = 110, label, side = 1 }) => {
   if (t < t0) return null;
   const d = t - t0;
   const fall = d < 0.12 ? -260 * (1 - d / 0.12) ** 2 : 0;
@@ -88,7 +88,7 @@ const LAKE_FILLS: Fill[] = [
 ];
 const sp = (c: Cam, k: string) => toS(c, PT[k]);
 
-const Vectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
+export const Vectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // Canada: white flash, then red (the reference's 0.7–1.6 s), dimmer while zoomed in
   const can = FILLS[0];
   const white = ramp(t, can.t0, can.t0 + 0.08, linear) * (1 - ramp(t, can.t0 + 0.25, can.t0 + 0.75, inOut));
