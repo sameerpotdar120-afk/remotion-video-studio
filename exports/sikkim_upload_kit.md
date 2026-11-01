@@ -2,7 +2,7 @@
 
 Upload file: `sikkim_4k60_master.mp4` (4K 60 fps, 2160×3840, 1:43, 568 MB; in the repo through Git LFS).
 Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/sikkim_4k60_master.mp4
-Thumbnail: not made yet.
+Thumbnail: `sikkim_thumbnail.jpg` (1080×1920) and `sikkim_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram (SikkimCover: the Blender train nosing out of its tunnel portal, "SIKKIM / ट्रेन क्यों नहीं?" and "0 RAILWAY STATIONS"). Everything that matters sits inside the 3:4 crop.
 
 ## Search queries this should win
 
