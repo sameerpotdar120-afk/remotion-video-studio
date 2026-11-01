@@ -1,11 +1,13 @@
 import React from 'react';
-import { AbsoluteFill, Img, staticFile } from 'remotion';
+import { AbsoluteFill, continueRender, delayRender, staticFile } from 'remotion';
 import { Cam, GEO } from './cam';
 
 // The plates (tools/build_canadalakes_maps.py: EOX Sentinel-2 + AWS terrain, graded) under the camera, coarse to fine.
-// A fine plate fades in once the camera is close enough for it (and its centre is near it); a coarse plate is dropped
-// once it would be blown up more than 40× and a fine plate covers the screen, so no layer is ever absurdly large.
+// Each plate is painted as the background of a screen-sized box (background-size/-position place it), so the browser
+// only ever paints the part on screen, however far the camera zooms in: a plate drawn as a giant <img> crashed the
+// render tab after a few hundred deep-zoom frames. The images are decoded once, before the first frame.
 const ORDER = ['namerica', 'canada', 'novascotia', 'athabasca', 'stupid', 'shield', 'louise', 'bc', 'bigass'];
+const SRC = (n: string) => staticFile(`canadalakes/maps/${n}_geo.jpg`);
 const native = (n: string) => { const p = GEO.plates[n]; return (p.bounds[2] - p.bounds[0]) / p.w; };
 const rect = (c: Cam, n: string) => {
   const [b0, b1, b2, b3] = GEO.plates[n].bounds;
@@ -23,7 +25,18 @@ export const opacityOf = (c: Cam, n: string) => {
   if (n === 'canada') return Math.min(1, Math.max(0, (16000 - c.mpp) / 4000));
   return Math.min(1, Math.max(0, (k * 9 - c.mpp) / (k * 4)));
 };
+
+let preloaded: Promise<unknown> | null = null;
+const usePreload = () => {
+  const [h] = React.useState(() => delayRender('ca plates'));
+  React.useEffect(() => {
+    if (!preloaded) preloaded = Promise.all(ORDER.map((n) => { const i = new Image(); i.src = SRC(n); return i.decode().catch(() => undefined); }));
+    preloaded.then(() => continueRender(h));
+  }, [h]);
+};
+
 export const MapLayers: React.FC<{ c: Cam }> = ({ c }) => {
+  usePreload();
   const vis = ORDER.map((n) => ({ n, o: opacityOf(c, n) }));
   // the finest plate fully opaque and covering the screen hides everything coarser that is blown up too far
   let floor = -1;
@@ -32,12 +45,14 @@ export const MapLayers: React.FC<{ c: Cam }> = ({ c }) => {
     <AbsoluteFill style={{ background: SEA, overflow: 'hidden' }}>
       {vis.map(({ n, o }, i) => {
         if (o <= 0) return null;
-        if (i < floor && c.mpp < native(n) / 40) return null;
-        if (c.mpp < native(n) / 60) return null; // never blow a plate up past 60× (a huge layer crashes the tab)
+        if (i < floor && c.mpp < native(n) / 30) return null;
+        const r = rect(c, n);
+        const size = `${r.width}px ${r.height}px`, pos = `${r.left}px ${r.top}px`;
         const fine = i >= 2;
         return (
-          <Img key={n} src={staticFile(`canadalakes/maps/${n}_geo.jpg`)} style={{ position: 'absolute', ...rect(c, n), maxWidth: 'none', opacity: o,
-            ...(fine ? { WebkitMaskImage: FEATHER, WebkitMaskComposite: 'source-in', maskImage: FEATHER, maskComposite: 'intersect' } : {}) }} />
+          <div key={n} style={{ position: 'absolute', inset: 0, opacity: o, backgroundImage: `url(${SRC(n)})`, backgroundSize: size, backgroundPosition: pos, backgroundRepeat: 'no-repeat',
+            ...(fine ? { WebkitMaskImage: FEATHER, WebkitMaskSize: size, WebkitMaskPosition: pos, WebkitMaskRepeat: 'no-repeat', WebkitMaskComposite: 'source-in',
+              maskImage: FEATHER, maskSize: size, maskPosition: pos, maskRepeat: 'no-repeat', maskComposite: 'intersect' } : {}) }} />
         );
       })}
     </AbsoluteFill>
