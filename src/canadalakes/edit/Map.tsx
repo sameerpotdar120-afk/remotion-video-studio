@@ -33,6 +33,7 @@ export const MapLayers: React.FC<{ c: Cam }> = ({ c }) => {
       {vis.map(({ n, o }, i) => {
         if (o <= 0) return null;
         if (i < floor && c.mpp < native(n) / 40) return null;
+        if (c.mpp < native(n) / 60) return null; // never blow a plate up past 60× (a huge layer crashes the tab)
         const fine = i >= 2;
         return (
           <Img key={n} src={staticFile(`canadalakes/maps/${n}_geo.jpg`)} style={{ position: 'absolute', ...rect(c, n), maxWidth: 'none', opacity: o,
