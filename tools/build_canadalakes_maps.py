@@ -28,16 +28,16 @@ from build_thailand_maps import mx, my, rings  # noqa: E402
 Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "canadalakes" / "maps"
-PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
+PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1 (close-ups tall enough to fill a 9:16 frame)
     ("namerica", 5, 4, -172.0, -10.0, 14.0, 83.5),
     ("canada", 6, 5, -142.0, -50.0, 41.0, 72.0),
-    ("shield", 13, 9, -93.72, -93.36, 53.95, 54.11),
-    ("athabasca", 9, 7, -111.6, -106.0, 58.3, 59.85),
-    ("louise", 15, 12, -116.235, -116.196, 51.405, 51.425),
-    ("bc", 16, 12, -120.252, -120.222, 49.886, 49.899),
+    ("shield", 13, 9, -93.78, -93.30, 53.93, 54.13),
+    ("athabasca", 8, 7, -114.0, -104.0, 55.5, 62.0),
+    ("louise", 15, 12, -116.26, -116.17, 51.392, 51.437),
+    ("bc", 16, 12, -120.256, -120.218, 49.878, 49.902),
     ("stupid", 14, 10, -93.52, -93.38, 55.635, 55.692),
-    ("novascotia", 8, 7, -66.6, -59.6, 43.3, 47.3),
-    ("bigass", 16, 12, -62.945, -62.921, 44.919, 44.932),
+    ("novascotia", 7, 6, -68.0, -58.0, 40.5, 49.5),
+    ("bigass", 16, 12, -62.945, -62.921, 44.917, 44.935),
 ]
 NAMED = {  # name: (lon, lat, plate) for lakes traced from the satellite
     "Lake Louise": (-116.2195, 51.4160, "louise"),

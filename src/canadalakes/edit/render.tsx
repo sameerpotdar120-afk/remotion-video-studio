@@ -1,0 +1,9 @@
+import React from 'react';
+import { Composition, registerRoot } from 'remotion';
+import { CA_DURATION_60, CanadaLakes } from './CanadaLakes';
+
+/** A render-only entry for the Canada lake names edit (a minimal public dir: canadalakes, brand). */
+const RenderRoot: React.FC = () => (
+  <Composition id="CanadaLakes4K60" component={CanadaLakes} durationInFrames={CA_DURATION_60} fps={60} width={1080} height={1920} defaultProps={{ captions: true, audio: '' }} />
+);
+registerRoot(RenderRoot);
