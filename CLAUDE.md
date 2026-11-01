@@ -37,6 +37,9 @@ session picks it up. If the plugin is not loaded, run `claude plugin marketplace
 - The house rules still apply: copyright-free credited sources only, India's official boundary on every map block,
   Mixkit music and Sonniss SFX (no HeyGen or AI-generated music unless the creator asks), the creator's own VO, no grain,
   loop ending.
+- No paid HeyGen generation (creator, Nov 1): media-use image, image-to-video, voice and music generation need a HeyGen
+  sign-in and its credits, so don't use them. Use HyperFrames for the free parts: HTML/GSAP motion, registry blocks,
+  captions, grading, cutouts, local checks and render.
 - Optional local tools it can use: whisper-cpp for word timing (build from source), Kokoro TTS and MusicGen (not
   needed: the VO is the creator's and the music is Mixkit).
 
