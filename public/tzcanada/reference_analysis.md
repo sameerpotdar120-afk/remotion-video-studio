@@ -31,8 +31,8 @@ close-ups). Captions: small white word-by-word line at y≈1200 (about 62 % down
 | 58.5–62.8 | Everyone else turns back | many clock icons pop over the US and eastern Canada and spin back an hour |
 | 62.8–67.4 | Spring | zones recolour, clock labels back; slow push; ends on the normal map (not a loop) |
 
-Style notes for our version: the same continuous camera on EOX satellite with Natural Earth zone fills (time zones are
-cut from Natural Earth's time-zone polygons, with India never involved here), boxed UTC / clock tags, sweeping
+Style notes for our version: the same continuous camera on EOX satellite with zone fills cut from Natural Earth's
+province and state polygons (grouped by their time), boxed UTC / clock tags, sweeping
 meridians, a code-drawn clock that flies off with motion blur, ring pulses, a drawn rail line with a moving train icon,
 split-flap boards drawn in code, padlock / clock icons in code. The clock and boards are the only "props"; everything
 else is map work. Every image in the reference (satellite, icons) is someone else's: we rebuild it all.
