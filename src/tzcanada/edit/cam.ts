@@ -32,7 +32,7 @@ export const NA_MPP = 9000;
 export const CAM0: Cam = { x: NA[0], y: NA[1] + 300000, mpp: 9800 };
 const CASC = add(mid(PT.Vancouver, PT.Seattle), 0, -10000);
 const CD = mid(PT.Calgary, PT.Destin);
-const CANADA: P = merc(-107, 58);
+const CANADA: P = merc(-112, 58);
 
 const keys = (): Key[] => [
   // line 1: the continent tilted, then the dive to Vancouver and Seattle (the hook: 3 hours there, 5 back)
@@ -58,7 +58,10 @@ const keys = (): Key[] => [
   { t: C.ulta5 + 0.55, at: PT.Vancouver, mpp: 2600, e: inOut },
   { t: C.vancouver5 - 0.25, at: PT.Vancouver, mpp: 2300, e: linear },
   { t: C.vancouver5 + 0.35, at: CASC, mpp: 245, e: inOut },
-  { t: C.end16, at: CASC, mpp: 215, e: linear },
+  { t: C.clocks5 - 0.25, at: CASC, mpp: 225, e: linear },
+  { t: C.clocks5 + 0.3, at: add(CASC, 0, 15000), mpp: 520, e: inOut },
+  { t: C.end16, at: add(CASC, 0, 15000), mpp: 490, e: linear },
+  { t: C.train6 + 0.3, at: CASC, mpp: 215, e: inOut },
   // line 6: the train runs the line (the station insert covers 'par ghadi dekho')
   { t: C.ghadi6 + 0.2, at: CASC, mpp: 200, e: linear },
   { t: C.end19, at: CASC, mpp: 190, e: linear },
@@ -118,7 +121,7 @@ export const camAt = (t: number): Cam => {
 export const tiltAt = (t: number) => {
   const a = 1 - clamp(t / 0.8), b = clamp((t - (DURATION_S - 0.9)) / 0.9);
   const e = (x: number) => x * x * (3 - 2 * x);
-  return 30 * Math.max(e(a), e(b));
+  return 22 * Math.max(e(a), e(b));
 };
 export const toS = (c: Cam, p: P): P => [540 + (p[0] - c.x) / c.mpp, 960 - (p[1] - c.y) / c.mpp];
 export const ringsD = (c: Cam, rings: P[][]) => rings.map((r) => r.map((p, i) => { const [sx, sy] = toS(c, p); return `${i ? 'L' : 'M'}${sx.toFixed(1)},${sy.toFixed(1)}`; }).join('') + 'Z').join('');

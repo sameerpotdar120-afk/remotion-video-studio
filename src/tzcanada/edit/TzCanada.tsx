@@ -130,6 +130,7 @@ const BAND_ORDER = (z: number) => (z + 10) / 6.5;
 
 const ZoneMap: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const L = zoneLook(t);
+  const zoomK = 0.55 + 0.45 * clamp01((c.mpp - 600) / 2500);
   const countries = [...GEO.countries.Canada, ...GEO.countries['United States of America']];
   const showA1 = Math.max(L.o, L.pale, win(t, C.bc8 - 0.3, C.baaki9 + 0.3, 0.4, 0.4) * 0.7);
   return (
@@ -148,7 +149,7 @@ const ZoneMap: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
             const d = ringsD(c, z.rings);
             return (
               <g key={i} opacity={L.o * dev}>
-                <path d={d} fill={col} opacity={0.62} />
+                <path d={d} fill={col} opacity={0.62 * zoomK} />
                 <path d={d} fill="#fff" opacity={flash * 0.5} />
                 <path d={d} fill="url(#sheen)" />
               </g>
@@ -412,8 +413,8 @@ const Provinces: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           const lab = n === 'Northwest Territories' ? 'NW Territories' : n;
           return (
             <React.Fragment key={n}>
-              <div style={{ position: 'absolute', left: x, top: y + s * 0.62, transform: `translate(-50%,0) scale(${pop(t, t0 + 0.05, 11, 180) * big})`, opacity: 1 - ramp(t, C.baaki9, C.baaki9 + 0.3, linear) }}>
-                <TwoTone a={lab} size={54} />
+              <div style={{ position: 'absolute', left: x, top: y + s * 0.6, transform: `translate(-50%,0) scale(${pop(t, t0 + 0.05, 11, 180) * big})`, opacity: 1 - ramp(t, t0 + 1.6, t0 + 1.9, linear) }}>
+                <TwoTone a={lab} size={46} />
               </div>
               {t > clockAt && (
                 <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${pop(t, clockAt, 11, 190) * pulse}) scaleX(${sx})` }}>
@@ -430,7 +431,7 @@ const Provinces: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   );
 };
 
-const OTHER: [number, number][] = [[-120.2, 44.5], [-118.8, 36.8], [-105.0, 39.7], [-98.0, 35.5], [-88.5, 41.9], [-84.4, 33.6], [-77.5, 38.9], [-74.2, 42.6], [-79.4, 46.5], [-72.0, 47.5], [-64.0, 45.7], [-150.0, 63.0], [-81.6, 28.5], [-93.5, 31.5]];
+const OTHER: [number, number][] = [[-120.2, 44.5], [-118.8, 36.8], [-105.0, 39.7], [-98.0, 34.5], [-88.5, 41.9], [-84.4, 33.0], [-75.5, 40.0], [-79.4, 47.0], [-70.5, 47.5], [-64.0, 45.7], [-150.0, 63.0], [-111.5, 34.0]];
 const OthersClocks: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const o = win(t, C.baaki9 - 0.1, C.khisak9 + 0.2, 0.1, 0.3);
   if (o <= 0) return null;
@@ -439,7 +440,7 @@ const OthersClocks: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
     <div style={{ position: 'absolute', inset: 0, opacity: o }}>
       {OTHER.map(([lon, lat], i) => {
         const [x, y] = toS(c, LL(lon, lat));
-        const s = 120;
+        const s = 96;
         return (
           <div key={i} style={{ position: 'absolute', left: x - s / 2, top: y - s / 2, width: s, height: s, transform: `scale(${pop(t, C.baaki9 + i * 0.07, 11, 190)})` }}>
             <Clock size={s} hour={60 - 30 * back} minute={-360 * back} style={{ left: 0, top: 0 }} />
@@ -485,7 +486,7 @@ const FLAP = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:';
 const Flaps: React.FC<{ t: number; t0: number; text: string; size: number; color?: string }> = ({ t, t0, text, size, color = '#fff' }) => (
   <span style={{ display: 'inline-flex', gap: size * 0.06 }}>
     {Array.from(text).map((ch, i) => {
-      const settle = t0 + 0.05 * i + 0.25;
+      const settle = t0 + 0.035 * i + 0.2;
       const shown = t >= settle || ch === ' ' ? ch : t < t0 ? ' ' : FLAP[Math.floor((t * 30 + i * 7) % FLAP.length)];
       const flip = t < settle && t >= t0 ? (t * 30) % 1 : 0;
       return (
@@ -596,7 +597,7 @@ export const TzCanada: React.FC<{ audio?: string; captions?: boolean }> = ({ aud
   return (
     <AbsoluteFill style={{ background: '#05080d', overflow: 'hidden' }}>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy + mapOff}px)` }}>
-        <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1600px) rotateX(${tilt.toFixed(2)}deg) scale(${1 + tilt * 0.012})` : undefined, transformOrigin: '50% 60%' }}>
+        <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1600px) rotateX(${tilt.toFixed(2)}deg) scale(${1 + tilt * 0.024})` : undefined, transformOrigin: '50% 60%' }}>
           <AbsoluteFill style={{ filter: blur > 0.6 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
             <MapLayers c={c0} />
             <ZoneMap t={t} c={c0} />

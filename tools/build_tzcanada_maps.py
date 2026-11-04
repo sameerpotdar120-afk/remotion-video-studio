@@ -24,7 +24,7 @@ from build_thailand_maps import mx, my, rings  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "tzcanada" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
-    ("namerica", 5, 4, -172.0, -10.0, 12.0, 83.5),
+    ("namerica", 5, 4, -172.0, -10.0, -22.0, 83.5),
     ("west", 7, 6, -136.0, -98.0, 40.0, 63.0),
     ("calgary", 9, 8, -117.0, -111.0, 48.6, 53.4),
     ("destin", 9, 8, -89.5, -83.5, 27.4, 33.2),
@@ -57,7 +57,7 @@ def main() -> None:
     for name, zs, zd, lo0, lo1, la0, la1 in PLATES:
         if only and name not in only:
             continue
-        if name in ("namerica", "west"):
+        if name in ("namerica", "west", "calgary", "destin"):
             geo["plates"][name] = uk.build(name, zs, zd, lo0, lo1, la0, la1, cache, sat_water=True)
         else:
             geo["plates"][name] = cl.closeup(name, zs, zd, lo0, lo1, la0, la1, cache)
