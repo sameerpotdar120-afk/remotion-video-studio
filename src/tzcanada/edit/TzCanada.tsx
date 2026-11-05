@@ -71,7 +71,7 @@ const Tag: React.FC<{ t: number; t0: number; x: number; y: number; text: string;
   );
 };
 /** A wall-clock icon: the creator's clock face (t01) with code-drawn hands; angles in degrees from 12. */
-const Clock: React.FC<{ size: number; hour: number; minute: number; style?: React.CSSProperties }> = ({ size, hour, minute, style }) => (
+export const Clock: React.FC<{ size: number; hour: number; minute: number; style?: React.CSSProperties }> = ({ size, hour, minute, style }) => (
   <div style={{ position: 'absolute', width: size, height: size * 1.034, ...style }}>
     <Img src={IMG('t01_wall_clock.png')} style={{ width: size, height: size * 1.034 }} />
     <svg width={size} height={size * 1.034} viewBox="0 0 100 103.4" style={{ position: 'absolute', left: 0, top: 0 }}>
@@ -128,7 +128,7 @@ const zoneLook = (t: number) => {
 };
 const BAND_ORDER = (z: number) => (z + 10) / 6.5;
 
-const ZoneMap: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
+export const ZoneMap: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const L = zoneLook(t);
   const zoomK = 0.55 + 0.45 * clamp01((c.mpp - 600) / 2500);
   const countries = [...GEO.countries.Canada, ...GEO.countries['United States of America']];
