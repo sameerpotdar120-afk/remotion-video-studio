@@ -19,8 +19,16 @@ const shin = (y) => 0.004 * Math.exp(-(((y - 0.3) / 0.12) ** 2));
 /** surface point (person faces -z, right side = +x, calf/back = +z) */
 export function P(th, y, out = new THREE.Vector3()) {
   const r = R(y), c = Math.cos(th), s = Math.sin(th);
-  const back = Math.max(0, s) ** 1.6 * bulge(y), front = Math.max(0, -s) ** 3 * shin(y);
-  return out.set(r * c * 1.0, y, r * 1.06 * s + back - front);
+  const back = Math.max(0, s) ** 1.6 * bulge(y) * 0.55, front = Math.max(0, -s) ** 3 * shin(y);
+  const ang = (a) => { let d = th - a; d = Math.atan2(Math.sin(d), Math.cos(d)); return d; };
+  const med = 0.0105 * Math.exp(-((ang(Math.PI / 2 + 0.6) / 0.62) ** 2) - (((y - 0.295) / 0.072) ** 2));   // inner calf head (bigger, lower)
+  const lat = 0.0072 * Math.exp(-((ang(Math.PI / 2 - 0.6) / 0.55) ** 2) - (((y - 0.325) / 0.064) ** 2));   // outer calf head
+  const lo = Math.max(0, Math.min(1, (0.2 - y) / 0.09)), achS = lo * lo * (3 - 2 * lo);
+  const ach = achS * (0.0028 * Math.exp(-((ang(Math.PI / 2) / 0.22) ** 2)) - 0.0045 * Math.exp(-(((Math.abs(ang(Math.PI / 2)) - 0.75) / 0.35) ** 2)));
+  const knee = -0.0042 * Math.exp(-(((y - 0.505) / 0.032) ** 2)) * Math.max(0, s) ** 3;
+  const ankle = 0.0042 * Math.exp(-((ang(0.05) / 0.35) ** 2) - (((y - 0.075) / 0.016) ** 2)) + 0.0036 * Math.exp(-((ang(Math.PI - 0.05) / 0.35) ** 2) - (((y - 0.085) / 0.016) ** 2));
+  const rr = r + med + lat + ach + knee + ankle;
+  return out.set(rr * c * 1.0, y, rr * 1.06 * s + back - front);
 }
 export function N(th, y, out = new THREE.Vector3()) {
   const e = 1e-4, a = P(th + e, y), b = P(th - e, y), c = P(th, y + e), d = P(th, y - e);
@@ -35,8 +43,8 @@ const sst = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a)))
 export function taperOf(s, pad = 0) { const t = (s - WOUND.s0 + pad) / (WOUND.s1 - WOUND.s0 + 2 * pad); return t <= 0 || t >= 1 ? 0 : Math.sin(Math.PI * t); }
 export function disp(l, s, U) {
   const tp = taperOf(s), al = Math.abs(l), tq = Math.pow(tp, 0.5);
-  const gw = WOUND.gap * tq * U.open + 1e-6;
-  const groove = -WOUND.depth * tq * (1 - sst(gw * 0.5, gw * 1.15, al)) * (1 - U.fill);
+  const gw = Math.max(WOUND.gap * tq * U.open, 0.0013 * tq * (U.chan || 0)) + 1e-6;
+  const groove = -WOUND.depth * (1 + 0.5 * (U.chan || 0)) * tq * (1 - sst(gw * 0.55, gw * 1.12, al)) * (1 - U.fill);
   const lip = 0.00035 * tq * U.open * Math.exp(-(((al - gw * 1.3) / 0.0012) ** 2));
   const ts = taperOf(s, 0.012), lumps = 0.84 + 0.13 * Math.sin(6.2832 * (s - WOUND.s0) / 0.0095 + 1.3 + 0.6 * Math.sign(l)) + 0.07 * Math.sin(s * 410 + l * 900);
   const sw = U.swell * 0.0034 * Math.pow(ts, 0.75) * lumps * Math.exp(-(((al - 0.0036) / 0.0052) ** 3));
@@ -65,7 +73,7 @@ function cumulativeMap(n, a, b, dens) {   // n+1 samples in [a,b] with density d
   return out;
 }
 export function legGeometry({ wound = true, nth = 420, ny = 600, y0 = 0.05, y1 = 0.80 } = {}) {
-  const ths = cumulativeMap(nth, WOUND.th0 - Math.PI, WOUND.th0 + Math.PI, (x) => 1 + (wound ? 9 * Math.exp(-(((x - WOUND.th0) / 0.22) ** 2)) : 0));
+  const ths = cumulativeMap(nth, WOUND.th0 - Math.PI, WOUND.th0 + Math.PI, (x) => 1 + (wound ? 7 * Math.exp(-(((x - WOUND.th0) / 0.22) ** 2)) + 14 * Math.exp(-(((x - WOUND.th0) / 0.045) ** 2)) : 0));
   const ys = cumulativeMap(ny, y0, y1, (y) => 1 + (wound ? 6 * Math.exp(-(((y - 0.31) / 0.085) ** 2)) : 0));
   const nv = (nth + 1) * (ny + 1);
   const pos = new Float32Array(nv * 3), nrm = new Float32Array(nv * 3), tl = new Float32Array(nv * 3), ts = new Float32Array(nv * 3), wl = new Float32Array(nv), wsA = new Float32Array(nv);
@@ -114,12 +122,12 @@ float snoise(vec3 v){ const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,
   return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3))); }
 `;
 const FIELD = /* glsl */`
-uniform float uOpen, uFill, uSwell, uScar, uScarK, uGlow, uS0, uS1, uDepth, uGap, uHeal;
+uniform float uOpen, uFill, uSwell, uScar, uScarK, uGlow, uS0, uS1, uDepth, uGap, uHeal, uChan, uFib, uTis;
 float taperOf(float s, float pad){ float t=(s-uS0+pad)/(uS1-uS0+2.0*pad); return (t<=0.0||t>=1.0)?0.0:sin(3.14159265*t); }
 float disp(float l, float s){
   float tp=taperOf(s,0.0), al=abs(l), tq=sqrt(tp);
-  float gw=uGap*tq*uOpen+1e-6;
-  float groove=-uDepth*tq*(1.0-smoothstep(gw*0.5,gw*1.15,al))*(1.0-uFill);
+  float gw=max(uGap*tq*uOpen, 0.0013*tq*uChan)+1e-6;
+  float groove=-uDepth*(1.0+0.5*uChan)*tq*(1.0-smoothstep(gw*0.55,gw*1.12,al))*(1.0-uFill);
   float lip=0.00035*tq*uOpen*exp(-pow((al-gw*1.3)/0.0012,2.0));
   float ts=taperOf(s,0.012), lumps=0.84+0.13*sin(6.2832*(s-uS0)/0.0095+1.3+0.6*sign(l))+0.07*sin(s*410.0+l*900.0);
   float sw=uSwell*0.0034*pow(ts,0.75)*lumps*exp(-pow((al-0.0036)/0.0052,3.0));
@@ -131,7 +139,7 @@ export function skinMaterial(envMap) {
   const m = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.52, metalness: 0, sheen: 0.35, sheenRoughness: 0.6, sheenColor: new THREE.Color('#ffd9c0'),
     clearcoat: 0.08, clearcoatRoughness: 0.5, envMap, envMapIntensity: 0.7 });
   const U = {
-    uOpen: { value: 1 }, uFill: { value: 0 }, uSwell: { value: 0 }, uScar: { value: 0 }, uScarK: { value: 0 }, uGlow: { value: 0 }, uHeal: { value: 0 },
+    uOpen: { value: 1 }, uFill: { value: 0 }, uChan: { value: 0 }, uFib: { value: 0 }, uTis: { value: 0 }, uSwell: { value: 0 }, uScar: { value: 0 }, uScarK: { value: 0 }, uGlow: { value: 0 }, uHeal: { value: 0 },
     uS0: { value: WOUND.s0 }, uS1: { value: WOUND.s1 }, uDepth: { value: WOUND.depth }, uGap: { value: WOUND.gap }, uDetail: { value: 1 },
   };
   m.userData.U = U;
@@ -169,11 +177,14 @@ float skinH(vec3 p){ return 0.000030*snoise(p*2600.0) + 0.000045*snoise(p*900.0)
   base *= 1.0 - 0.10*smoothstep(0.2,0.9,streak);
   // the wound
   float l=vWl, s=vWs, tp=taperOf(s,0.0), al=abs(l), tq=sqrt(tp);
-  float gw=uGap*tq*uOpen+1e-6;
-  float gap=(1.0-smoothstep(gw*0.55,gw*1.1,al))*step(0.001,tp);
+  float gw=max(uGap*tq*uOpen, 0.0013*tq*uChan)+1e-6;
+  float gap=(1.0-smoothstep(gw*0.6,gw*1.08,al))*step(0.001,tp);
   vec3 woundIn=mix(vec3(0.16,0.008,0.008), vec3(0.42,0.04,0.03), smoothstep(0.0,gw,al)+0.2*n2);
   vec3 fresh=vec3(0.50,0.11,0.12)*(0.9+0.1*n2+0.06*n3);
-  vec3 inside=mix(woundIn, fresh, uFill);
+  vec3 yel=vec3(0.80,0.52,0.06)*(0.9+0.12*n2+0.05*n3);
+  vec3 tis=vec3(0.46,0.12,0.12)*(0.88+0.12*n2+0.06*n3);
+  vec3 inside=mix(mix(woundIn, yel, uFib), tis, uTis);
+  inside=mix(inside, fresh, uHeal);
   float rim=exp(-pow(al/0.0028,2.0))*tq;
   base=mix(base, vec3(0.42,0.10,0.07), 0.45*rim*uOpen*(1.0-uFill)*(1.0-uHeal));
   float ts=taperOf(s,0.012);
@@ -181,27 +192,33 @@ float skinH(vec3 p){ return 0.000030*snoise(p*2600.0) + 0.000045*snoise(p*900.0)
   base=mix(base, vec3(0.55,0.10,0.12)*(0.88+0.14*n2+0.06*n3), 0.9*smoothstep(0.0,0.7,swA));
   float halo=uSwell*pow(ts,0.9)*exp(-pow((al-0.0098)/0.0028,2.0));
   base=mix(base, vec3(0.62,0.36,0.08), 0.35*halo);
-  base=mix(base, inside, gap*(1.0-0.75*uFill));
+  base=mix(base, inside, gap*(1.0-0.8*uHeal));
   float scarA=uScar*tp*exp(-pow(l/0.0026,2.0));
   base=mix(base, vec3(0.62,0.22,0.20), 0.85*scarA*uScarK);
   diffuseColor.rgb = base;
 }`)
       .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
-{ float l=vWl, s=vWs, tp=taperOf(s,0.0), al=abs(l); float gw=uGap*sqrt(tp)*uOpen+1e-6;
-  float gap=(1.0-smoothstep(gw*0.55,gw*1.1,al))*step(0.001,tp);
+{ float l=vWl, s=vWs, tp=taperOf(s,0.0), al=abs(l); float gw=max(uGap*sqrt(tp)*uOpen, 0.0013*sqrt(tp)*uChan)+1e-6;
+  float gap=(1.0-smoothstep(gw*0.6,gw*1.08,al))*step(0.001,tp);
   float swA=uSwell*pow(taperOf(s,0.012),0.75)*exp(-pow((al-0.0036)/0.0056,4.0));
   roughnessFactor = mix(roughnessFactor, 0.47, smoothstep(0.0,0.8,swA));
-  roughnessFactor = mix(roughnessFactor, mix(0.3,0.45,uFill), gap); }`)
+  roughnessFactor = mix(roughnessFactor, mix(0.22, 0.4, uTis), gap); }`)
       .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
 { float e=0.00012; float l=vWl, s=vWs;
   float dl=(disp(l+e,s)-disp(l-e,s))/(2.0*e), ds=(disp(l,s+e)-disp(l,s-e))/(2.0*e);
   float h0=skinH(vWP), hl=skinH(vWP+vTlW*e), hs=skinH(vWP+vTsW*e);
-  float wfade = 1.0 - 0.7*exp(-pow(l/0.004,2.0))*uSwell;
+  float wfade = 1.0 - 0.92*exp(-pow(l/0.006,2.0))*uSwell;
   dl += uDetail*wfade*(hl-h0)/e; ds += uDetail*wfade*(hs-h0)/e;
   normal = normalize(normal - dl*vTlV - ds*vTsV); }`)
+      .replace('#include <opaque_fragment>', `
+{ float lum = dot(outgoingLight, vec3(0.2126,0.7152,0.0722));
+  float sss = smoothstep(0.55, 0.04, lum);
+  outgoingLight = mix(outgoingLight, outgoingLight * vec3(1.22, 0.93, 0.84) + vec3(0.018, 0.004, 0.0), 0.65 * sss);
+  outgoingLight = mix(vec3(lum), outgoingLight, 1.06); }
+#include <opaque_fragment>`)
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
 { float tp=taperOf(vWs,0.01); totalEmissiveRadiance += vec3(1.0,0.45,0.15)*uGlow*tp*exp(-pow(vWl/0.005,2.0))*0.6; }`);
   };
-  m.customProgramCacheKey = () => 'skin-v1';
+  m.customProgramCacheKey = () => 'skin-v3';
   return m;
 }

@@ -68,7 +68,7 @@ export function buildScene(E, W) {   // W = word-time helper: W('word', line)
     im.count = k; group.add(im); return im;
   }
   const QP = new URLSearchParams(location.search);
-  if (!QP.has('nohair')) { hair(legR, 34000, true, 1); hair(legLInner, 12000, false, 50); }
+  if (!QP.has('nohair')) { hair(legR, 26000, true, 1); hair(legLInner, 9000, false, 50); }
 
   // socks, sneakers, shorts (sculpted, then meshed)
   const fabric = (c, r = 0.85) => new THREE.MeshPhysicalMaterial({ color: c, roughness: r, sheen: 0.6, sheenRoughness: 0.8, sheenColor: new THREE.Color('#ffffff'), side: THREE.DoubleSide });
@@ -116,29 +116,29 @@ export function buildScene(E, W) {   // W = word-time helper: W('word', line)
   const loopEnds = (i) => { const sa = S1 - 0.0085 - i * SP; return { sa, sb: sa - SP * 0.5 }; };
   const threadMat = new THREE.MeshPhysicalMaterial({ color: '#f3f3ef', roughness: 0.38, sheen: 0.4, sheenColor: new THREE.Color('#ffffff'), clearcoat: 0.3, clearcoatRoughness: 0.3, transparent: true });
   const TR = 0.00056;
-  const loops = []; for (let i = 0; i < NL; i++) { const m = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); m.castShadow = true; m.frustumCulled = false; scene.add(m); loops.push(m); }
+  const loops = []; for (let i = 0; i < NL; i++) { const m = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); m.castShadow = true; m.frustumCulled = false; legR.add(m); loops.push(m); }
   function loopCurve(i, U, h, f = 1, lift = 0) {
     const { sa, sb } = loopEnds(i), pts = [], n = 28;
     for (let k = 0; k <= n; k++) {
       const u = (k / n) * f, l = lerp(-AL, AL, u), s = lerp(sa, sb, u);
       const hh = h * Math.pow(Math.sin(Math.PI * u), 0.7) - 0.0009 * (1 - Math.sin(Math.PI * u)) + lift;
-      pts.push(onSkin(l, s, { ...U, fill: 1 }, hh + TR * 0.6));
+      pts.push(onSkin(l, s, { ...U, fill: 1, chan: 0 }, hh + TR * 0.6));
     }
     return pts;
   }
   const tube = (mesh, pts, r, seg = 40, rs = 8) => { mesh.geometry.dispose(); mesh.geometry = pts.length > 1 ? new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), seg, r, rs, false) : new THREE.BufferGeometry(); };
 
   const steel = new THREE.MeshPhysicalMaterial({ color: '#d7dbe2', metalness: 1, roughness: 0.18, envMapIntensity: 1.3 });
-  const needle = new THREE.Mesh(new THREE.BufferGeometry(), steel); needle.castShadow = true; needle.frustumCulled = false; scene.add(needle);
-  const tail = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); tail.castShadow = true; tail.frustumCulled = false; scene.add(tail);
-  const cutTail = new THREE.Mesh(new THREE.BufferGeometry(), threadMat.clone()); cutTail.castShadow = true; cutTail.frustumCulled = false; scene.add(cutTail);
-  const knot = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); knot.castShadow = true; knot.frustumCulled = false; scene.add(knot);
+  const needle = new THREE.Mesh(new THREE.BufferGeometry(), steel); needle.castShadow = true; needle.frustumCulled = false; legR.add(needle);
+  const tail = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); tail.castShadow = true; tail.frustumCulled = false; legR.add(tail);
+  const cutTail = new THREE.Mesh(new THREE.BufferGeometry(), threadMat.clone()); cutTail.castShadow = true; cutTail.frustumCulled = false; legR.add(cutTail);
+  const knot = new THREE.Mesh(new THREE.BufferGeometry(), threadMat); knot.castShadow = true; knot.frustumCulled = false; legR.add(knot);
 
   // needle path: param q in [0, NL]; frac < 0.72 = over the top, else under the skin to the next loop
   function needlePoint(q, U, h) {
     const i = Math.min(Math.floor(q), NL - 1), f = q - i;
     if (f < 0.72) { const u = f / 0.72; const { sa, sb } = loopEnds(i); const l = lerp(-AL, AL, u), s = lerp(sa, sb, u);
-      return onSkin(l, s, { ...U, fill: 1 }, h * Math.pow(Math.sin(Math.PI * u), 0.7) - 0.0009 * (1 - Math.sin(Math.PI * u)) + TR); }
+      return onSkin(l, s, { ...U, fill: 1, chan: 0 }, h * Math.pow(Math.sin(Math.PI * u), 0.7) - 0.0009 * (1 - Math.sin(Math.PI * u)) + TR); }
     const u = (f - 0.72) / 0.28, a = loopEnds(i), b = loopEnds(Math.min(i + 1, NL - 1));
     const l = lerp(AL, -AL, u), s = lerp(a.sb, b.sa, u); return onSkin(l, s, U, -0.003 * Math.sin(Math.PI * u) - 0.0012);
   }
@@ -160,45 +160,45 @@ export function buildScene(E, W) {   // W = word-time helper: W('word', line)
     screw.rotation.x = Math.PI / 2; screw.castShadow = true; root.add(screw);
     root.userData.halves = halves; return root;
   }
-  const SCI = scissors(); SCI.visible = false; scene.add(SCI);
+  const SCI = scissors(); SCI.visible = false; legR.add(SCI);
 
   // ── cells (glowing, rushing in) ───────────────────────────────────────
   const NC = 170;
   const cellGeo = new THREE.SphereGeometry(1, 18, 12);
   const cellMat = new THREE.MeshPhysicalMaterial({ color: '#fff3ea', emissive: '#ffe2cc', emissiveIntensity: 1.1, roughness: 0.25, transmission: 0, clearcoat: 0.6, transparent: true });
-  const cells = new THREE.InstancedMesh(cellGeo, cellMat, NC); cells.frustumCulled = false; cells.castShadow = true; scene.add(cells);
-  const cellData = Array.from({ length: NC }, (_, i) => ({ side: i % 2 ? 1 : -1, s: S0 + 0.004 + (S1 - S0 - 0.008) * rnd(i * 13 + 2), l0: 0.012 + 0.018 * rnd(i * 5 + 1), l1: 0.0015 + 0.003 * rnd(i * 17 + 3), d: rnd(i * 19 + 4) * 0.9, r: 0.0005 + 0.0004 * rnd(i * 23 + 5), w: rnd(i * 29 + 6) * 6.28 }));
+  const cells = new THREE.InstancedMesh(cellGeo, cellMat, NC); cells.frustumCulled = false; cells.castShadow = true; legR.add(cells);
+  const cellData = Array.from({ length: NC }, (_, i) => ({ side: i % 2 ? 1 : -1, s: S0 + 0.004 + (S1 - S0 - 0.008) * rnd(i * 13 + 2), l0: 0.012 + 0.018 * rnd(i * 5 + 1), l1: 0.0002 + 0.0008 * rnd(i * 17 + 3), d: rnd(i * 19 + 4) * 0.9, r: 0.00032 + 0.00026 * rnd(i * 23 + 5), w: rnd(i * 29 + 6) * 6.28 }));
 
   // ── collagen fibres (built on the swollen, still-open wound) ──────────
-  const USW = { open: 0.24, fill: 0, swell: 1, scar: 0 };
+  const USW = { open: 0.24, fill: 0, swell: 1, scar: 0, chan: 1 };
   const colMat = new THREE.MeshPhysicalMaterial({ color: '#f0cdbd', roughness: 0.4, sheen: 0.6, sheenColor: new THREE.Color('#ffe8e0'), emissive: '#2a120c', emissiveIntensity: 0.3, transparent: true });
   const fibres = [];
-  const NF = 76;
+  const NF = 110;
   for (let i = 0; i < NF; i++) {
-    const fam = i % 2 ? 1 : -1, s = S0 + 0.006 + (S1 - S0 - 0.012) * (Math.floor(i / 2) + 0.5 * (i % 2)) / (NF / 2), span = 0.0021 + 0.0005 * rnd(i * 11);
+    const fam = i % 2 ? 1 : -1, s = S0 + 0.006 + (S1 - S0 - 0.012) * (Math.floor(i / 2) + 0.5 * (i % 2)) / (NF / 2), span = 0.0013 + 0.0002 * rnd(i * 11);
     const pts = []; for (let k = 0; k <= 12; k++) { const u = k / 12, l = lerp(-span, span, u), ss = s + fam * l * (0.75 + 0.35 * rnd(i * 5)) + 0.00025 * Math.sin(u * 7 + i * 1.7) + 0.0006 * (rnd(i * 9) - 0.5);
-      pts.push(onSkin(l, ss, { ...USW, fill: 0.5 }, 0.00022 + 0.00025 * Math.sin(Math.PI * u) + 0.00008 * fam)); }
-    const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.00011 + 0.00004 * rnd(i * 13), 6, false);
-    const m = new THREE.Mesh(g, colMat); m.userData.t0 = 0.85 * (s - S0) / (S1 - S0) + 0.1 * rnd(i * 31); m.userData.n = g.index.count; m.castShadow = true; scene.add(m); fibres.push(m);
+      pts.push(onSkin(l, ss, { ...USW, fill: 0.18 }, 0.00012 + 0.0001 * fam)); }
+    const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.00007 + 0.00003 * rnd(i * 13), 6, false);
+    const m = new THREE.Mesh(g, colMat); m.userData.t0 = 0.85 * (s - S0) / (S1 - S0) + 0.1 * rnd(i * 31); m.userData.n = g.index.count; m.castShadow = true; legR.add(m); fibres.push(m);
   }
 
   // ── blood vessels (branching network) ─────────────────────────────────
   const vesMat = new THREE.MeshPhysicalMaterial({ color: '#d4170f', emissive: '#7a0800', emissiveIntensity: 0.55, roughness: 0.3, clearcoat: 0.7, clearcoatRoughness: 0.2, transparent: true });
-  const vessels = [], UV = { open: 0.24, fill: 1, swell: 1, scar: 0 };
+  const vessels = [], UV = { open: 0.24, fill: 0.5, swell: 1, scar: 0, chan: 1 };
   let vid = 0;
   function branch(l, s, dirL, dirS, len, rad, dist, depth) {
     const pts = [], n = Math.max(4, Math.round(len / 0.0009)); let cl = l, cs = s, dl = dirL, ds = dirS; const raw = [[cl, cs]];
     for (let k = 1; k <= n; k++) { const a = (rnd(vid * 7 + k * 3) - 0.5) * 0.9; const c = Math.cos(a), sn = Math.sin(a); [dl, ds] = [dl * c - ds * sn, dl * sn + ds * c];
-      const m = Math.hypot(dl, ds); dl /= m; ds /= m; if (Math.abs(cl) > 0.0045) dl -= Math.sign(cl) * 1.4 * (Math.abs(cl) - 0.0045) / 0.001; cl += dl * len / n; cs += ds * len / n; cs = clamp(cs, S0 - 0.006, S1 + 0.006); raw.push([cl, cs]); }
+      let m = Math.hypot(dl, ds); dl /= m; ds /= m; if (Math.abs(cl) > 0.0007) dl -= Math.sign(cl) * Math.min(1.2, (Math.abs(cl) - 0.0007) / 0.0003); m = Math.hypot(dl, ds); dl /= m; ds /= m; if (Math.abs(ds) < 0.35) { ds = Math.sign(ds || 1) * 0.35; m = Math.hypot(dl, ds); dl /= m; ds /= m; } cl = clamp(cl + dl * len / n, -0.00125, 0.00125); cs += ds * len / n; cs = clamp(cs, S0 - 0.006, S1 + 0.006); raw.push([cl, cs]); }
     for (const [a, b] of raw) pts.push(onSkin(a, b, UV, rad * 0.6));
     const g = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), n * 3, rad, 6, false);
-    const m = new THREE.Mesh(g, vesMat); m.userData = { d0: dist, len, n: g.index.count }; m.castShadow = true; scene.add(m); vessels.push(m); vid++;
+    const m = new THREE.Mesh(g, vesMat); m.userData = { d0: dist, len, n: g.index.count }; m.castShadow = true; legR.add(m); vessels.push(m); vid++;
     if (depth < 3) { const nb = depth === 0 ? 6 : 2;
       for (let b = 0; b < nb; b++) { const f = (b + 0.5 + 0.4 * (rnd(vid * 5 + b) - 0.5)) / nb, [bl, bs] = raw[Math.floor(f * (raw.length - 1))];
         const side = (b % 2 ? 1 : -1) * (depth === 0 ? 1 : (rnd(vid + b) > 0.5 ? 1 : -1));
-        branch(bl, bs, side * 0.9, (rnd(vid * 3 + b) - 0.5) * 1.2, len * (depth === 0 ? 0.22 : 0.5), rad * 0.62, dist + f * len, depth + 1); } }
+        branch(bl, bs, side * 0.7, (rnd(vid * 3 + b) > 0.5 ? 1 : -1) * 0.9, len * (depth === 0 ? 0.3 : 0.5), rad * 0.6, dist + f * len, depth + 1); } }
   }
-  [[0.0003, 0.300, 0.1, 1, 0.034], [-0.0003, 0.300, -0.1, -1, 0.05], [0.0005, 0.330, 0.2, 1, 0.04], [-0.0004, 0.275, 0.1, -1, 0.03]].forEach(([l, s0, dl, ds, len], i) => branch(l, s0, dl, ds, len, 0.00062, i * 0.002, 0));
+  [[0.0003, 0.300, 0.1, 1, 0.034], [-0.0003, 0.300, -0.1, -1, 0.05], [0.0005, 0.330, 0.2, 1, 0.04], [-0.0004, 0.275, 0.1, -1, 0.03]].forEach(([l, s0, dl, ds, len], i) => branch(l, s0, dl, ds, len, 0.00036, i * 0.002, 0));
 
   // ── the timeline ──────────────────────────────────────────────────────
   const T = {
@@ -216,66 +216,53 @@ export function buildScene(E, W) {   // W = word-time helper: W('word', line)
   function state(t) {
     const tighten = eo(seg(t, T.tight, T.tightE));
     const swell = sm(seg(t, T.swell, T.swellE)) * (1 - eio(seg(t, T.weeks, T.heal + 1.2)));
-    const fill = sm(seg(t, T.fill, T.fillE));
     const heal = eio(seg(t, T.weeks, T.heal + 1.0));
+    const chan = sm(seg(t, T.swell, T.swellE + 0.4)) * (1 - heal);
+    const fib = sm(seg(t, T.weaveE - 0.2, T.fillE)), tis = sm(seg(t, T.vesFade, T.vesFade + 1.4));
+    const fill = 0.5 * fib + 0.5 * tis;
     return {
-      U: { open: lerp(1, 0.24, tighten) * (1 - heal), fill: Math.min(1, fill + heal), swell, scar: heal },
+      U: { open: lerp(1, 0.24, tighten) * (1 - heal), fill: Math.min(1, fill + heal), swell, scar: heal, chan },
+      fib, tis,
       tighten, heal, scarK: lerp(1, 0.35, seg(t, T.heal + 0.8, 29.8)),
       glow: Math.exp(-(((t - T.glow - 0.3) / 0.45) ** 2)),
-      h: lerp(0.0022, 0.0009, tighten) + 0.0006 * swell,
+      h: lerp(0.0026, 0.0015, tighten) + 0.0007 * swell,
     };
   }
 
   // ── camera ────────────────────────────────────────────────────────────
   const cam = new THREE.PerspectiveCamera(38, 1440 / 2560, 0.002, 100);
   const side = new THREE.Vector3().crossVectors(V3(0, 1, 0), Fc.n).normalize();
-  // [t, dist, azimuth deg (toward the calf), elevation deg (negative = below), look offset y, fov, roll]
-  const K = [
-    [0.0, 0.66, 26, -14, 0.04, 38, 0],
-    [T.tightE + 0.4, 0.40, 22, -12, 0.03, 36, 0],
-    [T.swell, 0.215, 16, -9, 0.004, 35, 2],
-    [T.cellsE - 0.2, 0.118, 11, -7, 0.0, 34, 7],
-    [T.weave + 1.5, 0.078, 7, -6, -0.002, 34, 12],
-    [T.vesE - 0.2, 0.072, 4, -5, -0.004, 34, 13],
-    [T.vesFade + 0.3, 0.09, 7, -6, 0.0, 34, 10],
-    [T.heal + 0.7, 0.66, 25, -14, 0.045, 38, 1],
-    [30.0, 0.78, 28, -15, 0.05, 38, 0],
-  ];
-  function hermite(k, t) {
-    let i = 0; while (i < K.length - 2 && K[i + 1][0] <= t) i++;
-    const a = K[i], b = K[i + 1], u = clamp((t - a[0]) / (b[0] - a[0]));
-    const prev = K[Math.max(i - 1, 0)], next = K[Math.min(i + 2, K.length - 1)];
-    const val = (r, j) => (j === 1 ? Math.log(r[j]) : r[j]);
-    const m0 = i === 0 ? 0 : (val(b, k) - val(prev, k)) / (b[0] - prev[0]) * (b[0] - a[0]);
-    const m1 = i + 1 >= K.length - 1 ? 0 : (val(next, k) - val(a, k)) / (next[0] - a[0]) * (b[0] - a[0]);
-    const u2 = u * u, u3 = u2 * u, v = (2 * u3 - 3 * u2 + 1) * val(a, k) + (u3 - 2 * u2 + u) * m0 + (-2 * u3 + 3 * u2) * val(b, k) + (u3 - u2) * m1;
-    return k === 1 ? Math.exp(v) : v;
+  const DW = 0.62, DM = 0.066, AZ = 14 * Math.PI / 180;
+  const PUSH_END = T.weave + 1.2, PULL_A = T.vesFade + 0.4, PULL_B = PULL_A + 3.0;
+  function camDist(t) {
+    const L = Math.log, E = Math.exp;
+    if (t < PUSH_END) return E(lerp(L(DW), L(DM), sm(clamp(t / PUSH_END))));
+    if (t < PULL_A) return DM * (1 - 0.06 * sm(seg(t, PUSH_END, PULL_A)));
+    return E(lerp(L(DM * 0.94), L(DW), eio(seg(t, PULL_A, PULL_B))));
   }
   function placeCamera(t) {
-    const d = hermite(1, t), az = hermite(2, t) * Math.PI / 180, el = hermite(3, t) * Math.PI / 180, ly = hermite(4, t), fov = hermite(5, t), roll = hermite(6, t) * Math.PI / 180;
-    const target = C.clone().add(V3(0, ly, 0)).addScaledVector(Fc.n, -0.0);
-    const dir = Fc.n.clone().multiplyScalar(Math.cos(az)).addScaledVector(side, Math.sin(az)); dir.y = 0; dir.normalize();
+    const d = camDist(t), k = clamp((Math.log(d) - Math.log(DM)) / (Math.log(DW) - Math.log(DM)));   // 0 macro .. 1 wide
+    const el = lerp(-3, -13, k) * Math.PI / 180, ly = 0.04 * k;
+    const target = C.clone().add(V3(0, ly, 0));
+    const dir = Fc.n.clone().multiplyScalar(Math.cos(AZ)).addScaledVector(side, Math.sin(AZ)); dir.y = 0; dir.normalize();
     const pos = target.clone().addScaledVector(dir, d * Math.cos(el)).add(V3(0, d * Math.sin(el), 0));
-    // subtle handheld drift
-    pos.x += 0.0025 * d * Math.sin(t * 0.7); pos.y += 0.002 * d * Math.sin(t * 0.53 + 1);
-    cam.position.copy(pos); cam.up.set(0, 1, 0); cam.lookAt(target);
-    cam.rotateZ(roll); cam.fov = fov; cam.updateProjectionMatrix();
-    return { d, focus: pos.distanceTo(C) };
+    cam.position.copy(pos); cam.up.set(0, 1, 0); cam.lookAt(target); cam.fov = 36; cam.updateProjectionMatrix();
+    SU.uDetail.value = lerp(1.0, 0.45, k); skinL.userData.U.uDetail.value = 0.45;
+    return { d, k, focus: pos.distanceTo(C) };
   }
 
   // ── per-frame update ──────────────────────────────────────────────────
   const tmp = new THREE.Matrix4(), q = new THREE.Quaternion(), vs = new THREE.Vector3();
   function update(t) {
     const st = state(t), U = st.U; Object.assign(Ucur, U);
-    const camD = hermite(1, t), TRe = TR * (1 + 0.9 * clamp((camD - 0.15) / 0.45));
-    SU.uOpen.value = U.open; SU.uFill.value = U.fill; SU.uSwell.value = U.swell; SU.uScar.value = U.scar; SU.uScarK.value = st.scarK; SU.uGlow.value = st.glow; SU.uHeal.value = st.heal;
+    const camD = camDist(t), TRe = TR * (1 + 0.9 * clamp((camD - 0.15) / 0.45));
+    SU.uOpen.value = U.open; SU.uFill.value = U.fill; SU.uChan.value = U.chan; SU.uFib.value = st.fib; SU.uTis.value = st.tis; SU.uSwell.value = U.swell; SU.uScar.value = U.scar; SU.uScarK.value = st.scarK; SU.uGlow.value = st.glow; SU.uHeal.value = st.heal;
 
     // walking: the far leg swings, the near leg sways a touch
     const ph = t * Math.PI * 2 / 1.15;
-    legL.position.set(-0.2, 0, -0.02); legL.rotation.set(0, 0, 0);
+    
     legLInner.position.set(0, 0, 0);
-    const swing = 0.32 * Math.sin(ph); legL.position.z = -0.09 + 0.22 * Math.sin(ph); legL.position.y = Math.max(0, 0.05 * Math.sin(ph + 1.6)); legL.rotation.x = -swing * 0.5;
-    legR.rotation.x = 0.012 * Math.sin(ph * 0.5);
+    legL.position.set(-0.185, 0, -0.075); legL.rotation.set(0, 0.12, 0); void ph;
 
     // stitching: loops appear as the needle passes
     const qn = NL * eio(seg(t, T.stitchA, T.stitchB)) * 0.999 + (t > T.stitchB ? 0.0 : 0);
@@ -355,7 +342,7 @@ export function buildScene(E, W) {   // W = word-time helper: W('word', line)
 
     // vessels
     const vk = seg(t, T.ves, T.vesE), vf = 1 - seg(t, T.vesFade, T.vesFade + 1.1);
-    vesMat.opacity = vf; vesMat.color.setRGB(lerp(0.55, 0.83, vf), lerp(0.12, 0.09, vf), lerp(0.12, 0.06, vf)); vesMat.emissiveIntensity = 0.55 * vf;
+    vesMat.opacity = vf; vesMat.color.setRGB(lerp(0.5, 0.95, vf), lerp(0.12, 0.13, vf), lerp(0.12, 0.03, vf)); vesMat.emissiveIntensity = 0.55 * vf;
     const front = vk * 0.055;
     for (const m of vessels) { const g = clamp((front - m.userData.d0) / m.userData.len); m.visible = g > 0.01 && vf > 0.01; m.geometry.setDrawRange(0, Math.floor(m.userData.n * g / 6) * 6); }
 
