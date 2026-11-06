@@ -424,7 +424,7 @@ export const UsCongress: React.FC<{ audio?: string; captions?: boolean }> = ({ a
     <AbsoluteFill style={{ background: '#05080d', overflow: 'hidden' }}>
       {!boardFull && (
         <AbsoluteFill style={{ transform: `translate(${sx + mapX}px, ${sy + off}px)` }}>
-          <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1600px) rotateX(${tilt.toFixed(2)}deg) scale(${1 + tilt * 0.024})` : undefined, transformOrigin: '50% 60%' }}>
+          <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1600px) rotateX(${tilt.toFixed(2)}deg) scale(${1 + tilt * 0.032})` : undefined, transformOrigin: '50% 60%' }}>
             <AbsoluteFill style={{ filter: blur > 0.6 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
               <MapLayers c={c0} />
               <MapVectors t={t} c={c0} />

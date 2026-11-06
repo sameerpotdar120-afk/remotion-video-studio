@@ -55,8 +55,8 @@ const keys = (): Key[] => [
   { t: C.ny26 + 0.15, at: add(NYV, 20000, 0), mpp: 800, e: linear },
   { t: C.ny26 + 1.2, at: add(PT.NYC, 0, 15000), mpp: 150, e: inOut },
   { t: C.wyoming2 - 0.35, at: add(PT.NYC, 0, 15000), mpp: 135, e: linear },
-  { t: C.wyoming2 + 0.25, at: WYV, mpp: 760, e: inOut },
-  { t: C.one + 0.6, at: WYV, mpp: 690, e: linear },
+  { t: C.wyoming2 + 0.25, at: WYV, mpp: 1250, e: inOut },
+  { t: C.one + 0.6, at: WYV, mpp: 1130, e: linear },
   // line 6 (Null A splits): New York again, a representative in each district
   { t: C.each + 0.2, at: add(NYV, 0, 230000), mpp: 900, e: inOut },
   { t: C.so - 0.3, at: add(NYV, 30000, 230000), mpp: 860, e: linear },
