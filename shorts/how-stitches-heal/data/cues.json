@@ -1,0 +1,60 @@
+{
+ "duration": 29.806,
+ "cues": [
+  {
+   "t": 0,
+   "type": "whoosh",
+   "gain": 0.35,
+   "dur": 0.6
+  },
+  {
+   "t": 4.08,
+   "type": "zip",
+   "gain": 0.35
+  },
+  {
+   "t": 7.2,
+   "type": "tock",
+   "gain": 0.5
+  },
+  {
+   "t": 10.1,
+   "type": "sparkle",
+   "gain": 0.25
+  },
+  {
+   "t": 11.86,
+   "type": "slide",
+   "gain": 0.35,
+   "dur": 1.2
+  },
+  {
+   "t": 13.55,
+   "type": "bubbles",
+   "gain": 0.3,
+   "dur": 1.4
+  },
+  {
+   "t": 17.15,
+   "type": "sparkle",
+   "gain": 0.22
+  },
+  {
+   "t": 21.98,
+   "type": "slide",
+   "gain": 0.3,
+   "dur": 1
+  },
+  {
+   "t": 24.76,
+   "type": "whoosh",
+   "gain": 0.5,
+   "dur": 0.9
+  },
+  {
+   "t": 28.52,
+   "type": "pop",
+   "gain": 0.35
+  }
+ ]
+}
