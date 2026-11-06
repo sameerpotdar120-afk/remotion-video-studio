@@ -1,6 +1,9 @@
 # What if Germany won WW2 — Ink Toon film (89.5 s)
 
 Source for the full short in the Ink Toon style (see `.claude/skills/ink-toon`).
+
+**Quality note (user feedback):** only the first ~11 s (shots 1–3, the approved preview) meet the target. Shots 4–24
+were a single quick pass and are clearly below it. The preview's quality is the goal for every shot of future films.
 - `intro.js` — shots 1–3 (the approved 10 s test) + shared drawing helpers
 - `lib2.js` — character rig `person()`, Europe map `europe()`, globe `globe()`
 - `shots.js` — shots 4–24; `main.js` — shot table, captions, `window.OP`

@@ -10,13 +10,37 @@ outlines that taper and boil, flat fills with a hard cel shadow plus a soft airb
 blurred painted backgrounds, white egg-shaped heads with tiny oval eyes and heavy lids, and very simple hands.
 Everything is drawn from path strings in code, rendered frame-exact in headless Chrome, $0, no assets.
 
+## QUALITY BAR — read this first (user's standing instruction)
+The approved 10 s preview (`examples/what-if-test-scenes.js`, shots: soldier on hill, dial + hand, leader at
+desk + leap) is the target for EVERY shot of every film. The user judged the first full film
+(`examples/full-film/`) as clearly worse after 0:11 and said the quality "goes down and down" — that film is a
+cautionary example, NOT a template. Never ship a film whose later shots fall below the preview.
+
+Why the full film dropped (do not repeat):
+- The preview got ~8 rounds of reference-vs-ours comparison per shot; the other 21 shots got one pass.
+- Later shots used a generic `person()` rig (stubby flipper arms, stiff frontal poses, same body everywhere)
+  instead of hand-authoring each character pose the way the preview did.
+- Backgrounds/props were thin (blocky map regions, plain boxes for buildings, empty walls) compared with the
+  preview's dense, shaded sets.
+- No per-shot side-by-side against the reference frame before moving on.
+
+What to do instead:
+1. Treat each shot like the preview: hand-author the pose and the set for that shot (the rig may only be a
+   starting point), then run the compare-and-fix loop until the shot matches its reference frame at ~90%.
+2. Check every shot at full resolution and in face/hand crops before rendering the film. Make a contact sheet of
+   our film next to the reference's sheet and look for any shot that looks simpler than the preview.
+3. Budget for it and say so up front: roughly 30–60 min per shot to reach the bar (a 90 s short ≈ 20–25 shots).
+   If time is short, deliver fewer finished shots or ask — do not fill the rest with quick placeholder shots.
+4. Report quality honestly per shot; never present a mixed-quality film as finished.
+
 Files in this skill:
 - `kit/kit.js` — the drawing kit (import it from the scene file).
 - `kit/index.html` — 1080x1920 canvas page; loads `scenes.js` as a module.
 - `kit/Fredoka-700.woff2` — caption + lettering font (copy to `fonts/`).
 - `tools/capture.mjs` — frame-exact renderer (frames / sheet / video; `FPS=60`; muxes `data/mix.wav`).
 - `tools/compare.sh` — side-by-side vs a reference video at given times.
-- `examples/full-film/` — the full 89.5 s film: `lib2.js` has a reusable character rig `person({outfit, mood, armF, armB, legs, …})`
+- `examples/full-film/` — the first full 89.5 s film (BELOW the quality bar after 0:11 — see above; reuse its
+  map/globe/lon-lat data and structure, not its look): `lib2.js` has a reusable character rig `person({outfit, mood, armF, armB, legs, …})`
   (outfits: grey soldier, khaki, soviet fur hat, irish cap, leader, uncle-sam style, civilian), a hand-simplified
   Europe map `europe(box, regions)` from lon/lat polygons, and an orthographic `globe()`; `shots.js` shows 21 shots
   built from them (beach, office, forest, house, crate, wall/pull-down maps, globe spins, parchment, passport).
