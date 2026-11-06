@@ -47,6 +47,20 @@ Files in this skill:
 - `examples/what-if-test-scenes.js` — the approved 10 s test (soldier on hill, dial + hand, leader at desk,
   leap + chair swivel). Copy patterns from it; it is the quality bar.
 
+## v2 tools (what got later shots close to the preview)
+- `examples/v2/fig.js` — 3/4-view character `fig({x,y,s,d,kit,mood,armF,armB,legF,legB,armFTo,armBTo,hold,lean,tilt})`:
+  bean torso, puffy breeches + short boots, egg head (`hs` 0.72), simple hands, 2-bone arm IK (`armFTo:[x,y]`)
+  so hands land on props (rifles via `rifle(..., d)` which mirrors for left-facing figures). Kits: grey, soviet,
+  khaki, irish, civ, civ2, leader, sam. Kneel-aim pose: `legF:[86,-86], legB:[6,-96]` + IK onto the rifle.
+- `examples/v2/geo.js` + `geo.json` — real Natural Earth (public domain) countries: `drawEurope(c, colourFn, {extra})`
+  inks thick coastlines/thin borders with a coastal glow; `drawGlobe(...)` orthographic. Hand-typed outlines looked
+  amateur next to the reference — always use real geodata for maps. Drop far-east Russia points (antimeridian band).
+- `examples/v2/hq.js` — every shot of the v2 film; reuse sets (beach, office corner, desk set via `shot3(t,{mid,top})`,
+  pine forest + X fence, porch house, pull-down map, globe on stand, parchment + candle + swords, Roman street).
+- 4K: canvas 2160x3840, `DPR` in kit scales drawing; `blur()` multiplies by DPR. Render 4 time-ranges in parallel.
+- Per-shot loop that worked: measure reference positions in its pixels → place → render 1 frame → compare at full
+  size and in crops → fix 3–5 biggest gaps → repeat (usually 3–6 rounds per shot).
+
 ## Project layout
 ```
 my-short/
