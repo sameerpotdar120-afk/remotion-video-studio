@@ -16,6 +16,10 @@ Files in this skill:
 - `kit/Fredoka-700.woff2` — caption + lettering font (copy to `fonts/`).
 - `tools/capture.mjs` — frame-exact renderer (frames / sheet / video; `FPS=60`; muxes `data/mix.wav`).
 - `tools/compare.sh` — side-by-side vs a reference video at given times.
+- `examples/full-film/` — the full 89.5 s film: `lib2.js` has a reusable character rig `person({outfit, mood, armF, armB, legs, …})`
+  (outfits: grey soldier, khaki, soviet fur hat, irish cap, leader, uncle-sam style, civilian), a hand-simplified
+  Europe map `europe(box, regions)` from lon/lat polygons, and an orthographic `globe()`; `shots.js` shows 21 shots
+  built from them (beach, office, forest, house, crate, wall/pull-down maps, globe spins, parchment, passport).
 - `examples/what-if-test-scenes.js` — the approved 10 s test (soldier on hill, dial + hand, leader at desk,
   leap + chair swivel). Copy patterns from it; it is the quality bar.
 
