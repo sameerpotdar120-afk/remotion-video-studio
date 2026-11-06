@@ -1,0 +1,108 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;background:#000}canvas{display:block}</style></head>
+<body><canvas id="cv" width="2160" height="3840"></canvas><script>
+// Code-drawn props for the House vs Senate video, in the reference's blueprint-board look (a test of the
+// faceless-shorts approach: every prop is shapes + gradients, separate parts, no images).
+const cv = document.getElementById('cv'), c = cv.getContext('2d'); c.scale(2, 2);
+const W = 1080, H = 1920, TAU = Math.PI * 2;
+const C = { bg0: '#0E4C9A', bg1: '#0A3772', grid: 'rgba(255,255,255,0.07)', orange: '#F28C1E', orangeD: '#C46A0C', gold: '#FFD23F',
+  red: '#E2333A', blue: '#2F7BEA', white: '#F4F6FA', stone: '#E9E4D8', stoneD: '#BDB4A2', ink: '#0B1830', green: '#2ECC71', paper: '#F6F0E1' };
+function shadow(b = 18, y = 10, a = 0.45) { c.shadowColor = `rgba(0,0,0,${a})`; c.shadowBlur = b; c.shadowOffsetY = y; c.shadowOffsetX = 0; }
+function noShadow() { c.shadowColor = 'transparent'; c.shadowBlur = 0; c.shadowOffsetY = 0; }
+function rr(x, y, w, h, r, fill, stroke, lw = 4) { c.beginPath(); c.roundRect(x, y, w, h, r); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = lw; c.stroke(); } }
+function poly(pts, fill, stroke, lw = 4) { c.beginPath(); pts.forEach((p, i) => i ? c.lineTo(...p) : c.moveTo(...p)); c.closePath(); if (fill) { c.fillStyle = fill; c.fill(); } if (stroke) { c.strokeStyle = stroke; c.lineWidth = lw; c.stroke(); } }
+function text(s, x, y, size, col, weight = 900, font = 'Arial Black, Arial', align = 'center') { c.font = `${weight} ${size}px ${font}`; c.fillStyle = col; c.textAlign = align; c.textBaseline = 'middle'; c.fillText(s, x, y); }
+function lg(x0, y0, x1, y1, stops) { const g = c.createLinearGradient(x0, y0, x1, y1); stops.forEach(([o, col]) => g.addColorStop(o, col)); return g; }
+
+// --- blueprint board
+function board() {
+  const g = c.createRadialGradient(540, 700, 100, 540, 900, 1300); g.addColorStop(0, '#1767C4'); g.addColorStop(1, C.bg1);
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  c.strokeStyle = C.grid; c.lineWidth = 1.5; for (let x = 0; x <= W; x += 36) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); } for (let y = 0; y <= H; y += 36) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  c.strokeStyle = 'rgba(255,255,255,0.13)'; c.lineWidth = 2.5; for (let x = 0; x <= W; x += 180) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); } for (let y = 0; y <= H; y += 180) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+}
+// --- the Capitol (dome, drum, colonnade, wings, steps), cut-out with a white sticker edge
+function capitol(x, y, s) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  const sil = () => { c.beginPath(); c.moveTo(-300, 70); c.lineTo(-300, -30); c.lineTo(-90, -30); c.lineTo(-90, -70); c.lineTo(-62, -70); c.lineTo(-62, -150); c.quadraticCurveTo(-60, -260, 0, -275); c.lineTo(0, -310); c.lineTo(0, -275); c.quadraticCurveTo(60, -260, 62, -150); c.lineTo(62, -70); c.lineTo(90, -70); c.lineTo(90, -30); c.lineTo(300, -30); c.lineTo(300, 70); c.closePath(); };
+  shadow(24, 14, 0.5); sil(); c.fillStyle = '#fff'; c.fill(); noShadow(); c.lineWidth = 16; c.strokeStyle = '#fff'; c.lineJoin = 'round'; sil(); c.stroke();
+  // wings
+  for (const sx of [-1, 1]) { rr(sx > 0 ? 95 : -295, -26, 200, 92, 4, lg(0, -26, 0, 66, [[0, C.stone], [1, C.stoneD]])); for (let i = 0; i < 9; i++) rr((sx > 0 ? 108 : -282) + i * 21, -14, 9, 66, 2, '#CFC7B6'); poly([[sx > 0 ? 95 : -295, -26], [sx > 0 ? 295 : -95, -26], [sx > 0 ? 285 : -105, -40], [sx > 0 ? 105 : -285, -40]], C.stoneD); }
+  // centre block + portico
+  rr(-92, -66, 184, 132, 4, lg(0, -66, 0, 66, [[0, '#F3EFE6'], [1, C.stoneD]]));
+  poly([[-70, -66], [70, -66], [0, -100]], C.stone, C.stoneD, 3);
+  for (let i = 0; i < 8; i++) rr(-78 + i * 21, -52, 10, 110, 2, '#D9D2C2');
+  // drum and dome
+  rr(-62, -150, 124, 84, 4, lg(0, -150, 0, -66, [[0, '#F6F2EA'], [1, '#CFC6B4']])); for (let i = 0; i < 9; i++) rr(-56 + i * 13.5, -140, 6, 66, 2, '#C9C0AD');
+  c.beginPath(); c.moveTo(-58, -150); c.quadraticCurveTo(-56, -255, 0, -270); c.quadraticCurveTo(56, -255, 58, -150); c.closePath(); c.fillStyle = lg(-58, 0, 58, 0, [[0, '#D8D1C2'], [0.45, '#FBF9F4'], [1, '#BFB6A3']]); c.fill();
+  c.strokeStyle = 'rgba(120,110,95,0.5)'; c.lineWidth = 2; for (const k of [-36, -14, 14, 36]) { c.beginPath(); c.moveTo(k, -150); c.quadraticCurveTo(k * 0.7, -230, 0, -268); c.stroke(); }
+  rr(-10, -292, 20, 24, 3, C.stone); rr(-3, -312, 6, 22, 2, '#8C836F');
+  rr(-300, 60, 600, 14, 3, '#A99F8A'); poly([[-80, 74], [80, 74], [110, 96], [-110, 96]], '#CFC7B6');
+  c.restore();
+}
+// --- the White House (portico, columns, flag)
+function whiteHouse(x, y, s) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  shadow(24, 14, 0.5); rr(-250, -110, 500, 190, 10, '#fff'); noShadow();
+  rr(-232, -60, 464, 124, 3, lg(0, -60, 0, 64, [[0, '#FFFFFF'], [1, '#D9DDE3']])); rr(-240, -70, 480, 12, 2, '#E3E6EA');
+  for (let r = 0; r < 2; r++) for (let i = 0; i < 12; i++) { const wx = -214 + i * 37 + (i > 5 ? 52 : 0) - (i > 5 ? 52 : 0); if (Math.abs(wx) < 70) continue; rr(wx, -44 + r * 56, 18, 34, 2, '#5A6E86'); }
+  poly([[-82, -70], [82, -70], [0, -112]], '#F2F4F7', '#C8CDD4', 3);
+  for (let i = 0; i < 6; i++) rr(-70 + i * 26.5, -62, 11, 122, 3, '#E9ECF0');
+  rr(-246, 62, 492, 14, 3, '#BFC5CC');
+  rr(-2, -170, 4, 62, 1, '#6B7280'); rr(2, -170, 46, 28, 2, C.red); rr(2, -170, 20, 14, 1, C.blue); for (let i = 0; i < 4; i++) rr(22, -166 + i * 7, 26, 2.5, 1, '#fff');
+  c.restore();
+}
+// --- label box (orange, white text)
+function labelBox(s, x, y, w, size = 30) { shadow(10, 6, 0.4); rr(x - w / 2, y - size * 0.9, w, size * 1.8, 6, lg(0, y - size, 0, y + size, [[0, C.orange], [1, C.orangeD]])); noShadow(); text(s, x, y + 2, size, '#fff', 900); }
+// --- person icon
+function person(x, y, s, col = C.white) { c.fillStyle = col; c.beginPath(); c.arc(x, y - 30 * s, 11 * s, 0, TAU); c.fill(); c.beginPath(); c.roundRect(x - 13 * s, y - 16 * s, 26 * s, 30 * s, 8 * s); c.fill(); c.fillRect(x - 11 * s, y + 8 * s, 9 * s, 24 * s); c.fillRect(x + 2 * s, y + 8 * s, 9 * s, 24 * s); }
+// --- hemicycle: n seats in rows, colour by fraction
+function hemicycle(cx, cy, R0, R1, n, rows, split) {
+  const seats = []; const tot = []; let sum = 0; for (let r = 0; r < rows; r++) { const rad = R0 + (R1 - R0) * r / (rows - 1); tot.push(rad); sum += rad; }
+  tot.forEach((rad, r) => { const k = Math.round(n * rad / sum); for (let i = 0; i < k; i++) { const a = Math.PI + Math.PI * (i + 0.5) / k; seats.push([a, cx + Math.cos(a) * rad, cy + Math.sin(a) * rad]); } });
+  seats.sort((p, q) => p[0] - q[0]);
+  const dot = (R1 - R0) / rows * 0.36;
+  seats.forEach(([a, x, y], i) => { const f = i / seats.length; c.fillStyle = f < split[0] ? C.red : f < split[0] + split[1] ? C.white : C.blue; c.beginPath(); c.arc(x, y, dot, 0, TAU); c.fill(); });
+  return seats.length;
+}
+// --- podium with a party flag (simplified donkey / elephant drawn in shapes)
+function donkey(x, y, s, col) { c.save(); c.translate(x, y); c.scale(s, s); c.fillStyle = col; c.beginPath(); c.ellipse(0, 0, 34, 18, 0, 0, TAU); c.fill(); c.beginPath(); c.moveTo(22, -8); c.lineTo(40, -34); c.lineTo(52, -30); c.lineTo(36, -2); c.fill(); c.beginPath(); c.ellipse(48, -34, 12, 8, -0.4, 0, TAU); c.fill(); poly([[40, -42], [38, -62], [46, -44]], col); poly([[46, -42], [50, -62], [52, -42]], col); for (const lx of [-24, -12, 14, 26]) c.fillRect(lx - 3, 10, 7, 26); c.lineWidth = 4; c.strokeStyle = col; c.beginPath(); c.moveTo(-32, -4); c.quadraticCurveTo(-46, -6, -44, 14); c.stroke(); c.restore(); }
+function elephant(x, y, s, col) { c.save(); c.translate(x, y); c.scale(s, s); c.fillStyle = col; c.beginPath(); c.ellipse(-4, 0, 36, 24, 0, 0, TAU); c.fill(); c.beginPath(); c.arc(32, -10, 17, 0, TAU); c.fill(); c.lineWidth = 9; c.strokeStyle = col; c.lineCap = 'round'; c.beginPath(); c.moveTo(44, -4); c.quadraticCurveTo(54, 14, 46, 28); c.stroke(); for (const lx of [-28, -14, 6, 20]) c.fillRect(lx - 4, 14, 9, 22); c.fillStyle = '#fff'; for (let i = 0; i < 3; i++) { c.beginPath(); c.arc(-22 + i * 16, -6, 4, 0, TAU); c.fill(); } c.restore(); }
+function podiumFlag(x, y, s, side) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  rr(-3, -330, 6, 250, 2, '#C9A45C'); const col = side ? C.red : C.blue; const wave = (k) => Math.sin(k * 0.05) * 8;
+  c.beginPath(); c.moveTo(3, -326); for (let k = 0; k <= 150; k += 10) c.lineTo(3 + k, -326 + wave(k)); for (let k = 150; k >= 0; k -= 10) c.lineTo(3 + k, -226 + wave(k)); c.closePath(); shadow(10, 6, 0.35); c.fillStyle = col; c.fill(); noShadow();
+  (side ? elephant : donkey)(76, -276, 0.95, '#fff');
+  shadow(16, 10, 0.4); poly([[-70, -60], [70, -60], [56, 110], [-56, 110]], '#F4F6FA'); noShadow(); rr(-78, -74, 156, 20, 4, '#DCE1E8'); rr(-40, -20, 80, 50, 6, col);
+  person(0, -100, 2.2, '#F4F6FA');
+  c.restore();
+}
+// --- ballot in a raised hand
+function ballotHand(x, y, s) { c.save(); c.translate(x, y); c.scale(s, s); shadow(12, 8, 0.4); rr(-50, -150, 100, 130, 6, '#fff'); noShadow(); for (let i = 0; i < 3; i++) { rr(-34, -126 + i * 36, 18, 18, 3, null, '#3C4A60', 3); rr(-8, -122 + i * 36, 46, 8, 3, '#B9C2CF'); } c.strokeStyle = C.green; c.lineWidth = 6; c.lineCap = 'round'; c.beginPath(); c.moveTo(-31, -82); c.lineTo(-25, -76); c.lineTo(-14, -94); c.stroke(); c.fillStyle = '#E9B48A'; c.beginPath(); c.roundRect(-30, -40, 60, 70, 18); c.fill(); for (let i = 0; i < 4; i++) { c.beginPath(); c.roundRect(-30 + i * 15, -64, 13, 40, 6); c.fill(); } c.fillStyle = '#2E4A7A'; c.fillRect(-26, 26, 52, 70); c.restore(); }
+// --- federal law paper with seal, checks and a pen
+function lawPaper(x, y, s, rot) { c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s); shadow(22, 14, 0.5); rr(-120, -160, 240, 320, 6, C.paper); noShadow(); text('FEDERAL', 0, -118, 30, '#4A3A28', 900); text('LAW', 0, -84, 30, '#4A3A28', 900); for (let i = 0; i < 7; i++) rr(-90, -46 + i * 22, i % 3 == 2 ? 120 : 180, 7, 3, '#CFC3A7'); c.fillStyle = '#B8862E'; c.beginPath(); for (let i = 0; i <= 36; i++) { const a = i / 36 * TAU, r = 30 + Math.sin(a * 9) * 3; c.lineTo(80 + Math.cos(a) * r, 120 + Math.sin(a) * r); } c.fill(); c.strokeStyle = '#3A3A6A'; c.lineWidth = 3; c.beginPath(); c.moveTo(-90, 128); c.bezierCurveTo(-60, 100, -40, 150, -10, 118); c.bezierCurveTo(10, 100, 20, 140, 30, 122); c.stroke(); c.restore(); }
+function checkBox(x, y, s) { c.save(); c.translate(x, y); c.scale(s, s); c.shadowColor = 'rgba(46,204,113,0.9)'; c.shadowBlur = 30; rr(-40, -40, 80, 80, 10, '#122a1c', C.green, 6); noShadow(); c.strokeStyle = C.green; c.lineWidth = 12; c.lineCap = 'round'; c.lineJoin = 'round'; c.beginPath(); c.moveTo(-22, 2); c.lineTo(-6, 18); c.lineTo(24, -18); c.stroke(); c.restore(); }
+function pen(x, y, s, rot) { c.save(); c.translate(x, y); c.rotate(rot); c.scale(s, s); shadow(10, 8, 0.4); rr(-10, -150, 20, 160, 8, '#1C1F26'); noShadow(); rr(-10, -150, 20, 26, 6, '#C9A45C'); poly([[-10, 10], [10, 10], [0, 40]], '#C9A45C'); c.restore(); }
+function handwrite(s, x, y, size, rot, col = C.gold) { c.save(); c.translate(x, y); c.rotate(rot); text(s, 0, 0, size, col, 700, 'Comic Sans MS, Segoe Script, cursive'); c.restore(); }
+
+// ================= the sheet
+board();
+text('CODE-DRAWN PROPS · HOUSE vs SENATE', 540, 60, 34, '#fff', 900);
+whiteHouse(300, 260, 0.62); labelBox('WHITE HOUSE', 300, 330, 260, 24);
+capitol(780, 300, 0.78); labelBox('CONGRESS', 780, 390, 220, 26);
+// chart
+c.strokeStyle = '#fff'; c.lineWidth = 4; c.beginPath(); c.moveTo(780, 420); c.lineTo(780, 460); c.moveTo(560, 460); c.lineTo(960, 460); c.moveTo(560, 460); c.lineTo(560, 490); c.moveTo(960, 460); c.lineTo(960, 490); c.stroke();
+labelBox('HOUSE OF REPS', 560, 520, 300, 24); labelBox('SENATE', 960, 520, 200, 24);
+for (let r = 0; r < 4; r++) for (let i = 0; i < 9; i++) person(452 + i * 27, 590 + r * 66, 0.8);
+for (let r = 0; r < 2; r++) for (let i = 0; i < 6; i++) person(890 + i * 28, 590 + r * 66, 0.8);
+text('435', 560, 870, 70, C.gold); text('100', 960, 870, 70, C.gold);
+handwrite('every 2 years', 230, 700, 34, -0.12); handwrite('6 years', 960, 960, 34, -0.1);
+// hemicycles
+const n1 = hemicycle(300, 1290, 90, 250, 435, 12, [0.48, 0.0]); text('HOUSE · 435', 300, 1330, 36, '#fff');
+const n2 = hemicycle(800, 1290, 70, 190, 100, 6, [0.47, 0.02]); text('SENATE · 100', 800, 1330, 36, '#fff');
+// podiums, ballot, law
+podiumFlag(170, 1720, 0.95, 0); podiumFlag(420, 1720, 0.95, 1);
+handwrite('Democrats', 200, 1840, 30, -0.1, '#fff'); handwrite('Republicans', 470, 1840, 30, 0.08, '#fff');
+ballotHand(610, 1800, 1.1);
+lawPaper(860, 1640, 1.0, 0.06); checkBox(720, 1500, 0.9); checkBox(1000, 1500, 0.9); pen(990, 1700, 1, 0.5);
+document.title = 'done ' + n1 + ' ' + n2;
+</script></body></html>
