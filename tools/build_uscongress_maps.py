@@ -30,10 +30,11 @@ Image.MAX_IMAGE_PIXELS = None
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "uscongress" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
-    ("namerica", 5, 4, -172.0, -10.0, -10.0, 83.5),
+    ("namerica", 5, 4, -172.0, -10.0, -56.0, 83.5),
     ("usa", 6, 5, -128.0, -64.0, 21.0, 51.5),
     ("ny", 8, 7, -81.0, -71.0, 38.3, 47.3),
     ("wy", 8, 7, -112.5, -102.5, 38.5, 47.5),
+    ("nyc", 11, 9, -75.0, -72.8, 40.1, 41.75),
     ("dcarea", 12, 10, -77.3, -76.75, 38.68, 39.12),
 ]
 USGS = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"

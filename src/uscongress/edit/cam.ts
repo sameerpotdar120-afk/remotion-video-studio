@@ -58,8 +58,8 @@ const keys = (): Key[] => [
   { t: C.wyoming2 + 0.25, at: WYV, mpp: 760, e: inOut },
   { t: C.one + 0.6, at: WYV, mpp: 690, e: linear },
   // line 6 (Null A splits): New York again, a representative in each district
-  { t: C.each + 0.2, at: add(NYV, 0, -60000), mpp: 900, e: inOut },
-  { t: C.so - 0.3, at: add(NYV, 30000, -60000), mpp: 860, e: linear },
+  { t: C.each + 0.2, at: add(NYV, 0, 230000), mpp: 900, e: inOut },
+  { t: C.so - 0.3, at: add(NYV, 30000, 230000), mpp: 860, e: linear },
   // (the board covers 39.3-44.4) line 8: the whole country, two senators in every state
   { t: C.insenate - 0.4, at: US, mpp: US_MPP, e: inOut },
   { t: C.senserve - 0.2, at: add(US, -100000, 0), mpp: 5500, e: linear },
