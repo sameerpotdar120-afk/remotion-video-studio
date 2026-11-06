@@ -21,7 +21,7 @@ function beach(t, mood) { // mood: 'summer' | 'storm'
   const st = mood === 'storm';
   grad(st ? [[0, '#56627a'], [0.5, '#8a96aa'], [1, '#c3c8cc']] : [[0, '#7cc4f2'], [0.55, '#a9daf6'], [1, '#d4eefa']], 0, 0, 0, 1300, 0, 0, W, H);
   if (st) { for (const [y, w] of [[60, 700], [130, 520], [210, 380]]) blur(3, () => { ctx.fillStyle = 'rgba(160,172,196,0.55)'; ctx.beginPath(); ctx.ellipse(W - w / 2 + 40, y, w / 2, 9, 0, 0, 6.3); ctx.fill(); });
-    for (const [x, y, s2, sd] of [[700, 520, 1.5, 11], [880, 380, 1.3, 12], [420, 760, 1.4, 13], [960, 820, 1.2, 14]]) { blur(3, () => cloudBank(x, y + 26 * s2, s2, '#4e5870', '#4e5870', sd)); blur(2, () => cloudBank(x - 10, y, s2 * 0.96, '#8590a8', '#6a7590', sd)); blur(8, () => cloudBank(x - 30, y - 24 * s2, s2 * 0.7, 'rgba(190,198,214,0.5)', 'rgba(0,0,0,0)', sd + 5)); } }
+    for (const [x, y, s2, sd] of [[700, 520, 1.5, 11], [880, 380, 1.3, 12], [420, 760, 1.4, 13], [960, 820, 1.2, 14]]) { cloudBank(x, y + 26 * s2, s2, '#4e5870', '#4e5870', sd); cloudBank(x - 10, y, s2 * 0.96, '#8590a8', '#6a7590', sd); cloudBank(x - 30, y - 24 * s2, s2 * 0.7, 'rgba(190,198,214,0.5)', 'rgba(0,0,0,0)', sd + 5); } }
   // sea strip + far shore line
   if (st) F(sm([[-40, 1010], [400, 1000], [1120, 1016], [1120, 1240], [-40, 1100]]), st ? '#4a5a6c' : '#5f9fc4', { line: 6, seed: 300, shadow: 0, soft: 0, hi: 0.1 });
   if (st) for (let i = 0; i < 6; i++) Ln(`M ${(i * 190 + t * 20) % 1200 - 60} ${1035 + (i % 2) * 22} l 60 -3`, 3, 301 + i, 'rgba(255,255,255,0.55)');
