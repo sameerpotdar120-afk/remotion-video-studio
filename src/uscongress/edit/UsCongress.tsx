@@ -5,6 +5,7 @@ import { clamp01, easeOut, inOut, linear, pop, ramp } from '../../darien/anim';
 import { C, CAPS, Cam, DURATION_S, GEO, LOOPF, P, camAt, camMotion, merc, ringsD, shake, tiltAt, toS } from './cam';
 import { LABEL, SERIF, TITLE, UI, useFonts } from './font';
 import { MapLayers } from './Map';
+import { Clouds, Grade as HouseGrade, HiFill, MAP_GRADE } from './Fx';
 import { Board, Capitol, Hand, Hemicycle, K, LabelBox, LawPaper, Pair, Pen, Person, Tick, WhiteHouse } from './Props';
 
 export const US_DURATION_60 = Math.round(DURATION_S * 60);
@@ -55,6 +56,7 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         <filter id="glow"><feGaussianBlur stdDeviation="6" /></filter>
         <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0.28" /><stop offset="0.55" stopColor="#fff" stopOpacity="0" /></linearGradient>
       </defs>
+      {t > C.flip - 0.4 && t < C.wyoming0 + 0.6 && <path d={ringsD(c, GEO.countries.USA)} fill="#F6EEDC" opacity={0.42 * win(t, C.flip - 0.4, C.wyoming0 + 0.6, 0.4, 0.5)} stroke="#fff" strokeWidth={3} />}
       {usO > 0 && (
         <g opacity={usO}>
           <path d={ringsD(c, GEO.countries.USA)} fill="none" stroke="#fff" strokeWidth={3} opacity={0.85} />
@@ -67,36 +69,22 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         const g = ramp(t, t0, t0 + 0.3, easeOut) * (1 - ramp(t, C.senserve - 0.1, C.senserve + 0.3, linear));
         if (g <= 0) return null;
         const hot = n === 'New York' || n === 'Wyoming' ? win(t, C.nomatter - 0.05, C.n50, 0.15, 0.3) : 0;
-        return <path key={n} d={ringsD(c, S[n])} fill={hot ? (n === 'New York' ? K.orange : K.red) : '#fff'} opacity={(0.22 + 0.5 * hot) * g} stroke="#fff" strokeWidth={2} />;
+        return <path key={n} d={ringsD(c, S[n])} fill={hot ? (n === 'New York' ? '#FF7A00' : K.red) : ['#F28C1E', '#FFB347', '#E8781A'][n.length % 3]} opacity={(0.5 + 0.35 * hot) * g} stroke="#fff" strokeWidth={2.4} />;
       })}
-      {wy > 0 && (
-        <g opacity={wy}>
-          <path d={ringsD(c, S.Wyoming)} fill="#000" opacity={0.35} transform="translate(6 12)" filter="url(#glow)" />
-          <path d={ringsD(c, S.Wyoming)} fill={K.red} opacity={c.mpp < 1500 ? 0.5 : 0.78} />
-          <path d={ringsD(c, S.Wyoming)} fill="url(#sheen)" />
-          <path d={ringsD(c, S.Wyoming)} fill="none" stroke="#fff" strokeWidth={4} />
-        </g>
-      )}
-      {ny > 0 && (
-        <g opacity={ny}>
-          <path d={ringsD(c, S['New York'])} fill="#000" opacity={0.35} transform="translate(6 12)" filter="url(#glow)" />
-          <path d={ringsD(c, S['New York'])} fill={K.orange} opacity={c.mpp < 1500 ? 0.45 : 0.72} />
-          <path d={ringsD(c, S['New York'])} fill="url(#sheen)" />
-          <path d={ringsD(c, S['New York'])} fill="none" stroke="#fff" strokeWidth={4} />
-        </g>
-      )}
+      {wy > 0 && <HiFill id="wy" t={t} d={ringsD(c, S.Wyoming)} color={K.red} g={wy} alpha={c.mpp < 1500 ? 0.5 : 0.78} />}
+      {ny > 0 && <HiFill id="ny" t={t} d={ringsD(c, S['New York'])} color={K.orange} g={ny} alpha={c.mpp < 1500 ? 0.42 : 0.75} />}
       {dist > 0 && (
         <g opacity={dist}>
           {Object.entries(GEO.nyDistricts).map(([k, r]) => {
             const t0 = C.population + 0.7 + (Number(k) - 1) * 0.028;
             const d = ramp(t, t0, t0 + 0.25, easeOut);
-            return <path key={k} d={ringsD(c, r)} fill={Number(k) % 2 ? '#FFB55A' : '#E07A10'} fillOpacity={0.35 * d} stroke="#fff" strokeWidth={2.2} strokeOpacity={d} />;
+            return <path key={k} d={ringsD(c, r)} fill={['#FFB347', '#F28C1E', '#FFD27A', '#E86A10'][Number(k) % 4]} fillOpacity={0.5 * d} stroke="#fff" strokeWidth={2.6} strokeOpacity={d} />;
           })}
         </g>
       )}
       {dc > 0 && (
         <g opacity={dc}>
-          <path d={ringsD(c, GEO.dcRing)} fill="#6FB2FF" opacity={0.3 * ramp(t, C.heres + 0.6, C.heres + 1.2, linear)} />
+          <HiFill id="dc" t={t} d={ringsD(c, GEO.dcRing)} color="#4FA3FF" g={ramp(t, C.heres + 0.6, C.heres + 1.2, linear)} alpha={0.42} />
           <path d={ringsD(c, GEO.dcRing)} fill="none" stroke="#fff" strokeWidth={5} strokeDasharray={4000} strokeDashoffset={4000 * (1 - ramp(t, C.heres + 0.4, C.heres + 1.4, inOut))} />
         </g>
       )}
@@ -128,6 +116,18 @@ const MapOverlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           <At x={790} y={1010}><Big text="SENATE" size={58} color="#fff" /></At>
         </div>
       )}
+      {/* line 1: the reference's handwritten words in a yellow ellipse, with question marks */}
+      {t > C.but - 0.1 && t < C.wyoming0 + 0.3 && (
+        <div style={{ position: 'absolute', inset: 0, opacity: 1 - ramp(t, C.wyoming0 - 0.1, C.wyoming0 + 0.3, linear) }}>
+          <Hand text="House" x={380} y={640} size={92} p={ramp(t, C.but - 0.05, C.but + 0.35, linear)} rot={-8} color="#fff" />
+          <Hand text="Senate" x={710} y={610} size={92} p={ramp(t, C.but + 0.25, C.but + 0.65, linear)} rot={-4} color="#fff" />
+          <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
+            <ellipse cx={545} cy={628} rx={330} ry={105} transform="rotate(-5 545 628)" fill="none" stroke={K.gold} strokeWidth={9} strokeLinecap="round"
+              strokeDasharray={1500} strokeDashoffset={1500 * (1 - ramp(t, C.but + 0.5, C.wyoming0 - 0.2, inOut))} style={{ filter: `drop-shadow(0 0 10px ${K.gold})` }} />
+          </svg>
+          {[[300, 470, -12, 0], [545, 430, 4, 0.12], [800, 470, 10, 0.24]].map(([x, y, r, d]) => <At key={x} x={x} y={y + Math.sin(t * 4 + x) * 8} p={pop(t, C.but + 0.45 + d, 9, 210)} rot={r}><Big text="?" size={130} color="#fff" /></At>)}
+        </div>
+      )}
       {/* line 1: Wyoming and New York, their people, two senators each */}
       {both > 0 && (
         <div style={{ opacity: both }}>
@@ -151,9 +151,11 @@ const MapOverlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       )}
       {t > C.this - 0.1 && t < C.meets + 0.9 && (
         <div style={{ opacity: 1 - ramp(t, C.meets + 0.5, C.meets + 0.9, linear) }}>
+          <Pulse t={t} t0={C.whitehouse} x={whx} y={why} r={120} color={K.gold} />
           <Arrow t={t} t0={C.this + 0.05} x={whx} y={why - 20} />
           <At x={whx} y={why - 330} p={pop(t, C.whitehouse + 0.1, 11, 170) * 0.8}><WhiteHouse flag={Math.sin(t * 6)} /></At>
           <At x={whx} y={why - 150} p={pop(t, C.president0 - 0.1, 11, 190)}><Tag text="WHITE HOUSE" size={40} color="#fff" /></At>
+          <Pulse t={t} t0={C.capitol} x={cpx} y={cpy} r={120} color={K.gold} />
           <Arrow t={t} t0={C.capitol - 0.25} x={cpx} y={cpy - 20} />
           <At x={cpx} y={cpy - 360} p={pop(t, C.capitol, 11, 170) * 0.82}><Capitol dome={ramp(t, C.capitol + 0.15, C.capitol + 0.5, easeOut)} /></At>
           <At x={cpx} y={cpy - 150} p={pop(t, C.meets - 0.4, 11, 190)}><Tag text="CONGRESS" size={40} color={K.orange} /></At>
@@ -426,17 +428,19 @@ export const UsCongress: React.FC<{ audio?: string; captions?: boolean }> = ({ a
         <AbsoluteFill style={{ transform: `translate(${sx + mapX}px, ${sy + off}px)` }}>
           <AbsoluteFill style={{ transform: tilt > 0.01 ? `perspective(1600px) rotateX(${tilt.toFixed(2)}deg) scale(${1 + tilt * 0.032})` : undefined, transformOrigin: '50% 60%' }}>
             <AbsoluteFill style={{ filter: blur > 0.6 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
-              <MapLayers c={c0} />
+              <AbsoluteFill style={{ filter: MAP_GRADE }}><MapLayers c={c0} /></AbsoluteFill>
+              <Clouds t={t} a={clamp01((c0.mpp - 150) / 600)} />
               <MapVectors t={t} c={c0} />
             </AbsoluteFill>
           </AbsoluteFill>
-          <Grade />
+          <HouseGrade t={t} />
           <MapOverlays t={t} c={c0} />
         </AbsoluteFill>
       )}
       {bd && (
         <AbsoluteFill style={{ transform: `translate(${bd.x}px, ${off}px)`, ...(bd.mask < 1 ? { WebkitMaskImage: inkMask(bd.mask), maskImage: inkMask(bd.mask) } : {}) }}>
           <BoardScene t={t} k={bd.k} />
+          <HouseGrade t={t} board />
         </AbsoluteFill>
       )}
       {split && <NullPanel t={t} q={split.q} {...split.w} />}

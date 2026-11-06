@@ -38,7 +38,7 @@ PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
     ("dcarea", 12, 10, -77.3, -76.75, 38.68, 39.12),
 ]
 USGS = "https://basemap.nationalmap.gov/arcgis/rest/services/USGSImageryOnly/MapServer/tile/{z}/{y}/{x}"
-DC_CLOSE = ("dc", 16, -77.062, -76.996, 38.866, 38.918)
+DC_CLOSE = ("dc", 16, -77.062, -76.972, 38.862, 38.918)
 POINTS = {
     "White House": (-77.0365, 38.8977), "Capitol": (-77.0091, 38.8899), "Washington": (-77.0369, 38.9072),
     "Wyoming": (-107.55, 43.0), "New York": (-75.5, 42.9), "NYC": (-73.95, 40.72),
