@@ -28,8 +28,9 @@ OUT = ROOT / "public" / "dingofence" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
     ("indopac", 5, 4, 60.0, 179.9, -82.0, 45.0),
     ("aus", 6, 5, 108.0, 158.0, -47.0, -6.0),
+    ("fencemid", 9, 8, 132.6, 136.4, -31.0, -26.5),
     ("fence", 13, 10, 134.30, 134.70, -29.05, -28.45),
-    ("atlantic", 5, 4, -95.0, 20.0, 15.0, 70.0),
+    ("atlantic", 4, 3, -115.0, 45.0, -50.0, 80.0),
 ]
 POINTS = {
     "London": (-0.1276, 51.5072), "New York": (-74.0060, 40.7128), "Coober Pedy fence": (134.5002, -28.7533),
@@ -85,7 +86,7 @@ def main() -> None:
     for name, zs, zd, lo0, lo1, la0, la1 in PLATES:
         if only and name not in only:
             continue
-        fn = cl.closeup if name == "fence" else uk.build
+        fn = cl.closeup if name in ("fence", "fencemid") else uk.build
         geo["plates"][name] = fn(name, zs, zd, lo0, lo1, la0, la1, cache, **({"sat_water": True} if fn is uk.build else {}))
         print(name, geo["plates"][name]["w"], geo["plates"][name]["h"], flush=True)
 

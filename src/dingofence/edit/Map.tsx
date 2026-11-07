@@ -6,7 +6,7 @@ import { Cam, GEO } from './cam';
 // Each plate is painted as the background of a screen-sized box (background-size/-position place it), so the browser
 // only ever paints the part on screen, however far the camera zooms in: a plate drawn as a giant <img> crashed the
 // render tab after a few hundred deep-zoom frames. The images are decoded once, before the first frame.
-const ORDER = ['indopac', 'atlantic', 'aus', 'fence'];
+const ORDER = ['indopac', 'atlantic', 'aus', 'fencemid', 'fence'];
 const SRC = (n: string) => staticFile(`dingofence/maps/${n}_geo.jpg`);
 const native = (n: string) => { const p = GEO.plates[n]; return (p.bounds[2] - p.bounds[0]) / p.w; };
 const rect = (c: Cam, n: string) => {
