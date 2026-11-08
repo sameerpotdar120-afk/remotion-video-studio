@@ -133,15 +133,17 @@ const rot = (v: V3, k: V3, a: number): V3 => {
   const c = Math.cos(a), s = Math.sin(a), kv = cross(k, v), d = dot(k, v) * (1 - c);
   return [v[0] * c + kv[0] * s + k[0] * d, v[1] * c + kv[1] * s + k[1] * d, v[2] * c + kv[2] * s + k[2] * d];
 };
-/** A shape (lon/lat rings) carried over the globe from `from` to `to` (fraction p of the way along the great circle),
- *  keeping its true size, then drawn in Mercator metres: what thetruesize.com does. */
+/** A shape (lon/lat rings) carried over the globe from `from` to `to` (fraction p of the way), keeping its true size,
+ *  then drawn in Mercator metres: what thetruesize.com does. It turns about the polar axis (longitude), then about the
+ *  east-west axis at its new longitude (latitude), so its north stays up. */
 export const moveTrue = (rings: P[][], from: P, to: P, p: number): P[][] => {
-  const a = vec(from[0], from[1]), b = vec(to[0], to[1]);
+  if (p <= 0) return rings.map((r) => r.map(([lo, la]) => merc(lo, la)));
+  const dLon = (to[0] - from[0]) * p, lat1 = from[1] + (to[1] - from[1]) * p, lon1 = from[0] + dLon;
+  const a = vec(lon1, from[1]), b = vec(lon1, lat1);
   const ax = cross(a, b), n = Math.hypot(ax[0], ax[1], ax[2]);
-  if (n < 1e-9 || p <= 0) return rings.map((r) => r.map(([lo, la]) => merc(lo, la)));
-  const k: V3 = [ax[0] / n, ax[1] / n, ax[2] / n];
-  const ang = Math.acos(Math.max(-1, Math.min(1, dot(a, b)))) * p;
-  return rings.map((r) => r.map(([lo, la]) => { const [x, y] = ll(rot(vec(lo, la), k, ang)); return merc(x, y); }));
+  const k: V3 = n < 1e-9 ? [0, 0, 1] : [ax[0] / n, ax[1] / n, ax[2] / n];
+  const ang = n < 1e-9 ? 0 : Math.acos(Math.max(-1, Math.min(1, dot(a, b))));
+  return rings.map((r) => r.map(([lo, la]) => { const [x, y] = ll(rot(vec(lo + dLon, la), k, ang)); return merc(x, y); }));
 };
 /** A circle of radius km on the ground around (lon, lat), as Mercator metres: a Tissot indicatrix. */
 export const groundCircle = (lon: number, lat: number, km: number, n = 48): P[] => {
