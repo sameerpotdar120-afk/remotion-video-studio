@@ -167,13 +167,14 @@ const MapOverlays: React.FC<{ t: number; c: Cam; dim: number }> = ({ t, c, dim }
 };
 
 // ------------------------------------------------------------------ the India panel (lines 2-4, split screen)
-const IN_CAM: Cam = { x: merc(82.6, 0)[0], y: mercY(22.4), mpp: 4250 };
+// framed so all of India's official boundary (Gilgit-Baltistan at the top) sits below the tilted divider
+const IN_CAM: Cam = { x: merc(82.6, 0)[0], y: mercY(25.2), mpp: 4400 };
 const PANEL_TOP = 900;
 const panelQ = (t: number) => ramp(t, C.in1 - 0.2, C.in1 + 0.35, inOut) * (1 - ramp(t, C.area - 0.3, C.area + 0.25, inOut));
 const IndiaPanel: React.FC<{ t: number; dim: number }> = ({ t, dim }) => {
   const q = panelQ(t);
   if (q <= 0) return null;
-  const c: Cam = { ...IN_CAM, mpp: IN_CAM.mpp * (1 - 0.04 * ramp(t, C.in1, C.area, linear)), x: IN_CAM.x + Math.sin(t * LOOPF(19)) * 4000 };
+  const c: Cam = { ...IN_CAM, mpp: IN_CAM.mpp * (1 - 0.02 * ramp(t, C.in1, C.area, linear)), x: IN_CAM.x + Math.sin(t * LOOPF(19)) * 4000 };
   const M = GEO.measure;
   const ns = ramp(t, C.n3214 - 0.6, C.n3214 + 1.2, inOut), ew = ramp(t, C.n2933 - 0.75, C.n2933 + 0.7, inOut);
   const box = ringsBox(c, GEO.countries.India);
@@ -188,7 +189,7 @@ const IndiaPanel: React.FC<{ t: number; dim: number }> = ({ t, dim }) => {
           <HiFill id="inp" t={t} d={ringsD(c, GEO.countries.India)} color={COL.in} alpha={0.55} />
         </svg>
         <Compass4 box={box} o={1} />
-        <Measure c={c} a={M.inNS[0]} b={M.inNS[1]} p={ns} o={1 - 0.6 * ramp(t, C.ew - 0.2, C.ew + 0.3, linear) + 0.6 * ramp(t, C.dono - 0.2, C.dono + 0.2, linear)} km={3214} dx={150} dy={30} />
+        <Measure c={c} a={M.inNS[0]} b={M.inNS[1]} p={ns} o={1 - 0.6 * ramp(t, C.ew - 0.2, C.ew + 0.3, linear) + 0.6 * ramp(t, C.dono - 0.2, C.dono + 0.2, linear)} km={3214} dx={190} dy={-110} />
         <Measure c={c} a={M.inEW[0]} b={M.inEW[1]} p={ew} o={1} km={2933} dx={-120} dy={-80} />
         {t > C.dono - 0.2 && <At x={760} y={1300} p={pop(t, C.dono, 10, 200)} rot={-4}><Tag text="दोनों तरफ़ भारत आगे" size={54} color={COL.in} font={UI} /></At>}
       </div>
