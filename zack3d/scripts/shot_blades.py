@@ -69,8 +69,8 @@ def chitin_mat(name, base, light, rough=0.32, crinkle=1.0, scale=1.0):
     return m
 
 def blade_mat(name, base_lo, base_hi):
-    m = mat(name, base_lo, 0.38, **{'Subsurface Weight': 0.6, 'Subsurface Radius': (1.0, 0.55, 0.2), 'Subsurface Scale': 0.02,
-                                    'Transmission Weight': 0.12, 'Coat Weight': 0.5, 'Coat Roughness': 0.25,
+    m = mat(name, base_lo, 0.3, **{'Subsurface Weight': 0.6, 'Subsurface Radius': (1.0, 0.55, 0.2), 'Subsurface Scale': 0.02,
+                                    'Transmission Weight': 0.12, 'Coat Weight': 0.8, 'Coat Roughness': 0.12,
                                     'Specular IOR Level': 0.45, 'Emission Color': (1.0, 0.92, 0.05, 1), 'Emission Strength': 0.0})
     n, l = nodes(m); b = n['Principled BSDF']
     au = n.new('ShaderNodeAttribute'); au.attribute_name = 'u'           # -1..1 across the width
@@ -86,9 +86,23 @@ def blade_mat(name, base_lo, base_hi):
     l.new(tc.outputs['Object'], nz.inputs['Vector'])
     mo = n.new('ShaderNodeMix'); mo.data_type = 'RGBA'; mo.blend_type = 'OVERLAY'; mo.inputs['Factor'].default_value = 0.12
     l.new(cr.outputs['Color'], mo.inputs['A']); l.new(nz.outputs['Color'], mo.inputs['B'])
-    tm = n.new('ShaderNodeMix'); tm.data_type = 'RGBA'; tm.inputs['B'].default_value = lin(255, 214, 120)
-    l.new(at.outputs['Fac'], tm.inputs['Factor']); l.new(mo.outputs['Result'], tm.inputs['A'])
-    l.new(tm.outputs['Result'], b.inputs['Base Color'])
+    tm = n.new('ShaderNodeMix'); tm.data_type = 'RGBA'; tm.inputs['B'].default_value = lin(255, 206, 120)
+    tk = n.new('ShaderNodeMath'); tk.operation = 'MULTIPLY'; tk.inputs[1].default_value = 0.5; l.new(at.outputs['Fac'], tk.inputs[0]); l.new(tk.outputs[0], tm.inputs['Factor']); l.new(mo.outputs['Result'], tm.inputs['A'])
+    # luminous edges (thin chitin lets light through) + darker core, brighter glowing tip
+    ab = n.new('ShaderNodeMath'); ab.operation = 'ABSOLUTE'; l.new(au.outputs['Fac'], ab.inputs[0])
+    pw = n.new('ShaderNodeMath'); pw.operation = 'POWER'; pw.inputs[1].default_value = 4.0; l.new(ab.outputs[0], pw.inputs[0])
+    core = n.new('ShaderNodeMix'); core.data_type = 'RGBA'; core.blend_type = 'MULTIPLY'; core.inputs['B'].default_value = (0.78, 0.66, 0.55, 1)
+    om = n.new('ShaderNodeMath'); om.operation = 'SUBTRACT'; om.inputs[0].default_value = 1.0; l.new(ab.outputs[0], om.inputs[1])
+    om2 = n.new('ShaderNodeMath'); om2.operation = 'MULTIPLY'; om2.inputs[1].default_value = 0.6; l.new(om.outputs[0], om2.inputs[0])
+    l.new(om2.outputs[0], core.inputs['Factor']); l.new(tm.outputs['Result'], core.inputs['A'])
+    rim = n.new('ShaderNodeMix'); rim.data_type = 'RGBA'; rim.inputs['B'].default_value = lin(255, 206, 120)
+    l.new(pw.outputs[0], rim.inputs['Factor']); l.new(core.outputs['Result'], rim.inputs['A'])
+    tp = n.new('ShaderNodeMapRange'); tp.inputs['From Min'].default_value = 0.86; tp.inputs['From Max'].default_value = 1.0
+    tp.interpolation_type = 'SMOOTHSTEP'; l.new(al.outputs['Fac'], tp.inputs['Value'])
+    tip = n.new('ShaderNodeMix'); tip.data_type = 'RGBA'; tip.inputs['B'].default_value = lin(255, 214, 130)
+    tq = n.new('ShaderNodeMath'); tq.operation = 'MULTIPLY'; tq.inputs[1].default_value = 0.75; l.new(tp.outputs['Result'], tq.inputs[0])
+    l.new(tq.outputs[0], tip.inputs['Factor']); l.new(rim.outputs['Result'], tip.inputs['A'])
+    l.new(tip.outputs['Result'], b.inputs['Base Color'])
     # faint fine pits/bump
     nb = n.new('ShaderNodeTexNoise'); nb.inputs['Scale'].default_value = 60; nb.inputs['Detail'].default_value = 4
     l.new(tc.outputs['Object'], nb.inputs['Vector'])
@@ -206,7 +220,7 @@ K = 79
 def leg(name, a, b, R, n=160, flat=0.72, shape='femur', seed=0):
     pts = bez(a, (a + b) / 2 + V((0, 0, 0.04)), b, n)
     if shape == 'femur':   # long almond: thick body, rounded ends
-        rr = [R * (0.55 + 0.45 * math.sin(math.pi * min(1, 0.06 + 0.96 * i / (n - 1))) ** 0.45) for i in range(n)]
+        rr = [R * (0.42 + 0.62 * math.sin(math.pi * min(1, 0.04 + 0.97 * i / (n - 1))) ** 0.5) * (1 - 0.28 * i / (n - 1)) for i in range(n)]
     else:
         rr = [R * (1 - 0.25 * i / (n - 1)) for i in range(n)]
     o = tube(name, pts, rr, leg_m, nr=64, flat=flat, lump=0.035, lump_scale=7, seed=seed, parent=ROOT_)
@@ -217,7 +231,7 @@ F1a, F1b = W(K, -0.35, 0.37, 1.55), W(K, 0.84, 0.455, 1.95)
 legs.append(leg('femur1', F1a, F1b, SW(K, 0.27, 1.7), seed=1))
 F2a, F2b = W(K, 0.05, 0.23, 2.6), W(K, 0.66, 0.30, 2.75)
 legs.append(leg('femur2', F2a, F2b, SW(K, 0.085, 2.7), seed=2))
-F3a, F3b = W(K, 0.35, 0.33, 2.3), W(K, 0.98, 0.43, 2.2)
+F3a, F3b = W(K, 0.5, 0.27, 2.4), W(K, 1.02, 0.42, 2.2)
 legs.append(leg('femur3', F3a, F3b, SW(K, 0.15, 2.25), seed=3))
 # tibia + tarsus of the near leg standing on the skin
 kn = W(K, 0.80, 0.5, 2.0); ft = W(K, 0.88, 0.0, 2.25); ft.z = skz(ft.x, ft.y) + 0.012
@@ -226,8 +240,8 @@ def tibia(name, kn, ft, r):
     t_ = tube(name, bez(kn, (kn + tb) / 2 + V((0.01, 0, 0.0)), tb, 80), [r * (1.1 - 0.2 * i / 79) for i in range(80)], leg_m, nr=24, parent=ROOT_)
     out = [t_]
     for s in range(5):   # tarsomeres
-        a = tb + (ft - tb) * (s / 5); b = tb + (ft - tb) * ((s + 0.9) / 5); rs = r * (0.95 - 0.08 * s)
-        out.append(tube(f'{name}_t{s}', bez(a, (a + b) / 2, b, 10), [rs * (0.8 + 0.3 * math.sin(math.pi * j / 9)) for j in range(10)], leg_m, nr=16, parent=ROOT_))
+        a = tb + (ft - tb) * (s / 5); b = tb + (ft - tb) * ((s + 0.98) / 5); rs = r * (0.9 - 0.07 * s)
+        out.append(tube(f'{name}_t{s}', bez(a, (a + b) / 2, b, 10), [rs * (0.85 + 0.15 * math.sin(math.pi * j / 9)) for j in range(10)], leg_m, nr=16, parent=ROOT_))
     for sg in (-1, 1):   # claws
         c0 = ft + V((0, 0, 0.004)); c1 = ft + V((sg * r * 1.6, -r * 1.2, -0.004))
         out.append(tube(f'{name}_c{sg}', bez(c0, (c0 + c1) / 2 + V((0, 0, r)), c1, 8), [r * 0.45 * (1 - j / 8) for j in range(8)], leg_m, nr=10, parent=ROOT_))
@@ -249,13 +263,13 @@ def blobs(name, elems, mat_, res=0.025, lump=0.04):
     d = o.modifiers.new('lump', 'DISPLACE'); d.texture = tx; d.strength = lump; d.mid_level = 0.5; d.texture_coords = 'GLOBAL'
     return o
 belly = []
-tx = bpy.data.textures.new('bellytx', 'CLOUDS'); tx.noise_scale = 0.22; tx.noise_depth = 3
+tx = bpy.data.textures.new('bellytx', 'CLOUDS'); tx.noise_scale = 0.35; tx.noise_depth = 2
 for nm_, sx, sy, d, sz, rot in (('thx', 0.85, 0.0, 3.0, (0.95, 0.7, 0.5), (0, 0.3, 0.2)),
                                 ('stern', 0.88, 0.17, 2.75, (0.7, 0.5, 0.26), (0.35, 0.1, 0.35)),
                                 ('cox2', 1.0, 0.33, 2.45, (0.32, 0.2, 0.28), (0.6, 0.2, -0.3)),
                                 ('abd', 0.35, -0.12, 3.8, (0.75, 0.85, 0.5), (0, 0, 0))):
     o = ellip(nm_, tuple(W(K, sx, sy, d)), sz, belly_m, rot=rot, parent=ROOT_)
-    dm = o.modifiers.new('lump', 'DISPLACE'); dm.texture = tx; dm.strength = 0.12; dm.texture_coords = 'GLOBAL'
+    dm = o.modifiers.new('lump', 'DISPLACE'); dm.texture = tx; dm.strength = 0.2; dm.texture_coords = 'GLOBAL'
     belly.append(o)
 legs += belly
 # palps (silvery, spotted), only seen at the start (2.0-2.3 s) at the top of the frame
@@ -270,7 +284,9 @@ l_.new(cr_.outputs['Color'], mx_.inputs['A']); l_.new(nz_.outputs['Color'], mx_.
 P0, P1 = W(61, 0.66, -0.25, 1.6), W(61, 0.62, 0.32, 1.7)
 pp = bez(P0, (P0 + P1) / 2 + V((0.12, -0.05, 0.05)), P1, 120)
 pr = [SW(61, 0.2, 1.6) * (math.sin(math.pi * min(1, 0.3 + 0.75 * i / 119)) ** 0.9) * (1 - 0.15 * (i / 119)) + 0.004 for i in range(120)]
-po = tube('palp', pp, pr, palp_m, nr=48, flat=0.55, parent=ROOT_); subsurf(po, 1)
+po = tube('palp', pp, pr, palp_m, nr=48, flat=0.7, lump=0.04, lump_scale=12, parent=ROOT_); subsurf(po, 1)
+nb_ = n_.new('ShaderNodeTexNoise'); nb_.inputs['Scale'].default_value = 90; nb_.inputs['Detail'].default_value = 6; l_.new(tc_.outputs['Object'], nb_.inputs['Vector'])
+bb_ = n_.new('ShaderNodeBump'); bb_.inputs['Strength'].default_value = 0.25; l_.new(nb_.outputs['Fac'], bb_.inputs['Height']); l_.new(bb_.outputs['Normal'], b_.inputs['Normal'])
 
 # ───────────────────────────── blades ─────────────────────────────
 # (name, W world, T, serr side, tip len, tipround, lo/hi colour, keys {frame: (root sx,sy,depth), (tip sx,sy[,depth])})
@@ -281,10 +297,10 @@ BL = [
     ('stylet', 0.072, 0.01, 0, 0.3, 1.0, lin(228, 130, 46), lin(248, 176, 84),
      {61: ((0.99, -0.03, 1.5), (0.83, 0.63, 1.6)), 70: ((0.99, -0.03, 1.4), (0.97, 0.7, 1.5)),
       79: ((0.66, -0.05, 1.35), (0.40, 0.745, 1.5)), 91: ((0.2, -0.05, 1.5), (-0.05, 0.3, 1.5)), 103: ((-0.1, -0.05, 1.5), (-0.3, 0.3, 1.5))}),
-    ('labrum', 0.14, 0.02, 0, 0.16, 0.45, lin(238, 156, 70), lin(252, 198, 112),
+    ('labrum', 0.14, 0.02, 0, 0.11, 0.3, lin(206, 102, 38), lin(240, 160, 78),
      {61: ((1.08, -0.03, 1.2), (1.03, 0.75, 1.25)), 79: ((1.03, -0.05, 1.1), (0.985, 0.82)),
       91: ((0.62, -0.1, 0.6), (0.55, 0.91)), 103: ((0.05, -0.05, 1.0), (-0.2, 0.4, 1.0))}),
-    ('max_L', 0.12, 0.014, 0, 0.22, 0.8, lin(240, 160, 72), lin(252, 200, 112),
+    ('max_L', 0.12, 0.014, 0, 0.22, 0.8, lin(232, 142, 58), lin(252, 196, 108),
      {61: ((1.3, -0.03, 1.2), (1.25, 0.8, 1.2)), 79: ((1.15, -0.05, 1.0), (1.2, 0.85)),
       91: ((0.42, -0.05, 1.0), (0.0, 0.87)), 103: ((0.12, -0.05, 0.9), (0.01, 0.9))}),
     ('hypo', 0.075, 0.011, 0, 0.3, 0.9, lin(232, 140, 52), lin(250, 186, 92),
@@ -329,10 +345,49 @@ def pose_blades(f):
         xax = Matrix.Rotation(math.radians(b['roll']), 3, zax) @ xax; yax = zax.cross(xax)
         b['o'].matrix_world = Matrix.Translation(root) @ Matrix((xax, yax, zax)).transposed().to_4x4()
 
+# ───────────────────────────── 1.9 s opening: head-on close-up of the face (frames 57-59) + dive (60) ─────────────
+# Built as a separate set at x = HX (out of view of the under-shot camera).
+HX = 9.0
+def build_head_set():
+    FM = fly_materials()
+    eye = FM['eye']; vr = [x for x in eye.node_tree.nodes if x.type == 'TEX_VORONOI'][0]; vr.inputs['Scale'].default_value = 34
+    H = V((HX, 0.2, 2.05))
+    hd = ellip('h_cap', tuple(H), (0.95, 0.55, 0.72), belly_m, parent=ROOT_); subsurf(hd, 1)
+    for sg in (-1, 1):
+        e = ellip(f'h_eye{sg}', tuple(H + V((sg * 0.66, -0.2, 0.18))), (0.6, 0.48, 0.78), eye, rot=(0, math.radians(sg * -12), math.radians(sg * 18)), parent=ROOT_)
+    fc = ellip('h_face', tuple(H + V((0, -0.42, -0.2))), (0.38, 0.3, 0.55), leg_m, rot=(math.radians(-12), 0, 0), parent=ROOT_); subsurf(fc, 1)
+    ellip('h_frons', tuple(H + V((0, -0.38, 0.45))), (0.22, 0.2, 0.32), leg_m, parent=ROOT_)
+    ellip('h_mouth', tuple(H + V((0, -0.5, -0.62))), (0.3, 0.2, 0.16), leg_m, parent=ROOT_)
+    for sg in (-1, 1):   # palps hanging either side of the bundle
+        a = H + V((sg * 0.2, -0.62, -0.6)); b = H + V((sg * 0.17, -0.82, -1.35))
+        pp = bez(a, (a + b) / 2 + V((sg * 0.06, -0.05, 0)), b, 70)
+        pr = [0.11 * math.sin(math.pi * min(1, 0.25 + 0.8 * i / 69)) ** 0.8 + 0.006 for i in range(70)]
+        o = tube(f'h_palp{sg}', pp, pr, palp_m, nr=36, flat=0.7, parent=ROOT_); subsurf(o, 1)
+    for k, (dx, Wd, m) in enumerate(((-0.07, 0.07, BLADES[0]['m']), (-0.02, 0.06, BLADES[1]['m']), (0.025, 0.07, BLADES[4]['m']), (0.07, 0.065, BLADES[5]['m']), (0.0, 0.09, BLADES[2]['m']))):
+        o = blade(f'h_bl{k}', 1.0, Wd, 0.01, m, serr=0, tip=0.25, tipround=0.7, nl=300, parent=ROOT_)
+        o.location = H + V((dx, -0.66 + 0.02 * (k == 4), -0.45)); o.rotation_euler = (math.radians(-6), math.radians(dx * 40), 0)
+    for sg, (k1, k2) in ((-1, (V((-1.9, -0.9, 1.1)), V((-1.6, -1.6, 0.0)))), (1, (V((1.9, -0.9, 1.1)), V((1.6, -1.6, 0.0))))):
+        a = H + V((sg * 0.5, 0.2, -0.6)); kn = V((HX, 0, 0)) + k1; f_ = leg(f'h_fem{sg}', a, kn, 0.2, seed=20 + sg)
+        ft = V((HX, 0, 0)) + k2; ft.z = skz(ft.x, ft.y) + 0.01
+        thin.extend(tibia(f'h_tib{sg}', kn, ft, 0.035)); legs.append(f_)
+    HC_ = bpy.data.collections.new('headset'); sc.collection.children.link(HC_)
+    for o in sc.objects:
+        if o.name.startswith('h_') and o.type == 'MESH': HC_.objects.link(o)
+    for nm_, off, pw, sz, col in (('hkey', (-3, -5, 4), 900, 4, (1, .96, .9)), ('hrim', (3, 4, 3), 700, 3, (.8, .93, 1)), ('hfill', (0, -5, -0.5), 250, 5, (1, 1, 1))):
+        lo_ = area(sc, nm_, H + V(off), H, pw, sz, col); lo_.light_linking.receiver_collection = HC_
+    bpy.context.view_layer.update()
+    fur(sc, [o for o in HC_.objects if o.name in ('h_cap', 'h_face', 'h_mouth') or o.name.startswith('h_fem')], 900, 0.14, 0.0028, hairm, sweep=(0, -0.2, -0.8), jitter=0.5, seed=31)
+    return H
+HEAD = build_head_set() if FS <= 60 else None
+def head_cam(f):
+    H = HEAD; s = (f - 57) / 3.0
+    loc = H + V((0.0, -4.3 + 0.35 * s, -1.6 - 0.05 * s)); tgt = H + V((0, 0, -0.75 - 0.05 * s))
+    return loc, (tgt - loc).normalized()
+
 # ───────────────────────────── environment ─────────────────────────────
 skin(sc, R=SKIN_R, size=30, hairs=0, seed=5)
 for nd in bpy.data.materials['skin'].node_tree.nodes:   # smoother skin at this scale
-    if nd.type == 'BUMP': nd.inputs['Strength'].default_value *= 0.35
+    if nd.type == 'BUMP': nd.inputs['Strength'].default_value *= 0.15
     if nd.type == 'VALTORGB':
         nd.color_ramp.elements[0].color = lin(192, 104, 60); nd.color_ramp.elements[1].color = lin(218, 128, 78)
 # a few big dark skin hairs in the foreground (reference: 2-3 tapered spikes)
@@ -348,19 +403,28 @@ for sx, sy, h, lean in ((0.62, 0.95, 0.075, (-0.02, 0.03)), (0.86, 0.8, 0.07, (-
 loc0, fwd0, _, _ = cam_pose(79)
 cam = camera(sc, loc0, loc0 + fwd0, lens=LENS)
 sky(sc, loc0, loc0 + fwd0 * 5 + V((1.2, 0, -0.9)))
+_e = [nd for nd in sc.world.node_tree.nodes if nd.type == 'VALTORGB'][0].color_ramp.elements   # smaller, more saturated glow
+for _x in _e:
+    if _x.position > 0.98 and _x.position < 0.999: _x.color = lin(70, 180, 226)
+    if _x.position >= 0.999: _x.color = lin(140, 208, 236)
 LT = W(79, 0.5, 0.4, 2.0)
 lights(sc, LT, k=0.5)
 area(sc, 'top', LT + V((-1.0, -1.5, 4.0)), LT, 140, 2.0, (1, 0.98, 0.95))       # sharp top-edge highlights on the legs
 CHIT = bpy.data.collections.new('chitin'); sc.collection.children.link(CHIT)
 for o in legs + thin: CHIT.objects.link(o)
 for nm_ in ('top', 'under'): pass
-area(sc, 'under', LT + V((0.3, 4.0, -0.2)), LT + V((0, 0, 0.3)), 120, 4.0, (0.85, 0.95, 1))  # pale rim on the undersides
+area(sc, 'under', LT + V((0.3, 4.0, -0.2)), LT + V((0, 0, 0.3)), 45, 4.0, (0.85, 0.95, 1))  # pale rim on the undersides
 
 for o in sc.objects:
     if o.type == 'LIGHT' and o.name in ('top', 'under'): o.light_linking.receiver_collection = CHIT
 bpy.context.view_layer.update()
 fur(sc, [l for l in legs if l.name.startswith('femur')], 450, 0.2, 0.0024, hairm, sweep=(0, 0.2, -1.0), jitter=0.5, seed=11)
 fur(sc, [l for l in thin if l.name.startswith('tibia') and '_' not in l.name], 900, 0.05, 0.0012, hairm, sweep=(0, 0, -0.6), jitter=0.5, seed=12)
+fur(sc, [l for l in thin if '_t' in l.name], 500, 0.025, 0.0008, hairm, sweep=(0, -0.3, -0.3), jitter=0.6, seed=15)
+pose_blades(FS)
+bhm = mat('bl_hair', lin(105, 52, 18), 0.4)
+for bi, b in enumerate(BLADES):   # sparse tiny dark bristles lying along the blade faces
+    fur(sc, [b['o']], int(260 * b['L']), 0.0045, 0.00055, bhm, sweep=(0, 0, -1.5), jitter=0.25, seed=40 + bi, parent=b['o'])
 fur(sc, [l for l in legs if not l.name.startswith('femur')], 350, 0.16, 0.0024, hairm, sweep=(0, 0.3, -0.7), jitter=0.5, seed=13)
 
 def glow_at(i, f):
@@ -377,8 +441,21 @@ for f in range(FS, FE + 1):
     path = os.path.join(OUT, f'f_{f:04d}.png')
     if os.path.exists(path) and os.path.getsize(path) > 0: continue
     sc.frame_set(f)
-    loc, fwd, right, up = cam_pose(f); cam.location = loc
-    cam.rotation_euler = fwd.to_track_quat('-Z', 'Y').to_euler()
+    sc.render.use_motion_blur = False
+    if f <= 60 and HEAD is not None:
+        if f == 60:   # whip: dive down under the head, motion-blurred
+            sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 1.0; cam.animation_data_clear()
+            for ff, dz, pitch in ((59.5, 0.0, 0.0), (60.0, -0.8, 0.35), (60.5, -1.3, 0.6)):
+                l0, d0 = head_cam(59); l0 = l0 + V((0, 0.6 * (ff - 59.5), dz)); d0 = (d0 + V((0, 0, pitch))).normalized()
+                cam.location = l0; cam.rotation_euler = d0.to_track_quat('-Z', 'Y').to_euler()
+                cam.keyframe_insert('location', frame=ff); cam.keyframe_insert('rotation_euler', frame=ff)
+            sc.frame_set(60)
+        else:
+            l0, d0 = head_cam(f); cam.location = l0; cam.rotation_euler = d0.to_track_quat('-Z', 'Y').to_euler()
+    else:
+        cam.animation_data_clear()
+        loc, fwd, right, up = cam_pose(f); cam.location = loc
+        cam.rotation_euler = fwd.to_track_quat('-Z', 'Y').to_euler()
     pose_blades(f)
     for i, b in enumerate(BLADES):
         g = glow_at(i, f); bs = b['m'].node_tree.nodes['Principled BSDF']
