@@ -78,7 +78,7 @@ def lights(sc, target, k=1.0):
 
 # ── skin ground: a big grid bent into a cylinder so the horizon falls away like a shoulder ──
 def skin_material():
-    m = mat('skin', lin(222, 132, 84), 0.5, **{'Subsurface Weight': 0.15, 'Subsurface Radius': (1, .4, .25)})
+    m = mat('skin', lin(222, 132, 84), 0.72, **{'Subsurface Weight': 0.15, 'Subsurface Radius': (1, .4, .25), 'Specular IOR Level': 0.12})
     mottle(m, lin(212, 118, 72), lin(230, 146, 96), 0.6, 0.3, 0.75)
     add_bump(m, [('noise', 3, 0.35), ('noise', 14, 0.2), ('voronoi', 9, 0.3), ('cells', 140, 0.16)])
     return m
@@ -109,8 +109,9 @@ def skin_z(x, y, R=7.0):  # height of the bent skin surface at (x, y)
 # ── the fly ──
 FLY_GLB = os.path.join(ROOT, 'assets', 'domestic.glb')
 EYES = {'Object_2.003', 'Object_2.004'}; ANT = {'Object_5.002', 'Object_5.003'}; MOUTH = {'Object_2'}; WINGS = {'Object_2.009', 'Object_2.010'}
-HEADPARTS = {'Object_2.001', 'Object_2.006'}  # face plate + head capsule (replaced)
+HEADPARTS = {'Object_2.001', 'Object_2.006', 'Object_2'}  # face plate + head capsule + mouth tip (replaced)
 HC = (4.785, -0.20, 2.32)  # head centre in model units
+MOUTH_LEN = 1.0
 def fly_materials():
     eye = mat('eye', lin(120, 44, 34), 0.5, **{'Coat Weight': 0.35, 'Coat Roughness': 0.22})
     n, l = nodes(eye); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); vr = n.new('ShaderNodeTexVoronoi'); vr.feature = 'DISTANCE_TO_EDGE'
@@ -174,7 +175,7 @@ def load_fly(sc, length=3.4):
     fly = bpy.data.objects.new('FLY', None); sc.collection.objects.link(fly); piv.parent = fly
     for o in parts:
         if o.name in EYES | ANT | HEADPARTS: o.hide_render = True; o.hide_viewport = True
-    build_head(sc, piv, M)
+    build_head(sc, piv, M); build_mouth(sc, piv, M, length=MOUTH_LEN)
     for e in [o for o in sc.objects if o not in before and o.type == 'EMPTY' and o.name not in ('PIV', 'FLY')]: pass
     return fly, parts, M
 
@@ -225,9 +226,9 @@ def fly_fur(sc, fly, M, k=1.0):
     bpy.context.view_layer.update()
     body = [o for o in sc.objects if o.type == 'MESH' and o.data.materials and o.data.materials[0].name in ('body', 'abd')]
     legs = [o for o in sc.objects if o.type == 'MESH' and o.data.materials and o.data.materials[0].name == 'leg']
-    hm = mat('furmat', lin(22, 21, 21), 0.4); hm2 = mat('furlight', lin(170, 166, 160), 0.35)
+    hm = mat('furmat', lin(22, 21, 21), 0.4); hm2 = mat('furlight', lin(128, 124, 120), 0.35)
     fur(sc, body, int(3200 * k), 0.065, 0.0024, hm, sweep=(0, 0.8, 0.1), seed=1, parent=fly)
-    fur(sc, body, int(3000 * k), 0.045, 0.002, hm2, sweep=(0, 0.9, 0.0), seed=2, parent=fly)
+    fur(sc, body, int(1400 * k), 0.045, 0.002, hm2, sweep=(0, 0.9, 0.0), seed=2, parent=fly)
     fur(sc, legs, int(3500 * k), 0.045, 0.0018, hm, sweep=(0, 0.2, -0.6), jitter=0.5, seed=3, parent=fly)
 
 def ellipsoid(sc, name, loc, scale, mat_, parent, rot=(0, 0, 0), seg=96, rings=64):
@@ -245,10 +246,35 @@ def build_head(sc, piv, M):
     cap = ellipsoid(sc, 'HEADCAP', (hx, hy + 0.08, hz + 0.02), (0.66, 0.40, 0.60), M['body'], piv)
     face = ellipsoid(sc, 'FACE', (hx, hy - 0.30, hz - 0.18), (0.20, 0.16, 0.36), M['leg'], piv, rot=(math.radians(-14), 0, 0))
     stripe = ellipsoid(sc, 'FRONS', (hx, hy - 0.26, hz + 0.30), (0.08, 0.10, 0.30), M['leg'], piv, rot=(math.radians(-10), 0, 0))
-    am = mat('antenna', lin(40, 34, 28), 0.45, **{'Coat Weight': 0.3})
+    am = mat('antenna', lin(70, 66, 34), 0.4, **{'Coat Weight': 0.4})
     for sg in (-1, 1):  # antennae: scape + pedicel + flattened flagellum + fine arista
         ellipsoid(sc, f'ANT1{sg}', (hx + sg * 0.07, hy - 0.42, hz + 0.02), (0.035, 0.035, 0.06), am, piv, seg=24, rings=16)
         ellipsoid(sc, f'ANT2{sg}', (hx + sg * 0.08, hy - 0.46, hz - 0.12), (0.045, 0.04, 0.13), am, piv, rot=(math.radians(-12), 0, 0), seg=24, rings=16)
         cu = bpy.data.curves.new('ar', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.006; sp = cu.splines.new('POLY'); sp.points.add(1)
         sp.points[0].co = (hx + sg * 0.09, hy - 0.47, hz - 0.05, 1); sp.points[1].co = (hx + sg * 0.32, hy - 0.62, hz + 0.02, 1)
         ob = bpy.data.objects.new('arista', cu); sc.collection.objects.link(ob); cu.materials.append(am); ob.parent = piv
+
+def tube_obj(sc, name, pts, radii, mat_, parent, res=24):
+    """smooth tapered tube along points (model units), as a curve converted to mesh"""
+    cu = bpy.data.curves.new(name, 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 1.0; cu.bevel_resolution = res // 4; cu.use_fill_caps = True
+    sp = cu.splines.new('NURBS'); sp.points.add(len(pts) - 1); sp.order_u = 4; sp.use_endpoint_u = True
+    for i, (p, r) in enumerate(zip(pts, radii)): sp.points[i].co = (*p, 1); sp.points[i].radius = r
+    ob = bpy.data.objects.new(name, cu); sc.collection.objects.link(ob); cu.materials.append(mat_); ob.parent = parent; return ob
+
+def mouth_material():
+    m = mat('proboscis', lin(214, 96, 40), 0.32, **{'Subsurface Weight': 0.45, 'Subsurface Radius': (1, .45, .15), 'Coat Weight': 0.6, 'Coat Roughness': 0.1})
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); sx = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Object'], sx.inputs[0])
+    mr = n.new('ShaderNodeMapRange'); mr.inputs['From Min'].default_value = HC[2] - 0.45 - 0.95 * MOUTH_LEN; mr.inputs['From Max'].default_value = HC[2] - 0.45; l.new(sx.outputs['Z'], mr.inputs['Value'])
+    r = n.new('ShaderNodeValToRGB'); r.color_ramp.elements[0].color = lin(246, 162, 64); r.color_ramp.elements[1].color = lin(186, 52, 32)
+    l.new(mr.outputs['Result'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color']); return m
+
+def build_mouth(sc, piv, M, spread=0.0, length=1.0):
+    """horsefly mouthparts: a red-orange labium splitting into two stylet tubes, black palps either side"""
+    hx, hy, hz = HC; pm = mouth_material(); M['proboscis'] = pm; top = (hx, hy - 0.30, hz - 0.42)
+    for sg in (-1, 1):
+        pts = [top, (hx + sg * 0.03, hy - 0.34, hz - 0.62), (hx + sg * (0.05 + 0.10 * spread), hy - 0.36, hz - 0.42 - 0.55 * length), (hx + sg * (0.06 + 0.16 * spread), hy - 0.36, hz - 0.42 - 0.95 * length)]
+        tube_obj(sc, f'STYLET{sg}', pts, [0.075, 0.07, 0.05, 0.012], pm, piv)
+        ppts = [(hx + sg * 0.12, hy - 0.28, hz - 0.36), (hx + sg * 0.20, hy - 0.40, hz - 0.62), (hx + sg * 0.22, hy - 0.42, hz - 0.84)]
+        tube_obj(sc, f'PALP{sg}', ppts, [0.035, 0.045, 0.01], M['leg'], piv)
+    # thinner pale central stylet between them
+    tube_obj(sc, 'STYLET0', [top, (hx, hy - 0.38, hz - 0.62), (hx + 0.01, hy - 0.40, hz - 0.42 - 0.6 * length), (hx + 0.015, hy - 0.40, hz - 0.42 - 0.97 * length)], [0.04, 0.035, 0.025, 0.008], pm, piv)
