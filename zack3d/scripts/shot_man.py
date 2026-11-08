@@ -15,12 +15,15 @@ FE = int(argv[4]) if len(argv) > 4 else FS
 FAST = os.environ.get('FAST', '0') == '1'      # skip fur/strands for layout tests
 MAN_GLB = os.path.join(ROOT, 'assets', 'bearded.glb')
 EYE_OUT = 0.09
-DOME_CELL = 3.2   # bumps per BU (laterally stretched)
+DOME_CELL = 4.4   # bumps per BU (laterally stretched)
 DOME_DISP = 0.22
 SHIRT_BLOBS = [((0, 0.3, -0.9), 6.6, (1.0, 0.62, 0.8)),          # torso
-               ((-4.9, -0.3, 1.4), 3.2, (1.1, 1.05, 0.8)),        # near shoulder (his right)
+               ((-4.6, -0.3, 1.0), 3.0, (1.1, 1.05, 0.8)),        # near shoulder (his right)
                ((4.7, 0.1, 1.8), 3.1, (1.0, 1.0, 0.85)),          # far shoulder
-               ((0, 0.45, 2.85), 4.4, (1.12, 0.74, 0.55))]        # trapezius / neck base
+               ((-0.6, 0.45, 2.85), 4.6, (1.3, 0.74, 0.55))]        # trapezius / neck base
+SHIRT_GLOW = 0.1
+BROW_Z = 8.86
+SHIRT_SHELL = True
 S = 5.5            # man scale: model units (≈3.3 cm) -> BU (fly 3.4 BU ≈ 2 cm)
 
 def smooth01(e0, e1, x):
@@ -106,7 +109,19 @@ def head_material(m):
     rp.inputs['B'].default_value = lin(222, 150, 112); skincol = rp.outputs['Result']
     hm = n.new('ShaderNodeMix'); hm.data_type = 'RGBA'; l.new(dd, hm.inputs['Factor'])
     l.new(skincol, hm.inputs['A']); hm.inputs['B'].default_value = lin(112, 78, 52)
-    l.new(hm.outputs['Result'], b.inputs['Base Color'])
+    # thick dark eyebrows (reference): band above each eye, arched, front of the face only
+    ax = math_node(n, l, 'ABSOLUTE', X)
+    bx = math_node(n, l, 'MULTIPLY', smoothstep_node(n, l, ax, 0.22, 0.4), smoothstep_node(n, l, ax, 1.5, 1.3))
+    arch = math_node(n, l, 'MULTIPLY_ADD', math_node(n, l, 'POWER', math_node(n, l, 'SUBTRACT', ax, 0.85), 2), -0.25, BROW_Z)
+    dz = math_node(n, l, 'ABSOLUTE', math_node(n, l, 'SUBTRACT', Z, arch))
+    bz = smoothstep_node(n, l, dz, 0.15, 0.07)
+    by = smoothstep_node(n, l, Y, -2.6, -3.0)
+    bn = n.new('ShaderNodeTexNoise'); bmap = n.new('ShaderNodeMapping'); bmap.inputs['Scale'].default_value = (6, 40, 40)
+    l.new(tc.outputs['Object'], bmap.inputs['Vector']); l.new(bmap.outputs['Vector'], bn.inputs['Vector']); bn.inputs['Scale'].default_value = 3
+    brow = math_node(n, l, 'MULTIPLY', math_node(n, l, 'MULTIPLY', bx, bz), math_node(n, l, 'MULTIPLY', by, math_node(n, l, 'MULTIPLY_ADD', bn.outputs['Fac'], 0.5, 0.6)))
+    bm_ = n.new('ShaderNodeMix'); bm_.data_type = 'RGBA'; l.new(math_node(n, l, 'MINIMUM', brow, 0.92), bm_.inputs['Factor'])
+    l.new(hm.outputs['Result'], bm_.inputs['A']); bm_.inputs['B'].default_value = lin(52, 34, 24)
+    l.new(bm_.outputs['Result'], b.inputs['Base Color'])
     rr = math_node(n, l, 'MULTIPLY_ADD', dd, 0.25, 0.42); l.new(rr, b.inputs['Roughness'])
 
 def hair_material():
@@ -116,7 +131,7 @@ def hair_material():
     no = n.new('ShaderNodeTexNoise'); no.inputs['Scale'].default_value = 4; no.inputs['Detail'].default_value = 10; no.inputs['Roughness'].default_value = 0.7
     l.new(mp.outputs['Vector'], no.inputs['Vector'])
     cr = n.new('ShaderNodeValToRGB'); e = cr.color_ramp.elements
-    e[0].position = 0.3; e[0].color = lin(110, 74, 46); e[1].position = 0.75; e[1].color = lin(196, 140, 94)
+    e[0].position = 0.3; e[0].color = lin(104, 70, 44); e[1].position = 0.75; e[1].color = lin(186, 132, 88)
     l.new(no.outputs['Fac'], cr.inputs['Fac']); l.new(cr.outputs['Color'], b.inputs['Base Color'])
     bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.6; bp.inputs['Distance'].default_value = 0.05
     l.new(no.outputs['Fac'], bp.inputs['Height']); l.new(bp.outputs['Normal'], b.inputs['Normal'])
@@ -169,8 +184,13 @@ def build_hair_cap(sc, head):
 
 def hair_strands(sc, cap, n):
     """Fine strands on the cap surface, combed back and slightly up, for a soft silhouette."""
-    hm = mat('strand', lin(96, 66, 44), 0.4)
-    return fur(sc, [cap], n, 0.32 * S, 0.03, hm, sweep=(0, 1.6, 0.3), jitter=0.25, seed=7)
+    hm = mat('strand', lin(176, 126, 84), 0.38, **{'Coat Weight': 0.2, 'Coat Roughness': 0.3})
+    tmp = bpy.data.objects.new('cap_core', cap.data.copy()); sc.collection.objects.link(tmp)
+    tmp.parent = cap.parent; tmp.matrix_world = cap.matrix_world.copy()
+    keep_faces(tmp, lambda c: c.z > 9.05 - 0.5 * smooth01(0.3, 2.0, c.y) + 0.45 and (c.y > -2.2 or c.z > 10.4))
+    bpy.context.view_layer.update()
+    ob = fur(sc, [tmp], n, 0.24 * S, 0.022, hm, sweep=(-2.2, 0, 0.25), jitter=0.12, seed=7)   # world -X = towards the back of his head
+    bpy.data.objects.remove(tmp); return ob
 
 def build_eyes(sc, head):
     """Open eyes: eyeball (white sclera + light blue iris) poking out of the closed lid, plus an upper lid."""
@@ -195,16 +215,17 @@ def build_eyes(sc, head):
 
 def build_shirt(sc, bust):
     """Blue T-shirt: shell copied from the bust below a crew collar line, plus torso and shoulder volumes."""
-    cm = mat('shirt', lin(80, 178, 228), 0.85, **{'Sheen Weight': 0.6, 'Sheen Roughness': 0.4, 'Sheen Tint': (0.8, 0.95, 1, 1)})
+    cm = mat('shirt', lin(90, 158, 200), 0.85, **{'Sheen Weight': 0.6, 'Sheen Roughness': 0.4, 'Sheen Tint': (0.8, 0.95, 1, 1)})
     n, l = nodes(cm); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord')
     # soft folds: stretched noise -> bump; fine weave
     mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (0.35, 0.35, 0.09); l.new(tc.outputs['Object'], mp.inputs['Vector'])
     fo = n.new('ShaderNodeTexNoise'); fo.inputs['Scale'].default_value = 1.4; fo.inputs['Detail'].default_value = 3
     l.new(mp.outputs['Vector'], fo.inputs['Vector'])
     wv = n.new('ShaderNodeTexNoise'); wv.inputs['Scale'].default_value = 60; l.new(tc.outputs['Object'], wv.inputs['Vector'])
-    b1 = n.new('ShaderNodeBump'); b1.inputs['Strength'].default_value = 0.5; b1.inputs['Distance'].default_value = 1.5; l.new(fo.outputs['Fac'], b1.inputs['Height'])
+    b1 = n.new('ShaderNodeBump'); b1.inputs['Strength'].default_value = 0.8; b1.inputs['Distance'].default_value = 1.5; l.new(fo.outputs['Fac'], b1.inputs['Height'])
     b2 = n.new('ShaderNodeBump'); b2.inputs['Strength'].default_value = 0.08; b2.inputs['Distance'].default_value = 0.05; l.new(wv.outputs['Fac'], b2.inputs['Height'])
     l.new(b1.outputs['Normal'], b2.inputs['Normal']); l.new(b2.outputs['Normal'], b.inputs['Normal'])
+    b.inputs['Emission Color'].default_value = lin(116, 178, 212); b.inputs['Emission Strength'].default_value = SHIRT_GLOW
     parts = []
     # one smooth metaball volume: torso, both shoulders/upper sleeves, trapezius around the neck base
     mb = bpy.data.metaballs.new('shirt_mb'); mb.resolution = 0.12; mb.render_resolution = 0.08; mb.threshold = 0.6
@@ -218,14 +239,15 @@ def build_shirt(sc, bust):
     parts.append(sh)
     # fitted shell on the neck base (bust copy below the crew-neck line), flaring out at its bottom into the volume
     me2 = bust.data.copy(); sh2 = bpy.data.objects.new('shirt_shell', me2); sc.collection.objects.link(sh2)
-    keep_faces(sh2, lambda c: 0.6 < c.z < 3.55 + 0.9 * smooth01(-2.2, 1.6, c.y))
+    keep_faces(sh2, lambda c: 2.0 < c.z < 3.55 + 0.9 * smooth01(-2.2, 1.6, c.y) and abs(c.x) < 3.8)
     bm = bmesh.new(); bm.from_mesh(me2); bm.normal_update()
-    off = {v: v.normal * (0.1 + 0.9 * smooth01(3.2, 1.0, v.co.z)) for v in bm.verts}
+    off = {v: v.normal * (0.1 + 0.25 * smooth01(3.0, 2.0, v.co.z) + 0.45 * smooth01(2.4, 3.8, abs(v.co.x))) for v in bm.verts}
     for v in bm.verts: v.co = v.co + off[v]
     bm.to_mesh(me2); bm.free()
     for p in me2.polygons: p.use_smooth = True
     so = sh2.modifiers.new('solid', 'SOLIDIFY'); so.thickness = 0.1; so.offset = -1; so.use_rim = True
-    parts.append(sh2)
+    if SHIRT_SHELL: parts.append(sh2)
+    else: bpy.data.objects.remove(sh2)
     # collar rib
     bpy.ops.mesh.primitive_torus_add(major_radius=1, minor_radius=0.09, major_segments=96, minor_segments=12)
     col = bpy.context.object; col.name = 'collar'
@@ -252,11 +274,12 @@ def build_man(sc, loc=(0, 0, 0)):
             dk = m.node_tree.nodes.new('ShaderNodeMix'); dk.data_type = 'RGBA'; dk.blend_type = 'MULTIPLY'; dk.inputs['Factor'].default_value = 1
             dk.inputs['B'].default_value = (0.55, 0.5, 0.48, 1); m.node_tree.links.new(src, dk.inputs['A']); m.node_tree.links.new(dk.outputs['Result'], bb.inputs['Base Color'])
     cap = build_hair_cap(sc, head); eyes = build_eyes(sc, head); shirt = build_shirt(sc, head)
+    keep_faces(head, lambda c: not (abs(c.x) > 3.5 and c.z < 3.55 + 0.9 * smooth01(-2.2, 1.6, c.y) - 0.3))  # bust shoulders hidden under the shirt
     root = bpy.data.objects.new('MAN', None); sc.collection.objects.link(root)
     for o in [head, cap, *beard, *eyes, *shirt]: o.parent = root
     root.rotation_euler = (0, 0, math.radians(90)); root.scale = (S, S, S); root.location = V(loc) + V((0, 0, 3.2))
     bpy.context.view_layer.update()
-    if not FAST: strands = hair_strands(sc, cap, 30000)
+    if not FAST: strands = hair_strands(sc, cap, 22000)
     return root, head
 
 def model_to_world(root, p): return root.matrix_world @ V(p)
@@ -278,13 +301,13 @@ def dome_material():
     h = math_node(n, l, 'MULTIPLY_ADD', vo.outputs['Distance'], 1.0, math_node(n, l, 'MULTIPLY', wv.outputs['Fac'], 0.35))
     disp = n.new('ShaderNodeDisplacement'); disp.inputs['Scale'].default_value = DOME_DISP; disp.inputs['Midlevel'].default_value = 0.5
     l.new(h, disp.inputs['Height']); l.new(disp.outputs['Displacement'], o.inputs['Displacement'])
-    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.07; bp.inputs['Distance'].default_value = 0.08
+    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 0.14; bp.inputs['Distance'].default_value = 0.08
     l.new(pores.outputs['Distance'], bp.inputs['Height'])
     bp2 = n.new('ShaderNodeBump'); bp2.inputs['Strength'].default_value = 0.06; bp2.inputs['Distance'].default_value = 0.1
     l.new(fine.outputs['Fac'], bp2.inputs['Height']); l.new(bp.outputs['Normal'], bp2.inputs['Normal']); l.new(bp2.outputs['Normal'], b.inputs['Normal'])
     # mottle
     mo = n.new('ShaderNodeTexNoise'); mo.inputs['Scale'].default_value = 0.35; l.new(tc.outputs['Object'], mo.inputs['Vector'])
-    cr = n.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].color = lin(172, 124, 106); cr.color_ramp.elements[1].color = lin(190, 140, 120)
+    cr = n.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].color = lin(160, 114, 96); cr.color_ramp.elements[1].color = lin(178, 128, 108)
     cr.color_ramp.elements[0].position = 0.35; cr.color_ramp.elements[1].position = 0.7
     l.new(mo.outputs['Fac'], cr.inputs['Fac']); l.new(cr.outputs['Color'], b.inputs['Base Color'])
     m.displacement_method = 'BOTH'
@@ -306,21 +329,26 @@ def build_dome(sc, F, nrm, R, half=(70, 70), res=160):
     return g
 
 def dome_hairs(sc, dome, n):
-    hm = mat('armhair', lin(120, 78, 50), 0.4)
-    return fur(sc, [dome], n, 0.9, 0.012, hm, sweep=(0.9, 0.0, 0.0), jitter=0.3, seed=11)
+    hm = mat('armhair', lin(170, 120, 88), 0.4)
+    return fur(sc, [dome], n, 0.6, 0.006, hm, sweep=(0.9, 0.0, 0.0), jitter=0.3, seed=11)
 
 # ───────────────────────── shot ─────────────────────────
 CAM = V((9.3, -94.5, 9.5))
 FLYP = V((9.3, -62.5, 10.65))
 
+CAM_KEYS = [  # (t seconds, camera offset from the 1.2 s pose); the camera keeps aiming at the fly
+    (0.80, V((8.0, 16.0, 0.58))), (0.90, V((5.5, 12.0, 0.43))), (1.00, V((2.4, 0, 0))), (1.20, V((0, 0, 0))),
+    (1.40, V((-0.35, 0, 0))), (1.50, V((-0.5, 0, 0)))]
+
 def cam_at(f):
-    """camera position / aim for global frame f (slow drift 1.0->1.4 s, faster arrival before 1.0 s)."""
-    t = (f - 1) / 30
-    k = [(0.80, V((-6, 10, 3.5)), V((-3, 2, 1.5))), (0.90, V((-3, 5, 1.6)), V((-1.5, 1, 0.7))), (1.00, V((0, 0, 0)), V((0, 0, 0))),
-         (1.50, V((1.2, -1.0, -0.4)), V((0.6, 0, 0)))]
-    for (t0, p0, a0), (t1, p1, a1) in zip(k, k[1:]):
-        if t <= t1 or (t1 == k[-1][0]):
-            u = max(0, min(1, (t - t0) / (t1 - t0))); return p0.lerp(p1, u), a0.lerp(a1, u)
+    """camera offset for global frame f: fast arrival (end of the whip from shot 1) then a slow drift (ref 1.0-1.4 s)."""
+    t = (f - 1) / 30; k = CAM_KEYS
+    if t <= k[0][0]: return k[0][1], V((0, 0, 0))
+    for (t0, p0), (t1, p1) in zip(k, k[1:]):
+        if t <= t1:
+            u = (t - t0) / (t1 - t0); u = u * u * (3 - 2 * u) if t0 >= 1.0 else u
+            return p0.lerp(p1, u), V((0, 0, 0))
+    return k[-1][1], V((0, 0, 0))
 
 def sun(sc, name, frm, energy, color, angle=10):
     d = bpy.data.lights.new(name, 'SUN'); d.energy = energy; d.angle = math.radians(angle); d.color = color
@@ -339,7 +367,7 @@ def main():
     fly.rotation_euler = Matrix((xax, yax, nrm)).transposed().to_euler(); fly.location = FLYP; fly.scale = (1.15,) * 3
     bpy.context.view_layer.update()
     if not FAST:
-        fly_fur(sc, fly, M); dome_hairs(sc, dome, 1500)
+        fly_fur(sc, fly, M); dome_hairs(sc, dome, 900)
     os.makedirs(OUT, exist_ok=True)
     sc.render.resolution_x = int(1440 * RES / 100); sc.render.resolution_y = int(2560 * RES / 100); sc.render.resolution_percentage = 100
     sc.cycles.samples = SPP
@@ -350,7 +378,7 @@ def main():
         if abs(e.position - 0.955) < 1e-3: e.color = lin(48, 160, 204)
         if abs(e.position - 0.988) < 1e-3: e.color = lin(92, 172, 206)
         if e.position > 0.999: e.color = lin(158, 198, 216)
-    sun(sc, 'key', (0.7, -0.9, 1.5), 5.0, (1, .9, .8), 12)        # warm, front-right, camera side: lights the face
+    sun(sc, 'key', (0.9, -0.8, 1.15), 4.6, (1, .9, .8), 12)        # warm, front-right, camera side: lights the face
     sun(sc, 'fill', (-1.0, -0.9, 0.35), 0.8, (1, .9, .8), 20)    # soft fill from camera-left: back of head / shirt
     sun(sc, 'rim', (-0.3, 1.0, 0.22), 4.0, (.85, .95, 1), 6)      # from behind: bright skin horizon, neck rim
     for f in range(FS, FE + 1):
