@@ -1,4 +1,4 @@
-# Korea: script draft (Hindi, for the creator to rewrite)
+# Korea: script draft, polished (Hindi, for the creator to rewrite)
 
 Files: `script_hindi.txt` (Devanagari), `script_roman.txt` (Roman Hinglish), `hooks.txt`, `reference_analysis.md`
 (look, beats, full fact check).
@@ -6,44 +6,45 @@ Files: `script_hindi.txt` (Devanagari), `script_roman.txt` (Roman Hinglish), `ho
 ## The two best hooks (hookscore.py, scored in English, then put into Hindi)
 
 **1. The Question: 71, WORKABLE** (used)
-"You think the Korean War ended in 1953? It never did. Nobody ever signed the peace, so why are they still at war?"
-→ "तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। बंदूकें रुकीं, पर शांति पर आज तक किसी ने साइन नहीं किया।"
+"You think the Korean War ended in 1953? It never did. 73 years, no peace signed, and families still split by one line. Why?"
+→ "तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। 73 साल, शांति पर कोई साइन नहीं, और एक लाइन आज भी परिवारों को बाँटे हुए है। क्यों?"
 ```
-SPECIFICITY 69 · ADDRESS 76 · STAKES 62 · CURIOSITY 76 · BREVITY 100 · weakest: STAKES
-```
-
-**2. The Clock: 58, WORKABLE** (kept as beat 5 instead of the opening)
-"You see this line? Two American officers drew it in 30 minutes, and 81 years later millions of families are still split by it. Why?"
-→ "ये लाइन देख रहे हो? दो American अफ़सरों ने इसे आधे घंटे में खींचा था, और 81 साल बाद भी ये Korea को बाँटे हुए है।"
-```
-SPECIFICITY 96 · STAKES 36 · CURIOSITY 59 · verdict 58 · weakest: STAKES
+SPECIFICITY 96 · ADDRESS 76 · STAKES 62 · CURIOSITY 59 · BREVITY 100 · weakest: CURIOSITY
 ```
 
-Winner formula: **The Question** on a common belief ("the war ended in 1953"). It works here because almost everyone
-believes it, and the answer ("it never ended") lands in the first 3 seconds, with the DMZ already on screen. That pays off
-part of the hook by 8 s; the "why" carries the rest.
+**2. The Question: 71, WORKABLE** (the runner-up; stronger curiosity, vaguer)
+"You think the Korean War ended in 1953? It never did. Nobody signed the peace, and it still splits families today. Why?"
+```
+SPECIFICITY 74 · ADDRESS 76 · STAKES 62 · CURIOSITY 76 · BREVITY 100 · weakest: STAKES
+```
+
+What changed from the first draft: the old hook (also 71) was weakest on STAKES; adding "73 years" and "families
+still split by one line" lifted specificity from 69 to 96 and gave the hook a concrete cost. "One line" is a promise the
+script now pays off out loud in beat 5 ("यही है वो लाइन।").
+
+Winner formula: **The Question** on a common belief ("the war ended in 1953"). Almost everyone believes it, the
+answer ("कभी नहीं हुई") lands in the first 3 seconds, and "एक लाइन" gives the viewer something to wait for.
 
 ## The script, beat by beat
 
 | # | VO (Hindi) | ON SCREEN |
 | --- | --- | --- |
-| 1 | तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। बंदूकें रुकीं, पर शांति पर आज तक किसी ने साइन नहीं किया। | Frame 0: Korea close, North red / South blue, the DMZ glowing between them, "1953" and a big "जंग खत्म?" (3 words). On "कभी नहीं": a red ✗ stamps over "खत्म". On "साइन नहीं": a peace-treaty paper drawn in code with an empty signature line. |
-| 2 | आज भी न कोई दूतावास, न कोई रिश्ता। बीच में बस 4 किलोमीटर की पट्टी: कांटेदार तार और बारूदी सुरंगें। | Push in on the DMZ: the 4 km strip widens into a band, "4 KM" tag; barbed-wire line and mine icons drawn in code along it. |
-| 3 | पर 1945 तक ये एक ही देश था, 35 साल से Japan के कब्ज़े में। | Border fades, whole peninsula one colour; then Japan orange washes over it, "1910 → 1945" timeline ticks, "35 साल". |
-| 4 | 1945 में Japan हार की कगार पर था, और Soviet सेना उत्तर से घुस आई। America को डर था कि पूरा Korea हाथ से निकल जाएगा। | Pull out: USSR fills red from the north, red arrows cross the Tumen into Korea; a US badge over the sea to the south with a "?" |
-| 5 | तो दो American अफ़सरों ने करीब आधे घंटे में map पर एक लाइन खींच दी: 38th parallel। | Two officer silhouettes over a desk map (code-drawn or creator GPT image), a stopwatch to "30 मिनट", a pencil draws the 38th parallel across Korea; the line jumps onto the satellite map. |
-| 6 | बँटवारा कुछ समय के लिए था। पर Cold War में ऊपर communism आया, नीचे capitalism, और 1948 में दो देश बन गए। | Soviet badge north, US badge south; red and blue rings pulse; "1948" pops, the fills split into DPRK / ROK flags. |
-| 7 | दोनों का दावा एक ही: पूरा Korea हमारा। | **NULL A (split, ~3 s):** Null points both ways (or shrugs). Top half: each flag's colour floods the whole peninsula in turn. |
-| 8 | 1950 में North ने हमला किया, और लगभग पूरा South जीत लिया। | "1950"; red tide sweeps south to a small blue pocket round Busan (the Pusan Perimeter). |
-| 9 | फिर America और UN की फ़ौज आई, और North को China की सीमा तक धकेल दिया। | UN + US badges land at Incheon (arrow from the sea); blue tide sweeps north to the Yalu. |
-| 10 | तब China कूदा, लाखों सैनिकों के साथ। | **NULL B (split, ~2.5 s):** Null's alarmed reaction. Top: China fills dark red, a wave of red arrows crosses the Yalu. |
-| 11 | [OPTIONAL] और भारत? हमारी 60 Para Field Ambulance ने वहाँ हज़ारों घायलों का इलाज किया। | Zoom out to show India (official boundary) → arc to Korea; a red-cross field-ambulance tag with the Indian flag. |
-| 12 | 3 साल और कम से कम 25 लाख मौतों के बाद, लड़ाई लगभग वहीं रुकी जहाँ से शुरू हुई थी। | The tide settles near the 38th parallel; the old straight line and the new front line glow together; "25 लाख+" counter. |
-| 13 | 1953 में युद्धविराम हुआ। South Korea ने उस पर साइन तक नहीं किया। और शांति समझौता? आज तक नहीं। | The armistice paper: signatures for the UN Command, North Korea and China; the South Korea line stays empty, a red circle round it; then the peace-treaty paper from beat 1, still empty. |
-| 14 | तो अब बताओ... | Camera eases back to the frame-0 shot; "तो अब बताओ…" runs into "तुम्हें लगता है…" (loop). |
+| 1 | तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। 73 साल, शांति पर कोई साइन नहीं, और एक लाइन आज भी परिवारों को बाँटे हुए है। क्यों? | Frame 0: Korea close, North red / South blue, the border glowing, "जंग खत्म?" (2 words, big). On "कभी नहीं": a red ✗ over "खत्म". "73 साल" counter; an empty peace-treaty paper drawn in code; on "एक लाइन": the border flares white. |
+| 2 | बीच में बस 4 किलोमीटर की पट्टी: कांटेदार तार और बारूदी सुरंगें। | Push in: the border widens into the DMZ band, "4 KM" tag, barbed-wire line and mine icons drawn in code. |
+| 3 | पर 1945 तक ये एक ही देश था, 35 साल से Japan के कब्ज़े में। | Border fades, the peninsula one colour; Japan orange washes over it; "1910 → 1945", "35 साल". |
+| 4 | फिर उसी साल Soviet सेना उत्तर से घुस आई, और America को डर था कि पूरा Korea हाथ से निकल जाएगा। | Pull out: USSR red from the north, red arrows into Korea; a US badge over the sea to the south with a "?". |
+| 5 | तो दो American अफ़सरों ने map उठाया, और करीब आधे घंटे में एक लाइन खींच दी: 38th parallel। यही है वो लाइन। | Two officer silhouettes over a desk map, a stopwatch to "30 मिनट", a pencil draws the 38th parallel; on "यही है वो लाइन" it jumps onto the satellite map and lines up with frame 0's border (payoff of the hook). |
+| 6 | बँटवारा कुछ समय के लिए था। पर Cold War में ऊपर communism आया, नीचे capitalism, और 1948 में दो देश बन गए। | Soviet badge north, US badge south, red and blue rings pulse; "1948" pops, the fills split into DPRK / ROK flags. |
+| 7 | और दोनों का दावा एक: पूरा Korea हमारा। | **NULL A (split, ~3 s):** Null points both ways / shrugs. Top half: each flag's colour floods the whole peninsula in turn. |
+| 8 | 1950 में North ने हमला किया, और लगभग पूरा South जीत लिया। फिर America और UN की फ़ौज आई, और North को China की सीमा तक धकेल दिया। | "1950"; red tide sweeps south to a pocket round Busan; UN + US badges land at Incheon; blue tide sweeps north to the Yalu. |
+| 9 | तब China कूदा, लाखों सैनिकों के साथ। | **NULL B (split, ~2.5 s):** Null's alarmed reaction. Top: China fills dark red, a wave of arrows crosses the Yalu. |
+| 10 | [OPTIONAL] और भारत? हमारी 60 Para Field Ambulance ने वहाँ हज़ारों घायलों का इलाज किया। | Zoom out to show India (official boundary) → arc to Korea; red-cross ambulance tag with the Indian flag. |
+| 11 | 3 साल, कम से कम 25 लाख मौतें, और लड़ाई लगभग वहीं रुकी जहाँ से शुरू हुई थी: उसी लाइन के पास। | The tide settles; the straight 38th parallel and the real front line glow together; "25 लाख+" counter. |
+| 12 | 1953 में युद्धविराम हुआ। South Korea ने उस पर साइन तक नहीं किया। और शांति समझौता? आज तक नहीं। | The armistice paper: signatures for the UN Command, North Korea and China; South Korea's line empty, red circle; then the beat-1 peace-treaty paper, still empty. |
+| 13 | तो अब बताओ... | Camera eases back to the frame-0 shot; "तो अब बताओ…" runs into "तुम्हें लगता है…" (loop). |
 
-**Runtime:** 221 Hindi words at the last VO's pace (2.34 words/s) ≈ **94 s** with the optional India beat, **≈ 88 s**
-without it. (At the skill's 150 wpm it would be 88 s.) Null total ≈ 5.5 s, both in the middle.
+**Runtime:** 224 Hindi words. At the skill's 150 wpm: **≈ 84 s** without the India beat. At the last VO's pace (2.34 words/s):
+**≈ 90 s** without it, **≈ 96 s** with it. Null total ≈ 5.5 s, both in the middle.
 
 **The close:** one ask, built into the loop ("तो अब बताओ…" → "तुम्हें लगता है…?"). The pinned comment asks the
 question.
