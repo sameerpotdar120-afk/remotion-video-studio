@@ -1,53 +1,85 @@
-# Korea: script draft, polished (Hindi, for the creator to rewrite)
+# Korea: the creator's script, polished (Hindi)
 
-Files: `script_hindi.txt` (Devanagari), `script_roman.txt` (Roman Hinglish), `hooks.txt`, `reference_analysis.md`
-(look, beats, full fact check).
+Files: `script_roman.txt` (the creator's Roman Hinglish, polished), `script_hindi.txt` (Devanagari for captions),
+`hooks.txt`, `reference_analysis.md` (look, beats, full fact check).
 
-## The two best hooks (hookscore.py, scored in English, then put into Hindi)
+## The loop
 
-**1. The Question: 71, WORKABLE** (used)
-"You think the Korean War ended in 1953? It never did. 73 years, no peace signed, and families still split by one line. Why?"
-→ "तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। 73 साल, शांति पर कोई साइन नहीं, और एक लाइन आज भी परिवारों को बाँटे हुए है। क्यों?"
+The seam is where the last line runs into the first. The ending stops right before the first word, so line 1 completes
+its sentence and nothing is said twice:
+
+> …Aur shanti samjhauta? Aaj tak nahi. **To ye sab jaanne ke baad bhi…** ↻ **Tumhe lagta hai Korea ki jung 1953 me khatam ho gayi? Khatam hui hi nahi.**
+
+On the first play, line 1 is a plain question. On every replay it reads as "even after all this, you still think it
+ended?", and "Khatam hui hi nahi" answers it again. Picture: the last frame is the frame before frame 0 (the same
+border close-up), and the music and room tone cross the seam.
+
+VO tip: record the last line and the first line together in one take ("…to ye sab jaanne ke baad bhi, tumhe lagta hai
+Korea ki jung…") so the voice rises into the question, then use that take's "tumhe lagta hai…" as the opening. That
+removes the drop in tone that gives most loops away.
+
+## The two best hooks (hookscore.py, scored in English)
+
+**1. The Question: 74, STRONG** (option, adds an India tease)
+"You think the Korean War ended in 1953? It never ended, and 627 Indians saw why. Why is it still on?"
 ```
-SPECIFICITY 96 · ADDRESS 76 · STAKES 62 · CURIOSITY 59 · BREVITY 100 · weakest: CURIOSITY
+SPECIFICITY 96 · STAKES 62 · CURIOSITY 76 · weakest: STAKES
+```
+In Hindi it would be line 2: "…Kyu? Aur 627 Hindustani wahan goliyon ke beech the." Use it only if you want India
+teased up front.
+
+**2. The Question: 71, WORKABLE** (yours, used)
+"You think the Korean War ended in 1953? It never did. 73 years, no peace signed, and one line still splits families. Why?"
+```
+SPECIFICITY 96 · STAKES 62 · CURIOSITY 59 · weakest: CURIOSITY
 ```
 
-**2. The Question: 71, WORKABLE** (the runner-up; stronger curiosity, vaguer)
-"You think the Korean War ended in 1953? It never did. Nobody signed the peace, and it still splits families today. Why?"
-```
-SPECIFICITY 74 · ADDRESS 76 · STAKES 62 · CURIOSITY 76 · BREVITY 100 · weakest: STAKES
-```
-
-What changed from the first draft: the old hook (also 71) was weakest on STAKES; adding "73 years" and "families
-still split by one line" lifted specificity from 69 to 96 and gave the hook a concrete cost. "One line" is a promise the
-script now pays off out loud in beat 5 ("यही है वो लाइन।").
-
-Winner formula: **The Question** on a common belief ("the war ended in 1953"). Almost everyone believes it, the
-answer ("कभी नहीं हुई") lands in the first 3 seconds, and "एक लाइन" gives the viewer something to wait for.
+Winner formula: **The Question** on a common belief. Almost everyone thinks the war ended in 1953, the answer lands
+in 3 seconds, and "ek line" is a promise paid off out loud at "Bas. Yahi hai wo line."
 
 ## The script, beat by beat
 
-| # | VO (Hindi) | ON SCREEN |
+| # | VO (Roman) | ON SCREEN |
 | --- | --- | --- |
-| 1 | तुम्हें लगता है Korea की जंग 1953 में खत्म हो गई? कभी नहीं हुई। 73 साल, शांति पर कोई साइन नहीं, और एक लाइन आज भी परिवारों को बाँटे हुए है। क्यों? | Frame 0: Korea close, North red / South blue, the border glowing, "जंग खत्म?" (2 words, big). On "कभी नहीं": a red ✗ over "खत्म". "73 साल" counter; an empty peace-treaty paper drawn in code; on "एक लाइन": the border flares white. |
-| 2 | बीच में बस 4 किलोमीटर की पट्टी: कांटेदार तार और बारूदी सुरंगें। | Push in: the border widens into the DMZ band, "4 KM" tag, barbed-wire line and mine icons drawn in code. |
-| 3 | पर 1945 तक ये एक ही देश था, 35 साल से Japan के कब्ज़े में। | Border fades, the peninsula one colour; Japan orange washes over it; "1910 → 1945", "35 साल". |
-| 4 | फिर उसी साल Soviet सेना उत्तर से घुस आई, और America को डर था कि पूरा Korea हाथ से निकल जाएगा। | Pull out: USSR red from the north, red arrows into Korea; a US badge over the sea to the south with a "?". |
-| 5 | तो दो American अफ़सरों ने map उठाया, और करीब आधे घंटे में एक लाइन खींच दी: 38th parallel। यही है वो लाइन। | Two officer silhouettes over a desk map, a stopwatch to "30 मिनट", a pencil draws the 38th parallel; on "यही है वो लाइन" it jumps onto the satellite map and lines up with frame 0's border (payoff of the hook). |
-| 6 | बँटवारा कुछ समय के लिए था। पर Cold War में ऊपर communism आया, नीचे capitalism, और 1948 में दो देश बन गए। | Soviet badge north, US badge south, red and blue rings pulse; "1948" pops, the fills split into DPRK / ROK flags. |
-| 7 | और दोनों का दावा एक: पूरा Korea हमारा। | **NULL A (split, ~3 s):** Null points both ways / shrugs. Top half: each flag's colour floods the whole peninsula in turn. |
-| 8 | 1950 में North ने हमला किया, और लगभग पूरा South जीत लिया। फिर America और UN की फ़ौज आई, और North को China की सीमा तक धकेल दिया। | "1950"; red tide sweeps south to a pocket round Busan; UN + US badges land at Incheon; blue tide sweeps north to the Yalu. |
-| 9 | तब China कूदा, लाखों सैनिकों के साथ। | **NULL B (split, ~2.5 s):** Null's alarmed reaction. Top: China fills dark red, a wave of arrows crosses the Yalu. |
-| 10 | [OPTIONAL] और भारत? हमारी 60 Para Field Ambulance ने वहाँ हज़ारों घायलों का इलाज किया। | Zoom out to show India (official boundary) → arc to Korea; red-cross ambulance tag with the Indian flag. |
-| 11 | 3 साल, कम से कम 25 लाख मौतें, और लड़ाई लगभग वहीं रुकी जहाँ से शुरू हुई थी: उसी लाइन के पास। | The tide settles; the straight 38th parallel and the real front line glow together; "25 लाख+" counter. |
-| 12 | 1953 में युद्धविराम हुआ। South Korea ने उस पर साइन तक नहीं किया। और शांति समझौता? आज तक नहीं। | The armistice paper: signatures for the UN Command, North Korea and China; South Korea's line empty, red circle; then the beat-1 peace-treaty paper, still empty. |
-| 13 | तो अब बताओ... | Camera eases back to the frame-0 shot; "तो अब बताओ…" runs into "तुम्हें लगता है…" (loop). |
+| 1 | Tumhe lagta hai Korea ki jung 1953 me khatam ho gayi? Khatam hui hi nahi. | Frame 0: Korea close, North red / South blue, the border glowing, "जंग खत्म?" big. On "Khatam hui hi nahi": a red ✗ stamps over "खत्म". |
+| 2 | 73 saal ho gaye, shanti par aaj tak koi sign nahi, aur ek line aaj bhi parivaaron ko baante hue hai. Kyu? | "73 साल" counter; an empty peace-treaty paper drawn in code; on "ek line" the border flares white. |
+| 3 | Beech me bas 4 kilometer ki patti hai. Kaantedar taar, baroodi surangein, aur dono taraf bandookein taani hui. | Push in: the DMZ band, "4 KM" tag, barbed wire and mine icons, gun icons facing each other across it. |
+| 4 | Par 1945 tak ye ek hi desh tha. 35 saal se Japan ke kabze me. | Border fades, peninsula one colour; Japan orange washes over it; "1910 → 1945", "35 साल". |
+| 5 | Fir usi saal Soviet sena uttar se ghus aayi, aur America ko darr tha ki poora Korea haath se nikal jayega. | Pull out: USSR red from the north, arrows into Korea; a US badge over the sea with a "?". |
+| 6 | To do American officers ne map uthaya, aur kareeb aadhe ghante me ek line kheench di: 38th parallel. Bas. Yahi hai wo line. | Desk map, two officer silhouettes, stopwatch to "30 मिनट", a pencil draws the line; on "Yahi hai wo line" it jumps onto the satellite map and lines up with frame 0's border. |
+| 7 | Batwara kuch samay ke liye tha. Par Cold War me upar communism aa gaya, neeche capitalism, aur 1948 me do desh ban gaye. | Soviet badge north, US badge south, rings pulse; "1948", the fills split into DPRK / ROK flags. |
+| 8 | Aur dono ka daava ek hi tha: poora Korea humara hai. | **NULL A (split, ~3 s):** Null points both ways. Top: each flag's colour floods the whole peninsula in turn. |
+| 9 | 1950 me North ne hamla kiya, aur lagbhag poora South jeet liya. Fir America aur UN ki fauj aayi, aur North ko China ki seema tak dhakel diya. | "1950"; red tide south to the Busan pocket; UN + US badges land at Incheon; blue tide north to the Yalu. |
+| 10 | Tab China kooda, lakhon sainikon ke saath. | **NULL B (split, ~2.5 s):** alarmed reaction. Top: China dark red, arrows over the Yalu. |
+| 11 | Aur yahin India aaya. Humne ladne ke liye fauj nahi bheji, bachane ke liye bheji. Hamari 60 Para Field Ambulance. 627 log, jinhone 2.2 lakh se zyada mareezon ka ilaaj kiya, aur 2,324 surgeries ki, goliyon ke beech me. | Zoom out to India (official boundary), arc to Korea; a red-cross ambulance tag with the Indian flag; counters "627", "2,22,324+", "2,324". |
+| 12 | 3 saal, kam se kam 25 lakh mautein, aur ladai lagbhag wahin ruki jahan se shuru hui thi. Usi line ke paas. | The tide settles; the straight 38th parallel and the real front line glow together; "25 लाख+". |
+| 13 | 1953 me yudhviram hua. South Korea ne us par sign tak nahi kiya. Aur shanti samjhauta? Aaj tak nahi. | Armistice paper: UN Command, North Korea, China sign; South Korea's line empty, red circle; then the beat-2 peace paper, still empty. |
+| 14 | To ye sab jaanne ke baad bhi… | Camera eases back to the frame-0 shot; ↻ into line 1. |
 
-**Runtime:** 224 Hindi words. At the skill's 150 wpm: **≈ 84 s** without the India beat. At the last VO's pace (2.34 words/s):
-**≈ 90 s** without it, **≈ 96 s** with it. Null total ≈ 5.5 s, both in the middle.
+**Runtime:** 270 words. At the skill's 150 wpm ≈ **108 s**; at the last VO's pace (2.34 words/s) ≈ **115 s**. That is
+longer than the usual 60–90 s, mostly from the India beat (about 18 s). Still well inside the Shorts limit.
 
-**The close:** one ask, built into the loop ("तो अब बताओ…" → "तुम्हें लगता है…?"). The pinned comment asks the
-question.
+## What I changed in your script, and why
+
+1. **"Kabhi hui hi nahi" → "Khatam hui hi nahi."** "Kabhi hui hi nahi" can be heard as "the war never happened";
+   "Khatam hui hi nahi" can only mean "it never ended", with the same punch.
+2. **The ending.** "To 73 saal baad bhi jung khatam nahi hui hai. Isiliye toh tumhe lagta hai Korea ki jung 1953 me…"
+   would make the loop say "tumhe lagta hai Korea ki jung 1953 me" twice back to back, and "isiliye toh" doesn't follow
+   (the war going on isn't why you think it ended). It also repeated "73 saal" and "khatam nahi hui" right before the
+   hook says both again. Now: "To ye sab jaanne ke baad bhi…" ↻ "Tumhe lagta hai…".
+3. **"2.2 lakh se zyada ghayalon" → "mareezon".** The unit's 2,22,324 cases include the sick and civilians, not only
+   the wounded. "field surgeries" → "surgeries" (shorter for the VO; the number is the same).
+
+Everything else is your wording.
+
+## Fact check of the new lines
+
+- **60 Para Field Ambulance:** India sent no combat troops to Korea; this medical unit (Lt Col A. G. Rangaraj) served
+  with the UN forces, 1950–54, including the airborne drop at Munsan with the US 187th Airborne. Indian Army accounts
+  give **627** personnel, **2,22,324** cases treated and **2,324** field surgeries. ✓ (These figures come from Indian
+  Army and Ministry of Defence accounts; there is no independent count.)
+- **"Goliyon ke beech me":** the unit worked at the front and in battle, and had men killed and wounded. ✓
+- Everything else is as checked in `reference_analysis.md`.
 
 ## Packaging (yt-package, title.py)
 
