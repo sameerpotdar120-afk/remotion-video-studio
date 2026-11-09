@@ -1,0 +1,25 @@
+lang en 0.999578058719635
+  0.00-  3.04  Do you know why North and South Korea are enemies?
+  3.04-  7.88  They have no diplomatic relations, divided by walls and barbed wire, and have technically
+  7.88- 12.48  been at war for decades, even though just 100 years ago, they were one country known
+ 12.48- 14.04  as the Korean Empire.
+ 14.04- 19.20  But in 1910, Japan, seeking to expand its empire, annexed the Korean Peninsula, and
+ 19.20- 23.36  Korea remained under Japanese control until the end of World War II.
+ 23.36- 27.16  Just days before Japan's surrender, Soviet troops entered the peninsula from the
+ 27.16- 29.84  North while the U.S. advanced from the South.
+ 29.84- 34.00  To prevent the USSR from taking full control of the region, the United States proposed
+ 34.00- 39.08  dividing Korea along the 38th parallel, a temporary solution for joint administration
+ 39.08- 42.18  until an independent Korean government could be formed.
+ 42.18- 45.92  But as tensions between the two superpowers grew during the Cold War, the country
+ 45.92- 50.12  was never reunited, and Korea fell under the influence of two opposing ideologies
+ 50.12- 52.52  – communism and capitalism.
+ 52.52- 56.32  As a result, two countries were formed, each believing that the entire peninsula
+ 56.32- 58.30  should be united under its rule.
+ 58.30- 62.42  This led North Korea to launch a war, nearly capturing the entire South.
+ 62.42- 66.74  South Korea asked for help, and the U.S., leading UN forces, pushed the North Korean
+ 66.74- 69.34  army back almost to the Chinese border.
+ 69.34- 73.78  China unofficially entered the conflict on the North side, sending about 2 million
+ 73.78- 77.94  volunteers while the USSR provided military equipment and weapons.
+ 77.94- 81.62  Eventually, the front line moved back to almost the 38th parallel, and it was
+ 81.62- 85.70  decided to sign an armistice, but a peace treaty was never concluded, so the
+ 85.70- 87.86  two countries are still in a state of war.
