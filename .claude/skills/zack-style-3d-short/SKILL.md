@@ -9,7 +9,7 @@ This is the exact pipeline used to recreate the first 5 s of the reference short
 (1440x2560, 29.97 fps, 27.6 s) for the Sam-ulation channel. It covers analysis, free assets, the scene
 look, every shot, rendering on a 2-core CPU or a free GPU, captions, assembly and QA, plus every bug hit.
 
-Honest benchmark from that run: ~65-70 % visual match on CPU with free models. The gaps (photoreal human,
+Honest benchmark from the first run: ~65-70 % visual match on CPU with free models. The gaps (photoreal human,
 hand-sculpted mouthparts, micro skin detail) need better assets and GPU render time, not more code.
 Tell the user this number up front; never promise 90 %.
 
@@ -261,3 +261,43 @@ ffmpeg -framerate 30 -i frames/f_%04d.png \
 2. Mouthparts: sculpted, translucent, finely serrated blades; dark fleshy labium and palps.
 3. Micro detail: eye facets, bristles and skin pores at full resolution, with high samples on a GPU.
 4. Motion: hand-tuned easing and whip transitions rendered as real camera moves, not post blur.
+
+## 12. v2 enhancements (second run, ~75-80 % match) - use these first
+Working code: `zack3d/scripts/scene.py` (shared look), `shots_me.py` (landing, wide, face, skin-level),
+`zack3d/scripts/shot_man.py` and `shot_blades.py` (helper branches `claude/zack3d-man`, `claude/zack3d-blades`),
+`assemble.py` (upscale + whip blur + PIL captions). Reference frames: `zack3d/ref/ref_<t>.png`.
+
+Environment (Claude Code cloud): Blender **4.5.15 LTS binary** from download.blender.org (no bpy pip). No
+libEGL -> Workbench/EEVEE fail, use Cycles CPU (OIDN, adaptive, persistent data). 4 cores: ~2.3-3.6 min per
+1080x1920 frame at 32 spp for the heavy fur/face shots, ~1 min for wide shots. Render at 75 % and Lanczos
+upscale to 1440x2560 in assembly. Network hosts to allow: download.blender.org, huggingface.co,
+cdn-lfs.huggingface.co, cas-bridge.xethub.hf.co, us.aws.cdn.hf.co, cdn.hf.co, api.sketchfab.com,
+dl.polyhaven.org, api.polyhaven.com, ambientcg.com.
+
+Better models (both CC-BY, fetch from the Objaverse HF mirror):
+| use | model | uid (dir) | credit |
+|---|---|---|---|
+| hero fly | "Domestic Fly" (clean anatomy, untextured -> shade it yourself) | 3d305de3106d462194ed03fad5715ddf (000-050) | aramabdulrahim |
+| man | "Bearded Man" (photoreal head, beard) | 60947a1819a1407685cb4332e894e585 (000-039) | KaitlynAndrus |
+Rejected: "tabanos" (actually a rock scan), specter fly (crude up close), Musca scan (crouched pose).
+
+What closed the gap:
+- **Procedural head**: hide the model's low-poly open-shell eyes; build ellipsoid eyes (scale ~0.37/0.34/0.50,
+  toed out ±16°) with a Voronoi distance-to-edge facet bump (scale 70), dark red-brown ramp, clearcoat 0.35,
+  layer-weight rim darkening; plus an ellipsoid head capsule, face plate and frons stripe; olive antennae
+  with an arista curve.
+- **Mouthparts**: NURBS-curve tubes (radius 0.075 -> 0.012) with an orange gradient material (tip
+  (246,162,64) -> base (186,52,32) by Z map range), black palps, a thin central stylet. Make them longer
+  (MOUTH_LEN 1.9) for the face and skin-level shots.
+- **Body**: cosine stripe shader along the thorax (period 0.30) over a grey mottle, clearcoat; legs glossy
+  near-black with a fine bump; Displace (0.014) on legs so they are not pencil-thin.
+- **Fur**: numpy area-weighted strands (3 point POLY curves) grown after placement and parented to the fly:
+  3200 dark + 1400 light body hairs, 3500 leg bristles.
+- **Sky**: colour ramp on dot(view dir, camera->subject), re-aimed every frame so the glow always sits
+  behind the subject; `LightPath.IsCameraRay` mix so the sky lights the scene only at 0.5.
+- **Skin**: bent cylinder ground with displacement, mottle, bump chain, curve hairs (bevel 0.007);
+  roughness 0.72, Specular IOR Level 0.12 - higher specular washes out at grazing angles.
+- **Blades shot**: amber translucent serrated blades, crumpled-chitin leg bump, one blade at a time
+  emission-pulsed yellow.
+- **Helpers**: one remote session per shot on its own branch; each pushes `zack3d/renders/<shot>.mp4`
+  (crf 12) + STATUS.md. Put a `send_later` watcher on them every 45 min; they share the usage limit.
