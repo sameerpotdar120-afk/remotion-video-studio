@@ -333,3 +333,54 @@ Rules:
 Script for our own video: `zack3d/script_v2.md` (user-approved draft, loops). Its new shot types (mosquito
 needle, male vs female eye gap, cross-section pool of blood, saliva, sponge pad, blood-weight scale, zebra) need
 look-dev against the matching reference shot types in REFERENCE_ANALYSIS.md section 2 before any render.
+
+## 14. Look-dev v3 lessons (horsefly long version, 63 s VO)
+Scripts (all in `zack3d/scripts/`, each takes `-- <out> <res%> <spp>` plus a JSON env var for tuning):
+`scene.py` (shared look, `LOOK` dict overridable with ZK_LOOK), `shots_me.py k1` (fly key frame matched to ref 0.3 s),
+`xsec.py` (inside-the-skin cross-section; `mode: blades|needle`), `blood.py bead|saliva|pad` (skin-surface macro),
+`mosq.py`, `zebra.py` (`coat: zebra|horse`), `eyes.py` (`who: male|female`), `xray.py`, `balance.py`, `tune.py`
+(colour loop: renders 25 %/16 spp in ~9 s and prints box means vs the reference).
+
+Method that works: one key frame per look, rendered at 25 %/32 spp (~10-60 s), side by side with the matching ref
+frame, fix the single biggest visible gap, repeat. Measure colours in boxes; eyeballing missed a 40-unit skin error.
+
+What fixed what:
+- Skin/sky: v2 was overexposed and yellow. Tuned LOOK: sky stops (38,140,181)/(50,158,196)/(110,190,215)/(160,210,225),
+  skin (165,100,62) -> rendered sky (41,162,206) vs ref (42,165,208), skin (231,147,96) vs ref (233,147,99).
+- Fly eyes: Voronoi F1 bump at scale ~45 in eye object space (~90 facets across), roughness 0.2, no coat (coat gave
+  square light reflections), base (130,72,62)->(46,22,19), dark rim via Layer Weight. Too-fine facets read as milky.
+- Head: one dome (HEADCAP) + wide raised FRONS ridge (matte dark chitin, not glossy: glossy gave a white streak) +
+  olive antenna blades in grooves. `LOOK['eye_gap']` 0.30 female / 0.17 male (eyes meet).
+- Chitin: wrinkle bump scales must be in object space of the ellipsoid (7/16/40), not 38/70/140 (invisible).
+- Legs: `bend_legs()` lifts each leg island's knee (40 % along, 22 % of length) keeping foot and hip fixed; Displace
+  0.03 thickens; glossy coat 0.7 + crumpled bump; leg fur 1600 short strands (3500 looked fuzzy).
+- Mouthparts for the exterior shots: MOUTH_LEN 0.6, stylets converge into one orange blade, fat glossy grey palps.
+- Cross-section: tissue blocks with object-space noise scale ~9-14 (2 was invisible), lower layer "crumpled foil" =
+  stacked Voronoi F1 bumps (16/34/70) x6 strength + coat; blades metallic 0.55 + anisotropic 0.8 lit by tall thin
+  strip lights (vertical sheen bands); teeth = flattened cones in a separate saturated gold material.
+- Blood: glossy dark red (142,10,16), coat 1.0 roughness 0.02, SSS 0.35 (0.8 looks like pink jelly); metaballs for
+  beads/pools; displaced subdivided cylinders for clots/columns (metaball chains look like beads).
+- Cut on skin: carve a real groove in a 500x500 grid, colour ramp on distance-to-line: dark interior, bright red lips,
+  fade to skin. MULTIPLY_ADD math node's 3rd input defaults to 0.5 - set it to 0 or the line is offset.
+- Saliva: Transmission 0.55 + SSS 0.4, bluish white; pure glass looked dark in the groove.
+- Zebra "Zebra Anatomy" model: one mesh/texture with an anatomy side -> delete faces with x > centre (minus 1.2 % of
+  width to drop seam pixels) and add a Mirror modifier. Keep world transform when unparenting
+  (`mw = o.matrix_world.copy(); o.parent = None; o.matrix_world = mw`) or the animal ends up on its back. Texture is
+  soft up close: use mid-distance + DOF (thresholding it shows pixel stair-steps; procedural stripes look like a cow).
+- Same zebra body + bay coat (black lower legs via Z ramp) = the plain horse.
+- Mosquito "MOSQUITO" (Branislav): hide Skin_Plane/Drop_Sphere, HueSat on the body texture (sat 0.55, val 0.55),
+  replace the green eyes with a dark faceted material.
+- Ground in animal shots: fade to a self-lit mist colour by camera Z depth (600-1600) or the far ground goes dark teal.
+
+Bugs hit (add to section 10):
+| symptom | cause | fix |
+|---|---|---|
+| numpy import fails in a helper script | a file named `inspect.py` in the scripts folder shadows the stdlib | rename it (`inspect_glb.py`) |
+| floating ball of fur away from the fly | fly_fur sampled hidden original head parts placed elsewhere | skip `hide_render` objects |
+| black band on overlapping surfaces | two coplanar faces, one with subsurface | offset one by ~0.02-0.03 |
+| second fly import fails "cannot edit hidden object" | object names collide with the first fly | rename the first fly's objects first |
+| faint sphere outline / lights in frame | area lights visible to camera | `o.visible_camera = False` in `area()` |
+| faster-whisper download fails | xet CAS host blocked | `HF_HUB_DISABLE_XET=1`; pass a float32 array (PyAV arg mismatch) |
+
+Render cost (measured, 4-core CPU, 1440x2560, 128 spp): fly exterior with fur 8.0 min/frame. See
+`zack3d/SHOTLIST_v1.md` for the per-scene table once measured.
