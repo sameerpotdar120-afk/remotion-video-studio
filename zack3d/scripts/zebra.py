@@ -18,7 +18,7 @@ import bmesh
 for o in meshes:
     bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); bpy.context.view_layer.objects.active = o
     mw_ = o.matrix_world.copy(); o.parent = None; o.matrix_world = mw_; bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
-    xs = [v.co.x for v in o.data.vertices]; cx = (min(xs) + max(xs)) / 2
+    xs = [v.co.x for v in o.data.vertices]; cx = (min(xs) + max(xs)) / 2 - Z.get('seam_in', 0.012) * (max(xs) - min(xs))
     bm = bmesh.new(); bm.from_mesh(o.data)
     bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.calc_center_median().x > cx], context='FACES'); bm.to_mesh(o.data); bm.free()
     me = bpy.data.objects.new('MIRC', None); sc.collection.objects.link(me); me.location = (cx, 0, 0)
@@ -31,7 +31,17 @@ piv = bpy.data.objects.new('ZPIV', None); sc.collection.objects.link(piv); s = Z
 piv.scale = (s, s, s); piv.location = (-(mn.x + mx.x) / 2 * s, -(mn.y + mx.y) / 2 * s, -mn.z * s)
 for o in new:
     if o.parent is None: o.parent = piv
-if Z['coat'] == 'horse':  # plain horse: same body, short glossy bay coat
+if Z['coat'] == 'zebra_proc':  # crisp procedural stripes + fine hair for macro shots (texture is too soft up close)
+    zm = mat('zproc', lin(236, 226, 206), 0.7, **{'Sheen Weight': 0.6, 'Sheen Roughness': 0.3, 'Specular IOR Level': 0.15})
+    n, l = nodes(zm); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); wv = n.new('ShaderNodeTexWave'); wv.wave_type = 'BANDS'; wv.bands_direction = 'Y'
+    wv.inputs['Scale'].default_value = Z.get('stripe_scale', 9.0); wv.inputs['Distortion'].default_value = Z.get('stripe_dist', 6.0); wv.inputs['Detail'].default_value = 3
+    l.new(tc.outputs['Generated'], wv.inputs['Vector']); rp = n.new('ShaderNodeValToRGB'); e = rp.color_ramp.elements
+    e[0].position = 0.46; e[0].color = lin(22, 20, 20); e[1].position = 0.54; e[1].color = lin(236, 226, 206); l.new(wv.outputs['Fac'], rp.inputs['Fac']); l.new(rp.outputs['Color'], b.inputs['Base Color'])
+    mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1, 1, 14); l.new(tc.outputs['Object'], mp.inputs['Vector'])
+    hn = n.new('ShaderNodeTexNoise'); hn.inputs['Scale'].default_value = 900; hn.inputs['Detail'].default_value = 4; l.new(mp.outputs['Vector'], hn.inputs['Vector'])
+    hb = n.new('ShaderNodeBump'); hb.inputs['Strength'].default_value = 0.35; hb.inputs['Distance'].default_value = 0.002; l.new(hn.outputs['Fac'], hb.inputs['Height']); l.new(hb.outputs['Normal'], b.inputs['Normal'])
+    for o in meshes: o.data.materials.clear(); o.data.materials.append(zm)
+elif Z['coat'] == 'horse':  # plain horse: same body, short glossy bay coat
     hm = mat('bay', lin(96, 52, 30), 0.62, **{'Sheen Weight': 0.7, 'Sheen Roughness': 0.35, 'Specular IOR Level': 0.25})
     n, l = nodes(hm); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); sxz = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Generated'], sxz.inputs[0])
     rp = n.new('ShaderNodeValToRGB'); e = rp.color_ramp.elements; e[0].position = 0.22; e[0].color = lin(30, 22, 20); e[1].position = 0.38; e[1].color = lin(104, 56, 32)
@@ -42,7 +52,12 @@ else:
     for o in meshes:
         for m in o.data.materials:
             if m and m.use_nodes and m.node_tree.nodes.get('Principled BSDF'):
-                b = m.node_tree.nodes['Principled BSDF']; b.inputs['Roughness'].default_value = 0.72; b.inputs['Specular IOR Level'].default_value = 0.15; b.inputs['Sheen Weight'].default_value = 0.5
+                b = m.node_tree.nodes['Principled BSDF']
+                if Z.get('crisp', False) and b.inputs['Base Color'].links:  # threshold the soft texture into crisp stripe edges
+                    nt = m.node_tree; src = b.inputs['Base Color'].links[0].from_socket; bw = nt.nodes.new('ShaderNodeRGBToBW'); rp = nt.nodes.new('ShaderNodeValToRGB')
+                    e = rp.color_ramp.elements; e[0].position = Z.get('thr', 0.42) - 0.05; e[0].color = lin(22, 20, 20); e[1].position = Z.get('thr', 0.42) + 0.05; e[1].color = lin(238, 228, 208)
+                    nt.links.new(src, bw.inputs['Color']); nt.links.new(bw.outputs['Val'], rp.inputs['Fac']); nt.links.new(rp.outputs['Color'], b.inputs['Base Color'])
+                b.inputs['Roughness'].default_value = 0.72; b.inputs['Specular IOR Level'].default_value = 0.15; b.inputs['Sheen Weight'].default_value = 0.5
                 for nd in m.node_tree.nodes:
                     if nd.type == 'TEX_IMAGE' and nd.outputs[0].links and nd.outputs[0].links[0].to_socket.name in ('Roughness', 'Metallic'): m.node_tree.links.remove(nd.outputs[0].links[0])
 # ground: soft warm dry-grass plane that falls into DOF, cyan sky behind
