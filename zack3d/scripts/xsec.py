@@ -5,9 +5,9 @@ import sys, os, math, json, random
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scene import *
 argv = sys.argv[sys.argv.index('--') + 1:]; OUT, RES, SPP = argv[0], int(argv[1]), int(argv[2])
-X = {'dermis': [236, 116, 110], 'dermis_lo': [214, 92, 92], 'dermis_hi': [246, 150, 140],
-     'lower': [206, 150, 166], 'lower_lo': [152, 100, 120], 'band': [168, 26, 36], 'vessel': [150, 16, 22],
-     'blade_tip': [255, 236, 180], 'blade_base': [240, 172, 84], 'key': 900, 'fill': 350, 'amb': [250, 170, 160], 'amb_k': 0.6,
+X = {'dermis': [150, 66, 60], 'dermis_lo': [118, 44, 44], 'dermis_hi': [176, 92, 80],
+     'lower': [130, 76, 86], 'lower_lo': [98, 54, 64], 'band': [128, 14, 20], 'vessel': [118, 8, 10],
+     'blade_tip': [255, 236, 180], 'blade_base': [240, 172, 104], 'key': 900, 'fill': 350, 'amb': [250, 170, 160], 'amb_k': 0.6,
      'cam': [0.1, -4.2, -3.4], 'tgt': [0.0, 0.0, -4.0], 'lens': 26}
 X.update(json.loads(os.environ.get('ZK_X', '{}')))
 sc = reset()
@@ -26,8 +26,12 @@ def block(name, z0, z1, m):
     o.scale = (W, D, z1 - z0); o.location = (0, D / 2, (z0 + z1) / 2); o.data.materials.append(m); return o
 derm = mat('dermis', lin(*X['dermis']), 0.62, **{'Subsurface Weight': 0.25, 'Subsurface Radius': (1, .35, .3)})
 cloudy(derm, X['dermis_lo'], X['dermis_hi'], 9); add_bump(derm, [('noise', 14, 0.3), ('noise', 60, 0.2)], mul=0.8)
+n, l = nodes(derm); b = n['Principled BSDF']; tc2 = n.new('ShaderNodeTexCoord'); mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1, 1, 8)
+l.new(tc2.outputs['Object'], mp.inputs['Vector']); fz = n.new('ShaderNodeTexNoise'); fz.inputs['Scale'].default_value = 60; fz.inputs['Detail'].default_value = 10; l.new(mp.outputs['Vector'], fz.inputs['Vector'])
+fb = n.new('ShaderNodeBump'); fb.inputs['Strength'].default_value = 0.5; fb.inputs['Distance'].default_value = 0.02; l.new(fz.outputs['Fac'], fb.inputs['Height'])
+prev = b.inputs['Normal'].links[0].from_socket; l.new(prev, fb.inputs['Normal']); l.new(fb.outputs['Normal'], b.inputs['Normal'])   # fibrous streaks
 lower = mat('lower', lin(*X['lower']), 0.28, **{'Coat Weight': 0.55, 'Coat Roughness': 0.12})
-cloudy(lower, X['lower_lo'], X['lower'], 14); add_bump(lower, [('cells', 16, 1.0), ('cells', 34, 0.7), ('cells', 70, 0.4)], mul=X.get('crumple', 6.0))
+cloudy(lower, X['lower_lo'], X['lower'], 14); add_bump(lower, [('cells', X.get('cr1', 9), 1.0), ('cells', X.get('cr2', 20), 0.7), ('cells', 45, 0.35)], mul=X.get('crumple', 6.0))
 band = mat('band', lin(*X['band']), 0.3, **{'Coat Weight': 0.6, 'Coat Roughness': 0.1})
 block('DERMIS', -2.2, 0.0, derm); block('BAND1', -2.4, -2.2, band); block('LOWER', -9, -2.4, lower)
 # bright red rim along the top cut edge (the skin surface seen edge-on)
