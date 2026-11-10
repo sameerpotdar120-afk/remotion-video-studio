@@ -10,7 +10,7 @@ E.update(json.loads(os.environ.get('ZK_E', '{}')))
 scene.MOUTH_LEN = 0.6
 sc = reset(); skin(sc); sz = skin_z(0, 0)
 flies = []
-WHO = E.get('who', 'female')
+WHO = json.loads(os.environ.get('ZK_ANIM', '{}')).get('who', E.get('who', 'female'))
 for name, gap, x, yaw in [t for t in (('male', E['male_gap'], 0, 0), ('female', E['female_gap'], 0, 0)) if t[0] == WHO]:
     scene.LOOK['eye_gap'] = gap
     before = set(sc.objects); fly, parts, M = load_fly(sc); new = [o for o in sc.objects if o not in before]
@@ -31,7 +31,16 @@ for o in (flies[0][1] if WHO == 'female' else []):
         g = mat('gapglow', lin(255, 214, 40), 0.3, **{'Emission Color': lin(255, 214, 40), 'Emission Strength': 2.5 * GLOW})
         o.data.materials.clear(); o.data.materials.append(g)
 hp = [o for o in sc.objects if 'HEADCAP' in o.name][0].matrix_world.translation
-cl = hp + V(E.get('cam_off', [0.25, -3.0, -0.35])); tgt = hp + V(E.get('tgt_off', [0, 0, -0.25]))
-camera(sc, cl, tgt, lens=E['lens'], fstop=6, focus=(tgt - cl).length)
-sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25)
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+import anim, animwrap
+if anim.load():
+    gm = bpy.data.materials.get('gapglow')
+    def ex(p, f):
+        if gm:
+            b = gm.node_tree.nodes['Principled BSDF']; b.inputs['Emission Strength'].default_value = 2.5 * p.get('g', 0.0)
+            if f is not None: b.inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
+    animwrap.run(sc, hp, E['lens'], 6, 1.25, ex, RES, SPP)
+else:
+    cl = hp + V(E.get('cam_off', [0.25, -3.0, -0.35])); tgt = hp + V(E.get('tgt_off', [0, 0, -0.25]))
+    camera(sc, cl, tgt, lens=E['lens'], fstop=6, focus=(tgt - cl).length)
+    sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25)
+    render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)

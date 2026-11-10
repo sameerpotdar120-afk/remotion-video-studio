@@ -37,7 +37,22 @@ for v in d.data.vertices:  # teardrop: round bottom, pulled to a soft point on t
     if v.co.z > 0: k = v.co.z; v.co.x *= (1 - k) ** 1.35 + 0.0; v.co.y *= (1 - k) ** 1.35; v.co.z = k * 1.9
 [setattr(p, 'use_smooth', True) for p in d.data.polygons]
 d.location = rp + V((0, 0, 0.82)); d.scale = (0.72, 0.72, 0.72); d.data.materials.append(blood)
-cl, tgt = V(S['cam']), V(S['tgt'])
-camera(sc, cl, tgt, lens=S['lens'], fstop=11, focus=(tgt - cl).length)
-sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25 * 2.4)
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+import anim, animwrap
+if anim.load():
+    H = [sc.objects['HANG-1'], sc.objects['HANG1']]; bpy.context.view_layer.update()
+    for ob, h in ((fly, H[0]), (d, H[1])):
+        mw = ob.matrix_world.copy(); ob.parent = h; ob.matrix_world = mw
+    dm = d.data.materials[0].node_tree.nodes['Principled BSDF']; dm.inputs['Emission Color'].default_value = lin(230, 30, 36)
+    def ex(p, f):
+        t = math.radians(p.get('tilt', 0.0)); beam.rotation_euler = (0, t, 0)
+        for h in H: h.rotation_euler = (0, -t, 0)
+        dm.inputs['Emission Strength'].default_value = 0.6 * p.get('gd', 0.0)
+        if f is not None:
+            beam.keyframe_insert('rotation_euler', frame=f); dm.inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
+            for h in H: h.keyframe_insert('rotation_euler', frame=f)
+    animwrap.run(sc, V((0, 0, 0)), S['lens'], 11, 1.25 * 2.4, ex, RES, SPP)
+else:
+    cl, tgt = V(S['cam']), V(S['tgt'])
+    camera(sc, cl, tgt, lens=S['lens'], fstop=11, focus=(tgt - cl).length)
+    sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25 * 2.4)
+    render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)

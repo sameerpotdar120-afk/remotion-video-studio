@@ -30,8 +30,27 @@ for i in range(40):  # red blood cells streaming in from the thorax side
     u = i / 40; p = V((0.12 * math.sin(i * 1.3), 0.15 + 0.9 * u, 0.9 + 0.12 * math.sin(i * 0.9)))
     bpy.ops.mesh.primitive_torus_add(major_radius=0.035, minor_radius=0.018, major_segments=24, minor_segments=12)
     t = bpy.context.object; t.location = mw @ p; t.rotation_euler = (rng.uniform(0, 3), rng.uniform(0, 3), 0); t.data.materials.append(rbc)
-hp = abd.matrix_world.translation
-cl = V((0, 0, sz)) + V(R['cam_off']); tgt = V((0, 0, sz)) + V(R['tgt_off'])
-camera(sc, cl, tgt, lens=R['lens'], fstop=8, focus=(tgt - cl).length)
-sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25)
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+import anim, animwrap
+if anim.load():
+    eb = egg.node_tree.nodes['Principled BSDF']; xe = [n for n in xr.node_tree.nodes if n.type == 'EMISSION'][0]
+    EGGS = [o for o in sc.objects if o.name.startswith('EGG')]; RBC = [o for o in sc.objects if o.type == 'MESH' and o.data.materials and o.data.materials[0] == rbc]
+    for o in EGGS: o['s0'] = list(o.scale)
+    # swell about the abdomen's own centre: move its origin to the geometry centre first
+    bpy.ops.object.select_all(action='DESELECT'); abd.select_set(True); bpy.context.view_layer.objects.active = abd
+    bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='BOUNDS'); abd['s0'] = list(abd.scale)
+    def ex(p, f):
+        eb.inputs['Emission Strength'].default_value = 1.2 * p.get('ge', 0.0)
+        e = p.get('eggs', 1.0)
+        for i, o in enumerate(EGGS):
+            k = max(0.001, min(1.0, e * len(EGGS) - i)); o.scale = [c * k for c in o['s0']]
+        r = p.get('red', 0.0); xe.inputs['Color'].default_value = [a + (b - a) * r for a, b in zip(lin(150, 210, 255), lin(200, 30, 36))]
+        sw = p.get('sw', 1.0); abd.scale = [c * sw for c in abd['s0']]
+        if f is not None:
+            eb.inputs['Emission Strength'].keyframe_insert('default_value', frame=f); xe.inputs['Color'].keyframe_insert('default_value', frame=f); abd.keyframe_insert('scale', frame=f)
+            for o in EGGS: o.keyframe_insert('scale', frame=f)
+    animwrap.run(sc, V((0, 0, sz)), R['lens'], 8, 1.25, ex, RES, SPP)
+else:
+    cl = V((0, 0, sz)) + V(R['cam_off']); tgt = V((0, 0, sz)) + V(R['tgt_off'])
+    camera(sc, cl, tgt, lens=R['lens'], fstop=8, focus=(tgt - cl).length)
+    sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25)
+    render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
