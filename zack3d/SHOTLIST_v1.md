@@ -32,3 +32,14 @@ Word timings: `vo_words.json` (faster-whisper small.en). Every shot change is a 
 | 26 | 61.30-63.55 | but you always feel a horsefly. | horsefly lands hard; last frame matches frame 1 framing for the loop | loop 26.8-27.6 |
 
 New assets needed (CC0/CC-BY only): mosquito, zebra, horse; male fly = same model with eyes meeting.
+
+## Assets picked for the new shots (CC-BY, credit in the description)
+| use | model | uid (Objaverse dir) | author |
+|---|---|---|---|
+| mosquito | "MOSQUITO" (realistic, 683k faces; delete its skin plane) | fce3bbae949c4966a6cfd9d757deba9b (000-129) | Branislav |
+| zebra + plain horse | "Zebra Anatomy" (standing; one side realistic stripes, other side muscles: film the striped side; brown coat material for the plain horse) | c60aa3efb391448faa955426411d485a (000-138) | Shikaki_Naito |
+Rejected: cartoon zebra (AlexaKruckenberg), galloping horse on a plinth (kling), paint horse (low detail),
+"Zuk" (a truck scene), gold horse statue scan.
+
+## Measured render cost (final settings: 1440x2560, 128 spp, fur, Cycles CPU, 4 cores)
+Fly-landing shot: **8.0 min per frame**. 1907 frames at that rate = ~254 machine-hours.
