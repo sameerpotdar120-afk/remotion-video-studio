@@ -43,3 +43,16 @@ Rejected: cartoon zebra (AlexaKruckenberg), galloping horse on a plinth (kling),
 
 ## Measured render cost (final settings: 1440x2560, 128 spp, fur, Cycles CPU, 4 cores)
 Fly-landing shot: **8.0 min per frame**. 1907 frames at that rate = ~254 machine-hours.
+
+## Measured cost per scene type (1440x2560, 4-core CPU; setup is only 1-5 s, so this is all render time)
+| scene | 128 spp min/frame | 64 spp min/frame |
+|---|---|---|
+| pad (blood.py pad) | 18.0 | 9.5 |
+| bead/saliva (blood.py) | 15.9 | ~9.5 (est.) |
+| eyes close-up | 14.0 | ~8.4 (est.) |
+| cross-section (xsec.py) | 13.7 | 8.6 |
+| mosquito | 9.9 | ~6 (est.) |
+| fly exterior with fur | 8.0 | ~4.8 (est.) |
+| zebra/horse | 3.7 | ~2.2 (est.) |
+64 vs 128 spp (OIDN, adaptive 0.02): PSNR 48.2 dB (xsec) and 46.5 dB (pad), mean abs diff 0.5/255, 99th pct 4-5/255;
+indistinguishable in 1:1 crops (review/proof_128_vs_64spp.jpg). Final render uses 64 spp. Total ~220 machine-hours.
