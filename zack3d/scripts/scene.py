@@ -74,7 +74,7 @@ def sky(sc, cam_loc, target, light_frac=1.0):
 def area(sc, name, loc, target, power, size, color):
     d = bpy.data.lights.new(name, 'AREA'); d.energy = power; d.size = size; d.color = color
     o = bpy.data.objects.new(name, d); sc.collection.objects.link(o); o.location = loc
-    o.rotation_euler = (V(target) - V(loc)).to_track_quat('-Z', 'Y').to_euler(); return o
+    o.rotation_euler = (V(target) - V(loc)).to_track_quat('-Z', 'Y').to_euler(); o.visible_camera = False; return o
 
 def lights(sc, target, k=1.0):
     t = V(target); k = k * LOOK['light_k']
@@ -261,8 +261,8 @@ def fur(sc, objs, n, length, radius, material, sweep=(0, 0.6, 0.2), jitter=0.35,
 
 def fly_fur(sc, fly, M, k=1.0):
     bpy.context.view_layer.update()
-    body = [o for o in sc.objects if o.type == 'MESH' and o.data.materials and o.data.materials[0].name in ('body', 'abd')]
-    legs = [o for o in sc.objects if o.type == 'MESH' and o.data.materials and o.data.materials[0].name == 'leg']
+    body = [o for o in sc.objects if o.type == 'MESH' and not o.hide_render and o.data.materials and o.data.materials[0].name in ('body', 'abd')]
+    legs = [o for o in sc.objects if o.type == 'MESH' and not o.hide_render and o.data.materials and o.data.materials[0].name == 'leg']
     hm = mat('furmat', lin(22, 21, 21), 0.4); hm2 = mat('furlight', lin(128, 124, 120), 0.35)
     fur(sc, body, int(3200 * k), 0.065, 0.0024, hm, sweep=(0, 0.8, 0.1), seed=1, parent=fly)
     fur(sc, body, int(1400 * k), 0.045, 0.002, hm2, sweep=(0, 0.9, 0.0), seed=2, parent=fly)
