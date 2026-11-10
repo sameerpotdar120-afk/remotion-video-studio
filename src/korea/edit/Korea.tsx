@@ -211,7 +211,7 @@ const People: React.FC<{ color: string }> = ({ color }) => (
     ))}
   </svg>
 );
-const Stopwatch: React.FC<{ p: number; size: number }> = ({ p, size }) => (
+export const Stopwatch: React.FC<{ p: number; size: number }> = ({ p, size }) => (
   <svg width={size} height={size * 1.15} viewBox="-60 -78 120 138" style={{ filter: 'drop-shadow(0 10px 16px rgba(0,0,0,0.6))', overflow: 'visible' }}>
     <rect x={-10} y={-76} width={20} height={14} rx={3} fill="#D9D9D9" stroke="#222" strokeWidth={3} />
     <circle r={56} fill="#F4F4F2" stroke="#222" strokeWidth={6} />

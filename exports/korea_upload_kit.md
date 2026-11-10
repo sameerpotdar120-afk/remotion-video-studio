@@ -2,8 +2,10 @@
 
 Upload file: `korea_4k60_master.mp4` (4K 60 fps, 2160×3840, 6,672 frames, 1:51, 1.2 GB; in the repo through Git LFS).
 Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/korea_4k60_master.mp4
-Thumbnail: not made yet. The brief from the packaging pass: "30 मिनट की लाइन" over Korea, North red and South blue, the
-38th parallel as a thick glowing pencil line, a small stopwatch; text in the top third, inside the 3:4 crop.
+Thumbnail: `korea_thumbnail.jpg` (1080×1920) and `korea_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram (KoCover:
+the peninsula on the satellite map, North red and South blue with their flags, the 38th parallel as a glowing pencil
+line with the pencil at its end, a stopwatch at 30, and "30 मिनट की लाइन" in the top third). Everything that matters sits
+inside the 3:4 crop. It pairs with title 1: different words, same promise.
 
 The video is a seamless loop: "तो ये सब जानने के बाद भी…" runs straight into "तुम्हें लगता है Korea की जंग 1953 में खत्म
 हो गई?", and the last frame matches frame 0. So there's no end card and no CTA.
