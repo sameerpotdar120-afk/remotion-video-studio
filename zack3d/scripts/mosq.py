@@ -38,7 +38,28 @@ for o in new:
     if o.parent is None: o.parent = piv
 MQ = bpy.data.objects.new('MOSQ', None); sc.collection.objects.link(MQ); piv.parent = MQ
 MQ.location = (0, 0, sz + Mq['z']); MQ.rotation_euler = (math.radians(Mq['pitch']), 0, math.radians(Mq['yaw']))
-cl, tgt = V(Mq['cam']), V(Mq['tgt']); cl.z += sz; tgt.z += sz
-camera(sc, cl, tgt, lens=Mq['lens'], fstop=Mq['fstop'], focus=(V((0, -1.2, sz + 0.5)) - cl).length)
-sky(sc, cl, tgt, light_frac=0.5); lights(sc, tgt, 1.25 * Mq['light_k'])
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+import anim
+A = anim.load()
+def apply(p, f=None):
+    MQ.location = (p.get('mx', 0.0), p.get('my', 0.0), sz + p.get('mz', Mq['z'])); MQ.rotation_euler = (math.radians(p.get('pitch', Mq['pitch'])), 0, math.radians(p.get('yaw', Mq['yaw'])))
+    cl, tg = V(p.get('cam', Mq['cam'])), V(p.get('tgt', Mq['tgt'])); cl.z += sz; tg.z += sz
+    fp = V(p.get('focus', [0, -1.2, 0.5])); fp.z += sz
+    camera(sc, cl, tg, lens=p.get('lens', Mq['lens']), fstop=p.get('fstop', Mq['fstop']), focus=(fp - cl).length)
+    if f is not None:
+        cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)
+        MQ.keyframe_insert('location', frame=f); MQ.keyframe_insert('rotation_euler', frame=f)
+    return tg
+tgt = apply(anim.at(A, A['f0']) if A else {})
+sky(sc, sc.camera.location, tgt, light_frac=0.5); lights(sc, tgt, 1.25 * Mq['light_k'])
+if A:
+    out = A['out']; os.makedirs(out, exist_ok=True)
+    for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
+    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
+    sc.render.resolution_x, sc.render.resolution_y = 1440 * RES // 100, 2560 * RES // 100; sc.cycles.samples = SPP
+    dp = [n for n in sc.world.node_tree.nodes if n.type == 'VECT_MATH'][0]
+    for f in range(A['f0'], A['f1'] + 1, A.get('step', 1)):
+        sc.frame_set(f); pp = anim.at(A, f); tg = V(pp.get('tgt', Mq['tgt'])); tg.z += sz
+        dp.inputs[1].default_value = (tg - sc.camera.location).normalized()
+        sc.render.filepath = os.path.join(out, f'f_{f:04d}.png'); bpy.ops.render.render(write_still=True); print('FRAME', f, flush=True)
+else:
+    render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
