@@ -25,7 +25,7 @@ save('s22', 1516, 1581, K, {'nflies': N, 'fly_len': 13.0})
 LAND = [(-25, 62), (-12, 55), (0, 66), (8, 58), (18, 64), (26, 56), (-5, 50), (14, 72), (-18, 70), (30, 68)]
 SX = {-30: -6, -20: -17, -10: -19, 0: -17, 10: -17, 20: -17, 30: -16, 40: -14}
 def sx(y): return min(SX.items(), key=lambda kv: abs(kv[0] - y))[1] - 2.4
-for name, f0, f1, nl, coat in (('s23a', 1582, 1638, 10, 'horse'), ('s23b', 1639, 1695, 2, 'zebra')):
+for name, f0, f1, nl, coat in (('s23a', 1639, 1695, 10, 'horse'), ('s23b', 1582, 1638, 2, 'zebra')):
     K, k = mk()
     for i in range(10):
         if i < nl:
