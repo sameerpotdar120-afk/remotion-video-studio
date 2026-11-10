@@ -28,7 +28,7 @@ from fetch_mumbai_tiles import stitch as stitch_tpl  # noqa: E402
 ROOT = Path(__file__).resolve().parent.parent
 OUT = ROOT / "public" / "hormuz" / "maps"
 PLATES = [  # name, satellite zoom, dem zoom, lon0, lon1, lat0, lat1
-    ("wide", 6, 5, 28.0, 96.0, -4.0, 44.0),
+    ("wide", 6, 5, 28.0, 106.0, -14.0, 44.0),
     ("gulf", 8, 7, 43.0, 63.0, 19.0, 33.0),
     ("musandam", 11, 9, 54.9, 57.7, 24.5, 27.2),
 ]

@@ -68,7 +68,7 @@ const Plates: React.FC<{ c: Cam; atlas: number }> = ({ c, atlas }) => {
 
 /** A raised slab: the shape extruded h ground px up (darker side layers, then the glossy top). Only its bounding box
  *  is painted, so deep zooms stay cheap. dx, dy shift it on the ground (ground px). */
-const Slab: React.FC<{ c: Cam; rings: P[][]; color: string; t: number; id: string; g?: number; h?: number; dx?: number; dy?: number; alpha?: number; clip?: P[] }> = ({ c, rings, color, t, id, g = 1, h = 14, dx = 0, dy = 0, alpha = 0.72, clip }) => {
+const Slab: React.FC<{ c: Cam; rings: P[][]; color: string; t: number; id: string; g?: number; h?: number; dx?: number; dy?: number; alpha?: number; clip?: P[]; layers?: number }> = ({ c, rings, color, t, id, g = 1, h = 14, dx = 0, dy = 0, alpha = 0.72, clip, layers = 4 }) => {
   if (g <= 0.01) return null;
   const pts = rings.flat().map((p) => toG(c, p));
   let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
@@ -78,7 +78,7 @@ const Slab: React.FC<{ c: Cam; rings: P[][]; color: string; t: number; id: strin
   if (x1 <= x0 || y1 <= y0) return null;
   const d = rings.map((r) => r.map((p, i) => { const [x, y] = toG(c, p); return `${i ? 'L' : 'M'}${(x - x0).toFixed(1)},${(y - y0).toFixed(1)}`; }).join('') + 'Z').join('');
   const H = h * easeOut(clamp01(g));
-  const N = 5;
+  const N = layers;
   const cd = clip ? clip.map((p, i) => { const [x, y] = toG(c, p); return `${i ? 'L' : 'M'}${(x - x0).toFixed(1)},${(y - y0).toFixed(1)}`; }).join('') + 'Z' : '';
   const cid = `cl_${id}`;
   const cp = clip ? `url(#${cid})` : undefined;
@@ -197,7 +197,7 @@ const GroundLayer: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atl
       <Slab c={c} rings={GEO.countries['United Arab Emirates']} color={COL.ae} t={t} id="aeS" g={musandamAct} h={18} dy={gap} alpha={0.66} clip={SOUTH} />
       <Slab c={c} rings={GEO.countries.Oman} color={COL.om} t={t} id="omN" g={musandamAct} h={18} dy={-gap} alpha={0.62} clip={NORTH} />
       <Slab c={c} rings={GEO.countries.Oman} color={COL.om} t={t} id="omS" g={musandamAct} h={18} dy={gap} alpha={0.62} clip={SOUTH} />
-      {hajar > 0.01 && <Slab c={c} rings={GEO.hajar} color={COL.hajar} t={t} id="hj" g={hajar} h={70} alpha={0.6} />}
+      {hajar > 0.01 && <Slab c={c} rings={GEO.hajar} color={COL.hajar} t={t} id="hj" g={hajar} h={60} alpha={0.6} layers={3} />}
       {pipes && <svg width={GW} height={GH} style={{ position: 'absolute', inset: 0, overflow: 'visible', transform: 'translateZ(16px)' }}>
         <defs><filter id="pglow"><feGaussianBlur stdDeviation="14" /></filter></defs>
         {/* the pipelines */}
@@ -228,7 +228,7 @@ const World: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atlas }) 
       <GroundLayer t={t} c={c} atlas={atlas} />
     </div>
     {/* distance haze, so the far ground fades like the reference's horizon */}
-    <AbsoluteFill style={{ background: `linear-gradient(180deg, rgba(${atlas > 0.5 ? '170,168,160' : '206,190,160'},0.92) 0%, rgba(150,148,140,0.35) 16%, rgba(0,0,0,0) 30%)`, pointerEvents: 'none' }} />
+    <AbsoluteFill style={{ background: `linear-gradient(180deg, rgba(${atlas > 0.5 ? '150,150,146' : '196,184,160'},1) 0%, rgba(${atlas > 0.5 ? '150,150,146' : '196,184,160'},0.96) 12%, rgba(140,140,134,0.45) 22%, rgba(0,0,0,0) 34%)`, pointerEvents: 'none' }} />
   </AbsoluteFill>
 );
 
@@ -277,7 +277,7 @@ const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // tankers along the lane: many before the war, a trickle after
   const thin = ramp(t, C.jahaz, C.n49, linear);
   const tankersOn = win(t, C.roz - 0.2, C.bharat + 0.3, 0.5, 0.4) + win(t, C.parh, C.baaki + 0.2, 0.4, 0.4) * 0.6;
-  const tankers = Array.from({ length: 6 }, (_, i) => i).filter((i) => i === 0 || i * (1 - thin) > 0.6 || t > C.parh);
+  const tankers = Array.from({ length: 4 }, (_, i) => i).filter((i) => i === 0 || i * (1 - thin) > 0.6 || t > C.parh);
   return (
     <AbsoluteFill>
       {/* frame 0 (and the loop's end): the gap */}
@@ -292,13 +292,13 @@ const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {t > C.n2cr - 0.2 && t < C.y2026 && <At x={540} y={1250} p={pop(t, C.n2cr - 0.1, 10, 200)} o={1 - ramp(t, C.y2026 - 0.3, C.y2026, linear)}><Tag text={<>~2 करोड़ बैरल / दिन</>} size={60} color={COL.lane} /></At>}
       {t > C.panch - 0.2 && t < C.y2026 && <At x={540} y={330} p={pop(t, C.panch - 0.1, 10, 200)} o={1 - ramp(t, C.y2026 - 0.3, C.y2026, linear)}><Big text="~20% दुनिया का तेल" size={84} color={COL.gold} font={UI} /></At>}
       {tankersOn > 0.01 && tankers.map((i) => {
-        const ph = ((t * 0.035 + i / 6) % 1);
+        const ph = ((t * 0.03 + i / 4) % 1);
         const [pt, ang] = pointAt(GEO.lane, ph);
         const [x, y, sc] = project(c, pt);
         const [x2, y2] = project(c, [pt[0] + Math.cos(ang) * 5000, pt[1] + Math.sin(ang) * 5000]);
         const rot = (Math.atan2(y2 - y, x2 - x) * 180) / Math.PI;
         const flip = Math.abs(rot) > 90;
-        return <div key={i} style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-60%) scale(${Math.min(1.4, sc) * 0.9})`, opacity: Math.min(1, tankersOn) }}><Cut k="h01_tanker" w={190} rot={flip ? rot - 180 : rot} flip={flip} /></div>;
+        return <div key={i} style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-60%) scale(${Math.max(0.75, Math.min(1.3, sc))})`, opacity: Math.min(1, tankersOn) }}><Cut k="h01_tanker" w={170} rot={flip ? rot - 180 : rot} flip={flip} /></div>;
       })}
       {/* 2026: the war, the collapse */}
       {t > C.y2026 - 0.2 && t < C.bharat && <At x={540} y={330} p={pop(t, C.y2026 - 0.1, 10, 200)} o={1 - ramp(t, C.bharat - 0.3, C.bharat, linear)}><Big text="2026" size={150} color="#FF4D5E" /></At>}

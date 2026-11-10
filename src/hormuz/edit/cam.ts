@@ -28,7 +28,7 @@ type Key = { t: number; at: P; mpp: number; tilt: number; yaw: number; e?: Ease 
 
 /** Frame 0 and the loop's end: low over the strait, the 33 km gap. */
 export const HOOK = { at: K(56.42, 26.6), mpp: 105, tilt: 50, yaw: -12 };
-const GULF = K(54.2, 26.2), WIDE = K(62.5, 21.5), MUSANDAM = K(56.12, 25.78), HAJAR = K(57.1, 24.0), ARABIA = K(48.5, 24.6);
+const GULF = K(54.2, 26.2), WIDE = K(76.3, 21.0), MUSANDAM = K(56.12, 25.78), HAJAR = K(57.1, 24.0), ARABIA = K(48.5, 24.6);
 /** Split screens: the map lives in the top half (the focus moves half a screen down the ground). */
 const up = (p: P, mpp: number, tilt: number): P => [p[0], p[1] - 380 * mpp / Math.cos((tilt * Math.PI) / 180)];
 
@@ -38,8 +38,8 @@ const keys = (): Key[] => [
   { t: C.yehai + 1.1, at: GULF, mpp: 1450, tilt: 38, yaw: 0, e: inOut },
   { t: C.jahaz - 0.3, at: GULF, mpp: 1350, tilt: 40, yaw: 3, e: linear },
   { t: C.n49 + 0.6, at: K(55.6, 26.3), mpp: 900, tilt: 44, yaw: 6, e: inOut },
-  { t: C.bharat + 1.0, at: WIDE, mpp: 4300, tilt: 34, yaw: 0, e: inOut },
-  { t: C.isi + 0.8, at: WIDE, mpp: 4100, tilt: 36, yaw: -4, e: linear },
+  { t: C.bharat + 1.0, at: WIDE, mpp: 5300, tilt: 30, yaw: 0, e: inOut },
+  { t: C.isi + 0.8, at: WIDE, mpp: 5100, tilt: 32, yaw: -2, e: linear },
   { t: C.map + 1.0, at: MUSANDAM, mpp: 135, tilt: 46, yaw: -8, e: inOut },
   { t: C.oman1 + 0.3, at: MUSANDAM, mpp: 120, tilt: 48, yaw: -4, e: linear },
   { t: C.hajar + 0.9, at: HAJAR, mpp: 700, tilt: 54, yaw: 28, e: inOut },
@@ -109,7 +109,7 @@ export const shake = (t: number): P => {
 // ------------------------------------------------------------------ the 3D projection (it mirrors the CSS transforms)
 /** The ground plane is a GW×GH box of "ground pixels" (1 px = mpp metres), centred on the focus, which sits at screen
  *  (FX, FY); it is rotated rotateX(tilt) rotateZ(yaw) and seen through a CSS perspective of PERSP px from (FX, PY). */
-export const GW = 2000, GH = 3300, FX = 540, FY = 1060, PERSP = 1500, PY = 760;
+export const GW = 2300, GH = 3300, FX = 540, FY = 1060, PERSP = 1500, PY = 760;
 /** Ground pixel coordinates (in the GW×GH box) of a Mercator point. */
 export const toG = (c: Cam, p: P): P => [GW / 2 + (p[0] - c.x) / c.mpp, GH / 2 - (p[1] - c.y) / c.mpp];
 /** Screen position of a Mercator point lifted z ground px off the ground, and its perspective scale. */
