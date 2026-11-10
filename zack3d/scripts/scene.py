@@ -50,14 +50,20 @@ def mottle(m, dark, light, scale, lo, hi, co='Object'):
     l.new(t.outputs['Fac'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color'])
 
 # ── sky: colour ramp on the direction from camera toward the subject → glow right behind the subject ──
+import json as _json, os as _os
+# v3 look: tuned so the rendered sky corner = ref (42,165,208) and skin ground = ref (233,147,99) within 3 units
+LOOK = {'sky': [[0.86, [38, 140, 181]], [0.955, [50, 158, 196]], [0.988, [110, 190, 215]], [1.0, [160, 210, 225]]],
+        'skin': [165, 100, 62], 'skin_lo': [155, 90, 55], 'skin_hi': [175, 112, 70], 'light_k': 1.0}
+LOOK.update(_json.loads(_os.environ.get('ZK_LOOK', '{}')))
+
 def sky(sc, cam_loc, target, light_frac=1.0):
     w = bpy.data.worlds.new('sky'); sc.world = w; w.use_nodes = True; n, l = w.node_tree.nodes, w.node_tree.links
     bg = n['Background']; tc = n.new('ShaderNodeTexCoord'); dp = n.new('ShaderNodeVectorMath'); dp.operation = 'DOT_PRODUCT'
     D = (V(target) - V(cam_loc)).normalized(); dp.inputs[1].default_value = D
     l.new(tc.outputs['Generated'], dp.inputs[0])
     r = n.new('ShaderNodeValToRGB'); e = r.color_ramp.elements
-    e[0].position = 0.86; e[0].color = lin(26, 140, 196); e[1].position = 1.0; e[1].color = lin(176, 224, 240)
-    m = e.new(0.955); m.color = lin(38, 160, 212); m2 = e.new(0.988); m2.color = lin(110, 200, 232)
+    st = LOOK['sky']; e[0].position = st[0][0]; e[0].color = lin(*st[0][1]); e[1].position = st[-1][0]; e[1].color = lin(*st[-1][1])
+    for pos, col in st[1:-1]: e.new(pos).color = lin(*col)
     l.new(dp.outputs['Value'], r.inputs['Fac']); l.new(r.outputs['Color'], bg.inputs['Color'])
     if light_frac < 1:  # light the scene with part of the sky but show all of it to the camera
         lp = n.new('ShaderNodeLightPath'); mx = n.new('ShaderNodeMath'); mx.operation = 'MULTIPLY_ADD'
@@ -71,15 +77,15 @@ def area(sc, name, loc, target, power, size, color):
     o.rotation_euler = (V(target) - V(loc)).to_track_quat('-Z', 'Y').to_euler(); return o
 
 def lights(sc, target, k=1.0):
-    t = V(target)
+    t = V(target); k = k * LOOK['light_k']
     area(sc, 'key', t + V((-4, -6, 7)), t, 1300 * k, 5, (1, .96, .9))
     area(sc, 'rim', t + V((5, 5, 5)), t, 1100 * k, 3, (.8, .93, 1))
     area(sc, 'fill', t + V((0, -6, 0.8)), t, 260 * k, 6, (1, 1, 1))
 
 # ── skin ground: a big grid bent into a cylinder so the horizon falls away like a shoulder ──
 def skin_material():
-    m = mat('skin', lin(222, 132, 84), 0.72, **{'Subsurface Weight': 0.15, 'Subsurface Radius': (1, .4, .25), 'Specular IOR Level': 0.12})
-    mottle(m, lin(212, 118, 72), lin(230, 146, 96), 0.6, 0.3, 0.75)
+    m = mat('skin', lin(*LOOK['skin']), 0.72, **{'Subsurface Weight': 0.15, 'Subsurface Radius': (1, .4, .25), 'Specular IOR Level': 0.12})
+    mottle(m, lin(*LOOK['skin_lo']), lin(*LOOK['skin_hi']), 0.6, 0.3, 0.75)
     add_bump(m, [('noise', 3, 0.35), ('noise', 14, 0.2), ('voronoi', 9, 0.3), ('cells', 140, 0.16)])
     return m
 
