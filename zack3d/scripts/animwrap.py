@@ -17,7 +17,7 @@ def run(sc, base, lens0, fstop0, light_k, extra=None, RES=25, SPP=16):
     tg = apply(anim.at(A, A['f0']))
     sky(sc, sc.camera.location, tg, light_frac=0.5); lights(sc, tg, light_k)
     for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
-    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
+    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = (A or {}).get('shutter', 0.5) if 'A' in dir() else 0.5
     sc.render.resolution_x, sc.render.resolution_y = 1440 * RES // 100, 2560 * RES // 100; sc.cycles.samples = SPP
     dp = [n for n in sc.world.node_tree.nodes if n.type == 'VECT_MATH'][0]; out = A['out']; os.makedirs(out, exist_ok=True)
     for f in range(A['f0'], A['f1'] + 1, A.get('step', 1)):

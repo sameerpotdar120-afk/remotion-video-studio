@@ -9,10 +9,10 @@ def mk():
 for name, f0, f1 in (('s01', 1, 66), ('s25', 1750, 1839)):
     K, k = mk(); L = f1 - f0
     k(f0, mz=2.2, mx=-0.6, pitch=8, yaw=-30, cam=[0.5, -7.2, 1.2], tgt=[0, 0, 1.8], lens=55, focus=[0, -1.2, 0.5])
-    k(f0 + int(L * 0.55), mz=0.0, mx=0.0, pitch=0, yaw=-20, focus=[0, -1.2, 0.5])
+    k(f0 + int(L * 0.8), mz=0.0, mx=0.0, pitch=0, yaw=-20, focus=[0, -1.2, 0.5])
     k(f1 - 8, cam=[0.4, -6.0, 0.8], tgt=[0, 0, 0.95], lens=58)
     k(f1, cam=[2.6, -5.6, 0.9], tgt=[2.4, 0, 1.0], lens=58)
-    save(name, f0, f1, K)
+    save(name, f0, f1, K, )
 # 06 (322-417): front close-up of the head/proboscis on the skin, slow push, then a fast dive down at the needle
 K, k = mk()
 k(322, mz=0.0, cam=[0.35, -4.6, 0.75], tgt=[0, -0.9, 0.42], lens=70, focus=[-0.1, -0.78, 0.4], fstop=9)
