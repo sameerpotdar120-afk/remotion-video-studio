@@ -67,8 +67,13 @@ if MODE == 'bead':
     a = math.radians(B.get('cut_angle', 12))
     blob('SEEP', [(((x * 0.5 - 4) * math.cos(a), (x * 0.5 - 4) * math.sin(a), 0.0), 0.12, (1.6, 0.6, 0.35)) for x in range(17)], blood)
 elif MODE == 'saliva':
-    glass = mat('saliva', lin(206, 216, 228), 0.06, **{'Transmission Weight': 0.55, 'IOR': 1.34, 'Subsurface Weight': 0.4, 'Subsurface Radius': (.8, .9, 1), 'Coat Weight': 0.8, 'Coat Roughness': 0.02})
+    glass = mat('saliva', lin(214, 226, 240), 0.03, **{'Transmission Weight': 0.8, 'IOR': 1.34, 'Subsurface Weight': 0.15, 'Subsurface Radius': (.8, .9, 1), 'Coat Weight': 0.8, 'Coat Roughness': 0.02})
+    add_bump(glass, [('noise', 6, 0.25), ('cells', 18, 0.15)], mul=0.6)
     a = math.radians(B.get('cut_angle', 12))
+    import random as _rb; rb = _rb.Random(3)
+    for i in range(14):  # tiny trapped air bubbles
+        u = rb.uniform(-3.5, 3.5); bpy.ops.mesh.primitive_uv_sphere_add(radius=rb.uniform(0.02, 0.05), location=(u * math.cos(a), u * math.sin(a) + rb.uniform(-0.08, 0.08), 0.12))
+        bo = bpy.context.object; bo.name = f'BUB{i}'; bo.data.materials.append(mat('bub', lin(255, 255, 255), 0.02, **{'Transmission Weight': 1.0, 'IOR': 1.0})); bo.parent = None
     blob('SPIT', [(((x * 0.25 - 4) * math.cos(a), (x * 0.25 - 4) * math.sin(a), 0.07), 0.3, (1.6, 0.8, 0.38)) for x in range(33)], glass)
 if MODE == 'pad':
     CUTY = -0.95   # cut face of the skin (cross-section) just in front of the pool
@@ -98,10 +103,15 @@ if MODE == 'pad':
     am = mat('stalk', lin(240, 172, 84), 0.22, **{'Metallic': 0.55, 'Anisotropic': 0.8, 'Coat Weight': 0.4, 'Coat Roughness': 0.05})
     bpy.ops.mesh.primitive_cone_add(vertices=96, radius1=0.5, radius2=0.85, depth=4.5); st = bpy.context.object; st.location = (0, 0, 2.6); st.data.materials.append(am)
     [setattr(p_, 'use_smooth', True) for p_ in st.data.polygons]
+    n2, l2 = nodes(am); b2 = n2['Principled BSDF']; tc2 = n2.new('ShaderNodeTexCoord'); sx2 = n2.new('ShaderNodeSeparateXYZ'); l2.new(tc2.outputs['Generated'], sx2.inputs[0])
+    SOAK2 = n2.new('ShaderNodeMath'); SOAK2.operation = 'SUBTRACT'; SOAK2.inputs[1].default_value = 0.0; l2.new(sx2.outputs['Z'], SOAK2.inputs[0])
+    r2 = n2.new('ShaderNodeValToRGB'); e2 = r2.color_ramp.elements; e2[0].position = 0.0; e2[0].color = lin(150, 16, 22); e2[1].position = 0.04; e2[1].color = lin(240, 172, 104)
+    l2.new(SOAK2.outputs[0], r2.inputs['Fac']); l2.new(r2.outputs['Color'], b2.inputs['Base Color'])
     pm = mat('pad', lin(236, 158, 74), 0.4, **{'Subsurface Weight': 0.5, 'Subsurface Radius': (1, .6, .3), 'Coat Weight': 0.4, 'Coat Roughness': 0.1})
     n, l = nodes(pm); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); sxz = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Generated'], sxz.inputs[0])
     rp = n.new('ShaderNodeValToRGB'); e = rp.color_ramp.elements; e[0].position = 0.0; e[0].color = lin(130, 14, 20); e[1].position = 1.0; e[1].color = lin(240, 172, 84)
-    e.new(max(0.01, soak - 0.08)).color = lin(150, 20, 22); e.new(soak + 0.1).color = lin(240, 172, 84); l.new(sxz.outputs['Z'], rp.inputs['Fac'])
+    e.new(max(0.01, soak - 0.08)).color = lin(150, 20, 22); e.new(soak + 0.1).color = lin(240, 172, 84)
+    SOAK = n.new('ShaderNodeMath'); SOAK.operation = 'ADD'; SOAK.inputs[1].default_value = 0.0; l.new(sxz.outputs['Z'], SOAK.inputs[0]); l.new(SOAK.outputs[0], rp.inputs['Fac'])
     vo = n.new('ShaderNodeTexVoronoi'); vo.inputs['Scale'].default_value = 70; l.new(tc.outputs['Object'], vo.inputs['Vector'])
     pb = n.new('ShaderNodeBump'); pb.inputs['Strength'].default_value = 0.45; pb.inputs['Distance'].default_value = 0.02; l.new(vo.outputs['Distance'], pb.inputs['Height']); l.new(pb.outputs['Normal'], b.inputs['Normal'])
     l.new(rp.outputs['Color'], b.inputs['Base Color'])
@@ -114,5 +124,31 @@ area(sc, 'key', (-3, -5, 5), (0, 0, 0), B['key'], 6, (1, .97, .93)); area(sc, 'r
 area(sc, 'spec', (1.5, -4, 3), (0, 0, 0), B['key'] * 0.5, 0.8, (1, 1, 1))
 w = bpy.data.worlds.new('amb'); sc.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = lin(240, 200, 185); w.node_tree.nodes['Background'].inputs[1].default_value = B['amb']
 if MODE == 'pad': sky(sc, V(B['cam']), V(B['tgt']) + V((0, 0, 3)), light_frac=0.3)
-camera(sc, V(B['cam']), V(B['tgt']), lens=B['lens'], fstop=B['fstop'], focus=(V(B['tgt']) - V(B['cam'])).length)
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+# animation: cam/tgt/lens, grow (bead/spit/pool size), padz (pad + stalk height), soak (blood climbing the pad), lip (cut glow)
+import anim
+A = anim.load()
+GROW = [o for o in sc.objects if o.name in ('BEAD', 'SPIT', 'POOL')]
+PADS = [o for o in sc.objects if o.name == 'PAD' or (o.type == 'MESH' and o.data.materials and o.data.materials[0] and o.data.materials[0].name == 'stalk')]
+base_z = {o.name: o.location.z for o in PADS}
+skn = sk.node_tree.nodes['Principled BSDF']; skn.inputs['Emission Color'].default_value = lin(255, 40, 30)
+def apply(p, f=None):
+    cl, tg = V(p.get('cam', B['cam'])), V(p.get('tgt', B['tgt']))
+    camera(sc, cl, tg, lens=p.get('lens', B['lens']), fstop=p.get('fstop', B['fstop']), focus=(tg - cl).length)
+    g = max(p.get('grow', 1.0), 0.001)
+    for o in GROW: o.scale = (g, g, g) if o.name != 'SPIT' else (1, 1, g)
+    for o in PADS: o.location.z = base_z[o.name] + p.get('padz', 0.0)
+    if MODE == 'pad': SOAK.inputs[1].default_value = 0.35 - p.get('soak', 0.35); SOAK2.inputs[1].default_value = p.get('soak', 0.0) * 0.55
+    skn.inputs['Emission Strength'].default_value = 0.0   # (lip glow lives in the cut ramp; keep surface unlit)
+    if f is not None:
+        cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)
+        for o in GROW + PADS: o.keyframe_insert('scale', frame=f); o.keyframe_insert('location', frame=f)
+        if MODE == 'pad': SOAK.inputs[1].keyframe_insert('default_value', frame=f); SOAK2.inputs[1].keyframe_insert('default_value', frame=f)
+if A:
+    out = A['out']; os.makedirs(out, exist_ok=True)
+    for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
+    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
+    sc.render.resolution_x, sc.render.resolution_y = 1440 * RES // 100, 2560 * RES // 100; sc.cycles.samples = SPP
+    for f in range(A['f0'], A['f1'] + 1, A.get('step', 1)):
+        sc.frame_set(f); sc.render.filepath = os.path.join(out, f'f_{f:04d}.png'); bpy.ops.render.render(write_still=True); print('FRAME', f, flush=True)
+else:
+    apply({}); render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
