@@ -1,4 +1,18 @@
-# Hormuz: script draft (Hindi, for the creator to rewrite)
+# Hormuz: the creator's script, polished (Hindi)
+
+The creator's draft (10 Nov) polished for grammar and rhythm; `script_elevenlabs.txt` has the VO text with numbers as
+Hindi words. Changes: "iske chaaron taraf" → "iske badle" (an alternative, not "around it"); one unit system
+(crore/lakh) instead of mixing million and crore; "jahaazon ka guzarna" → "aana-jaana"; India's 26 lakh made the
+explicit figure; one added line (optional): the pipelines' 26 lakh spare equals what India alone took from Hormuz.
+Runtime: 239 words ≈ 96 s at 150 wpm, ≈ 102 s at the last VO's pace. Cut the added line to save about 4 s.
+
+New figures checked: EIA, flows fell from 21.6 million b/d (late 2025) to 4.9 million b/d (Q2 2026); EIA calls its tracking
+data since late February 2026 "especially unreliable" and IEA/Kpler give higher levels (IEA about 10.9 million in
+September). India: about 2.6 million b/d of Gulf crude in early 2026 (about half of imports, Kpler).
+
+---
+
+# (earlier draft below)
 
 Files: `script_hindi.txt`, `script_roman.txt`, `hooks.txt`, `reference_analysis.md` (look, beats, fact check, 3D plan).
 
