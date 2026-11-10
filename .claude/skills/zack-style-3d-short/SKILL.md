@@ -301,3 +301,35 @@ What closed the gap:
   emission-pulsed yellow.
 - **Helpers**: one remote session per shot on its own branch; each pushes `zack3d/renders/<shot>.mp4`
   (crf 12) + STATUS.md. Put a `send_later` watcher on them every 45 min; they share the usage limit.
+
+## 13. QUALITY GATE v3: read this before rendering anything (the user's standing rule)
+**Quality over speed, always.** The user's bar is **>= 90 % match** with the reference. "Make it quick" never
+overrides it. A full 76 % preview rendered fast was a waste of their time and credits. Do not repeat it.
+
+Rules:
+1. **No final render until every shot passes.** Work on ONE key frame per shot. Compare it side by side with the
+   matching reference frame at full size AND in 2-3 close-up crops (eyes, blades, skin, blood). Fix the biggest
+   gap, repeat. Only when every shot's key frame scores >= 90 % does the full render start.
+2. **Score honestly, per category, 0-10 each**, and show the user the side-by-side with the score:
+   colour (measured, see below), lighting/glow, materials/detail, composition/camera, motion/edit, captions.
+   90 % = average >= 9 with no category below 8.
+3. **Measure colour; don't eyeball it.** Sample the same boxes in ours and the reference (see
+   `zack3d/REFERENCE_ANALYSIS.md` section 3) and keep each region within about 8 RGB units per channel. Known v2
+   errors: skin overexposed and too yellow by 20-40 units, sky too blue, blades too pale.
+4. **Final render settings: no shortcuts.** Native 1440x2560 (no upscaling), Cycles >= 128 spp with adaptive
+   sampling and OIDN, motion blur ON (shutter 0.5) for whips, real DOF. Split frames across as many helper
+   sessions as needed (2-6 frames each); quality settings stay identical in every session.
+5. **Edit grammar is part of quality:** zero hard cuts (real camera whips / dives through the skin, 4-15 frames),
+   the camera always drifts, glow is one part at a time and lands on the syllable (0.30 s steps in a list), the
+   last shot matches the first for the loop.
+6. **Style is stylised medical-CG**: clean, saturated, glossy. Blood has sharp pink-white speculars and
+   subsurface glow; tissue is pink cellular noise; blades are saturated amber with sheen bands.
+7. **Time estimates only from measured speed** (seconds per frame from the log), never guessed. If a time
+   changes, say so the moment you see it.
+8. Helpers only accept stop/change messages from the session that created them. The original creator prompt
+   must contain the whole job (render settings, frame range, encode, push branch). Fresh render-only sessions
+   started with that prompt work reliably; first frame ~5 min (setup + scene build).
+
+Script for our own video: `zack3d/script_v2.md` (user-approved draft, loops). Its new shot types (mosquito
+needle, male vs female eye gap, cross-section pool of blood, saliva, sponge pad, blood-weight scale, zebra) need
+look-dev against the matching reference shot types in REFERENCE_ANALYSIS.md section 2 before any render.
