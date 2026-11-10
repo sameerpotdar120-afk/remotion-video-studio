@@ -89,7 +89,7 @@ else:  # mosquito: one hair-thin dark needle slipping cleanly into the vessel
     nd.rotation_euler = (math.radians(180 - 8), 0, 0); nd.location = (0, 0, X.get('needle_tip', -7.2) + 5.5); nd.data.materials.append(nm); nd.parent = rig
     [setattr(p_, 'use_smooth', True) for p_ in nd.data.polygons]; RIGS.append((rig, ()))
 # nerve endings in the dermis (glow for "the sting you feel")
-NERVE = mat('nerve', lin(250, 230, 150), 0.4, **{'Emission Color': lin(255, 214, 60), 'Emission Strength': 0.0})
+NERVE = mat('nerve', lin(214, 120, 120), 0.4, **{'Emission Color': lin(255, 214, 60), 'Emission Strength': 0.0})
 rng_n = random.Random(9)
 for k in range(6):
     x0 = rng_n.uniform(-5.5, 5.5); pts = [(x0, -0.05, -2.3)]
@@ -108,19 +108,22 @@ w = bpy.data.worlds.new('amb'); sc.world = w; w.use_nodes = True; w.node_tree.no
 
 import anim
 A = anim.load()
+if A and A.get('mode'): pass
 def apply(p, f=None):
     camera(sc, V(p.get('cam', X['cam'])), V(p.get('tgt', X['tgt'])), lens=p.get('lens', X['lens']), fstop=p.get('fstop', 8), focus=(V(p.get('tgt', X['tgt'])) - V(p.get('cam', X['cam']))).length)
     for i, (rig, mats) in enumerate(RIGS):
         rig.location.z = p.get(f'z{i}', 0.0)
         for m in mats: m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 4.0 * p.get(f'g{i}', 0.0)
-    NERVE.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 6.0 * p.get('gn', 0.0)
-    ves.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 3.0 * p.get('gv', 0.0)
+    NERVE.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 10.0 * p.get('gn', 0.0)
+    gv = p.get('gv', 0.0); vb = ves.node_tree.nodes['Principled BSDF']; vb.inputs['Emission Strength'].default_value = 0.18 * gv
+    c0, c1 = lin(*X['vessel']), lin(236, 176, 40); vb.inputs['Base Color'].default_value = [c0[i] + (c1[i] - c0[i]) * gv for i in range(4)]
     if f is not None:  # key everything so Cycles motion blur sees the movement
         cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)
         for rig, mats in RIGS:
             rig.keyframe_insert('location', frame=f)
             for m in mats: m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
         for m in (NERVE, ves): m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
+        ves.node_tree.nodes['Principled BSDF'].inputs['Base Color'].keyframe_insert('default_value', frame=f)
 if A:
     out = A['out']; os.makedirs(out, exist_ok=True)
     for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
