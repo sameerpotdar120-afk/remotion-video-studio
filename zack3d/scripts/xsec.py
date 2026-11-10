@@ -58,7 +58,13 @@ def blade(x, tip_z, top_z, w, teeth_side, seed):
         u = (i + 0.5) / n; z = tip_z + 0.35 + u * (top_z - tip_z - 0.5); r = w * 0.16 + w * 0.84 * (z - tip_z) / (top_z - tip_z)
         bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.16, radius2=0.0, depth=0.6)
         t = bpy.context.object; t.location = (x + teeth_side * (r + 0.16), -0.35, z); t.rotation_euler = (0, math.radians(teeth_side * 55), 0); t.scale = (1, 0.35, 1); t.data.materials.append(TM)
-blade(-0.9, -6.6, 4, 1.0, -1, 1); blade(0.95, -5.2, 4, 0.85, 1, 2)
+if X.get('mode', 'blades') == 'blades':
+    blade(-0.9, -6.6, 4, 1.0, -1, 1); blade(0.95, -5.2, 4, 0.85, 1, 2)
+else:  # mosquito: one hair-thin dark needle slipping cleanly into the vessel
+    nm = mat('needle', lin(58, 44, 38), 0.25, **{'Coat Weight': 0.6, 'Coat Roughness': 0.08})
+    bpy.ops.mesh.primitive_cone_add(vertices=48, radius1=0.16, radius2=0.025, depth=11); nd = bpy.context.object
+    nd.rotation_euler = (math.radians(180 - 8), 0, 0); nd.location = (0.1, -0.35, X.get('needle_tip', -7.2) + 5.5); nd.data.materials.append(nm)
+    [setattr(p_, 'use_smooth', True) for p_ in nd.data.polygons]
 
 # lights: soft key from front-top-left, warm fill, pinkish ambient
 area(sc, 'key', (-4, -8, 2), (0, 0, -4), X['key'], 14, (1, .97, .94)); area(sc, 'fill', (5, -7, -8), (0, 0, -4), X['fill'], 14, (1, .9, .9))
