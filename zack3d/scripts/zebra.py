@@ -8,6 +8,9 @@ argv = sys.argv[sys.argv.index('--') + 1:]; OUT, RES, SPP = argv[0], int(argv[1]
 Z = {'coat': 'zebra', 'height': 100.0, 'cam': [-430, 30, 40], 'tgt': [0, 0, 52], 'lens': 50, 'fstop': 11,
      'ground': [214, 190, 140], 'flies': []}
 Z.update(json.loads(os.environ.get('ZK_Z', '{}')))
+_A = json.loads(os.environ.get('ZK_ANIM', '{}'))
+for _k in ('nflies', 'coat', 'fly_len'):
+    if _k in _A: Z[_k] = _A[_k]
 GLB = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'assets', 'zebra.glb')
 if not os.path.exists(GLB): GLB = '/root/zack/dl/new/c60aa3efb391448faa955426411d485a.glb'
 sc = reset()
@@ -69,13 +72,42 @@ l.new(src, mxg.inputs['A']); l.new(mr.outputs['Result'], mxg.inputs['Factor']); 
 em = n.new('ShaderNodeEmission'); em.inputs['Color'].default_value = lin(*Z.get('mist_col', [104, 198, 228])); em.inputs['Strength'].default_value = 1.0
 ms = n.new('ShaderNodeMixShader'); out = n['Material Output']; l.new(mr.outputs['Result'], ms.inputs['Fac']); l.new(b.outputs['BSDF'], ms.inputs[1]); l.new(em.outputs['Emission'], ms.inputs[2]); l.new(ms.outputs['Shader'], out.inputs['Surface'])
 bpy.ops.mesh.primitive_plane_add(size=60000); gp = bpy.context.object; gp.data.materials.append(gm)
-# optional flies (no fur, for distance shots): list of [x, y, z, yaw, pitch, length]
-if Z['flies']:
-    for i, (fx, fy, fz, fyaw, fpitch, flen) in enumerate(Z['flies']):
-        fly, parts, M = load_fly(sc, length=flen); fly.location = (fx, fy, fz); fly.rotation_euler = (math.radians(fpitch), 0, math.radians(fyaw))
-cl, tgt = V(Z['cam']), V(Z['tgt'])
-camera(sc, cl, tgt, lens=Z['lens'], fstop=Z['fstop'], focus=(V((0, 0, 55)) - cl).length * Z.get('focus_k', 1.0))
-sky(sc, cl, tgt, light_frac=0.5)
-area(sc, 'key', tgt + V((-120, -150, 200)), tgt, 1300 * 900, 120, (1, .96, .9)); area(sc, 'rim', tgt + V((150, 200, 150)), tgt, 1100 * 700, 80, (.8, .93, 1))
-area(sc, 'fill', tgt + V((-200, 60, 30)), tgt, 260 * 900, 150, (1, 1, 1))
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+# flies: one fly model in a hidden collection, instanced N times (cheap); animated via keys 'f<i>': [x, y, z, yaw, pitch]
+import anim
+A = anim.load()
+NF = Z.get('nflies', len(Z['flies']))
+FL = []
+if NF:
+    before = set(sc.objects); fly, parts, M = load_fly(sc, length=Z.get('fly_len', 3.4)); new = [o for o in sc.objects if o not in before]
+    fc = bpy.data.collections.new('FLYC')
+    for o in new:
+        for c in o.users_collection: c.objects.unlink(o)
+        fc.objects.link(o)
+    for i in range(NF):
+        e = bpy.data.objects.new(f'FI{i}', None); e.instance_type = 'COLLECTION'; e.instance_collection = fc; sc.collection.objects.link(e); FL.append(e)
+        if i < len(Z['flies']):
+            fx, fy, fz, fyaw, fpitch, flen = Z['flies'][i]; e.location = (fx, fy, fz); e.rotation_euler = (math.radians(fpitch), 0, math.radians(fyaw)); e.scale = (flen / 3.4,) * 3
+area(sc, 'key', V((-120, -150, 260)), V((0, 0, 60)), 1300 * 900, 120, (1, .96, .9)); area(sc, 'rim', V((150, 200, 210)), V((0, 0, 60)), 1100 * 700, 80, (.8, .93, 1))
+area(sc, 'fill', V((-200, 60, 90)), V((0, 0, 60)), 260 * 900, 150, (1, 1, 1))
+def apply(p, f=None):
+    cl, tg = V(p.get('cam', Z['cam'])), V(p.get('tgt', Z['tgt']))
+    camera(sc, cl, tg, lens=p.get('lens', Z['lens']), fstop=p.get('fstop', Z['fstop']), focus=(V(p.get('focus', [0, 0, 55])) - cl).length)
+    for i, e in enumerate(FL):
+        v = p.get(f'f{i}')
+        if v: e.location = v[:3]; e.rotation_euler = (math.radians(v[4]), 0, math.radians(v[3]))
+    if f is not None:
+        cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)
+        for e in FL: e.keyframe_insert('location', frame=f); e.keyframe_insert('rotation_euler', frame=f)
+apply(anim.at(A, A['f0']) if A else {})
+sky(sc, sc.camera.location, V(Z['tgt']), light_frac=0.5)
+if A:
+    out = A['out']; os.makedirs(out, exist_ok=True)
+    for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
+    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
+    sc.render.resolution_x, sc.render.resolution_y = 1440 * RES // 100, 2560 * RES // 100; sc.cycles.samples = SPP
+    dp = [n for n in sc.world.node_tree.nodes if n.type == 'VECT_MATH'][0]
+    for f in range(A['f0'], A['f1'] + 1, A.get('step', 1)):
+        sc.frame_set(f); pp = anim.at(A, f); dp.inputs[1].default_value = (V(pp.get('tgt', Z['tgt'])) - sc.camera.location).normalized()
+        sc.render.filepath = os.path.join(out, f'f_{f:04d}.png'); bpy.ops.render.render(write_still=True); print('FRAME', f, flush=True)
+else:
+    render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)

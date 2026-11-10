@@ -37,3 +37,4 @@ circle 1533, quarter 1633, stripes 1708, mosquito (2nd) 1814, horsefly (2nd) 188
 | 25 | 1750-1839 | mosq.py | back to the forearm, mosquito lands softly (mirror of 01) | - |
 | 26 | 1840-1907 | shots_me.py landing | horsefly lands hard; last frame = frame 1 framing for the loop | - |
 - s18: dark band at the horizon behind the stalk (fix in final QA)
+- zebra: light triangular patch in the texture on the shoulder (paint out in final QA)
