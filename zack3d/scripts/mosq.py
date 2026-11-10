@@ -43,7 +43,7 @@ A = anim.load()
 def apply(p, f=None):
     MQ.location = (p.get('mx', 0.0), p.get('my', 0.0), sz + p.get('mz', Mq['z'])); MQ.rotation_euler = (math.radians(p.get('pitch', Mq['pitch'])), 0, math.radians(p.get('yaw', Mq['yaw'])))
     cl, tg = V(p.get('cam', Mq['cam'])), V(p.get('tgt', Mq['tgt'])); cl.z += sz; tg.z += sz
-    fp = V(p.get('focus', [0, -1.2, 0.5])); fp.z += sz
+    fp = V(p.get('focus', [0, -1.2, 0.5])); fp.z += sz + p.get('mz', Mq['z'])   # focus rides with the mosquito
     camera(sc, cl, tg, lens=p.get('lens', Mq['lens']), fstop=p.get('fstop', Mq['fstop']), focus=(fp - cl).length)
     if f is not None:
         cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)

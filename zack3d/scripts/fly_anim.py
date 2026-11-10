@@ -21,6 +21,7 @@ def apply(p, f=None):
         cl, tg = V(p['cam']), V(p['tgt']); cl.z += sz; tg.z += sz
         fp = V(p['focus']) if 'focus' in p else None
         if fp is not None: fp.z += sz
+    if 'focus_head' in p: fp = hp + V(p['focus_head'])
     camera(sc, cl, tg, lens=p.get('lens', 50), fstop=p.get('fstop', 4.5), focus=((fp if fp is not None else hp) - cl).length)
     pm.inputs['Emission Strength'].default_value = 3.0 * p.get('mouth', 0.0)
     if f is not None:
@@ -30,6 +31,8 @@ def apply(p, f=None):
     return tg
 tg = apply(p0)
 sky(sc, sc.camera.location, tg, light_frac=0.5); lights(sc, tg, 1.25)
+if A.get('front_fill'):  # wide low shots: light the near skin like the reference (it otherwise falls dark)
+    cpos = sc.camera.location; area(sc, 'frontfill', cpos + V((0, 2.0, 3.5)), cpos + V((0, 6.0, -0.4)), 900, 8, (1, .95, .9))
 out = A['out']; os.makedirs(out, exist_ok=True)
 for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
 sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
