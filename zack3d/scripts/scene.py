@@ -143,12 +143,42 @@ def fly_materials():
     l.new(mixc.outputs['Result'], bri.inputs['Color1']); l.new(bri.outputs['Color'], b.inputs['Base Color'])
     abd = mat('abd', lin(60, 50, 44), 0.42, **{'Coat Weight': 0.3, 'Coat Roughness': 0.18})
     mottle(abd, lin(34, 28, 25), lin(96, 80, 68), 7, 0.5, 0.74); add_bump(abd, [('noise', 26, 0.25), ('cells', 110, 0.15)], mul=0.4)
-    leg = mat('leg', lin(20, 18, 18), 0.45, **{'Coat Weight': 0.25, 'Coat Roughness': 0.25}); add_bump(leg, [('noise', 60, 0.4), ('cells', 160, 0.35), ('noise', 9, 0.3)], mul=0.6)
+    leg = mat('leg', lin(24, 22, 23), 0.32, **{'Coat Weight': 0.7, 'Coat Roughness': 0.08}); add_bump(leg, [('noise', 60, 0.4), ('cells', 160, 0.35), ('noise', 9, 0.3), ('voronoi', 25, 0.5)], mul=1.3)
     bristle = mat('bristle', lin(10, 9, 9), 0.32)
     wing = mat('wing', lin(170, 180, 190), 0.15, **{'Alpha': 0.05, 'Transmission Weight': 0.0, 'Coat Weight': 0.15})
     mouth = mat('mouth', lin(206, 110, 34), 0.3, **{'Subsurface Weight': 0.3, 'Subsurface Radius': (1, .5, .2), 'Coat Weight': 0.5})
     ant = mat('ant', lin(22, 18, 16), 0.4)
     return dict(eye=eye, body=body, abd=abd, leg=leg, bristle=bristle, wing=wing, mouth=mouth, ant=ant)
+
+def bend_legs(o, lift=0.22, knee=0.42, splay=0.35):
+    """raise each leg's knee (insect stance) while keeping the foot and the body attachment fixed (world z up)"""
+    import bmesh
+    if lift <= 0: return
+    mw = o.matrix_world; inv = mw.inverted(); bm = bmesh.new(); bm.from_mesh(o.data); bm.verts.ensure_lookup_table()
+    seen = set(); islands = []
+    for v in bm.verts:
+        if v.index in seen: continue
+        stack = [v]; isl = []; seen.add(v.index)
+        while stack:
+            x = stack.pop(); isl.append(x)
+            for e in x.link_edges:
+                w = e.other_vert(x)
+                if w.index not in seen: seen.add(w.index); stack.append(w)
+        islands.append(isl)
+    W = {v.index: mw @ v.co for v in bm.verts}
+    spans = [max(W[v.index].z for v in isl) - min(W[v.index].z for v in isl) for isl in islands]; big = max(spans)
+    ctr = sum((W[i] for i in W), V((0, 0, 0))) / len(W)
+    for isl, sp in zip(islands, spans):
+        if sp < 0.3 * big: continue
+        zs = sorted(isl, key=lambda v: W[v.index].z); k = max(3, len(zs) // 20)
+        F = sum((W[v.index] for v in zs[:k]), V((0, 0, 0))) / k; A = sum((W[v.index] for v in zs[-k:]), V((0, 0, 0))) / k
+        d = F - A; L2 = d.length_squared; out = V((d.x, d.y, 0)); out = out.normalized() if out.length > 1e-6 else V((0, 0, 0))
+        h = lift * d.length
+        for v in isl:
+            p = W[v.index]; t = max(0.0, min(1.0, (p - A).dot(d) / L2))
+            u = t / knee if t < knee else (1 - t) / (1 - knee); u = u * u * (3 - 2 * u)
+            v.co = inv @ (p + V((0, 0, h * u)) + out * (splay * h * u))
+    bm.to_mesh(o.data); bm.free(); o.data.update()
 
 def load_fly(sc, length=3.4):
     before = set(sc.objects); bpy.ops.import_scene.gltf(filepath=FLY_GLB)
@@ -169,6 +199,7 @@ def load_fly(sc, length=3.4):
         o.data.materials.clear(); o.data.materials.append(m)
         for p in o.data.polygons: p.use_smooth = True
         if n.startswith('Object_3'):
+            bend_legs(o, LOOK.get('knee_lift', 0.22))
             d = o.modifiers.new('thick', 'DISPLACE'); d.strength = LOOK.get('leg_thick', 0.03); d.mid_level = 0
     # pivot: centre between the feet, fly faces -Y, scale to `length`
     mn = V((1e9,) * 3); mx = -mn
@@ -235,7 +266,7 @@ def fly_fur(sc, fly, M, k=1.0):
     hm = mat('furmat', lin(22, 21, 21), 0.4); hm2 = mat('furlight', lin(128, 124, 120), 0.35)
     fur(sc, body, int(3200 * k), 0.065, 0.0024, hm, sweep=(0, 0.8, 0.1), seed=1, parent=fly)
     fur(sc, body, int(1400 * k), 0.045, 0.002, hm2, sweep=(0, 0.9, 0.0), seed=2, parent=fly)
-    fur(sc, legs, int(3500 * k), 0.045, 0.0018, hm, sweep=(0, 0.2, -0.6), jitter=0.5, seed=3, parent=fly)
+    fur(sc, legs, int(LOOK.get('leg_fur', 1600) * k), 0.03, 0.0016, hm, sweep=(0, 0.2, -0.6), jitter=0.5, seed=3, parent=fly)
 
 def ellipsoid(sc, name, loc, scale, mat_, parent, rot=(0, 0, 0), seg=96, rings=64):
     bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=rings, radius=1)
