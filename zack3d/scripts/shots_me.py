@@ -3,9 +3,10 @@
 import sys, os, time, math; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import scene
 argv = sys.argv[sys.argv.index('--') + 1:]; SHOT, OUT, RES, SPP = argv[0], argv[1], int(argv[2]), int(argv[3])
-RANGES = {'s1': (1, 24), 's3': (46, 56), 's5': (115, 129), 's6': (130, 150)}
+RANGES = {'k1': (10, 10), 's1': (1, 24), 's3': (46, 56), 's5': (115, 129), 's6': (130, 150)}
 F0, F1 = (int(argv[4]), int(argv[5])) if len(argv) > 5 else RANGES[SHOT]
 if SHOT in ('s5', 's6'): scene.MOUTH_LEN = 1.9
+elif SHOT in ('s1', 'k1'): scene.MOUTH_LEN = 0.6
 from scene import *
 def lerp(a, b, k): return a + (b - a) * k
 def ease(x): x = max(0, min(1, x)); return x * x * (3 - 2 * x)
@@ -16,15 +17,20 @@ sc = reset(); skin(sc); fly, parts, M = load_fly(sc)
 sz = skin_z(0, 0)
 def place(z, pitch, yaw): fly.location = (0, 0, sz + z); fly.rotation_euler = (math.radians(pitch), 0, math.radians(yaw)); bpy.context.view_layer.update()
 # grow fur once at a neutral placement (it is parented to FLY, so it follows every move)
-if SHOT == 's1': place(1.9, 20, -14)
+if SHOT in ('s1', 'k1'): place(1.9, 20, -14)
 elif SHOT == 's3': place(0, 0, -10)
 else: place(-0.05, -16, 14)
 fly_fur(sc, fly, M)
 W, Hh = 1440 * RES // 100, 2560 * RES // 100
 for f in range(F0, F1 + 1):
-    if SHOT == 's1':  # descends nose-down and lands; camera sinks and closes in
+    if SHOT == 'k1':  # look-dev key frame matched to ref 0.3 s: fly high, nose-down toward a low camera
+        import json as _j; K = _j.loads(os.environ.get('ZK_K1', '{}'))
+        place(K.get('z', 1.7), K.get('pitch', 28), K.get('yaw', -16))
+        cl = V((K.get('cx', 0.3), K.get('cy', -6.4), sz + K.get('cz', 0.8))); tgt = V((0, 0, sz + K.get('tz', 1.8)))
+        hp = head_point(sc); camera(sc, cl, tgt, lens=K.get('lens', 55), fstop=4.5, focus=(hp - cl).length)
+    elif SHOT == 's1':  # descends nose-down and lands; camera sinks and closes in
         k = ease(seg(f, 1, 17)); place(lerp(1.9, 0.0, k) + 0.04 * math.sin(f * 1.7) * (1 - k), lerp(20, 0, ease(seg(f, 1, 15))), lerp(-14, -8, k))
-        c = ease(seg(f, 1, 24)); cl = lerpv((0, -7.0, sz + 2.7), (0.1, -5.6, sz + 1.3), c); tgt = lerpv((0, 0, sz + 2.35), (-0.25, 0, sz + 0.8), c)
+        c = ease(seg(f, 1, 24)); cl = lerpv((0, -5.6, sz + 2.2), (0.1, -4.6, sz + 1.1), c); tgt = lerpv((0, 0, sz + 2.2), (-0.25, 0, sz + 0.9), c)
         hp = head_point(sc); camera(sc, cl, tgt, lens=lerp(50, 46, c), fstop=4.5, focus=(hp - cl).length)
     elif SHOT == 's3':  # wide low shot along the skin, slow push in
         c = seg(f, 46, 56); cl = lerpv((-0.6, -21.0, sz + 0.5), (-0.3, -18.6, sz + 0.45), c); tgt = V((0, 0, sz + 0.75))

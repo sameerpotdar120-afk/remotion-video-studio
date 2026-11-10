@@ -100,12 +100,12 @@ def skin(sc, R=7.0, size=24, hairs=90, seed=3):
     rng = random.Random(seed); hm = mat('hair', lin(30, 20, 16), 0.35)
     for i in range(hairs):
         x = rng.uniform(-size / 2.5, size / 2.5); yy = rng.uniform(-6, 6); t = (yy + 1) / R
-        base = V((x, R * math.sin(t) - 1, R * math.cos(t) - R)); L = rng.uniform(0.25, 0.6)
+        base = V((x, R * math.sin(t) - 1, R * math.cos(t) - R)); L = rng.uniform(*LOOK.get('hair_len', (0.14, 0.32)))
         dirn = V((rng.uniform(-0.4, 0.4), rng.uniform(0.2, 0.7), 1)).normalized()
         cu = bpy.data.curves.new(f'h{i}', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.007; cu.bevel_resolution = 2
         sp = cu.splines.new('POLY'); sp.points.add(3)
         for k in range(4):
-            u = k / 3; p = base + dirn * L * u + V((0, 0.15 * u * u, -0.05 * u * u)); sp.points[k].co = (*p, 1); sp.points[k].radius = 1 - 0.9 * u
+            u = k / 3; p = base + dirn * L * u + V((0, 0.45 * L * u * u, -0.12 * L * u * u)); sp.points[k].co = (*p, 1); sp.points[k].radius = 1 - 0.9 * u
         ob = bpy.data.objects.new(f'h{i}', cu); sc.collection.objects.link(ob); cu.materials.append(hm)
     return g
 
@@ -141,8 +141,8 @@ def fly_materials():
     old = [lk for lk in b.inputs['Base Color'].links][0].from_socket; l.new(old, mixc.inputs['A']); l.new(rp.outputs['Color'], mixc.inputs['B'])
     br = n.new('ShaderNodeMath'); br.operation = 'MULTIPLY'; br.inputs[1].default_value = 3.2; bri = n.new('ShaderNodeMixRGB'); bri.blend_type = 'MULTIPLY'; bri.inputs['Fac'].default_value = 1; bri.inputs['Color2'].default_value = (2.2, 2.2, 2.2, 1)
     l.new(mixc.outputs['Result'], bri.inputs['Color1']); l.new(bri.outputs['Color'], b.inputs['Base Color'])
-    abd = mat('abd', lin(26, 24, 24), 0.42, **{'Coat Weight': 0.3, 'Coat Roughness': 0.18})
-    mottle(abd, lin(18, 17, 17), lin(70, 68, 66), 7, 0.56, 0.74); add_bump(abd, [('noise', 26, 0.25), ('cells', 110, 0.15)], mul=0.4)
+    abd = mat('abd', lin(60, 50, 44), 0.42, **{'Coat Weight': 0.3, 'Coat Roughness': 0.18})
+    mottle(abd, lin(34, 28, 25), lin(96, 80, 68), 7, 0.5, 0.74); add_bump(abd, [('noise', 26, 0.25), ('cells', 110, 0.15)], mul=0.4)
     leg = mat('leg', lin(20, 18, 18), 0.45, **{'Coat Weight': 0.25, 'Coat Roughness': 0.25}); add_bump(leg, [('noise', 60, 0.4), ('cells', 160, 0.35), ('noise', 9, 0.3)], mul=0.6)
     bristle = mat('bristle', lin(10, 9, 9), 0.32)
     wing = mat('wing', lin(170, 180, 190), 0.15, **{'Alpha': 0.05, 'Transmission Weight': 0.0, 'Coat Weight': 0.15})
@@ -169,7 +169,7 @@ def load_fly(sc, length=3.4):
         o.data.materials.clear(); o.data.materials.append(m)
         for p in o.data.polygons: p.use_smooth = True
         if n.startswith('Object_3'):
-            d = o.modifiers.new('thick', 'DISPLACE'); d.strength = 0.014; d.mid_level = 0
+            d = o.modifiers.new('thick', 'DISPLACE'); d.strength = LOOK.get('leg_thick', 0.03); d.mid_level = 0
     # pivot: centre between the feet, fly faces -Y, scale to `length`
     mn = V((1e9,) * 3); mx = -mn
     for o in parts:
@@ -243,22 +243,44 @@ def ellipsoid(sc, name, loc, scale, mat_, parent, rot=(0, 0, 0), seg=96, rings=6
     for p in o.data.polygons: p.use_smooth = True
     o.data.materials.append(mat_); o.parent = parent; return o
 
+def chitin_material():
+    """glossy black-grey wrinkled chitin (reference head/thorax look)"""
+    m = mat('chitin', lin(*LOOK.get('chitin', [26, 24, 26])), 0.3, **{'Coat Weight': 0.7, 'Coat Roughness': 0.06})
+    add_bump(m, [('noise', 7, 0.9), ('voronoi', 16, 0.6), ('noise', 40, 0.4)], mul=LOOK.get('chitin_bump', 1.4))
+    return m
+
+def eye_material():
+    """red-brown compound eye: fine pebbled facets, sparkly coat, dark rim at grazing angles"""
+    E = LOOK.get('eye', {'lo': [46, 22, 19], 'hi': [130, 72, 62], 'rim': [20, 9, 8], 'scale': 45, 'bump': 0.8})
+    m = mat('eye3', lin(*E['hi']), LOOK.get('eye_rough', 0.2), **{'Coat Weight': 0.0, 'Specular IOR Level': 0.6})
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord')
+    vr = n.new('ShaderNodeTexVoronoi'); vr.feature = 'F1'; vr.inputs['Scale'].default_value = E['scale']; l.new(tc.outputs['Object'], vr.inputs['Vector'])
+    cr = n.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].position = 0.0; cr.color_ramp.elements[0].color = lin(*E['hi'])
+    cr.color_ramp.elements[1].position = 0.9; cr.color_ramp.elements[1].color = lin(*E['lo']); l.new(vr.outputs['Distance'], cr.inputs['Fac'])
+    no = n.new('ShaderNodeTexNoise'); no.inputs['Scale'].default_value = 9; l.new(tc.outputs['Object'], no.inputs['Vector'])
+    mb = n.new('ShaderNodeMix'); mb.data_type = 'RGBA'; mb.blend_type = 'MULTIPLY'; mb.inputs['Factor'].default_value = 0.35
+    l.new(cr.outputs['Color'], mb.inputs['A']); l.new(no.outputs['Color'], mb.inputs['B'])
+    lw = n.new('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.18
+    rim = n.new('ShaderNodeMix'); rim.data_type = 'RGBA'; rim.inputs['B'].default_value = lin(*E['rim'])
+    l.new(lw.outputs['Facing'], rim.inputs['Factor']); l.new(mb.outputs['Result'], rim.inputs['A']); l.new(rim.outputs['Result'], b.inputs['Base Color'])
+    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = E['bump']; bp.inputs['Distance'].default_value = 0.04; bp.invert = True
+    l.new(vr.outputs['Distance'], bp.inputs['Height']); l.new(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
+
 def build_head(sc, piv, M):
-    """Smooth horsefly head in model units: big faceted eyes, narrow frons stripe, glossy face, antennae."""
-    hx, hy, hz = HC
-    eye = M['eye']; n, l = nodes(eye); vr = [x for x in n if x.type == 'TEX_VORONOI'][0]; vr.inputs['Scale'].default_value = 70
+    """v3 head (matched to reference crop): one dome, eyes wrapping a wide raised chitin ridge, olive antennae in grooves."""
+    hx, hy, hz = HC; eye = eye_material(); ch = chitin_material(); M['chitin'] = ch
+    gap = LOOK.get('eye_gap', 0.30)   # female: clear ridge between the eyes; male: set ~0.18 so the eyes meet
     for sg in (-1, 1):
-        ellipsoid(sc, f'EYE{sg}', (hx + sg * 0.34, hy - 0.08, hz + 0.08), (0.37, 0.34, 0.50), eye, piv, rot=(math.radians(8), 0, math.radians(sg * 16)))
-    cap = ellipsoid(sc, 'HEADCAP', (hx, hy + 0.08, hz + 0.02), (0.66, 0.40, 0.60), M['body'], piv)
-    face = ellipsoid(sc, 'FACE', (hx, hy - 0.30, hz - 0.18), (0.20, 0.16, 0.36), M['leg'], piv, rot=(math.radians(-14), 0, 0))
-    stripe = ellipsoid(sc, 'FRONS', (hx, hy - 0.26, hz + 0.30), (0.08, 0.10, 0.30), M['leg'], piv, rot=(math.radians(-10), 0, 0))
-    am = mat('antenna', lin(70, 66, 34), 0.4, **{'Coat Weight': 0.4})
-    for sg in (-1, 1):  # antennae: scape + pedicel + flattened flagellum + fine arista
-        ellipsoid(sc, f'ANT1{sg}', (hx + sg * 0.07, hy - 0.42, hz + 0.02), (0.035, 0.035, 0.06), am, piv, seg=24, rings=16)
-        ellipsoid(sc, f'ANT2{sg}', (hx + sg * 0.08, hy - 0.46, hz - 0.12), (0.045, 0.04, 0.13), am, piv, rot=(math.radians(-12), 0, 0), seg=24, rings=16)
-        cu = bpy.data.curves.new('ar', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.006; sp = cu.splines.new('POLY'); sp.points.add(1)
-        sp.points[0].co = (hx + sg * 0.09, hy - 0.47, hz - 0.05, 1); sp.points[1].co = (hx + sg * 0.32, hy - 0.62, hz + 0.02, 1)
-        ob = bpy.data.objects.new('arista', cu); sc.collection.objects.link(ob); cu.materials.append(am); ob.parent = piv
+        ellipsoid(sc, f'EYE{sg}', (hx + sg * gap, hy - 0.06, hz + 0.06), (0.36, 0.31, 0.47), eye, piv, rot=(math.radians(6), 0, math.radians(sg * 20)))
+    ellipsoid(sc, 'HEADCAP', (hx, hy + 0.10, hz + 0.02), (0.68, 0.42, 0.60), ch, piv)
+    chd = mat('chitin_dark', lin(22, 20, 22), 0.45, **{'Coat Weight': 0.25, 'Coat Roughness': 0.3}); add_bump(chd, [('noise', 7, 0.9), ('voronoi', 16, 0.6), ('noise', 40, 0.4)], mul=1.4)
+    ellipsoid(sc, 'FRONS', (hx, hy - 0.22, hz + 0.10), (0.15 * gap / 0.30, 0.13, 0.46), chd, piv, rot=(math.radians(-8), 0, 0))
+    ellipsoid(sc, 'FACE', (hx, hy - 0.30, hz - 0.22), (0.22, 0.16, 0.30), ch, piv, rot=(math.radians(-14), 0, 0))
+    am = mat('antenna', lin(58, 52, 20), 0.5, **{'Coat Weight': 0.15, 'Coat Roughness': 0.3, 'Specular IOR Level': 0.2})
+    for sg in (-1, 1):  # antennae: short scape then a long flattened olive blade lying down the face
+        ellipsoid(sc, f'ANT1{sg}', (hx + sg * 0.06, hy - 0.40, hz + 0.10), (0.035, 0.035, 0.06), chd, piv, seg=24, rings=16)
+        ellipsoid(sc, f'ANT2{sg}', (hx + sg * 0.075, hy - 0.45, hz - 0.12), (0.038, 0.022, 0.24), am, piv, rot=(math.radians(-10), 0, math.radians(sg * 4)), seg=32, rings=24)
 
 def tube_obj(sc, name, pts, radii, mat_, parent, res=24):
     """smooth tapered tube along points (model units), as a curve converted to mesh"""
@@ -278,9 +300,9 @@ def build_mouth(sc, piv, M, spread=0.0, length=1.0):
     """horsefly mouthparts: a red-orange labium splitting into two stylet tubes, black palps either side"""
     hx, hy, hz = HC; pm = mouth_material(); M['proboscis'] = pm; top = (hx, hy - 0.30, hz - 0.42)
     for sg in (-1, 1):
-        pts = [top, (hx + sg * 0.03, hy - 0.34, hz - 0.62), (hx + sg * (0.05 + 0.10 * spread), hy - 0.36, hz - 0.42 - 0.55 * length), (hx + sg * (0.06 + 0.16 * spread), hy - 0.36, hz - 0.42 - 0.95 * length)]
+        pts = [top, (hx + sg * 0.02, hy - 0.34, hz - 0.62), (hx + sg * (0.025 + 0.12 * spread), hy - 0.36, hz - 0.42 - 0.55 * length), (hx + sg * (0.02 + 0.2 * spread), hy - 0.36, hz - 0.42 - 0.95 * length)]
         tube_obj(sc, f'STYLET{sg}', pts, [0.075, 0.07, 0.05, 0.012], pm, piv)
-        ppts = [(hx + sg * 0.12, hy - 0.28, hz - 0.36), (hx + sg * 0.20, hy - 0.40, hz - 0.62), (hx + sg * 0.22, hy - 0.42, hz - 0.84)]
-        tube_obj(sc, f'PALP{sg}', ppts, [0.035, 0.045, 0.01], M['leg'], piv)
+        ppts = [(hx + sg * 0.11, hy - 0.30, hz - 0.36), (hx + sg * 0.15, hy - 0.40, hz - 0.62), (hx + sg * 0.13, hy - 0.42, hz - 0.42 - 0.85 * max(length, 0.7))]
+        tube_obj(sc, f'PALP{sg}', ppts, [0.05, 0.075, 0.015], M.get('chitin', M['leg']), piv)
     # thinner pale central stylet between them
     tube_obj(sc, 'STYLET0', [top, (hx, hy - 0.38, hz - 0.62), (hx + 0.01, hy - 0.40, hz - 0.42 - 0.6 * length), (hx + 0.015, hy - 0.40, hz - 0.42 - 0.97 * length)], [0.04, 0.035, 0.025, 0.008], pm, piv)
