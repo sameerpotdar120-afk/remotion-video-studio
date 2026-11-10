@@ -1,0 +1,75 @@
+# Extreme macro on the skin surface: velvety skin, a red-rimmed cut, blood bead / glassy saliva / spongy pad.
+# Look-dev for ref 20.5 s (saliva in the cut), 23.9 s (blood bead), 25.8 s (pad in a blood pool).
+# usage: blender -b --python blood.py -- <mode bead|saliva|pad> <out.png> <res%> <spp>   (tuning: ZK_B json)
+import sys, os, math, json
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scene import *
+argv = sys.argv[sys.argv.index('--') + 1:]; MODE, OUT, RES, SPP = argv[0], argv[1], int(argv[2]), int(argv[3])
+B = {'skin': [206, 142, 110], 'skin_lo': [194, 126, 98], 'skin_hi': [226, 182, 160], 'cut': [220, 22, 22], 'blood': [142, 10, 16],
+     'cam': [0.0, -2.4, 2.3], 'tgt': [0.0, 0.0, 0.0], 'lens': 42, 'fstop': 3.5, 'key': 220, 'amb': 0.35}
+B.update(json.loads(os.environ.get('ZK_B', '{}')))
+sc = reset()
+# velvety skin: soft colour clouds + fine fuzz via sheen, very low specular
+sk = mat('vskin', lin(*B['skin']), 0.75, **{'Sheen Weight': 0.35, 'Sheen Roughness': 0.4, 'Sheen Tint': lin(255, 220, 200), 'Specular IOR Level': 0.08,
+                                            'Subsurface Weight': 0.3, 'Subsurface Radius': (1, .4, .3)})
+n, l = nodes(sk); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord')
+t = n.new('ShaderNodeTexNoise'); t.inputs['Scale'].default_value = 0.6; t.inputs['Detail'].default_value = 8; t.inputs['Roughness'].default_value = 0.6
+l.new(tc.outputs['Object'], t.inputs['Vector']); r = n.new('ShaderNodeValToRGB'); r.color_ramp.elements[0].position = 0.35; r.color_ramp.elements[0].color = lin(*B['skin_lo'])
+r.color_ramp.elements[1].position = 0.68; r.color_ramp.elements[1].color = lin(*B['skin_hi']); l.new(t.outputs['Fac'], r.inputs['Fac'])
+# the cut: a soft red glow band along x = slit line (distance from the line in y)
+sx = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Object'], sx.inputs[0]); ab = n.new('ShaderNodeMath'); ab.operation = 'ABSOLUTE'
+rot = n.new('ShaderNodeMath'); rot.operation = 'MULTIPLY_ADD'; rot.inputs[1].default_value = math.tan(math.radians(B.get('cut_angle', 12))); rot.inputs[2].default_value = 0.0
+l.new(sx.outputs['X'], rot.inputs[0]); sub = n.new('ShaderNodeMath'); sub.operation = 'SUBTRACT'; l.new(sx.outputs['Y'], sub.inputs[0]); l.new(rot.outputs[0], sub.inputs[1])
+l.new(sub.outputs[0], ab.inputs[0]); cr = n.new('ShaderNodeValToRGB'); e = cr.color_ramp.elements
+e[0].position = 0.0; e[0].color = lin(96, 8, 12); e[1].position = 0.5; e[1].color = (0, 0, 0, 1)
+e.new(0.16).color = lin(120, 10, 14); e.new(0.24).color = lin(*B['cut']); e.new(0.3).color = lin(*B['cut'])
+fac = n.new('ShaderNodeValToRGB'); f2 = fac.color_ramp.elements; f2[0].position = 0.3; f2[0].color = (0, 0, 0, 1); f2[1].position = 0.5; f2[1].color = (1, 1, 1, 1)
+l.new(ab.outputs[0], cr.inputs['Fac']); l.new(ab.outputs[0], fac.inputs['Fac'])
+mx = n.new('ShaderNodeMix'); mx.data_type = 'RGBA'; l.new(cr.outputs['Color'], mx.inputs['A']); l.new(fac.outputs['Color'], mx.inputs['Factor']); l.new(r.outputs['Color'], mx.inputs['B'])
+l.new(mx.outputs['Result'], b.inputs['Base Color'])
+add_bump(sk, [('noise', 3, 0.25), ('noise', 25, 0.15)], mul=0.6)
+# velvety fuzz: fine streaky noise stretched along one direction, as bump + slight colour
+n, l = nodes(sk); b = n['Principled BSDF']; tc2 = n.new('ShaderNodeTexCoord'); mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1, 6, 1)
+l.new(tc2.outputs['Object'], mp.inputs['Vector']); fz = n.new('ShaderNodeTexNoise'); fz.inputs['Scale'].default_value = 22; fz.inputs['Detail'].default_value = 12; l.new(mp.outputs['Vector'], fz.inputs['Vector'])
+fb = n.new('ShaderNodeBump'); fb.inputs['Strength'].default_value = B.get('fuzz', 0.35); fb.inputs['Distance'].default_value = 0.02; l.new(fz.outputs['Fac'], fb.inputs['Height'])
+prev = b.inputs['Normal'].links[0].from_socket; l.new(prev, fb.inputs['Normal']); l.new(fb.outputs['Normal'], b.inputs['Normal'])
+bpy.ops.mesh.primitive_grid_add(x_subdivisions=500, y_subdivisions=500, size=12); g = bpy.context.object; g.data.materials.append(sk)
+_a = math.radians(B.get('cut_angle', 12)); _gw = B.get('groove_w', 0.2); _gd = B.get('groove_d', 0.12)
+for v in g.data.vertices:  # carve a V/U groove along the cut line
+    d = abs(v.co.y * math.cos(_a) - v.co.x * math.sin(_a))
+    if d < _gw: v.co.z -= _gd * (1 - (d / _gw) ** 2)
+    elif d < _gw * 1.8: v.co.z += 0.025 * math.sin(math.pi * (d - _gw) / (_gw * 0.8))   # slight swollen lips
+for p_ in g.data.polygons: p_.use_smooth = True
+bpy.ops.mesh.primitive_plane_add(size=60); g2 = bpy.context.object; g2.location.z = -0.003; g2.data.materials.append(sk)
+# the slit itself: a thin dark-red groove (sunken strip) with glossy wet walls
+cutm = mat('cutwet', lin(150, 12, 18), 0.15, **{'Coat Weight': 1.0, 'Coat Roughness': 0.05})
+bpy.ops.mesh.primitive_cube_add(size=1); s_ = bpy.context.object; s_.scale = (11.5, 0.3, 0.02); s_.location = (0, 0, -0.13)
+s_.rotation_euler = (0, 0, math.atan(math.tan(math.radians(B.get('cut_angle', 12))))); s_.data.materials.append(cutm)
+blood = mat('blood', lin(*B['blood']), 0.12, **{'Coat Weight': 1.0, 'Coat Roughness': 0.02, 'Subsurface Weight': 0.35, 'Subsurface Radius': (1, .15, .1), 'Specular IOR Level': 0.7})
+def blob(name, centers, mat_, res=0.04):
+    mb = bpy.data.metaballs.new(name); mb.resolution = res; mb.render_resolution = res * 0.5; o = bpy.data.objects.new(name, mb); sc.collection.objects.link(o)
+    for (c, r_, sc_) in centers:
+        e = mb.elements.new(); e.co = c; e.radius = r_; e.size_x, e.size_y, e.size_z = sc_ if isinstance(sc_, tuple) else (sc_, sc_, sc_); e.type = 'ELLIPSOID'
+    o.data.materials.append(mat_); return o
+a = math.radians(B.get('cut_angle', 12)); import random as _r; rr = _r.Random(4)
+if MODE in ('bead', 'pad'):  # lumpy wet clot along the slit: a noisy displaced tube in the groove
+    bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.085, depth=11.5); cl_ = bpy.context.object; cl_.rotation_euler = (0, math.radians(90), a); cl_.location = (0, 0, -0.08)
+    bpy.ops.object.modifier_add(type='SUBSURF'); cl_.modifiers[-1].levels = 2; cl_.modifiers[-1].render_levels = 3
+    tx = bpy.data.textures.new('clotn', 'CLOUDS'); tx.noise_scale = 0.12; dm = cl_.modifiers.new('d', 'DISPLACE'); dm.texture = tx; dm.strength = 0.07
+    cl_.data.materials.append(blood); [setattr(p_, 'use_smooth', True) for p_ in cl_.data.polygons]
+if False:
+    blob('CLOT', [(((x * 0.22 - 4) * math.cos(a), (x * 0.22 - 4) * math.sin(a), -0.08), rr.uniform(0.1, 0.16), (1.4, 0.7, 0.35)) for x in range(37)], blood)
+if MODE == 'bead':
+    blob('BEAD', [((0, 0, 0.1), 0.42, (1.0, 0.95, 0.8)), ((0.16, 0.05, 0.04), 0.3, (1.0, 0.85, 0.6))], blood)
+    a = math.radians(B.get('cut_angle', 12))
+    blob('SEEP', [(((x * 0.5 - 4) * math.cos(a), (x * 0.5 - 4) * math.sin(a), 0.0), 0.12, (1.6, 0.6, 0.35)) for x in range(17)], blood)
+elif MODE == 'saliva':
+    glass = mat('saliva', lin(206, 216, 228), 0.06, **{'Transmission Weight': 0.55, 'IOR': 1.34, 'Subsurface Weight': 0.4, 'Subsurface Radius': (.8, .9, 1), 'Coat Weight': 0.8, 'Coat Roughness': 0.02})
+    a = math.radians(B.get('cut_angle', 12))
+    blob('SPIT', [(((x * 0.25 - 4) * math.cos(a), (x * 0.25 - 4) * math.sin(a), 0.07), 0.3, (1.6, 0.8, 0.38)) for x in range(33)], glass)
+# lights: soft key from front-left above, rim from behind for the wet speculars
+area(sc, 'key', (-3, -5, 5), (0, 0, 0), B['key'], 6, (1, .97, .93)); area(sc, 'rim', (2, 6, 3), (0, 0, 0), B['key'] * 0.8, 4, (1, 1, 1))
+area(sc, 'spec', (1.5, -4, 3), (0, 0, 0), B['key'] * 0.5, 0.8, (1, 1, 1))
+w = bpy.data.worlds.new('amb'); sc.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = lin(240, 200, 185); w.node_tree.nodes['Background'].inputs[1].default_value = B['amb']
+camera(sc, V(B['cam']), V(B['tgt']), lens=B['lens'], fstop=B['fstop'], focus=(V(B['tgt']) - V(B['cam'])).length)
+render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
