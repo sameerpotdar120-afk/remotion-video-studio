@@ -14,7 +14,7 @@ python3 -c "import json; [print(n,a,b) for n,a,b in json.load(open('$Z/scripts/j
   for s0 in $(seq $A 40 $B); do
     e0=$(( s0 + 39 < B ? s0 + 39 : B )); N=$(( e0 - s0 + 1 )); F=$Z/final/f_$(printf %04d $s0)-$(printf %04d $e0).mp4
     for crf in 12 15 18; do
-      ffmpeg -v error -y -framerate 30 -start_number $s0 -i $OUT/f_%04d.png -frames:v $N -c:v libx264 -crf $crf -preset slow -pix_fmt yuv420p $F
+      ffmpeg -nostdin -v error -y -framerate 30 -start_number $s0 -i $OUT/f_%04d.png -frames:v $N -c:v libx264 -crf $crf -preset slow -pix_fmt yuv420p $F
       [ $(stat -c %s $F) -lt 95000000 ] && break
     done
     echo "encoded $F crf $crf $(stat -c %s $F)" >> $LOG
