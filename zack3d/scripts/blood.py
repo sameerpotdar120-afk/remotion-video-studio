@@ -29,6 +29,11 @@ mx = n.new('ShaderNodeMix'); mx.data_type = 'RGBA'; l.new(cr.outputs['Color'], m
 l.new(mx.outputs['Result'], b.inputs['Base Color'])
 if MODE == 'pad':
     for el in fac.color_ramp.elements: el.color = (1, 1, 1, 1)
+    # distant skin is barely lit at this grazing angle and goes dark: fade it into self-lit skin colour by camera depth
+    cdn = n.new('ShaderNodeCameraData'); mrd = n.new('ShaderNodeMapRange'); mrd.inputs['From Min'].default_value = B.get('fade0', 7); mrd.inputs['From Max'].default_value = B.get('fade1', 16)
+    l.new(cdn.outputs['View Z Depth'], mrd.inputs['Value']); emd = n.new('ShaderNodeEmission'); emd.inputs['Color'].default_value = lin(*B.get('far_skin', [226, 140, 104]))
+    msd = n.new('ShaderNodeMixShader'); l.new(mrd.outputs['Result'], msd.inputs['Fac']); l.new(b.outputs['BSDF'], msd.inputs[1]); l.new(emd.outputs['Emission'], msd.inputs[2])
+    l.new(msd.outputs['Shader'], n['Material Output'].inputs['Surface'])
 add_bump(sk, [('noise', 3, 0.25), ('noise', 25, 0.15)], mul=0.6)
 # velvety fuzz: fine streaky noise stretched along one direction, as bump + slight colour
 n, l = nodes(sk); b = n['Principled BSDF']; tc2 = n.new('ShaderNodeTexCoord'); mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1, 6, 1)

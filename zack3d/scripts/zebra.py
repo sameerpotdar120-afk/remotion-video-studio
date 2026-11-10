@@ -60,6 +60,20 @@ else:
                     nt = m.node_tree; src = b.inputs['Base Color'].links[0].from_socket; bw = nt.nodes.new('ShaderNodeRGBToBW'); rp = nt.nodes.new('ShaderNodeValToRGB')
                     e = rp.color_ramp.elements; e[0].position = Z.get('thr', 0.42) - 0.05; e[0].color = lin(22, 20, 20); e[1].position = Z.get('thr', 0.42) + 0.05; e[1].color = lin(238, 228, 208)
                     nt.links.new(src, bw.inputs['Color']); nt.links.new(bw.outputs['Val'], rp.inputs['Fac']); nt.links.new(rp.outputs['Color'], b.inputs['Base Color'])
+                if b.inputs['Base Color'].links:  # faces that sample the texture's flat grey background -> coat cream
+                    nt = m.node_tree; src = b.inputs['Base Color'].links[0].from_socket; hsv = nt.nodes.new('ShaderNodeSeparateColor'); hsv.mode = 'HSV'
+                    nt.links.new(src, hsv.inputs['Color'])
+                    def cmp(a, op, v):
+                        mm = nt.nodes.new('ShaderNodeMath'); mm.operation = op; mm.inputs[1].default_value = v; nt.links.new(a, mm.inputs[0]); return mm.outputs[0]
+                    m1 = cmp(hsv.outputs['Green'], 'LESS_THAN', 0.07); m2 = cmp(hsv.outputs['Blue'], 'GREATER_THAN', 0.6); m3 = cmp(hsv.outputs['Blue'], 'LESS_THAN', 0.86)
+                    a1 = nt.nodes.new('ShaderNodeMath'); a1.operation = 'MULTIPLY'; nt.links.new(m1, a1.inputs[0]); nt.links.new(m2, a1.inputs[1])
+                    a2 = nt.nodes.new('ShaderNodeMath'); a2.operation = 'MULTIPLY'; nt.links.new(a1.outputs[0], a2.inputs[0]); nt.links.new(m3, a2.inputs[1])
+                    mx = nt.nodes.new('ShaderNodeMix'); mx.data_type = 'RGBA'; mx.inputs['B'].default_value = lin(232, 216, 194)
+                    nt.links.new(src, mx.inputs['A']); nt.links.new(a2.outputs[0], mx.inputs['Factor']); nt.links.new(mx.outputs['Result'], b.inputs['Base Color'])
+                if Z.get('no_normal', True) and b.inputs['Normal'].links: m.node_tree.links.remove(b.inputs['Normal'].links[0])   # broken normal-map patch on the shoulder
+                for sock in ('Metallic', 'Roughness'):   # the model's metal/roughness map makes a polished-metal patch on the shoulder
+                    for lk in list(b.inputs[sock].links): m.node_tree.links.remove(lk)
+                b.inputs['Metallic'].default_value = 0.0
                 b.inputs['Roughness'].default_value = 0.72; b.inputs['Specular IOR Level'].default_value = 0.15; b.inputs['Sheen Weight'].default_value = 0.5
                 for nd in m.node_tree.nodes:
                     if nd.type == 'TEX_IMAGE' and nd.outputs[0].links and nd.outputs[0].links[0].to_socket.name in ('Roughness', 'Metallic'): m.node_tree.links.remove(nd.outputs[0].links[0])
