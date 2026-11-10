@@ -20,10 +20,11 @@ def cloudy(m, lo, hi, scale, detail=6):
     l.new(t.outputs['Fac'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color'])
 
 # tissue block: the camera looks at the cut face (y = 0 plane); skin surface at z = 0
-W, D = 14, 6
+W, D = 60, 6
 def block(name, z0, z1, m):
     bpy.ops.mesh.primitive_cube_add(size=1); o = bpy.context.object; o.name = name
-    o.scale = (W, D, z1 - z0); o.location = (0, D / 2, (z0 + z1) / 2); o.data.materials.append(m); return o
+    o.scale = (W, D, z1 - z0); o.location = (0, D / 2, (z0 + z1) / 2); o.data.materials.append(m)
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True); return o
 derm = mat('dermis', lin(*X['dermis']), 0.62, **{'Subsurface Weight': 0.25, 'Subsurface Radius': (1, .35, .3)})
 cloudy(derm, X['dermis_lo'], X['dermis_hi'], 9); add_bump(derm, [('noise', 14, 0.3), ('noise', 60, 0.2)], mul=0.8)
 n, l = nodes(derm); b = n['Principled BSDF']; tc2 = n.new('ShaderNodeTexCoord'); mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1, 1, 8)
@@ -33,7 +34,14 @@ prev = b.inputs['Normal'].links[0].from_socket; l.new(prev, fb.inputs['Normal'])
 lower = mat('lower', lin(*X['lower']), 0.28, **{'Coat Weight': 0.55, 'Coat Roughness': 0.12})
 cloudy(lower, X['lower_lo'], X['lower'], 14); add_bump(lower, [('cells', X.get('cr1', 9), 1.0), ('cells', X.get('cr2', 20), 0.7), ('cells', 45, 0.35)], mul=X.get('crumple', 6.0))
 band = mat('band', lin(*X['band']), 0.3, **{'Coat Weight': 0.6, 'Coat Roughness': 0.1})
-block('DERMIS', -2.2, 0.0, derm); block('BAND1', -2.4, -2.2, band); block('LOWER', -9, -2.4, lower)
+def remap(m, sc_xyz):
+    # the look was tuned on unit cubes scaled to (14, 6, h): reproduce those texture coordinates on the bigger mesh
+    n, l = nodes(m)
+    for tcn in [x for x in n if x.type == 'TEX_COORD']:
+        for lk in list(tcn.outputs['Object'].links):
+            mp = n.new('ShaderNodeMapping'); mp.inputs['Scale'].default_value = sc_xyz; to = lk.to_socket; l.remove(lk); l.new(tcn.outputs['Object'], mp.inputs['Vector']); l.new(mp.outputs['Vector'], to)
+remap(derm, (1 / 14, 1 / 6, 1 / 2.2)); remap(lower, (1 / 14, 1 / 6, 1 / 6.6))
+block('DERMIS', -2.2, 0.0, derm); block('BAND1', -2.4, -2.2, band); block('LOWER', -30, -2.4, lower)
 # bright red rim along the top cut edge (the skin surface seen edge-on)
 rim = mat('rim', lin(214, 24, 24), 0.35, **{'Emission Color': lin(214, 24, 24), 'Emission Strength': 0.4})
 bpy.ops.mesh.primitive_cube_add(size=1); o = bpy.context.object; o.scale = (W, 0.06, 0.07); o.location = (0, 0.0, 0.0); o.data.materials.append(rim)
@@ -53,22 +61,42 @@ def blade_mat():
     l.new(mr.outputs['Result'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color']); return m
 BM = blade_mat()
 TM = mat('tooth', lin(248, 196, 60), 0.2, **{'Metallic': 0.5, 'Coat Weight': 0.5, 'Coat Roughness': 0.05})
-def blade(x, tip_z, top_z, w, teeth_side, seed):
+def glowable(base, name):
+    """copy of a material with an Emission input we can key (yellow glow)"""
+    m = base.copy(); m.name = name; b = m.node_tree.nodes['Principled BSDF']
+    b.inputs['Emission Color'].default_value = lin(255, 220, 60); b.inputs['Emission Strength'].default_value = 0.0; return m
+def blade(name, x, tip_z, top_z, w, teeth_side, seed, y=-0.35):
+    rig = bpy.data.objects.new(name, None); sc.collection.objects.link(rig); rig.location = (x, y, 0)
+    bm_, tm_ = glowable(BM, name + '_m'), glowable(TM, name + '_t')
     bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=w, radius2=w * 0.16, depth=top_z - tip_z)
-    o = bpy.context.object; o.rotation_euler = (math.radians(180), 0, 0); o.location = (x, -0.35, (top_z + tip_z) / 2); o.scale = (1, 0.45, 1)
-    o.data.materials.append(BM); [setattr(p, 'use_smooth', True) for p in o.data.polygons]
-    rng = random.Random(seed); n = 24
+    o = bpy.context.object; o.rotation_euler = (math.radians(180), 0, 0); o.location = (0, 0, (top_z + tip_z) / 2); o.scale = (1, 0.45, 1); o.parent = rig
+    o.data.materials.append(bm_); [setattr(p, 'use_smooth', True) for p in o.data.polygons]
+    n = 24
     for i in range(n):  # cone teeth along one edge
         u = (i + 0.5) / n; z = tip_z + 0.35 + u * (top_z - tip_z - 0.5); r = w * 0.16 + w * 0.84 * (z - tip_z) / (top_z - tip_z)
         bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.16, radius2=0.0, depth=0.6)
-        t = bpy.context.object; t.location = (x + teeth_side * (r + 0.16), -0.35, z); t.rotation_euler = (0, math.radians(teeth_side * 55), 0); t.scale = (1, 0.35, 1); t.data.materials.append(TM)
+        t = bpy.context.object; t.location = (teeth_side * (r + 0.16), 0, z); t.rotation_euler = (0, math.radians(teeth_side * 55), 0); t.scale = (1, 0.35, 1); t.data.materials.append(tm_); t.parent = rig
+    return rig, (bm_, tm_)
+RIGS = []
 if X.get('mode', 'blades') == 'blades':
-    blade(-0.9, -6.6, 4, 1.0, -1, 1); blade(0.95, -5.2, 4, 0.85, 1, 2)
+    # four blades: mandible pair (outer, wide) and maxilla pair (inner, narrower, set back)
+    for nm_, x, tip, w, side, y in (('B0', -1.0, -6.6, 1.0, -1, -0.35), ('B1', 1.05, -5.2, 0.85, 1, -0.35), ('B2', -2.9, -5.6, 0.7, -1, 0.4), ('B3', 3.0, -6.0, 0.7, 1, 0.4)):
+        RIGS.append(blade(nm_, x, tip, 4, w, side, 1, y))
 else:  # mosquito: one hair-thin dark needle slipping cleanly into the vessel
     nm = mat('needle', lin(58, 44, 38), 0.25, **{'Coat Weight': 0.6, 'Coat Roughness': 0.08})
+    rig = bpy.data.objects.new('NEEDLE', None); sc.collection.objects.link(rig); rig.location = (0.1, -0.35, 0)
     bpy.ops.mesh.primitive_cone_add(vertices=48, radius1=0.16, radius2=0.025, depth=11); nd = bpy.context.object
-    nd.rotation_euler = (math.radians(180 - 8), 0, 0); nd.location = (0.1, -0.35, X.get('needle_tip', -7.2) + 5.5); nd.data.materials.append(nm)
-    [setattr(p_, 'use_smooth', True) for p_ in nd.data.polygons]
+    nd.rotation_euler = (math.radians(180 - 8), 0, 0); nd.location = (0, 0, X.get('needle_tip', -7.2) + 5.5); nd.data.materials.append(nm); nd.parent = rig
+    [setattr(p_, 'use_smooth', True) for p_ in nd.data.polygons]; RIGS.append((rig, ()))
+# nerve endings in the dermis (glow for "the sting you feel")
+NERVE = mat('nerve', lin(250, 230, 150), 0.4, **{'Emission Color': lin(255, 214, 60), 'Emission Strength': 0.0})
+rng_n = random.Random(9)
+for k in range(6):
+    x0 = rng_n.uniform(-5.5, 5.5); pts = [(x0, -0.05, -2.3)]
+    for j in range(4): px, py, pz = pts[-1]; pts.append((px + rng_n.uniform(-0.5, 0.5), -0.05, pz + rng_n.uniform(0.35, 0.55)))
+    tube_obj(sc, f'NERVE{k}', pts, [0.06, 0.05, 0.04, 0.03, 0.015], NERVE, None)
+VES = [o for o in sc.objects if o.data and hasattr(o.data, 'materials') and o.data.materials and o.data.materials[0] == ves][0]
+ves.node_tree.nodes['Principled BSDF'].inputs['Emission Color'].default_value = lin(255, 210, 60)
 
 # lights: soft key from front-top-left, warm fill, pinkish ambient
 area(sc, 'key', (-4, -8, 2), (0, 0, -4), X['key'], 14, (1, .97, .94)); area(sc, 'fill', (5, -7, -8), (0, 0, -4), X['fill'], 14, (1, .9, .9))
@@ -77,5 +105,28 @@ for xx, pw in ((-6, 1), (6, 0.7), (-2.5, 0.5)):  # tall strip lights -> vertical
 for o in sc.objects:
     if o.name.startswith('strip'): o.data.size = 0.5; o.data.size_y = 14
 w = bpy.data.worlds.new('amb'); sc.world = w; w.use_nodes = True; w.node_tree.nodes['Background'].inputs[0].default_value = lin(*X['amb']); w.node_tree.nodes['Background'].inputs[1].default_value = X['amb_k']
-camera(sc, V(X['cam']), V(X['tgt']), lens=X['lens'], fstop=8, focus=(V(X['tgt']) - V(X['cam'])).length)
-render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
+
+import anim
+A = anim.load()
+def apply(p, f=None):
+    camera(sc, V(p.get('cam', X['cam'])), V(p.get('tgt', X['tgt'])), lens=p.get('lens', X['lens']), fstop=p.get('fstop', 8), focus=(V(p.get('tgt', X['tgt'])) - V(p.get('cam', X['cam']))).length)
+    for i, (rig, mats) in enumerate(RIGS):
+        rig.location.z = p.get(f'z{i}', 0.0)
+        for m in mats: m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 4.0 * p.get(f'g{i}', 0.0)
+    NERVE.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 6.0 * p.get('gn', 0.0)
+    ves.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].default_value = 3.0 * p.get('gv', 0.0)
+    if f is not None:  # key everything so Cycles motion blur sees the movement
+        cam = sc.camera; cam.keyframe_insert('location', frame=f); cam.keyframe_insert('rotation_euler', frame=f); cam.data.keyframe_insert('lens', frame=f)
+        for rig, mats in RIGS:
+            rig.keyframe_insert('location', frame=f)
+            for m in mats: m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
+        for m in (NERVE, ves): m.node_tree.nodes['Principled BSDF'].inputs['Emission Strength'].keyframe_insert('default_value', frame=f)
+if A:
+    out = A['out']; os.makedirs(out, exist_ok=True)
+    for f in range(A['f0'] - 1, A['f1'] + 2): apply(anim.at(A, f), f)
+    sc.render.use_motion_blur = True; sc.render.motion_blur_shutter = 0.5
+    sc.render.resolution_x, sc.render.resolution_y = 1440 * RES // 100, 2560 * RES // 100; sc.cycles.samples = SPP
+    for f in range(A['f0'], A['f1'] + 1, A.get('step', 1)):
+        sc.frame_set(f); sc.render.filepath = os.path.join(out, f'f_{f:04d}.png'); bpy.ops.render.render(write_still=True); print('FRAME', f, flush=True)
+else:
+    apply({}); render(sc, OUT, 1440 * RES // 100, 2560 * RES // 100, SPP)
