@@ -282,7 +282,7 @@ def chitin_material():
 
 def eye_material():
     """red-brown compound eye: fine pebbled facets, sparkly coat, dark rim at grazing angles"""
-    E = LOOK.get('eye', {'lo': [46, 22, 19], 'hi': [130, 72, 62], 'rim': [20, 9, 8], 'scale': 45, 'bump': 0.8})
+    E = LOOK.get('eye', {'lo': [46, 22, 19], 'hi': [130, 72, 62], 'rim': [20, 9, 8], 'scale': 45, 'bump': 0.5})
     m = mat('eye3', lin(*E['hi']), LOOK.get('eye_rough', 0.2), **{'Coat Weight': 0.0, 'Specular IOR Level': 0.6})
     n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord')
     vr = n.new('ShaderNodeTexVoronoi'); vr.feature = 'F1'; vr.inputs['Scale'].default_value = E['scale']; l.new(tc.outputs['Object'], vr.inputs['Vector'])
@@ -294,7 +294,7 @@ def eye_material():
     lw = n.new('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.18
     rim = n.new('ShaderNodeMix'); rim.data_type = 'RGBA'; rim.inputs['B'].default_value = lin(*E['rim'])
     l.new(lw.outputs['Facing'], rim.inputs['Factor']); l.new(mb.outputs['Result'], rim.inputs['A']); l.new(rim.outputs['Result'], b.inputs['Base Color'])
-    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = E['bump']; bp.inputs['Distance'].default_value = 0.04; bp.invert = True
+    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = E['bump']; bp.inputs['Distance'].default_value = 0.025; bp.invert = True
     l.new(vr.outputs['Distance'], bp.inputs['Height']); l.new(bp.outputs['Normal'], b.inputs['Normal'])
     return m
 
