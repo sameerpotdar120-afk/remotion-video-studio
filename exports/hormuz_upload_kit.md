@@ -2,7 +2,7 @@
 
 Upload file: `hormuz_4k120_master.mp4` (4K 120 fps, 2160×3840, 11,496 frames, 1:36; in the repo through Git LFS).
 Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/hormuz_4k120_master.mp4
-(v2 with the canal fix replaces this file when it's ready; same link.) YouTube and Instagram play at most 60 fps, so they
+YouTube and Instagram play at most 60 fps, so they
 convert the 120 fps file down.
 Thumbnail: `hormuz_thumbnail.jpg` (1080×1920) and `hormuz_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram
 (HzCover: the edit's 3D satellite map over Musandam with the canal cut across the raised UAE and Oman slabs, a tanker in
