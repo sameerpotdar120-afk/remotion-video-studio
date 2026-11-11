@@ -5,10 +5,12 @@
   "description": "A Remotion video editing studio for vertical documentary-style videos.",
   "scripts": {
     "dev": "remotion studio",
-    "render": "remotion render src/index.ts MainComposition out/video.mp4"
+    "render": "remotion render src/index.ts Jio90s out/jio-90s.mp4",
+    "still": "remotion still src/index.ts Jio90s out/jio-preview.png --frame=2295"
   },
   "dependencies": {
     "@remotion/cli": "4.0.523",
+    "@remotion/media": "4.0.523",
     "@remotion/media-utils": "4.0.523",
     "remotion": "4.0.523",
     "react": "19.1.0",

@@ -1,0 +1,6 @@
+node_modules/
+out/
+tmp/
+
+public/assets/*
+!public/assets/README.md
