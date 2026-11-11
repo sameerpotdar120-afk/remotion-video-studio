@@ -1,0 +1,28 @@
+{
+  "name": "ira-sleep-shaming-50s",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts IraSleepShaming50 out/ira_sleep_shaming_50s.mp4 --codec h264 --crf 18 --audio-codec aac --concurrency 2",
+    "stills": "remotion still src/index.ts IraSleepShaming50",
+    "compositions": "remotion compositions src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "validate": "node scripts/validate.mjs"
+  },
+  "dependencies": {
+    "remotion": "4.0.527",
+    "@remotion/cli": "4.0.527",
+    "@remotion/media": "4.0.527",
+    "@remotion/transitions": "4.0.527",
+    "@fontsource-variable/noto-sans-devanagari": "5.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0"
+  }
+}
