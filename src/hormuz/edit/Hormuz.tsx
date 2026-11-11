@@ -182,12 +182,6 @@ const GroundLayer: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atl
         </g>}
         {barrier > 0.01 && (() => { const [a, b] = GEO.gauge.map((p) => toG(c, p)); const m: P = [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]; const k = 0.5 * barrier;
           return <g opacity={barrier}><path d={`M${m[0] + (a[0] - m[0]) * k * 2},${m[1] + (a[1] - m[1]) * k * 2}L${m[0] + (b[0] - m[0]) * k * 2},${m[1] + (b[1] - m[1]) * k * 2}`} stroke="#FF1E3C" strokeWidth={30} strokeLinecap="round" /><path d={`M${m[0] + (a[0] - m[0]) * k * 2},${m[1] + (a[1] - m[1]) * k * 2}L${m[0] + (b[0] - m[0]) * k * 2},${m[1] + (b[1] - m[1]) * k * 2}`} stroke="#fff" strokeWidth={10} strokeLinecap="round" strokeDasharray="30 18" /></g>; })()}
-        {/* the canal */}
-        {canal > 0.01 && <g opacity={Math.min(1, canal * 1.5)}>
-          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke="#0B1B2E" strokeWidth={46} strokeLinecap="round" />
-          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke="#1E4E78" strokeWidth={26} strokeLinecap="round" />
-          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke={COL.lane} strokeWidth={6} strokeDasharray="18 12" opacity={ramp(t, C.canal + 0.6, C.persian, linear)} />
-        </g>}
       </svg>
       {/* raised slabs */}
       <Slab c={c} rings={GEO.countries.Iran} color={COL.ir} t={t} id="ir" g={Math.min(1, iranOn) * 0.85} h={12} alpha={0.55} />
@@ -198,6 +192,15 @@ const GroundLayer: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atl
       <Slab c={c} rings={GEO.countries.Oman} color={COL.om} t={t} id="omN" g={musandamAct} h={18} dy={-gap} alpha={0.62} clip={NORTH} />
       <Slab c={c} rings={GEO.countries.Oman} color={COL.om} t={t} id="omS" g={musandamAct} h={18} dy={gap} alpha={0.62} clip={SOUTH} />
       {hajar > 0.01 && <Slab c={c} rings={GEO.hajar} color={COL.hajar} t={t} id="hj" g={hajar} h={60} alpha={0.6} layers={3} />}
+      {/* the canal sits on top of the raised UAE and Oman slabs, so it reads as a cut through them */}
+      {canal > 0.01 && <svg width={GW} height={GH} style={{ position: 'absolute', inset: 0, overflow: 'visible', transform: 'translateZ(20px)' }}>
+        {/* the canal */}
+        {canal > 0.01 && <g opacity={Math.min(1, canal * 1.5)}>
+          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke="#0B1B2E" strokeWidth={46} strokeLinecap="round" />
+          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke="#1E4E78" strokeWidth={26} strokeLinecap="round" />
+          <path d={pathD(c, lineTo(c, GEO.canal, canal))} fill="none" stroke={COL.lane} strokeWidth={6} strokeDasharray="18 12" opacity={ramp(t, C.canal + 0.6, C.persian, linear)} />
+        </g>}
+      </svg>}
       {pipes && <svg width={GW} height={GH} style={{ position: 'absolute', inset: 0, overflow: 'visible', transform: 'translateZ(16px)' }}>
         <defs><filter id="pglow"><feGaussianBlur stdDeviation="14" /></filter></defs>
         {/* the pipelines */}
@@ -221,7 +224,7 @@ const GroundLayer: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atl
 };
 
 /** The ground plane in 3D: a CSS perspective camera over the rotated ground (the reference's tilted map). */
-const World: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atlas }) => (
+export const World: React.FC<{ t: number; c: Cam; atlas: number }> = ({ t, c, atlas }) => (
   <AbsoluteFill style={{ perspective: `${PERSP}px`, perspectiveOrigin: `${FX}px ${PY}px`, overflow: 'hidden', background: `linear-gradient(180deg, ${atlas > 0.5 ? '#C9C6BD' : '#D8CBB0'}, #6F6A60 40%)` }}>
     <div style={{ position: 'absolute', left: FX - GW / 2, top: FY - GH / 2, width: GW, height: GH, transformStyle: 'preserve-3d', transform: `rotateX(${c.tilt}deg) rotateZ(${c.yaw}deg)` }}>
       <Plates c={c} atlas={atlas} />
@@ -242,7 +245,7 @@ const Sign: React.FC<{ text: React.ReactNode; size?: number; color?: string }> =
 const Tag: React.FC<{ text: React.ReactNode; color?: string; size?: number; font?: string }> = ({ text, color = COL.gold, size = 46, font = UI }) => (
   <div style={{ padding: `${size * 0.1}px ${size * 0.5}px`, background: 'rgba(10,15,22,0.88)', border: `${Math.max(3, size / 10)}px solid ${color}`, borderRadius: size * 0.3, fontFamily: font, fontWeight: 700, fontSize: size, lineHeight: 1.3, color: '#fff', whiteSpace: 'nowrap', boxShadow: `0 0 ${size * 0.5}px ${color}55, 0 8px 18px rgba(0,0,0,0.5)` }}>{text}</div>
 );
-const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string }> = ({ text, size, color = COL.gold, font = TITLE }) => (
+export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string }> = ({ text, size, color = COL.gold, font = TITLE }) => (
   <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.1, color, WebkitTextStroke: `${Math.round(size / 11)}px ${INK}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 4}px ${color}55, 0 10px 24px rgba(0,0,0,0.5)`, whiteSpace: 'nowrap' }}>{text}</span>
 );
 /** An element standing on a ground point (anchored at its bottom centre), scaled by perspective. */
@@ -254,7 +257,7 @@ const Stand: React.FC<{ c: Cam; at: P; p?: number; o?: number; z?: number; k?: n
 };
 const At: React.FC<{ x: number; y: number; p?: number; o?: number; rot?: number; children: React.ReactNode }> = ({ x, y, p = 1, o = 1, rot = 0, children }) =>
   p <= 0 || o <= 0 ? null : <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${p}) rotate(${rot}deg)`, opacity: o }}>{children}</div>;
-const Cut: React.FC<{ k: string; w: number; rot?: number; flip?: boolean }> = ({ k, w, rot = 0, flip }) => {
+export const Cut: React.FC<{ k: string; w: number; rot?: number; flip?: boolean }> = ({ k, w, rot = 0, flip }) => {
   const h = (w * SZ[k].h) / SZ[k].w;
   return <Img src={IMG(k)} style={{ width: w, height: h, display: 'block', transform: `rotate(${rot}deg) scaleX(${flip ? -1 : 1})`, filter: 'drop-shadow(0 18px 24px rgba(0,0,0,0.55))' }} />;
 };
