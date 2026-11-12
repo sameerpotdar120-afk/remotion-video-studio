@@ -9,12 +9,12 @@ export const PG_DURATION_S = DURATION_S;
 const AUDIO = 'pangea/audio/mix.wav';
 const INK = '#2A1A08';
 const DARK = '#0B1830';
-const COL = { gold: '#FFC21A', india: '#FF9933', red: '#FF4A3A', sea: '#3E8FA0', tethys: '#2FB7D6', heat: '#FF5A1F' };
+export const COL = { gold: '#FFC21A', india: '#FF9933', red: '#FF4A3A', sea: '#3E8FA0', tethys: '#2FB7D6', heat: '#FF5A1F' };
 const win = (t: number, a: number, b: number, fi = 0.25, fo = 0.25) => Math.min(ramp(t, a, a + fi, linear), 1 - ramp(t, b - fo, b, linear));
 const rnd = (i: number, k: number) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
 
 // ------------------------------------------------------------------ type
-const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string; ink?: string }> = ({ text, size, color = '#fff', font = TITLE, ink = DARK }) => (
+export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string; ink?: string }> = ({ text, size, color = '#fff', font = TITLE, ink = DARK }) => (
   <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.05, color, WebkitTextStroke: `${Math.round(size / 11)}px ${ink}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 4}px ${color}55, 0 10px 24px rgba(0,0,0,0.5)`, whiteSpace: 'nowrap' }}>{text}</span>
 );
 const Tag: React.FC<{ text: React.ReactNode; color?: string; size?: number; font?: string }> = ({ text, color = COL.gold, size = 46, font = UI }) => (
@@ -81,7 +81,7 @@ const FILLS: { k: Piece; cue: () => number; end: () => number; color: string }[]
   { k: 'eurasia', cue: () => C.asia2, end: () => C.n25b, color: COL.gold },
   { k: 'india', cue: () => C.yani, end: () => C.safar + 0.8, color: COL.india },
 ];
-const OldMap: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
+export const OldMap: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
   const heat = ramp(t, C.n40 - 1.2, C.n70 + 0.4, inOut) * (1 - ramp(t, C.safar - 0.4, C.kyunki + 0.3, inOut));
   const future = ramp(t, C.model, C.model + 1.2, inOut);
   const land = `rgb(${Math.round(233 + 10 * heat)}, ${Math.round(207 - 95 * heat)}, ${Math.round(152 - 110 * heat)})`;
@@ -369,7 +369,7 @@ const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
 const xy = ([x, y]: P) => ({ x, y });
 
 // ------------------------------------------------------------------ the house grade (no grain)
-const Grade: React.FC<{ t: number }> = ({ t }) => {
+export const Grade: React.FC<{ t: number }> = ({ t }) => {
   const lx = 50 + 38 * Math.sin(t * LOOPF(3) + 1.1), ly = 30 + 22 * Math.sin(t * LOOPF(2) + 0.4);
   const leak = 0.5 + 0.2 * Math.sin(t * LOOPF(8));
   return (
