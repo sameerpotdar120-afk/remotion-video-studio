@@ -15,7 +15,16 @@ quality ... stick to it"). Never ship below it. Improve on it only in the direct
   volume, a big round white head (`#f7f4ef`) with soft shading, simple oval eyes with a glint, thick brows, short mouth.
 - **Signature hair: Flame Spikes.** Ginger `#e8742c` (shadow `#5a1d05`), four sharp spikes all swept to his left (screen right), short
   sides. Code: `HERO` in `char.js` (`hair: 'spiky'`). The hair stays in every video and every outfit. Caps sit *under* the spikes.
-- **Clothes/body colour change per video** (default slate blue `#5a7fa8`). He has no name yet: ask before inventing one.
+- **Channel: Samulation.** The hero is the channel mascot.
+- **Signature gold chain (LOCKED):** a gold rope chain with a round gold **"S" medallion** on his chest (`HERO.chain = 'S'`,
+  `goldChain()` in `char.js`), drawn over every outfit, under the head. It turns with him (`turn`). Only `noChain: true` hides
+  it, and only if the user asks.
+- **Clothes/body colour change per video** (default slate blue `#5a7fa8`). He has no personal name yet: ask before inventing one.
+- **Channel art** (`brand/`): profile photo `Samulation-Profile-800x800.png` (hero smug, chain visible inside the circle, blurred
+  neon street) and banner `Samulation-Banner-2560x1440.png` (hero + SAMULATION logotype with "SAM" in gold + tagline "HOW THE
+  WORLD REALLY WORKS", all inside the 1546x423 mobile safe area). Logotype: Montserrat Black, gold gradient "SAM", white
+  "ULATION", dark ink outline, orange glow. Regenerate: `PAGE=brand.html QS='&what=banner' SOFTWARE_GL=1 node tools/capture.mjs
+  frames review/b "0"` (`what=avatar` for the profile; add `&guides` to see the safe areas).
 - **Extras:** same build and ink, other hair/hats/colours (`LOOKS.A/B/C` + `hair: mop|afro|topknot`, `hat: beanie|police`, `phones`).
   Never give an extra flame-spike hair.
 - **Captions:** plain white, Montserrat Black 78 px, black outline 9 px + soft drop shadow, centred, baseline y = 1381 of 1920,

@@ -81,7 +81,7 @@ function sheet(t) {
   vignette(0.25); grainAll(0.05);
 }
 (async () => {
-  try { await document.fonts.load('700 100px Fredoka');
+  try { await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px Mont');
     OP.duration = () => DUR; OP.draw = sheet; OP.frame = (t, qq = 0.92) => { sheet(t); return document.getElementById('cv').toDataURL('image/jpeg', qq); };
     OP.shots = () => [{ id: 'S1', at: 0, end: DUR, note: 'sheet' }]; OP.captions = () => []; OP.cues = () => []; OP.ready = true;
     if (!q.has('capture')) sheet(0);

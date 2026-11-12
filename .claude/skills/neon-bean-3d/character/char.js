@@ -91,7 +91,8 @@ export const HAIRS = {
   H3: { name: 'Curtain Mop', body: '#5a7fa8', sh: '#16233a', shoe: '#e9e4d8', hair: 'mop', hairCol: '#7a4a2a', hairSh: '#26120a' },
 };
 // LOCKED by the user: the hero's signature hair = Flame Spikes (ginger, four spikes swept to one side). Never change.
-export const HERO = { name: 'Hero (hair locked: Flame Spikes)', body: '#5a7fa8', sh: '#16233a', shoe: '#e9e4d8', hair: 'spiky', hairCol: '#e8742c', hairSh: '#5a1d05' };
+// LOCKED (user): Samulation's hero = Flame Spikes hair + gold chain with an 'S' medallion. Never change either.
+export const HERO = { name: 'Samulation hero (locked)', body: '#5a7fa8', sh: '#16233a', shoe: '#e9e4d8', hair: 'spiky', hairCol: '#e8742c', hairSh: '#5a1d05', chain: 'S' };
 export const LOOKS = {
   HERO,
   A: { name: 'Option A', body: '#35b0a0', sh: '#0f3f3a', shoe: '#e6533f', trim: 'hood' , hair: 'tuft' },
@@ -216,6 +217,25 @@ function headwear(L, hx, hy, r) {
   }
 }
 
+// gold chain with an initial medallion (the hero's signature; drawn over the body, under the head)
+function goldChain(cx, top, bodyW, bodyH, s, letter, turn = 0) {
+  const x = cx + turn * bodyW * 0.12, py = top + bodyH * 0.36, n = 15;
+  const P = (u) => { const a = Math.PI * (0.06 + 0.88 * u); return [x - Math.cos(a) * bodyW * 0.27, top + bodyH * 0.04 + Math.sin(a) * (py - top - bodyH * 0.06)]; };
+  ctx.save(); ctx.globalAlpha = 0.35; for (let i = 0; i <= n; i++) { const [px, qy] = P(i / n); ctx.fillStyle = '#1a1020'; ctx.beginPath(); ctx.ellipse(px + 2 * s, qy + 3 * s, 6.5 * s, 5 * s, 0, 0, 6.3); ctx.fill(); } ctx.restore();
+  for (let i = 0; i <= n; i++) { const [px, qy] = P(i / n), [nx, ny] = P(Math.min(1, (i + 1) / n)), a = Math.atan2(ny - qy, nx - px);
+    ctx.save(); ctx.translate(px, qy); ctx.rotate(a); const gr = ctx.createLinearGradient(0, -6 * s, 0, 6 * s); gr.addColorStop(0, '#fff2a8'); gr.addColorStop(0.5, '#f2c033'); gr.addColorStop(1, '#a8700e');
+      ctx.fillStyle = gr; ctx.strokeStyle = '#4a2c05'; ctx.lineWidth = 2.2 * s; ctx.beginPath(); ctx.ellipse(0, 0, (i % 2 ? 7 : 6) * s, (i % 2 ? 4.2 : 5.4) * s, 0, 0, 6.3); ctx.fill(); ctx.stroke(); ctx.restore(); }
+  const r = bodyW * 0.15, my = py + r * 0.95;
+  F(sm([[x - 4 * s, py - 2 * s], [x + 4 * s, py - 2 * s], [x + 4 * s, my - r * 0.9], [x - 4 * s, my - r * 0.9]]), '#e0aa2a', { line: 3.5, seed: 401, shadow: 0, soft: 0, hi: 0.3, tex: 0 });   // bail
+  ctx.save(); const g2 = ctx.createRadialGradient(x - r * 0.35, my - r * 0.4, r * 0.1, x, my, r * 1.05); g2.addColorStop(0, '#fff6c2'); g2.addColorStop(0.45, '#f6c843'); g2.addColorStop(1, '#a26a0c');
+  ctx.fillStyle = g2; ctx.beginPath(); ctx.arc(x, my, r, 0, 6.3); ctx.fill(); ctx.lineWidth = 5 * s; ctx.strokeStyle = '#3d2405'; ctx.stroke();
+  ctx.lineWidth = 2.2 * s; ctx.strokeStyle = 'rgba(120,70,8,0.9)'; ctx.beginPath(); ctx.arc(x, my, r * 0.8, 0, 6.3); ctx.stroke();
+  ctx.font = `900 ${Math.round(r * 1.25)}px Mont, 'Montserrat', Fredoka, sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.lineWidth = 3 * s; ctx.strokeStyle = '#5a3405'; ctx.strokeText(letter, x, my + r * 0.06); ctx.fillStyle = '#ffe58a'; ctx.fillText(letter, x, my + r * 0.06);
+  ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = 'rgba(255,255,240,0.75)'; ctx.beginPath(); ctx.ellipse(x - r * 0.42, my - r * 0.45, r * 0.22, r * 0.12, -0.6, 0, 6.3); ctx.fill();
+  ctx.restore();
+}
+
 export function char(x, gy, s, o = {}) {
   const L = o.look || LOOKS.A, legH = 210 * s, bodyH = 245 * s, bodyW = 170 * s, r = 108 * s;
   const top = gy - legH - bodyH * 0.9, hx = x + (o.headDx || 0) * s, hy = top - r * 0.48, sw = o.legSwing || 0;
@@ -240,6 +260,7 @@ export function char(x, gy, s, o = {}) {
     shoe(fx + (ph == null ? d : (o.turn || 1)) * 4 * s, fy - 6 * s, 20 * s, ph == null ? d : Math.sign(o.turn || 1), L.shoe, 62 + d);
   }
   bean(x, top, bodyW, bodyH, L.body, L.sh, 70);
+  if (L.chain && !o.noChain) goldChain(x, top, bodyW, bodyH, s, L.chain, o.turn || 0);
   if (L.trim === 'hood') {   // hood collar + drawstrings
     F(sm([[x - bodyW * 0.42, top + bodyH * 0.03], [x, top + bodyH * 0.16], [x + bodyW * 0.42, top + bodyH * 0.03], [x + bodyW * 0.3, top + bodyH * 0.13], [x, top + bodyH * 0.24], [x - bodyW * 0.3, top + bodyH * 0.13]]), '#2b9585', { line: 5, seed: 71, shadow: 0.3, shadowCol: '#0f3f3a', soft: 0.2, hi: 0.1 });
     for (const d of [-1, 1]) { Ln(sm([[x + d * 18 * s, top + bodyH * 0.2], [x + d * 22 * s, top + bodyH * 0.36]], false), 3.5 * s, 72 + d, '#f4f0e6'); F(ell(x + d * 22 * s, top + bodyH * 0.38, 4.5 * s, 6 * s), '#f4f0e6', { line: 3, shadow: 0, soft: 0, hi: 0, tex: 0 }); }
