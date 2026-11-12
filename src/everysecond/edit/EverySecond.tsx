@@ -10,7 +10,7 @@ import { MapLayers } from './Map';
 export const ES_DURATION_S = DURATION_S;
 const AUDIO = 'everysecond/audio/mix.wav';
 const INK = '#0B1830';
-const COL = { gold: '#FFC21A', in: '#FF9933', asia: '#FF5E5E', africa: '#7BE04A', bolt: '#9FD8FF', oil: '#FF7A1A', co2: '#8C6E5A', mail: '#FFD84D', upi: '#2BD67B' };
+export const COL = { gold: '#FFC21A', in: '#FF9933', asia: '#FF5E5E', africa: '#7BE04A', bolt: '#9FD8FF', oil: '#FF7A1A', co2: '#8C6E5A', mail: '#FFD84D', upi: '#2BD67B' };
 const win = (t: number, a: number, b: number, fi = 0.25, fo = 0.25) => Math.min(ramp(t, a, a + fi, linear), 1 - ramp(t, b - fo, b, linear));
 const roll = (t: number, t0: number, n: number, d = 0.9) => n * easeOut(ramp(t, t0, t0 + d, linear));
 const fmtIN = (n: number) => Math.round(n).toLocaleString('en-IN');
@@ -18,17 +18,17 @@ const fmtIN = (n: number) => Math.round(n).toLocaleString('en-IN');
 const rnd = (i: number, k: number) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
 
 // ------------------------------------------------------------------ type
-const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string }> = ({ text, size, color = '#fff', font = TITLE }) => (
+export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string }> = ({ text, size, color = '#fff', font = TITLE }) => (
   <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.05, color, WebkitTextStroke: `${Math.round(size / 11)}px ${INK}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 4}px ${color}55, 0 10px 24px rgba(0,0,0,0.5)`, whiteSpace: 'nowrap' }}>{text}</span>
 );
 const Tag: React.FC<{ text: React.ReactNode; color?: string; size?: number; font?: string }> = ({ text, color = COL.gold, size = 46, font = UI }) => (
   <div style={{ padding: `${size * 0.1}px ${size * 0.5}px`, background: 'rgba(10,15,22,0.88)', border: `${Math.max(3, size / 10)}px solid ${color}`, borderRadius: size * 0.3, fontFamily: font, fontWeight: 700, fontSize: size, lineHeight: 1.3, color: '#fff', whiteSpace: 'nowrap', boxShadow: `0 0 ${size * 0.5}px ${color}55, 0 8px 18px rgba(0,0,0,0.5)` }}>{text}</div>
 );
-const At: React.FC<{ x: number; y: number; p?: number; o?: number; rot?: number; children: React.ReactNode }> = ({ x, y, p = 1, o = 1, rot = 0, children }) =>
+export const At: React.FC<{ x: number; y: number; p?: number; o?: number; rot?: number; children: React.ReactNode }> = ({ x, y, p = 1, o = 1, rot = 0, children }) =>
   p <= 0 || o <= 0 ? null : <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${p}) rotate(${rot}deg)`, opacity: o }}>{children}</div>;
 
 // ------------------------------------------------------------------ props drawn in code
-const Baby: React.FC<{ s?: number }> = ({ s = 1 }) => (
+export const Baby: React.FC<{ s?: number }> = ({ s = 1 }) => (
   <svg width={110 * s} height={150 * s} viewBox="-55 -75 110 150" style={{ overflow: 'visible', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.45))' }}>
     <rect x={-44} y={-30} width={88} height={102} rx={44} fill="#36C9B4" stroke="#1C8F80" strokeWidth={4} />
     <path d="M-44 10 Q0 30 44 10" stroke="#1C8F80" strokeWidth={4} fill="none" />
@@ -51,13 +51,13 @@ const Candle: React.FC<{ t: number; s?: number }> = ({ t, s = 1 }) => {
     </svg>
   );
 };
-const Envelope: React.FC<{ s?: number }> = ({ s = 1 }) => (
+export const Envelope: React.FC<{ s?: number }> = ({ s = 1 }) => (
   <svg width={70 * s} height={50 * s} viewBox="0 0 70 50" style={{ filter: 'drop-shadow(0 5px 6px rgba(0,0,0,0.45))' }}>
     <rect x={2} y={2} width={66} height={46} rx={5} fill="#FFFDF5" stroke={COL.mail} strokeWidth={3} />
     <path d="M4 6 L35 30 L66 6" fill="none" stroke="#D9B02A" strokeWidth={3} strokeLinejoin="round" />
   </svg>
 );
-const Rupee: React.FC<{ s?: number }> = ({ s = 1 }) => (
+export const Rupee: React.FC<{ s?: number }> = ({ s = 1 }) => (
   <svg width={60 * s} height={60 * s} viewBox="-30 -30 60 60" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}>
     <circle r={26} fill={COL.upi} stroke="#fff" strokeWidth={4} />
     <text x={0} y={11} textAnchor="middle" fontFamily="sans-serif" fontWeight={800} fontSize={32} fill="#fff">₹</text>
@@ -69,7 +69,7 @@ const SearchBar: React.FC<{ text: string; w: number }> = ({ text, w }) => (
     <div style={{ fontFamily: TITLE, fontSize: 56, color: '#1B1B1B', whiteSpace: 'nowrap', overflow: 'hidden' }}>{text}</div>
   </div>
 );
-const Barrel: React.FC<{ t: number; s?: number; i: number }> = ({ t, s = 1, i }) => {
+export const Barrel: React.FC<{ t: number; s?: number; i: number }> = ({ t, s = 1, i }) => {
   const f = 1 + 0.15 * Math.sin(t * 19 + i) + 0.08 * Math.sin(t * 31 + i * 2);
   return (
     <svg width={80 * s} height={150 * s} viewBox="-40 -100 80 150" style={{ overflow: 'visible', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.5))' }}>
