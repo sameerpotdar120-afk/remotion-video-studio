@@ -1,0 +1,18 @@
+lang en
+  0.00-  3.76  What would happen if the world's original supercontinent came back?
+  3.76-  9.04  This is Pangea, a single giant landmass that existed hundreds of millions of years ago
+  9.04- 11.84  before splitting into the continents we know today.
+ 11.84- 17.20  Now imagine it coming back, Asia, Africa, Europe, the Americas,
+ 17.20- 20.56  all crashing back together into one giant piece of land.
+ 20.56- 25.04  If that happened, sea levels would plummet and hidden places like Zealandia,
+ 25.04- 29.20  the sunken continent beneath New Zealand, could rise back above water,
+ 29.28- 32.56  creating a new landmass almost the size of Australia.
+ 32.56- 35.52  But geography wouldn't be the only thing to change.
+ 35.52- 39.20  Peaceful oceans that once separated rival nations would be gone.
+ 39.20- 42.64  The U.S. might suddenly share land borders with Morocco,
+ 42.64- 45.28  Australia could merge with Southeast Asia,
+ 45.28- 47.84  and Canada could touch parts of Portugal and Spain.
+ 48.40- 51.12  New neighbors could mean new disputes over land,
+ 51.12- 54.32  resources, and borders that no one ever agreed on.
+ 54.32- 58.72  Trade routes would collapse, and global shipping would have to reinvent itself.
+ 58.72- 62.40  So it wouldn't just be a new map, it would be a new world.
