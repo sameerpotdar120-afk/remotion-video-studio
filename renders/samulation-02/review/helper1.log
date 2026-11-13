@@ -1,0 +1,8 @@
+machine 1: frames 790..1579 (790 frames) in 3 processes, start 07:41:55
+  part 0: frames 790..1052 -> renders/q1_p0.mp4
+  part 1: frames 1053..1315 -> renders/q1_p1.mp4
+  part 2: frames 1316..1579 -> renders/q1_p2.mp4
+  renders/q1_p0.mp4: 263 frames, 11M
+  renders/q1_p1.mp4: 263 frames, 6.6M
+  renders/q1_p2.mp4: 264 frames, 5.7M
+done 09:03:45
