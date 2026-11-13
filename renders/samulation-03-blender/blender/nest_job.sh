@@ -13,6 +13,7 @@ case $M in
   4) plate P7; plate P8 ;;
   5) plate P9; plate P10 ;;
   6) plate P11; plate P12; $B -b -P blender/nest.py -- --shot P5 --layer cart --poses "$CP" --w $W --h $H --samples 24 $G --meta $O/cartmeta.json --out $O/cart_%02d.png > $O/log_cart 2>&1 ;;
+  9) $B -b -P blender/nest.py -- --shot P5 --layer cart --poses "$CP" --w $W --h $H --samples 24 $G --meta $O/cartmeta.json --out $O/cart_%02d.png > $O/log_cart 2>&1 ;;
   7) plate P7 ;;
   8) plate P9 ;;
 esac
