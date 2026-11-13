@@ -2,6 +2,10 @@
 
 Upload file: `everysecond_4k60_master.mp4` (v2: the GPT props, the new hook; 4K 60 fps, 2160×3840, 3,744 frames, 1:02).
 Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/everysecond_4k60_master.mp4
+Thumbnail: `everysecond_thumbnail_v2.jpg` (1080×1920) and `everysecond_thumbnail_v2_4k.jpg` (2160×3840), one for YouTube and
+Instagram (EsCover v2: your chrome stopwatch with the red one-second ring over the world map, a newborn, the payment
+phone, the flying email and the Earth around it, "बस 1 सेकंड!" in the top third). Inside the 3:4 crop. It pairs with
+title 1 without repeating its words.
 
 Yesterday's kit (`everysecond_upload_kit.md`) went with "what happens every second". This one leads with **you**: the
 second you just ignored, and how much happened inside it. Same facts, new words, so it doesn't read like a re-upload.
