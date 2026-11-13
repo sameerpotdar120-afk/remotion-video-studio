@@ -192,9 +192,9 @@ elif SHOT == 'P3':      shoot((LX + 1.5, LY + 2.2, FLOOR + 1.3), (LX + 0.9, LY +
 elif SHOT == 'P4':      shoot((26, -46, 30), (-1, -14, 2), 34, 22); army(-62, 1.0, 'march')
 elif SHOT == 'P5':      shoot((LX + 6.2, LY + 1.25, FLOOR + 1.45), (LX, LY + 1.25, FLOOR + 0.85), 32, 5.6, (LX, LY + 1.0, FLOOR + 0.8)); army(-24, 0.62, 'march')
 elif SHOT == 'P6':      fp = box.matrix_world @ Vector((0, -L / 2, 0)); ax = (box.matrix_world.to_3x3() @ Vector((0, -1, 0))).normalized(); sd_ = ax.cross(Vector((0, 0, 1))).normalized(); shoot(fp + ax * 0.62 + sd_ * 0.18 + Vector((0, 0, 0.06)), fp, 45, 4.0, fp); front.hide_render = True
-elif SHOT == 'P7':      shoot((LX + 1.7, LY + 3.8, FLOOR + 1.45), (LX + 0.15, LY + 0.9, FLOOR + 1.0), 35, 4.5, (LX + 0.3, LY + 1.4, FLOOR + 1.0)); army(-24, 0.62, 'march')
+elif SHOT == 'P7':      shoot((LX + 3.0, LY + 5.2, FLOOR + 1.6), (LX + 0.3, LY + 1.2, FLOOR + 0.95), 35, 5.6, (LX + 0.6, LY + 1.9, FLOOR + 1.0)); army(-24, 0.62, 'march')
 elif SHOT == 'P8':      zc = -18.0; shoot((0.8, zc, hT(0.8, zc) + 1.35), (0.1, -26, hT(0, -26) + 0.9), 35, 5.6, (0.2, -24.5, hT(0, -24.5) + 1.0)); army(-24, 0.62, 'march', laughrows=4)
-elif SHOT == 'P9':      ro = arrow(None, Vector((0, -20, 30)), 1.6); ro.rotation_euler = (math.radians(8), 0, 0); shoot((1.15, -20.3, 29.85), (0, -20.0, 30.0), 40, 2.8, (0, -20.05, 30.0))
+elif SHOT == 'P9':      ro = arrow(None, Vector((0, -20, 30)), 1.6); ro.rotation_euler = (math.radians(8), 0, 0); shoot((1.25, -19.95, 29.85), (0, -19.62, 30.02), 38, 2.8, (0, -19.85, 30.0))
 elif SHOT == 'P10':     shoot((LX + 9, LY + 3, FLOOR + 10), (-2, -30, -4), 30, 22); army(-24, 0.62, 'march')
 elif SHOT == 'P11':     shoot((3, -14, hT(0, -14) + 22), (0, -33, hT(0, -33)), 40, 22); army(-24, 0.62, 'shock')
 elif SHOT == 'P12':     fp = box.matrix_world @ Vector((0, -L / 2, 0)); ax = (box.matrix_world.to_3x3() @ Vector((0, -1, 0))).normalized(); sd_ = ax.cross(Vector((0, 0, 1))).normalized(); shoot(fp + sd_ * 1.35 - ax * 0.15 + Vector((0, 0, 0.22)), fp + ax * 0.12 + Vector((0, 0, 0.02)), 40, 4.0, fp); army(-24, 0.62, 'shock')
