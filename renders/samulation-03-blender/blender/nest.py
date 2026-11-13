@@ -232,4 +232,4 @@ else:
         if LAYER == 'cart':
             for wg in WHEELS: wg.rotation_euler = (0, math.radians(90), math.radians(q))
         else: ARROWS[0].location = Vector((HOLES[0][0], -L / 2 + 0.06 - q, HOLES[0][1]))
-        bpy.context.view_layer.update(); sc.render.filepath = OUT % k; bpy.ops.render.render(write_still=True); print('WROTE', OUT % k)
+        K0 = int(A.get('k0', 0)); bpy.context.view_layer.update(); sc.render.filepath = OUT % (k + K0); bpy.ops.render.render(write_still=True); print('WROTE', OUT % (k + K0))
