@@ -1,8 +1,10 @@
 import React from 'react';
 import { AbsoluteFill, Audio, OffthreadVideo, Sequence, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Watermark } from '../../brand/Watermark';
-import { clamp01, easeOut, inOut, linear, pop, ramp } from '../../darien/anim';
-import { C, CAPS, Cam, DURATION_S, EVEREST, GEO, LOOPF, P, PIECES, Piece, Pose, camAt, onCanvas, poseAt, satKm, shake, toS } from './cam';
+import { clamp01, easeOut, inOut, kick, linear, pop, ramp } from '../../darien/anim';
+import { C, CAPS, Cam, DURATION_S, EVEREST, GEO, HOOK_FF1, LOOPF, P, PIECES, PIN, Piece, Pose, TODAY, camAt, camSpeed, onCanvas, poseAt, rollAt, satKm, shake, toS } from './cam';
+import { Crumble, Cut, Hue, Pin, Slab } from './Studio';
+import { HAVE } from './assets';
 import { LABEL, SERIF, TITLE, UI, useFonts } from './font';
 
 export const PG_DURATION_S = DURATION_S;
@@ -48,20 +50,39 @@ const Satellite: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
   const [wl, wt] = toS(c, satKm([W[0], W[3]])), [wr, wb] = toS(c, satKm([W[2], W[1]]));
   const FEATHER = 'linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent), linear-gradient(180deg, transparent, #000 4%, #000 96%, transparent)';
   const india = GEO.india_merc.map((ring) => ring.map((m, i) => { const [x, y] = toS(c, satKm(m)); return `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`; }).join('') + 'Z').join('');
-  const g = ramp(t, C.n5 - 0.2, C.n5 + 0.4, easeOut) * (1 - ramp(t, C.karib30 - 0.3, C.karib30 + 0.2, linear));
-  const breathe = 1 + 0.08 * Math.sin(t * LOOPF(40));
+  // the hook: India rises as a red slab on "par hamara Bharat", slides north-east on "har saal… khisak", hits Asia
+  const g = ramp(t, C.par - 0.1, C.par + 0.35, easeOut) * (1 - ramp(t, C.n25 + 0.1, C.n25 + 0.5, linear));
+  const slide = 70 * ramp(t, C.harsaal - 0.1, C.khisak + 0.1, inOut) * (1 - ramp(t, C.khisak + 0.5, C.n25 + 0.3, inOut));
+  const jit = kick(t, C.khisak, 9, 34, 7);
+  const [cx, cy] = toS(c, [TODAY.india[0], TODAY.india[1]]);
+  const sc = 0.96 + 0.06 * pop(t, C.par - 0.05, 9, 190);
+  const ghost = clamp01(slide / 12) * g;
+  const him = GEO.himalaya.map((p, i) => { const [x, y] = toS(c, onCanvas(TODAY.india, p)); return `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`; }).join('');
+  const flash = win(t, C.khisak - 0.05, C.n25 + 0.2, 0.08, 0.6) * (0.75 + 0.25 * Math.sin((t - C.khisak) * 30));
+  const arrows = win(t, C.harsaal - 0.1, C.n25 + 0.1, 0.3, 0.3);
   return (
     <AbsoluteFill style={{ background: '#0E3A57', overflow: 'hidden' }}>
       <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${WORLD})`, backgroundSize: `${wr - wl}px ${wb - wt}px`, backgroundPosition: `${wl}px ${wt}px`, backgroundRepeat: 'no-repeat', filter: 'contrast(1.1) saturate(1.2) brightness(1.03)' }} />
       <div style={{ position: 'absolute', left: l, top: tp, width: r - l, height: bt - tp, backgroundImage: `url(${PLATE})`, backgroundSize: '100% 100%', filter: 'contrast(1.1) saturate(1.2) brightness(1.03)',
         WebkitMaskImage: FEATHER, WebkitMaskComposite: 'source-in', maskImage: FEATHER, maskComposite: 'intersect' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 55% 50%, rgba(0,10,25,0.15), rgba(0,10,25,0.7))', opacity: 0.85 * g }} />
       <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
-        <path d={india} fill="none" stroke="#fff" strokeWidth={3} opacity={0.55 * (1 - g)} />
-        {g > 0 && <>
-          <path d={india} fill={COL.india} opacity={0.42 * g * breathe} />
-          <path d={india} fill="none" stroke={COL.gold} strokeWidth={12} opacity={0.35 * g} />
-          <path d={india} fill="none" stroke="#fff" strokeWidth={4} opacity={g} />
+        <path d={india} fill="none" stroke="#fff" strokeWidth={3} opacity={0.6 * (1 - g)} strokeLinejoin="round" />
+        {ghost > 0.01 && <path d={india} fill="rgba(255,255,255,0.08)" stroke="#fff" strokeWidth={4} strokeDasharray="16 12" opacity={0.8 * ghost} strokeLinejoin="round" />}
+        <Slab d={india} hue="red" g={g} t={t} id="satin" depth={22} cx={cx} cy={cy} s={sc} dx={slide * 0.55 + jit} dy={-slide * 0.83 + jit * 0.6} />
+        {flash > 0 && <>
+          <path d={him} fill="none" stroke="#FF3B1F" strokeWidth={34} strokeLinecap="round" opacity={0.55 * flash} filter="url(#bl_satin)" />
+          <path d={him} fill="none" stroke="#FFD27A" strokeWidth={10} strokeLinecap="round" opacity={flash} />
         </>}
+        {arrows > 0 && [0, 1, 2].map((k) => {
+          const p = (t * 0.8 + k / 3) % 1, x = cx - 60 + (k - 1) * 170 + 150 * p * 0.55, y = cy + 120 - 150 * p * 0.83 + Math.abs(k - 1) * 90;
+          const o = arrows * Math.sin(p * Math.PI);
+          return (
+            <g key={k} transform={`translate(${x} ${y}) rotate(33.5)`} opacity={o}>
+              <path d="M-22,70 L-22,0 L-50,0 L0,-62 L50,0 L22,0 L22,70Z" fill="#fff" stroke="#7A0008" strokeWidth={6} strokeLinejoin="round" />
+            </g>
+          );
+        })}
       </svg>
     </AbsoluteFill>
   );
@@ -69,21 +90,24 @@ const Satellite: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
 
 // ------------------------------------------------------------------ the old map (past and future)
 const ringsAt = (c: Cam, pose: Pose, rings: P[][]) => rings.map((ring) => ring.map((p, i) => { const [x, y] = toS(c, onCanvas(pose, p)); return `${i ? 'L' : 'M'}${x.toFixed(1)},${y.toFixed(1)}`; }).join('') + 'Z').join('');
-const FILLS: { k: Piece; cue: () => number; end: () => number; color: string }[] = [
-  { k: 'india', cue: () => C.aur_bharat, end: () => C.n5cr, color: COL.india },
-  { k: 'africa', cue: () => C.africa, end: () => C.toota + 0.6, color: COL.gold },
-  { k: 'antarctica', cue: () => C.antarc, end: () => C.toota + 0.6, color: COL.gold },
-  { k: 'australia', cue: () => C.austr, end: () => C.toota + 0.6, color: COL.gold },
-  { k: 'samerica', cue: () => C.america, end: () => C.n25b, color: COL.gold },
-  { k: 'namerica', cue: () => C.america, end: () => C.n25b, color: COL.gold },
-  { k: 'africa', cue: () => C.africa2, end: () => C.n25b, color: COL.gold },
-  { k: 'australia', cue: () => C.austr2, end: () => C.n25b, color: COL.gold },
-  { k: 'eurasia', cue: () => C.asia2, end: () => C.n25b, color: COL.gold },
-  { k: 'india', cue: () => C.yani, end: () => C.safar + 0.8, color: COL.india },
+const FILLS: { k: Piece; cue: () => number; end: () => number; hue: Hue }[] = [
+  { k: 'india', cue: () => C.aur_bharat, end: () => C.n5cr, hue: 'red' },
+  { k: 'eurasia', cue: () => C.asia, end: () => C.africa, hue: 'blue' },
+  { k: 'africa', cue: () => C.africa, end: () => C.toota + 0.6, hue: 'blue' },
+  { k: 'madagascar', cue: () => C.africa, end: () => C.toota + 0.6, hue: 'blue' },
+  { k: 'antarctica', cue: () => C.antarc, end: () => C.toota + 0.6, hue: 'blue' },
+  { k: 'australia', cue: () => C.austr, end: () => C.toota + 0.6, hue: 'blue' },
+  { k: 'samerica', cue: () => C.america, end: () => C.n25b, hue: 'blue' },
+  { k: 'namerica', cue: () => C.america, end: () => C.n25b, hue: 'blue' },
+  { k: 'africa', cue: () => C.africa2, end: () => C.n25b, hue: 'blue' },
+  { k: 'australia', cue: () => C.austr2, end: () => C.n25b, hue: 'blue' },
+  { k: 'eurasia', cue: () => C.asia2, end: () => C.n25b, hue: 'blue' },
+  { k: 'india', cue: () => C.ultima + 0.3, end: () => C.n2023, hue: 'red' },
+  { k: 'india', cue: () => C.yani, end: () => C.safar + 0.8, hue: 'red' },
 ];
 export const OldMap: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
-  const heat = ramp(t, C.n40 - 1.2, C.n70 + 0.4, inOut) * (1 - ramp(t, C.safar - 0.4, C.kyunki + 0.3, inOut));
-  const future = ramp(t, C.model, C.model + 1.2, inOut);
+  const heat = Math.max(ramp(t, C.n40 - 1.2, C.n70 + 0.4, inOut) * (1 - ramp(t, C.safar - 0.4, C.kyunki + 0.3, inOut)), 0.85 * win(t, C.yahi - 0.6, C.karib30 + 0.4, 0.8, 0.6));
+  const future = Math.max(ramp(t, C.model, C.model + 1.2, inOut), win(t, C.n25, C.karib30 + 0.5, 0.6, 0.7));
   const land = `rgb(${Math.round(233 + 10 * heat)}, ${Math.round(207 - 95 * heat)}, ${Math.round(152 - 110 * heat)})`;
   // graticule: every 1,500 km on the canvas
   const lines: string[] = [];
@@ -106,17 +130,13 @@ export const OldMap: React.FC<{ c: Cam; t: number }> = ({ c, t }) => {
         {FILLS.map((f, i) => {
           const g = ramp(t, f.cue() - 0.15, f.cue() + 0.35, easeOut) * (1 - ramp(t, f.end() - 0.4, f.end(), linear));
           if (g <= 0) return null;
-          const d = f.k === 'india' ? ringsAt(c, poseAt(t, 'india'), GEO.india_country) : paths.find((p) => p.k === f.k)!.d;
-          const breathe = 1 + 0.08 * Math.sin(t * LOOPF(40) + i);
-          return (
-            <g key={i}>
-              <path d={d} fill={f.color} opacity={0.55 * g * breathe} />
-              <path d={d} fill="none" stroke={f.color} strokeWidth={12} opacity={0.4 * g} strokeLinejoin="round" />
-              <path d={d} fill="none" stroke="#fff" strokeWidth={3.5} opacity={g} strokeLinejoin="round" />
-            </g>
-          );
+          const pose = poseAt(t, f.k);
+          const d = f.k === 'india' ? ringsAt(c, pose, GEO.india_country) : paths.find((p) => p.k === f.k)!.d;
+          const [cx, cy] = toS(c, [pose[0], pose[1]]);
+          return <Slab key={i} d={d} hue={f.hue} g={g} t={t} id={`f${i}`} depth={14} cx={cx} cy={cy} s={0.97 + 0.04 * pop(t, f.cue() - 0.1, 9, 190)} />;
         })}
       </svg>
+      {HAVE.x_paper && <AbsoluteFill style={{ backgroundImage: `url(${staticFile('pangea/img/x_paper.png')})`, backgroundSize: 'cover', backgroundPosition: 'center', mixBlendMode: 'multiply', opacity: 0.55 }} />}
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,90,30,0.0), rgba(160,30,10,0.45))', opacity: future * 0.3 + heat * 0.12, mixBlendMode: 'multiply' }} />
     </AbsoluteFill>
   );
@@ -244,30 +264,60 @@ const Mammal: React.FC<{ kind: number; s?: number }> = ({ kind, s = 1 }) => (
     {kind === 3 && <g fill="#2A1A0E">{/* tiger */}<ellipse cx={0} cy={0} rx={50} ry={20} /><circle cx={50} cy={-12} r={18} /><path d="M-48,-4 q-26,-18 -22,-40 q6,20 26,30z" /><rect x={-40} y={10} width={10} height={32} rx={4} /><rect x={-22} y={10} width={10} height={32} rx={4} /><rect x={22} y={10} width={10} height={32} rx={4} /><rect x={38} y={8} width={10} height={32} rx={4} /></g>}
   </svg>
 );
-const Mammals: React.FC<{ t: number; y: number; fadeAt: number; show: number }> = ({ t, y, fadeAt, show }) => (
+const LIFE = ['m_elephant', 'm_tiger', 'm_family', 'm_deer', 'm_rhino'];
+/** The animals and the family; they crumble into dust one by one from fadeAt (keep = how many survive). */
+const Mammals: React.FC<{ t: number; y: number; fadeAt: number; show: number; keep?: number }> = ({ t, y, fadeAt, show, keep = 0 }) => (
   <>
-    {[0, 1, 2, 3].map((k) => {
-      const p = pop(t, show + k * 0.12, 10, 200);
-      const o = 1 - ramp(t, fadeAt + k * 0.25, fadeAt + k * 0.25 + 0.6, linear) * (k === 2 ? 0.75 : 1);
-      return <At key={k} x={180 + k * 240} y={y} p={p} o={o * 0.95}><div style={{ background: 'rgba(255,240,210,0.9)', borderRadius: 30, padding: 10, border: `5px solid ${DARK}` }}><Mammal kind={k} /></div></At>;
+    {LIFE.map((k, i) => {
+      const p = pop(t, show + i * 0.1, 10, 200);
+      const t0 = fadeAt + [1, 0, 3, 2, 4][i] * 0.18;
+      const dies = i !== 2 || keep === 0;
+      const o = dies ? 1 - ramp(t, t0, t0 + 0.45, linear) : 1;
+      const x = 120 + i * 210, yy = y + (i % 2) * 70 - (i === 2 ? 40 : 0);
+      return (
+        <React.Fragment key={k}>
+          <At x={x} y={yy} p={p} o={o}>
+            <div style={{ transform: `translateX(${dies ? 40 * ramp(t, t0, t0 + 0.45, linear) : 0}px)`, filter: dies && t > t0 ? `sepia(${clamp01((t - t0) * 3)}) brightness(${1 - 0.3 * clamp01((t - t0) * 3)})` : undefined }}>
+              <Cut k={k} w={i === 2 ? 250 : 230} fallback={<div style={{ background: 'rgba(255,240,210,0.9)', borderRadius: 30, padding: 10, border: `5px solid ${DARK}` }}><Mammal kind={[0, 3, 2, 1, 0][i]} /></div>} />
+            </div>
+          </At>
+          {dies && t > t0 && t < t0 + 1.6 && <div style={{ position: 'absolute', left: x, top: yy, width: 0, height: 0 }}>
+            <Crumble t={t} t0={t0} w={220} seed={i + 1} />
+            {HAVE.x_dust_burst && <div style={{ position: 'absolute', left: -60, top: -170, opacity: (1 - (t - t0) / 1.6) * 0.95, mixBlendMode: 'screen', transform: `scale(${0.7 + 0.5 * (t - t0)})` }}><Cut k="x_dust_burst" w={420} /></div>}
+          </div>}
+        </React.Fragment>
+      );
     })}
   </>
+);
+
+/** The burning Earth (creator's GPT image; a code globe until it arrives). */
+const FireEarth: React.FC<{ t: number }> = ({ t }) => (
+  <div style={{ transform: `rotate(${Math.sin(t * 1.3) * 3}deg)` }}>
+    <Cut k="f_earth_fire" w={520} fallback={
+      <svg width={460} height={460} viewBox="-230 -230 460 460">
+        <defs><radialGradient id="fe" cx="38%" cy="32%" r="70%"><stop offset="0" stopColor="#FFD08A" /><stop offset="0.45" stopColor="#FF5A1F" /><stop offset="1" stopColor="#5A0A04" /></radialGradient></defs>
+        <circle r={200} fill="url(#fe)" stroke="#2A0602" strokeWidth={6} />
+        {[0, 1, 2, 3, 4, 5].map((k) => <path key={k} d={`M${-150 + k * 55},${-120 + (k % 3) * 70} l40,30 l-20,40 l35,25`} stroke="#FFE7A0" strokeWidth={5} fill="none" opacity={0.8} />)}
+      </svg>} />
+  </div>
 );
 
 // ------------------------------------------------------------------ the counters (the Mumbai reel's rolling numbers)
 const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
 const Counters: React.FC<{ t: number }> = ({ t }) => {
   const cm = 5 * easeOut(ramp(t, C.n5 - 0.1, C.n5 + 0.9, linear));
-  const fut = 25 * easeOut(ramp(t, C.n25 - 0.1, C.n25 + 1.0, linear));
-  const past = 30 * easeOut(ramp(t, C.karib30, C.n30 + 0.9, linear));
+  // one counter for the hook: it spins up to +25 crore, then "30 crore saal pehle" rewinds it through 0 to −30
+  const yr = 25 * easeOut(ramp(t, C.n25 - 0.1, C.n25 + 1.0, linear)) - 55 * inOut(ramp(t, C.karib30 - 0.05, C.n30 + 0.9, linear));
+  const yrS = `${yr >= 0 ? '+' : '−'}${fmt(Math.abs(yr))} करोड़ साल`;
   const p5 = 5 * easeOut(ramp(t, C.karib5, C.n5cr + 0.8, linear));
   const fut2 = 25 * easeOut(ramp(t, C.model, C.n25b + 0.6, linear));
+  const yrPunch = 1 + 0.12 * Math.exp(-6 * Math.max(0, t - C.karib30)) * (t > C.karib30 ? 1 : 0);
   return (
     <>
-      <At x={540} y={330} p={pop(t, C.n5 - 0.15, 10, 200)} o={win(t, C.n5 - 0.2, C.n25 - 0.1)}><Big text={<>+{cm.toFixed(1)} cm<span style={{ fontSize: 70 }}> / साल</span></>} size={130} color={COL.gold} /></At>
-      <At x={540} y={330} p={pop(t, C.n25 - 0.15, 10, 200)} o={win(t, C.n25 - 0.2, C.kyu)}><Big text={<>+{fmt(fut)} करोड़ साल</>} size={110} color="#FFB08A" font={UI} /></At>
-      <At x={540} y={360} p={pop(t, C.kyu - 0.05, 9, 220)} o={win(t, C.kyu - 0.1, C.karib30)}><Big text="?" size={260} /></At>
-      <At x={540} y={300} p={pop(t, C.karib30 - 0.1, 10, 200)} o={win(t, C.karib30 - 0.15, C.pangea - 0.1)}><Big text={<>−{fmt(past)} करोड़ साल</>} size={110} font={UI} /></At>
+      <At x={540} y={330} p={pop(t, C.n5 - 0.15, 9, 220)} o={win(t, C.n5 - 0.2, C.n25 - 0.1)} rot={-4}><Big text={<>+{cm.toFixed(1)} cm<span style={{ fontSize: 70 }}> / साल</span></>} size={140} color={COL.gold} /></At>
+      <At x={540} y={330} p={pop(t, C.n25 - 0.15, 10, 200) * yrPunch} o={win(t, C.n25 - 0.2, C.pangea - 0.1)}><Big text={yrS} size={118} color={yr >= 0 ? '#FFB08A' : '#fff'} font={UI} /></At>
+      <At x={850} y={560} rot={10} p={pop(t, C.kyu - 0.05, 8, 240)} o={win(t, C.kyu - 0.1, C.karib30 + 0.1)}><Big text="?" size={300} color={COL.gold} /></At>
       <At x={540} y={300} p={pop(t, C.pangea - 0.1, 9, 200)} o={win(t, C.pangea - 0.15, C.aur_bharat + 0.4)}><Big text="PANGEA" size={170} font={SERIF} color="#FFF1C8" ink={INK} /></At>
       <At x={540} y={300} p={pop(t, C.karib5 - 0.1, 10, 200)} o={win(t, C.karib5 - 0.15, C.farsh)}><Big text={<>−{p5.toFixed(0)} करोड़ साल</>} size={110} font={UI} /></At>
       <At x={540} y={300} p={pop(t, C.model, 10, 200)} o={win(t, C.model - 0.05, C.ultima - 0.1)}><Big text={<>+{fmt(fut2)} करोड़ साल</>} size={110} color="#FFB08A" font={UI} /></At>
@@ -280,6 +330,9 @@ const Counters: React.FC<{ t: number }> = ({ t }) => {
 const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   // the hook's future flash: the continents heat up and the mammals fade
   const hookHeat = win(t, C.n25 - 0.1, C.karib30 + 0.2, 0.6, 0.5);
+  // "Tumhe": the viewer's pin on frame 0 (and the loop's end)
+  const pinS = toS(c, PIN);
+  const pinO = 1 - ramp(t, C.par - 0.3, C.par + 0.1, linear) + ramp(t, DURATION_S - 1.2, DURATION_S - 0.4, linear);
   // "Asia mein tha hi nahi": India and Asia, far apart
   const iS = toS(c, onCanvas(poseAt(t, 'india'), [0, -400]));
   const aS = toS(c, onCanvas(poseAt(t, 'eurasia'), [-1500, 2400]));
@@ -303,8 +356,10 @@ const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const mammO = win(t, C.mammals2 - 0.2, C.yani + 0.1);
   return (
     <>
-      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(255,120,40,0.25), rgba(200,30,10,0.55))', mixBlendMode: 'multiply', opacity: hookHeat }} />
-      {hookHeat > 0 && <Mammals t={t} y={1180} show={C.mammals - 0.3} fadeAt={C.mammals + 0.6} />}
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 55%, rgba(255,120,40,0.1), rgba(200,30,10,0.4))', mixBlendMode: 'multiply', opacity: hookHeat * 0.6 }} />
+      {pinO > 0.01 && <At x={pinS[0]} y={pinS[1] - 70} o={pinO} p={0.9 + 0.1 * Math.sin(t * 6)}><div style={{ position: 'relative' }}><Pin t={t} size={140} /><div style={{ position: 'absolute', left: '50%', top: 10, transform: 'translate(-50%,-100%)' }}><Tag text="तुम" color="#FF2B2B" size={58} /></div></div></At>}
+      {t > C.yahi - 0.3 && t < C.karib30 + 0.4 && <At x={540} y={780} p={pop(t, C.yahi - 0.2, 10, 170)} o={win(t, C.yahi - 0.3, C.karib30 + 0.4, 0.2, 0.4)}><FireEarth t={t} /></At>}
+      {t > C.mammals - 0.4 && t < C.karib30 + 0.4 && <AbsoluteFill style={{ opacity: win(t, C.mammals - 0.4, C.karib30 + 0.4, 0.2, 0.3) }}><Mammals t={t} y={1180} show={C.mammals - 0.3} fadeAt={C.mita1 - 0.05} /></AbsoluteFill>}
       {asiaO > 0 && <>
         <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: asiaO }}>
           <line x1={iS[0]} y1={iS[1]} x2={aS[0]} y2={aS[1]} stroke="#fff" strokeWidth={6} strokeDasharray="18 14" strokeDashoffset={-t * 60} />
@@ -360,7 +415,7 @@ const Overlays: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           </div>
         </At>
         <At x={540} y={1090} p={pop(t, C.n8 - 0.2, 10, 200)} o={win(t, C.n8 - 0.3, C.yani + 0.1)}><Big text="8–16% ज़मीन" size={96} font={UI} color="#9BE15A" /></At>
-        <Mammals t={t} y={1340} show={C.mammals2 - 0.1} fadeAt={C.n8 - 0.3} />
+        <Mammals t={t} y={1340} show={C.mammals2 - 0.1} fadeAt={C.n8 - 0.3} keep={1} />
       </>}
       {t > C.mita - 0.1 && t < C.safar && <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(255,60,30,0), rgba(200,20,10,0.5))', opacity: Math.max(0, Math.sin((t - C.mita) * 6)) * (1 - ramp(t, C.mita + 0.6, C.safar, linear)) }} />}
     </>
@@ -425,16 +480,22 @@ export const Pangea: React.FC<{ audio?: string; captions?: boolean }> = ({ audio
   const c = camAt(t);
   const [sx, sy] = shake(t);
   // satellite = today, the old map = past and future (the Mumbai reel's code)
-  const sat = 1 - ramp(t, C.karib30 + 0.1, C.karib30 + 0.9, inOut) + ramp(t, C.himalaya + 0.3, C.everest - 0.1, inOut) - ramp(t, C.model + 0.1, C.model + 0.9, inOut) + ramp(t, C.safar + 0.2, C.kyunki + 0.4, inOut);
+  const sat = 1 - ramp(t, C.n25 + 0.05, C.n25 + 0.6, inOut) + ramp(t, C.himalaya + 0.3, C.everest - 0.1, inOut) - ramp(t, C.model + 0.1, C.model + 0.9, inOut) + ramp(t, C.safar + 0.2, C.kyunki + 0.4, inOut);
   const so = clamp01(sat);
+  // living camera: a slow roll, and motion blur on the fast moves (whip-outs, dives)
+  const roll = rollAt(t);
+  const sp = camSpeed(t);
+  const blur = Math.min(12, sp.pan * 0.25 + sp.zoom * 260);
   const q = Math.min(ramp(t, NW().t0 - 0.2, NW().t0 + 0.2, inOut), 1 - ramp(t, NW().t1 - 0.2, NW().t1 + 0.2, inOut));
   return (
     <AbsoluteFill style={{ background: '#0E2A55', overflow: 'hidden' }}>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy}px)` }}>
-        {so < 0.999 && <OldMap c={c} t={t} />}
-        {so > 0.001 && <AbsoluteFill style={{ opacity: so }}><Satellite c={c} t={t} /></AbsoluteFill>}
-        <Tethys c={c} t={t} />
-        <Ridge c={c} t={t} />
+        <AbsoluteFill style={{ transform: `rotate(${roll.toFixed(3)}deg) scale(1.06)`, filter: blur > 0.7 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
+          {so < 0.999 && <OldMap c={c} t={t} />}
+          {so > 0.001 && <AbsoluteFill style={{ opacity: so }}><Satellite c={c} t={t} /></AbsoluteFill>}
+          <Tethys c={c} t={t} />
+          <Ridge c={c} t={t} />
+        </AbsoluteFill>
         <Grade t={t} />
         <Overlays t={t} c={c} />
         <Counters t={t} />

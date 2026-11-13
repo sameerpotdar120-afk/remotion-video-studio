@@ -18,7 +18,7 @@ DURATION = 89.2
 SCRIPT = (ROOT / "public" / "pangea" / "script_elevenlabs_v2.txt").read_text()
 NUM = {"पाँच": "5", "पच्चीस": "25", "तीस": "30", "पंद्रह": "15", "दो हज़ार तेईस": "2023", "चालीस": "40", "सत्तर": "70", "आठ": "8", "सोलह": "16"}
 CUES = {  # name: (index of the script word, counted from 0) is resolved below by the word itself and its occurrence
-    "n5": ("5", 0), "n25": ("25", 0), "mammals": ("mammals", 0), "kyu": ("क्यों?", 0), "karib30": ("करीब", 1), "n30": ("30", 0),
+    "par": ("पर", 0), "harsaal": ("हर", 0), "n5": ("5", 0), "khisak": ("खिसक", 0), "yahi": ("यही", 0), "mita1": ("मिटा", 0), "n25": ("25", 0), "mammals": ("mammals", 0), "kyu": ("क्यों?", 0), "karib30": ("करीब", 1), "n30": ("30", 0),
     "pangea": ("पैंजिया।", 0), "aur_bharat": ("भारत?", 1), "asia": ("Asia", 0), "africa": ("Africa,", 0), "antarc": ("Antarctica", 0),
     "austr": ("Australia", 0), "toota": ("टूटा,", 0), "bhagta": ("भागता", 0), "n15": ("15", 0), "beech": ("बीच", 0), "tethys": ("टेथिस।", 0),
     "karib5": ("करीब", 2), "n5cr": ("5", 1), "takraya": ("टकराया।", 0), "farsh": ("फ़र्श", 0), "bana": ("बना", 0), "himalaya": ("हिमालय।", 0),

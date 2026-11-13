@@ -35,11 +35,14 @@ const INDIA_NEAR: Pose = [7400, -1500, 4];
 const ULTIMA: Layout = { africa: [2200, -500, 10], madagascar: [4000, 1200, 0], india: [7584, -2442, 0], samerica: [-700, 3300, -120],
   namerica: [-2900, -3000, -40], eurasia: [8160, -5772, 0], australia: [11000, -200, -20], antarctica: [4800, 3300, 40] };
 
+export const HOOK_FF0 = C.n25 + 0.2, HOOK_FF1 = C.n25 + 3.9;
 const mixPose = (a: Pose, b: Pose, p: number): Pose => [lerp(a[0], b[0], p), lerp(a[1], b[1], p), lerp(a[2], b[2], p)];
 const seg = (t: number, t0: number, t1: number, e: Ease = inOut) => e(clamp((t - t0) / (t1 - t0)));
 export const poseAt = (t: number, k: Piece): Pose => {
-  if (t < 12.6) return TODAY[k];
-  if (t < C.toota) return mixPose(TODAY[k], PANGEA[k], seg(t, 12.6, 16.7));
+  // the hook fast-forwards to Pangaea Ultima, then "30 crore saal pehle" rewinds into Pangea
+  if (t < HOOK_FF0) return TODAY[k];
+  if (t < C.karib30) return mixPose(TODAY[k], ULTIMA[k], seg(t, HOOK_FF0, HOOK_FF1));
+  if (t < C.toota) return mixPose(ULTIMA[k], PANGEA[k], seg(t, C.karib30, 16.7));
   if (k === 'india') {
     if (t < C.n15 + 0.6) return mixPose(PANGEA.india, DRIFT.india, seg(t, C.toota, C.n15 + 0.6, linear));
     if (t < C.karib5) return mixPose(DRIFT.india, INDIA_NEAR, seg(t, C.n15 + 0.6, C.karib5, linear));
@@ -72,13 +75,16 @@ export const EVEREST = llKm(86.925, 27.988);
 export type Cam = { x: number; y: number; kpp: number };
 type Key = { t: number; at: P; kpp: number; e?: Ease };
 export const INDIA0: P = [7650, -2330];
+/** "Tumhe": the viewer's pin in central India (frame 0 and the loop's end). */
+export const PIN = llKm(77.4, 23.25);
 const HIM: P = [8094, -3172];
 const up = (p: P, kpp: number): P => [p[0], p[1] + 480 * kpp];
 const keys = (): Key[] => [
-  { t: 0, at: INDIA0, kpp: 3.0 },
-  { t: C.n25 - 0.2, at: INDIA0, kpp: 2.75, e: linear },
-  { t: C.n25 + 0.8, at: INDIA0, kpp: 3.5, e: inOut },
-  { t: C.karib30, at: INDIA0, kpp: 3.7, e: linear },
+  { t: 0, at: PIN, kpp: 1.25 },
+  { t: C.par - 0.05, at: [7650, -2150], kpp: 3.5, e: inOut },
+  { t: C.n25 - 0.3, at: [7720, -2150], kpp: 3.25, e: linear },
+  { t: C.n25 + 0.8, at: [3300, -500], kpp: 13.5, e: inOut },
+  { t: C.karib30, at: [3500, -450], kpp: 11.8, e: linear },
   { t: C.karib30 + 3.4, at: [1600, 300], kpp: 13.5, e: inOut },
   { t: C.aur_bharat - 0.1, at: [1500, 300], kpp: 12.8, e: linear },
   { t: C.aur_bharat + 0.9, at: [4400, 900], kpp: 6.6, e: inOut },
@@ -103,7 +109,7 @@ const keys = (): Key[] => [
   { t: C.yani - 0.2, at: [3500, -500], kpp: 11, e: linear },
   { t: C.himalaya2 + 0.2, at: [7700, -2600], kpp: 4.2, e: inOut },
   { t: C.safar - 0.3, at: [7650, -2400], kpp: 3.6, e: linear },
-  { t: DURATION_S, at: INDIA0, kpp: 3.0, e: inOut },
+  { t: DURATION_S, at: PIN, kpp: 1.25, e: inOut },
 ];
 const FULL = keys().map((k) => ({ t: k.t, x: k.at[0], y: k.at[1], kpp: k.kpp, e: k.e ?? linear }));
 const camRaw = (t: number): Cam => {
@@ -124,7 +130,7 @@ const camRaw = (t: number): Cam => {
 const SMOOTH = [-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12];
 const W8 = [0.06, 0.12, 0.18, 0.28, 0.18, 0.12, 0.06];
 const wrap = (t: number) => Math.min(DURATION_S, Math.max(0, t));
-const HITS = () => [C.n5, C.n30, C.takraya, C.fossil, C.n25b, C.n70, C.n8];
+const HITS = () => [C.par, C.n5, C.khisak, C.n30, C.takraya, C.fossil, C.n25b, C.n70, C.n8];
 export const camAt = (t: number): Cam => {
   let x = 0, y = 0, lk = 0;
   for (let i = 0; i < SMOOTH.length; i++) {
@@ -140,7 +146,7 @@ export const camAt = (t: number): Cam => {
 };
 export const shake = (t: number): P => {
   let x = 0, y = 0;
-  for (const [t0, a] of [[C.takraya, 14], [C.n25b, 5], [C.n30, 4], [C.mita, 7]] as P[]) {
+  for (const [t0, a] of [[C.khisak, 9], [C.takraya, 14], [C.n25b, 5], [C.n30, 4], [C.mita, 7], [C.kyu, 5]] as P[]) {
     x += kick(t, t0, a, 31, 8);
     y += kick(t, t0 + 0.02, a * 0.7, 27, 8);
   }
@@ -148,3 +154,11 @@ export const shake = (t: number): P => {
 };
 /** Canvas km to screen px. */
 export const toS = (c: Cam, p: P): P => [540 + (p[0] - c.x) / c.kpp, 960 + (p[1] - c.y) / c.kpp];
+
+/** Camera speed for motion blur: screen px per frame (60 fps) of pan, and |d ln kpp| per frame of zoom. */
+export const camSpeed = (t: number) => {
+  const a = camAt(t - 1 / 120), b = camAt(t + 1 / 120), c = camAt(t);
+  return { pan: Math.hypot(b.x - a.x, b.y - a.y) / c.kpp, zoom: Math.abs(Math.log(b.kpp / a.kpp)) };
+};
+/** A slow camera roll (degrees), with a kick on the hook's whip-out and on the rewind. */
+export const rollAt = (t: number) => 0.7 * Math.sin(t * LOOPF(7) + 0.4) + 3.2 * Math.exp(-(((t - C.n25 - 0.35) / 0.4) ** 2)) - 2.0 * Math.exp(-(((t - C.karib30 - 0.6) / 0.5) ** 2));
