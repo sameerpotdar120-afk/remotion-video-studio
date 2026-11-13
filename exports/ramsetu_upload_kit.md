@@ -1,7 +1,10 @@
 # Ram Setu: upload kit
 
 Upload file: `ramsetu_4k60_master.mp4` (4K 60 fps, 2160×3840, 2:29; in the repo through Git LFS).
-Thumbnail: `ramsetu_thumbnail.jpg` / `ramsetu_thumbnail_4k.jpg` (made with your GPT images once they arrive).
+Thumbnail: `ramsetu_thumbnail.jpg` (1080×1920) and `ramsetu_thumbnail_4k.jpg` (2160×3840), one for YouTube and Instagram
+(RsCover: the satellite view of the Setu shoals with the gold Setu line, your Shri Ram on the Indian shore, two floating
+stones with "राम", and "राम सेतु" over "1480 तक पैदल रास्ता?" in the top third). Inside the 3:4 crop. It pairs with title 1
+without repeating its words.
 
 The video is a seamless loop: "कहते हैं, कभी…" runs into "तुम राम सेतु पर चलकर…", and the last frame matches frame 0.
 No end card and no CTA.
