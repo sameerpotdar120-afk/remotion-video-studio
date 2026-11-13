@@ -13,6 +13,8 @@ case $M in
   4) plate P7; plate P8 ;;
   5) plate P9; plate P10 ;;
   6) plate P11; plate P12; $B -b -P blender/nest.py -- --shot P5 --layer cart --poses "$CP" --w $W --h $H --samples 24 $G --meta $O/cartmeta.json --out $O/cart_%02d.png > $O/log_cart 2>&1 ;;
+  7) plate P7 ;;
+  8) plate P9 ;;
 esac
 ls $O/*.png | wc -l
 if [ "$BR" != "-" ]; then git checkout -B "$BR" >/dev/null 2>&1; git add -f $O/*.png $O/*.json; git commit -qm "Samulation #3: Blender renders, machine $M" && for i in 1 2 3 4 5; do git push -u origin "$BR" && break; sleep $((2**i)); done; fi
