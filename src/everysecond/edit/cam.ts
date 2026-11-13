@@ -27,9 +27,17 @@ type Key = { t: number; at: P; mpp: number; e?: Ease };
 export const WORLD: P = K(30, 16);
 export const WORLD_MPP = 18000;
 const INDIA = K(79.5, 22.5);
+/** Frame 0 and the loop's end: the stopwatch over the Old World, close. */
+export const HOOK0: P = K(62, 20);
+export const HOOK0_MPP = 11000;
 const keys = (): Key[] => [
-  { t: 0, at: WORLD, mpp: WORLD_MPP },
-  { t: C.kya, at: WORLD, mpp: 17500, e: linear },
+  { t: 0, at: HOOK0, mpp: HOOK0_MPP },
+  { t: C.par - 0.1, at: K(58, 20), mpp: 12500, e: linear },
+  { t: C.par + 0.7, at: K(62, 14), mpp: 8800, e: inOut },
+  { t: C.dharti - 0.2, at: K(66, 16), mpp: 8300, e: linear },
+  { t: C.dharti + 0.6, at: WORLD, mpp: 22000, e: inOut },
+  { t: C.kya - 0.2, at: WORLD, mpp: 21000, e: linear },
+  { t: C.har + 0.2, at: WORLD, mpp: 17500, e: inOut },
   { t: C.bharat - 0.3, at: K(45, 20), mpp: 16500, e: linear },
   { t: C.bharat + 0.8, at: INDIA, mpp: 3900, e: inOut },
   { t: C.isi - 0.3, at: INDIA, mpp: 3600, e: linear },
@@ -44,7 +52,7 @@ const keys = (): Key[] => [
   { t: C.oil + 0.6, at: K(35, 28), mpp: 16500, e: inOut },
   { t: C.roshni - 0.2, at: K(40, 28), mpp: 15500, e: linear },
   { t: C.yesab - 0.2, at: WORLD, mpp: 19500, e: linear },
-  { t: DURATION_S, at: WORLD, mpp: WORLD_MPP, e: inOut },
+  { t: DURATION_S, at: HOOK0, mpp: HOOK0_MPP, e: inOut },
 ];
 const upHalf = (p: P, mpp: number): P => [p[0], p[1] - 480 * mpp];
 const FULL = keys().map((k) => ({ t: k.t, x: k.at[0], y: k.at[1], mpp: k.mpp, e: k.e ?? linear }));
@@ -64,7 +72,7 @@ const camRaw = (t: number): Cam => {
   }
   return FULL[FULL.length - 1];
 };
-const HITS = () => [C.n4a, C.n9500, C.n44b, C.n1200a];
+const HITS = () => [C.sec, C.par, C.n4a, C.kya, C.n4b, C.bharat, C.ek, C.n40, C.emails, C.n9500, C.bijli, C.n44b, C.n1200a, C.n7];
 const SMOOTH = [-0.12, -0.08, -0.04, 0, 0.04, 0.08, 0.12];
 const W8 = [0.06, 0.12, 0.18, 0.28, 0.18, 0.12, 0.06];
 /** Whole cycles over the duration, so the loop's last frame matches frame 0. */
@@ -99,3 +107,6 @@ export const shake = (t: number): P => {
   }
   return [x, y];
 };
+
+/** A slow camera roll (degrees), with kicks on the whip moves. */
+export const rollAt = (t: number) => 0.7 * Math.sin(t * LOOPF(7) + 0.4) + 2.6 * Math.exp(-(((t - C.dharti - 0.3) / 0.35) ** 2)) - 2.2 * Math.exp(-(((t - C.par - 0.35) / 0.3) ** 2)) + 1.8 * Math.exp(-(((t - C.isi - 0.4) / 0.35) ** 2));

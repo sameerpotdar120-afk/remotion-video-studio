@@ -1,0 +1,26 @@
+// The creator's GPT images in public/everysecond/img (tools/cut_everysecond_assets.py): name -> aspect (w/h).
+export const ASPECT: Record<string, number> = {
+ "a_stopwatch": 0.7444,
+ "a_you_lookup": 0.3261,
+ "a_you_phone": 0.2967,
+ "b_baby_1": 0.9133,
+ "b_baby_2": 0.9989,
+ "b_mother_india": 0.7178,
+ "d_diya": 1.1392,
+ "e_coin": 0.8383,
+ "e_envelope": 1.6682,
+ "e_magnifier": 0.9594,
+ "e_mail_burst": 1.4184,
+ "e_phone_paid": 0.4944,
+ "l_bolt": 0.6667,
+ "l_old_book": 1.273,
+ "l_satellite": 2.1454,
+ "l_storm_cloud": 1.5126,
+ "o_barrel_fire": 0.4244,
+ "o_co2_cloud": 1.4754,
+ "o_pumpjack": 1.1873,
+ "s_earth": 0.9983,
+ "s_light_streak": 1.5,
+ "s_stars": 0.6667,
+ "s_sun": 1.0
+};

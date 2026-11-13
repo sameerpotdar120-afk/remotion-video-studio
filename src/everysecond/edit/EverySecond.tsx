@@ -2,8 +2,10 @@ import React from 'react';
 import { AbsoluteFill, Audio, OffthreadVideo, Sequence, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Watermark } from '../../brand/Watermark';
 import { clamp01, easeOut, inOut, linear, pop, ramp } from '../../darien/anim';
-import { C, CAPS, Cam, DURATION_S, GEO, LOOPF, P, camAt, camMotion, lineD, merc, ringsD, shake, toS } from './cam';
-import { Clouds, Grade, HiFill, MAP_GRADE } from './Fx';
+import { C, CAPS, Cam, DURATION_S, GEO, P, camAt, camMotion, lineD, merc, ringsD, rollAt, shake, toS } from './cam';
+import { ASPECT } from './assets';
+import { Cut, Slab } from './Studio';
+import { Clouds, Grade, MAP_GRADE } from './Fx';
 import { LABEL, TITLE, UI, useFonts } from './font';
 import { MapLayers } from './Map';
 
@@ -18,302 +20,304 @@ const fmtIN = (n: number) => Math.round(n).toLocaleString('en-IN');
 const rnd = (i: number, k: number) => { const x = Math.sin(i * 127.1 + k * 311.7) * 43758.5453; return x - Math.floor(x); };
 
 // ------------------------------------------------------------------ type
-export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string }> = ({ text, size, color = '#fff', font = TITLE }) => (
-  <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.05, color, WebkitTextStroke: `${Math.round(size / 11)}px ${INK}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 4}px ${color}55, 0 10px 24px rgba(0,0,0,0.5)`, whiteSpace: 'nowrap' }}>{text}</span>
+export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string; ink?: string }> = ({ text, size, color = '#fff', font = TITLE, ink = INK }) => (
+  <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.05, color, WebkitTextStroke: `${Math.round(size / 11)}px ${ink}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 4}px ${color}55, 0 10px 24px rgba(0,0,0,0.5)`, whiteSpace: 'nowrap' }}>{text}</span>
 );
-const Tag: React.FC<{ text: React.ReactNode; color?: string; size?: number; font?: string }> = ({ text, color = COL.gold, size = 46, font = UI }) => (
+export const Tag: React.FC<{ text: React.ReactNode; color?: string; size?: number; font?: string }> = ({ text, color = COL.gold, size = 46, font = UI }) => (
   <div style={{ padding: `${size * 0.1}px ${size * 0.5}px`, background: 'rgba(10,15,22,0.88)', border: `${Math.max(3, size / 10)}px solid ${color}`, borderRadius: size * 0.3, fontFamily: font, fontWeight: 700, fontSize: size, lineHeight: 1.3, color: '#fff', whiteSpace: 'nowrap', boxShadow: `0 0 ${size * 0.5}px ${color}55, 0 8px 18px rgba(0,0,0,0.5)` }}>{text}</div>
 );
 export const At: React.FC<{ x: number; y: number; p?: number; o?: number; rot?: number; children: React.ReactNode }> = ({ x, y, p = 1, o = 1, rot = 0, children }) =>
   p <= 0 || o <= 0 ? null : <div style={{ position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${p}) rotate(${rot}deg)`, opacity: o }}>{children}</div>;
 
-// ------------------------------------------------------------------ props drawn in code
-export const Baby: React.FC<{ s?: number }> = ({ s = 1 }) => (
-  <svg width={110 * s} height={150 * s} viewBox="-55 -75 110 150" style={{ overflow: 'visible', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.45))' }}>
-    <rect x={-44} y={-30} width={88} height={102} rx={44} fill="#36C9B4" stroke="#1C8F80" strokeWidth={4} />
-    <path d="M-44 10 Q0 30 44 10" stroke="#1C8F80" strokeWidth={4} fill="none" />
-    <circle cx={0} cy={-34} r={34} fill="#F6D2B0" stroke="#D9A983" strokeWidth={3} />
-    <path d="M-34 -42 Q0 -82 34 -42 Q20 -60 0 -60 Q-20 -60 -34 -42 Z" fill="#36C9B4" />
-    <circle cx={-11} cy={-32} r={3.5} fill="#3A2A20" /><circle cx={11} cy={-32} r={3.5} fill="#3A2A20" />
-    <circle cx={-18} cy={-22} r={6} fill="#F4A3A3" opacity={0.7} /><circle cx={18} cy={-22} r={6} fill="#F4A3A3" opacity={0.7} />
-    <path d="M-6 -18 Q0 -14 6 -18" stroke="#3A2A20" strokeWidth={2.5} fill="none" strokeLinecap="round" />
-  </svg>
+// ------------------------------------------------------------------ the creator's GPT props (glossy 3D miniatures)
+const BABY = ['b_baby_1', 'b_baby_2'];
+export const Baby: React.FC<{ s?: number; i?: number }> = ({ s = 1, i = 0 }) => <Cut k={BABY[i % 2]} w={150 * s} />;
+export const Envelope: React.FC<{ s?: number }> = ({ s = 1 }) => <Cut k="e_envelope" w={130 * s} />;
+export const Barrel: React.FC<{ t: number; s?: number; i: number }> = ({ t, s = 1, i }) => (
+  <div style={{ transform: `scaleY(${1 + 0.02 * Math.sin(t * 17 + i)})`, transformOrigin: '50% 100%' }}><Cut k="o_barrel_fire" w={90 * s} /></div>
 );
-const Candle: React.FC<{ t: number; s?: number }> = ({ t, s = 1 }) => {
-  const f = 1 + 0.12 * Math.sin(t * 23) + 0.06 * Math.sin(t * 37);
-  return (
-    <svg width={70 * s} height={170 * s} viewBox="-35 -110 70 170" style={{ overflow: 'visible', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.5))' }}>
-      <ellipse cx={0} cy={-70} rx={22 * f} ry={34 * f} fill="#FFB347" opacity={0.25} />
-      <path d={`M0 ${-98 * f} Q14 -66 0 -52 Q-14 -66 0 ${-98 * f} Z`} fill="#FFD36B" />
-      <path d="M0 -84 Q6 -66 0 -58 Q-6 -66 0 -84 Z" fill="#FFF6D8" />
-      <rect x={-2} y={-54} width={4} height={10} fill="#333" />
-      <rect x={-22} y={-46} width={44} height={100} rx={6} fill="#F7F3EA" stroke="#D8D0BE" strokeWidth={3} />
-    </svg>
-  );
-};
-export const Envelope: React.FC<{ s?: number }> = ({ s = 1 }) => (
-  <svg width={70 * s} height={50 * s} viewBox="0 0 70 50" style={{ filter: 'drop-shadow(0 5px 6px rgba(0,0,0,0.45))' }}>
-    <rect x={2} y={2} width={66} height={46} rx={5} fill="#FFFDF5" stroke={COL.mail} strokeWidth={3} />
-    <path d="M4 6 L35 30 L66 6" fill="none" stroke="#D9B02A" strokeWidth={3} strokeLinejoin="round" />
-  </svg>
-);
+/** A gold coin with the ₹ drawn on it in code. */
 export const Rupee: React.FC<{ s?: number }> = ({ s = 1 }) => (
-  <svg width={60 * s} height={60 * s} viewBox="-30 -30 60 60" style={{ filter: 'drop-shadow(0 4px 6px rgba(0,0,0,0.45))' }}>
-    <circle r={26} fill={COL.upi} stroke="#fff" strokeWidth={4} />
-    <text x={0} y={11} textAnchor="middle" fontFamily="sans-serif" fontWeight={800} fontSize={32} fill="#fff">₹</text>
-  </svg>
-);
-const SearchBar: React.FC<{ text: string; w: number }> = ({ text, w }) => (
-  <div style={{ width: w, height: 110, borderRadius: 55, background: '#fff', display: 'flex', alignItems: 'center', gap: 22, padding: '0 34px', boxShadow: '0 16px 30px rgba(0,0,0,0.45)', boxSizing: 'border-box' }}>
-    <svg width={50} height={50} viewBox="0 0 50 50"><circle cx={21} cy={21} r={14} fill="none" stroke="#555" strokeWidth={6} /><path d="M31 31 L44 44" stroke="#555" strokeWidth={7} strokeLinecap="round" /></svg>
-    <div style={{ fontFamily: TITLE, fontSize: 56, color: '#1B1B1B', whiteSpace: 'nowrap', overflow: 'hidden' }}>{text}</div>
+  <div style={{ position: 'relative' }}>
+    <Cut k="e_coin" w={80 * s} />
+    <div style={{ position: 'absolute', left: 0, right: 0, top: '50%', transform: 'translateY(-54%)', textAlign: 'center', fontFamily: UI, fontWeight: 800, fontSize: 52 * s, color: '#B8860B', textShadow: '0 2px 0 #FFE9A0' }}>₹</div>
   </div>
 );
-export const Barrel: React.FC<{ t: number; s?: number; i: number }> = ({ t, s = 1, i }) => {
-  const f = 1 + 0.15 * Math.sin(t * 19 + i) + 0.08 * Math.sin(t * 31 + i * 2);
+/** The chrome stopwatch, with a red sweep ring that runs one second. */
+export const Stopwatch: React.FC<{ p: number; size: number; tick?: number }> = ({ p, size, tick = 0 }) => {
+  const r = size * 0.52, a = p * 2 * Math.PI;
+  const end = [Math.sin(a) * r, -Math.cos(a) * r];
   return (
-    <svg width={80 * s} height={150 * s} viewBox="-40 -100 80 150" style={{ overflow: 'visible', filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.5))' }}>
-      <path d={`M-26 -40 Q-30 ${-80 * f} -6 ${-96 * f} Q-10 -70 4 -66 Q8 ${-92 * f} 22 ${-86 * f} Q30 -60 26 -40 Z`} fill={COL.oil} />
-      <path d={`M-14 -40 Q-14 ${-64 * f} 0 ${-74 * f} Q14 -60 12 -40 Z`} fill="#FFD36B" />
-      <rect x={-26} y={-40} width={52} height={80} rx={6} fill="#1F3A5F" stroke="#0E1E33" strokeWidth={3} />
-      <rect x={-26} y={-20} width={52} height={6} fill="#C9D6E8" /><rect x={-26} y={14} width={52} height={6} fill="#C9D6E8" />
-    </svg>
+    <div style={{ position: 'relative', width: size, transform: `scale(${1 + 0.05 * tick})` }}>
+      <Cut k="a_stopwatch" w={size} />
+      <svg width={size * 1.3} height={size * 1.3} viewBox={`${-size * 0.65} ${-size * 0.65} ${size * 1.3} ${size * 1.3}`} style={{ position: 'absolute', left: -size * 0.15, top: size * (1 / ASPECT.a_stopwatch) * 0.58 - size * 0.65, overflow: 'visible' }}>
+        <circle r={r} fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth={size * 0.035} />
+        {p > 0.005 && <path d={`M0,${-r} A${r},${r} 0 ${p > 0.5 ? 1 : 0} 1 ${end[0].toFixed(1)},${end[1].toFixed(1)}`} fill="none" stroke="#FF2B2B" strokeWidth={size * 0.045} strokeLinecap="round" />}
+        <circle cx={end[0]} cy={end[1]} r={size * 0.035} fill="#fff" stroke="#FF2B2B" strokeWidth={4} />
+      </svg>
+    </div>
   );
 };
-const Bolt: React.FC<{ x: number; y: number; h: number; seed: number; o: number }> = ({ x, y, h, seed, o }) => {
-  if (o <= 0) return null;
-  const pts: P[] = [[x, y - h]];
-  const n = 7;
-  for (let k = 1; k < n; k++) pts.push([x + (rnd(seed, k) - 0.5) * 70, y - h + (h * k) / n]);
-  pts.push([x, y]);
-  const d = pts.map(([a, b], i) => `${i ? 'L' : 'M'}${a.toFixed(1)},${b.toFixed(1)}`).join('');
-  return (
-    <g opacity={o}>
-      <path d={d} fill="none" stroke={COL.bolt} strokeWidth={22} opacity={0.35} strokeLinejoin="round" />
-      <path d={d} fill="none" stroke="#C9B6FF" strokeWidth={10} opacity={0.7} strokeLinejoin="round" />
-      <path d={d} fill="none" stroke="#fff" strokeWidth={4} strokeLinejoin="round" />
-      <circle cx={x} cy={y} r={18} fill="#fff" opacity={0.6} />
-    </g>
-  );
-};
-const Satellite: React.FC = () => (
-  <svg width={190} height={90} viewBox="-95 -45 190 90" style={{ filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.5))' }}>
-    <rect x={-90} y={-22} width={60} height={44} fill="#2D5DA8" stroke="#BFD3F2" strokeWidth={3} />
-    <rect x={30} y={-22} width={60} height={44} fill="#2D5DA8" stroke="#BFD3F2" strokeWidth={3} />
-    <path d="M-90 0 H-30 M30 0 H90 M-60 -22 V22 M60 -22 V22" stroke="#BFD3F2" strokeWidth={2} />
-    <rect x={-30} y={-30} width={60} height={60} rx={8} fill="#E8E8E8" stroke="#9AA" strokeWidth={3} />
-    <circle cx={0} cy={0} r={12} fill="#FFC21A" />
-  </svg>
-);
-export const Stopwatch: React.FC<{ p: number; size: number }> = ({ p, size }) => (
-  <svg width={size} height={size * 1.15} viewBox="-60 -78 120 138" style={{ filter: 'drop-shadow(0 14px 22px rgba(0,0,0,0.55))', overflow: 'visible' }}>
-    <rect x={-10} y={-76} width={20} height={14} rx={3} fill="#D9D9D9" stroke="#222" strokeWidth={3} />
-    <circle r={56} fill="#F4F4F2" stroke="#222" strokeWidth={6} />
-    {Array.from({ length: 60 }, (_, i) => { const a = (i * Math.PI) / 30; const L = i % 5 ? 4 : 9; return <line key={i} x1={Math.sin(a) * (50 - L)} y1={-Math.cos(a) * (50 - L)} x2={Math.sin(a) * 50} y2={-Math.cos(a) * 50} stroke="#222" strokeWidth={i % 5 ? 1.2 : 3} />; })}
-    <line x1={-Math.sin(p * 2 * Math.PI) * 10} y1={Math.cos(p * 2 * Math.PI) * 10} x2={Math.sin(p * 2 * Math.PI) * 46} y2={-Math.cos(p * 2 * Math.PI) * 46} stroke="#E0221B" strokeWidth={3.5} strokeLinecap="round" />
-    <circle r={5} fill="#E0221B" />
-  </svg>
-);
+const Bolt: React.FC<{ x: number; y: number; h: number; o: number; flip: boolean }> = ({ x, y, h, o, flip }) =>
+  o <= 0 ? null : <div style={{ position: 'absolute', left: x, top: y - h, transform: `translateX(-50%) scaleX(${flip ? -1 : 1})`, opacity: o }}><Cut k="l_bolt" w={h * ASPECT.l_bolt} screen /></div>;
 
-// ------------------------------------------------------------------ the map's vector layer
+// ------------------------------------------------------------------ the map's highlight layer (studio slabs)
 const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const asia = win(t, C.har + 0.4, C.bharat + 0.3, 0.4, 0.4), africa = win(t, C.har + 0.8, C.bharat + 0.3, 0.4, 0.4);
-  const india = win(t, C.bharat - 0.1, C.isi + 0.3, 0.4, 0.5) + win(t, C.bharat2 - 0.2, C.dharti2 + 0.3, 0.4, 0.5);
+  const india = Math.max(win(t, C.n4a - 0.2, C.dharti + 0.3, 0.3, 0.4), win(t, C.bharat - 0.1, C.isi + 0.3, 0.4, 0.5), win(t, C.bharat2 - 0.2, C.dharti2 + 0.3, 0.4, 0.5));
+  const s = (p: P) => toS(c, p);
+  const [ax, ay] = s(GEO.centroids.Asia), [fx, fy] = s(GEO.centroids.Africa), [ix, iy] = s(GEO.centroids.India);
   return (
     <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-      <defs><filter id="glow"><feGaussianBlur stdDeviation="6" /></filter></defs>
       <path d={GEO.borders.map((l) => lineD(c, l)).join('')} fill="none" stroke="#fff" strokeWidth={1.2} opacity={0.28} />
-      {asia > 0.01 && <HiFill id="as" t={t} d={ringsD(c, GEO.continents.Asia)} color={COL.asia} g={Math.min(1, asia)} alpha={0.5} edge={3} />}
-      {africa > 0.01 && <HiFill id="af" t={t} d={ringsD(c, GEO.continents.Africa)} color={COL.africa} g={Math.min(1, africa)} alpha={0.5} edge={3} />}
-      {india > 0.01 && <HiFill id="in" t={t} d={ringsD(c, GEO.countries.India)} color={COL.in} g={Math.min(1, india)} alpha={0.7} edge={4} />}
+      <Slab id="as" t={t} d={ringsD(c, GEO.continents.Asia)} hue="blue" g={asia} depth={12} cx={ax} cy={ay} s={0.98 + 0.03 * pop(t, C.har + 0.3, 9, 190)} />
+      <Slab id="af" t={t} d={ringsD(c, GEO.continents.Africa)} hue="blue" g={africa} depth={12} cx={fx} cy={fy} s={0.98 + 0.03 * pop(t, C.har + 0.7, 9, 190)} />
+      <Slab id="in" t={t} d={ringsD(c, GEO.countries.India)} hue="red" g={india} depth={18} cx={ix} cy={iy} s={0.97 + 0.05 * Math.max(pop(t, C.n4a - 0.1, 9, 190) * (t < C.dharti + 0.4 ? 1 : 0), pop(t, C.bharat - 0.05, 9, 190) * (t > C.bharat - 0.1 && t < C.isi + 0.4 ? 1 : 0), pop(t, C.bharat2 - 0.1, 9, 190) * (t > C.bharat2 - 0.3 ? 1 : 0))} />
     </svg>
+  );
+};
+
+// ------------------------------------------------------------------ the hook (0-11 s)
+/** "Ek second par tum kabhi dhyan nahi dete": the stopwatch ticks one second; "tum" scrolls his phone. Also the loop's end. */
+const Clock: React.FC<{ t: number }> = ({ t }) => {
+  const o = clamp01(1 - ramp(t, C.par + 0.4, C.par + 0.9, linear) + ramp(t, C.yesab + 0.3, DURATION_S - 0.25, linear));
+  // the hand sweeps one second at a time; each new second lands with a tick punch
+  const p = ((t - C.sec + 10) % 1);
+  const tick = Math.exp(-14 * p);
+  // on "par isi ek second mein" the stopwatch flies to the top corner and keeps ticking there through the hook
+  const fly = ramp(t, C.par - 0.1, C.par + 0.5, inOut) * (1 - ramp(t, C.yesab + 0.3, DURATION_S - 0.4, inOut));
+  const corner = win(t, C.par, C.kya + 0.2, 0.3, 0.3);
+  const youO = clamp01(1 - ramp(t, C.par, C.par + 0.4, linear) + ramp(t, C.yesab + 0.5, DURATION_S - 0.25, linear));
+  const yx = 225 - 300 * (1 - youO), yy = 1300;
+  return (
+    <>
+      {o > 0.01 && <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 45%, rgba(0,10,25,0.1), rgba(0,10,25,0.6))', opacity: o * 0.9 }} />}
+      {o > 0.01 && <At x={540} y={290} o={o} p={1 + 0.04 * tick}><Big text={<>1 सेकंड</>} size={150} color="#fff" font={UI} /></At>}
+      {(o > 0.01 || corner > 0.01) && (() => {
+        const x = 600 + (870 - 600) * fly, y = 860 + (330 - 860) * fly, sz = 560 - 330 * fly;
+        return <At x={x} y={y} o={Math.max(o, corner)} rot={-6 + 4 * Math.sin(t * 2.1)}><Stopwatch p={p} size={sz} tick={tick} /></At>;
+      })()}
+      {youO > 0.01 && <At x={yx} y={yy} o={youO} rot={Math.sin(t * 1.7) * 1.5}><Cut k="a_you_phone" w={210} /></At>}
+      {youO > 0.01 && <At x={yx + 30} y={yy - 340} o={youO} p={0.9 + 0.1 * Math.sin(t * 5)}><Tag text="तुम" size={52} color={COL.in} /></At>}
+      {t > C.kya - 0.2 && t < C.har + 0.3 && <At x={540} y={620} p={pop(t, C.kya - 0.1, 8, 240)} o={1 - ramp(t, C.har, C.har + 0.3, linear)} rot={6}><Big text="?" size={300} color={COL.gold} /></At>}
+    </>
+  );
+};
+/** "Aur dharti 30 km aage": a quick cut to space, the Earth streaking along its orbit. */
+const HookSpace: React.FC<{ t: number }> = ({ t }) => {
+  const o = win(t, C.dharti + 0.25, C.kya - 0.05, 0.25, 0.3);
+  if (o <= 0) return null;
+  const q = ramp(t, C.dharti + 0.3, C.kya, inOut);
+  const sx = 1000, sy = 1820, R = 1180, a = -2.3 + 0.42 * q;
+  const ex = sx + Math.cos(a) * R, ey = sy + Math.sin(a) * R, ang = (a * 180) / Math.PI + 90;
+  return (
+    <AbsoluteFill style={{ opacity: o, background: '#02040A', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: -60, transform: `translate(${-40 * q}px, ${20 * q}px) scale(1.08)` }}><Cut k="s_stars" w={1200} screen shadow={false} /></div>
+      <div style={{ position: 'absolute', left: sx - 420, top: sy - 420, transform: `rotate(${t * 6}deg)` }}><Cut k="s_sun" w={840} screen /></div>
+      <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
+        <circle cx={sx} cy={sy} r={R} fill="none" stroke="#fff" strokeWidth={3} strokeDasharray="12 14" opacity={0.5} />
+        <path d={`M${sx + Math.cos(-2.3) * R},${sy + Math.sin(-2.3) * R} A${R} ${R} 0 0 1 ${ex},${ey}`} fill="none" stroke={COL.gold} strokeWidth={14} strokeLinecap="round" />
+      </svg>
+      <div style={{ position: 'absolute', left: ex, top: ey, transform: `translate(-100%,-50%) rotate(${ang}deg)`, transformOrigin: '100% 50%', opacity: 0.95 }}><Cut k="s_light_streak" w={620} screen /></div>
+      <At x={ex} y={ey} rot={t * 20}><Cut k="s_earth" w={300} /></At>
+      <At x={ex - 30} y={ey - 260} p={pop(t, C.km30a - 0.1, 9, 220)} rot={-10}><Big text="30 KM" size={130} color={COL.gold} /></At>
+    </AbsoluteFill>
   );
 };
 
 // ------------------------------------------------------------------ the beats
-/** Births and deaths: four babies drop onto the continents (2 Asia, 1 Africa, 1 the rest), two candles. */
+/** Births: 4 babies drop onto the map (hook and again at 10.9 s), two diyas for the two who leave, the mother in India. */
 const Births: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const s = (p: P) => toS(c, p);
-  const hook = win(t, C.n4a - 0.2, C.kya + 0.3, 0.2, 0.4);
+  const hook = win(t, C.n4a - 0.25, C.dharti + 0.35, 0.2, 0.3);
   const drop = win(t, C.n4b - 0.3, C.bharat + 0.2, 0.2, 0.4);
-  const targets: P[] = [s(merc(85, 32)), s(merc(103, 22)), s(merc(20, 6)), s(merc(8, 47))];
-  const candles: P[] = [s(merc(-5, 52)), s(merc(62, 56))];
+  const hookT: P[] = [s(merc(79, 23)), s(merc(100, 26)), s(merc(22, 4)), s(merc(46, 10))];
+  const targets: P[] = [s(merc(85, 32)), s(merc(105, 24)), s(merc(20, 6)), s(merc(-58, -12))];
+  const diyas: P[] = [s(merc(-5, 50)), s(merc(62, 55))];
+  const dropIn = (t0: number, [x, y]: P, i: number, sc: number) => {
+    const q = easeOut(ramp(t, t0, t0 + 0.45, linear));
+    const sq = 1 + 0.18 * Math.exp(-8 * Math.max(0, t - t0 - 0.45)) * Math.sin(Math.max(0, t - t0 - 0.45) * 22);
+    return <At key={i} x={x} y={y - (1 - q) * 520} o={Math.min(1, q * 2.5)} rot={(i % 2 ? 6 : -6) + 3 * Math.sin(t * 3 + i)}><div style={{ transform: `scale(${sc}) scaleY(${sq})`, transformOrigin: '50% 100%' }}><Baby i={i} s={1} /></div></At>;
+  };
+  const cnt4 = (t0: number, until: number) => t > t0 - 0.2 && t < until && <At x={540} y={330} p={pop(t, t0 - 0.1, 9, 220)} o={1 - ramp(t, until - 0.3, until, linear)}><Big text={<>{Math.min(4, Math.max(1, Math.ceil((t - t0 + 0.05) / 0.13)))} बच्चे</>} size={130} color={COL.gold} font={UI} /></At>;
   return (
     <>
-      {hook > 0 && [0, 1, 2, 3].map((i) => <At key={i} x={250 + i * 195} y={1180} p={pop(t, C.n4a - 0.1 + i * 0.12, 10, 220)} o={hook}><Baby s={1.4} /></At>)}
-      {drop > 0 && targets.map(([x, y], i) => {
-        const q = easeOut(ramp(t, C.n4b - 0.2 + i * 0.12, C.n4b + 0.5 + i * 0.12, linear));
-        return <At key={i} x={x} y={y - (1 - q) * 500} o={drop * Math.min(1, q * 2)} p={1}><Baby s={1.1} /></At>;
-      })}
-      {t > C.n4b - 0.2 && t < C.bharat + 0.2 && <At x={540} y={330} p={pop(t, C.n4b - 0.1, 10, 200)} o={1 - ramp(t, C.bharat - 0.2, C.bharat + 0.2, linear)}><Big text={<>~4 / सेकंड</>} size={110} color={COL.gold} font={UI} /></At>}
-      {t > C.n2 - 0.2 && t < C.bharat + 0.2 && candles.map(([x, y], i) => <At key={i} x={x} y={y} p={pop(t, C.n2 - 0.1 + i * 0.15, 10, 200)} o={1 - ramp(t, C.bharat - 0.2, C.bharat + 0.2, linear)}><Candle t={t} s={1.2} /></At>)}
-      {t > C.n2 - 0.2 && t < C.bharat + 0.2 && <At x={540} y={1250} p={pop(t, C.n2, 10, 200)} o={1 - ramp(t, C.bharat - 0.2, C.bharat + 0.2, linear)}><Tag text="~2 / सेकंड" size={60} color="#C9C9C9" /></At>}
+      {hook > 0 && <AbsoluteFill style={{ opacity: hook }}>{hookT.map((p, i) => dropIn(C.n4a - 0.15 + i * 0.13, p, i, 1.25))}</AbsoluteFill>}
+      {cnt4(C.n4a, C.dharti + 0.3)}
+      {drop > 0 && <AbsoluteFill style={{ opacity: drop }}>{targets.map((p, i) => dropIn(C.n4b - 0.2 + i * 0.13, p, i, 1.0))}</AbsoluteFill>}
+      {cnt4(C.n4b, C.n2 - 0.1)}
+      {t > C.n2 - 0.2 && t < C.bharat + 0.2 && diyas.map(([x, y], i) => (
+        <At key={i} x={x} y={y} p={pop(t, C.n2 - 0.1 + i * 0.18, 10, 170)} o={1 - ramp(t, C.bharat - 0.2, C.bharat + 0.2, linear)}>
+          <div style={{ position: 'relative' }}><div style={{ position: 'absolute', left: '50%', top: '30%', width: 220, height: 220, transform: 'translate(-50%,-50%)', borderRadius: '50%', background: `radial-gradient(circle, rgba(255,190,90,${0.55 + 0.1 * Math.sin(t * 9 + i)}), rgba(255,140,40,0) 70%)` }} /><Cut k="d_diya" w={170} /></div>
+        </At>
+      ))}
+      {t > C.n2 - 0.2 && t < C.bharat + 0.2 && <At x={540} y={330} p={pop(t, C.n2 - 0.1, 10, 200)} o={1 - ramp(t, C.bharat - 0.2, C.bharat + 0.2, linear)}><Big text="~2 / सेकंड" size={110} color="#E8E2D6" font={UI} /></At>}
       {t > C.dedh - 0.2 && t < C.isi + 0.3 && <>
-        <At x={s(merc(79, 23))[0]} y={s(merc(79, 23))[1]} p={pop(t, C.ek - 0.2, 10, 200)} o={1 - ramp(t, C.isi, C.isi + 0.3, linear)}><Baby s={1.6} /></At>
-        <At x={540} y={330} p={pop(t, C.dedh - 0.1, 10, 200)} o={1 - ramp(t, C.isi, C.isi + 0.3, linear)}><Big text={<>हर 1.5 सेकंड</>} size={110} color={COL.in} font={UI} /></At>
+        <At x={s(merc(79, 21))[0] + 40} y={s(merc(79, 21))[1] + 40} p={pop(t, C.ek - 0.25, 10, 170)} o={1 - ramp(t, C.isi, C.isi + 0.3, linear)}>
+          <div style={{ position: 'relative' }}><div style={{ position: 'absolute', inset: -60, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,220,170,0.6), rgba(255,200,140,0) 65%)' }} /><Cut k="b_mother_india" w={430} /></div>
+        </At>
+        <At x={540} y={330} p={pop(t, C.dedh - 0.1, 10, 200)} o={1 - ramp(t, C.isi, C.isi + 0.3, linear)}><Big text={<>हर 1.5 सेकंड</>} size={120} color="#FF5A4E" font={UI} /></At>
       </>}
     </>
   );
 };
-/** Emails rain across the world; the search bar types. */
+/** Emails stream across the world, the burst, and the magnifying glass for searches. */
 const Mails: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const o = win(t, C.n40 - 0.4, C.bharat2 + 0.2, 0.3, 0.4);
   if (o <= 0) return null;
-  const n = 46;
-  const typed = 'Search…  1,00,000+ / sec';
-  const k = Math.round(typed.length * ramp(t, C.google - 0.1, C.lakh1 + 0.9, linear));
+  const n = 34;
+  const burst = t - (C.emails - 0.1);
+  const mg = ramp(t, C.google - 0.3, C.bharat2, linear);
+  const scan = Math.sin(mg * Math.PI * 2.2);
   return (
     <AbsoluteFill style={{ opacity: o }}>
       {Array.from({ length: n }, (_, i) => {
-        const t0 = C.n40 - 0.3 + rnd(i, 1) * 1.6;
-        const q = ramp(t, t0, t0 + 0.6, easeOut);
-        if (q <= 0) return null;
-        const lon = -120 + rnd(i, 2) * 260, lat = -30 + rnd(i, 3) * 85;
-        const [x, y] = toS(c, merc(lon, lat));
-        return <At key={i} x={x} y={y - (1 - q) * 300} o={Math.min(1, q * 2)} rot={(rnd(i, 4) - 0.5) * 30}><Envelope s={0.9} /></At>;
+        const per = 1.4 + rnd(i, 1) * 0.9, ph = ((t - C.n40 + 0.3 + rnd(i, 2) * per) / per) % 1;
+        if (t < C.n40 - 0.3 + rnd(i, 3) * 0.8) return null;
+        const lane = rnd(i, 4), x = -150 + ph * 1400, y = 450 + lane * 1100 - ph * 260 + Math.sin(ph * 6 + i) * 30;
+        const flap = 1 + 0.18 * Math.sin(t * 24 + i * 2);
+        return <At key={i} x={x} y={y} o={Math.sin(ph * Math.PI)} rot={-14 + (rnd(i, 5) - 0.5) * 16} p={0.6 + 0.6 * lane}><div style={{ transform: `scaleY(${flap})` }}><Envelope s={1} /></div></At>;
       })}
-      <At x={540} y={330} p={pop(t, C.n40 - 0.1, 10, 200)}><Big text={<>{fmtIN(roll(t, C.n40 - 0.1, 40, 0.8))} लाख emails</>} size={92} color={COL.mail} font={UI} /></At>
-      {t > C.google - 0.3 && <At x={540} y={1240} p={pop(t, C.google - 0.2, 11, 180)}><SearchBar text={typed.slice(0, k)} w={900} /></At>}
+      {burst > -0.05 && burst < 1.3 && <At x={540} y={960} p={0.4 + 1.1 * easeOut(clamp01(burst / 0.6))} o={1 - clamp01((burst - 0.7) / 0.6)}><Cut k="e_mail_burst" w={900} /></At>}
+      <At x={540} y={330} p={pop(t, C.n40 - 0.1, 10, 200)} o={1 - ramp(t, C.google - 0.3, C.google, linear)}><Big text={<>{fmtIN(roll(t, C.n40 - 0.1, 40, 0.8))} लाख emails</>} size={100} color={COL.mail} font={UI} /></At>
+      {t > C.google - 0.4 && <>
+        <At x={540 + 300 * scan} y={980 + 160 * Math.sin(mg * Math.PI * 1.3)} p={pop(t, C.google - 0.3, 10, 180)} rot={-20 + 10 * scan}>
+          <div style={{ position: 'relative' }}><div style={{ position: 'absolute', left: '8%', top: '6%', width: '62%', height: '62%', borderRadius: '50%', background: 'radial-gradient(circle, rgba(140,210,255,0.55), rgba(140,210,255,0) 70%)' }} /><Cut k="e_magnifier" w={460} /></div>
+        </At>
+        <At x={540} y={330} p={pop(t, C.lakh1 - 0.2, 10, 200)}><Big text={<>1 लाख+ searches</>} size={100} color="#8FD3FF" font={UI} /></At>
+      </>}
     </AbsoluteFill>
   );
 };
-/** UPI: rupee pings over India (with Null in the split). */
+/** UPI: phones with the green tick pop up over Indian cities, ₹ coins rain (with Null in the split). */
 const Upi: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const o = win(t, C.bharat2, C.dharti2 + 0.2, 0.4, 0.4);
   if (o <= 0) return null;
-  const cities: P[] = [[72.88, 19.07], [77.2, 28.6], [77.6, 12.97], [88.36, 22.57], [80.27, 13.08], [78.48, 17.39], [73.85, 18.52], [72.57, 23.02], [75.79, 26.91], [80.95, 26.85], [85.14, 25.6], [76.27, 9.93], [83.0, 25.3], [91.74, 26.14], [75.86, 22.72], [79.08, 21.15]];
+  const cities: P[] = [[72.88, 19.07], [77.2, 28.6], [77.6, 12.97], [88.36, 22.57], [80.27, 13.08], [78.48, 17.39], [75.79, 26.91], [80.95, 26.85], [85.14, 25.6], [76.27, 9.93], [91.74, 26.14], [75.86, 22.72]];
   return (
     <AbsoluteFill style={{ opacity: o }}>
-      {Array.from({ length: 48 }, (_, i) => {
-        const city = cities[i % cities.length];
-        const ph = (t * 1.4 + rnd(i, 5)) % 1;
-        if (t < C.upi - 0.6 + rnd(i, 6) * 0.6) return null;
-        const [x, y] = toS(c, merc(city[0] + (rnd(i, 7) - 0.5) * 2.5, city[1] + (rnd(i, 8) - 0.5) * 2.5));
-        return <At key={i} x={x} y={y - ph * 70} p={0.6 + 0.5 * (1 - ph)} o={1 - ph}><Rupee s={1} /></At>;
+      {cities.map((cy, i) => {
+        const t0 = C.upi - 0.8 + i * 0.09, [x, y] = toS(c, merc(cy[0], cy[1]));
+        const bob = Math.sin(t * 4 + i) * 6;
+        return <At key={i} x={x} y={y - 60 + bob} p={pop(t, t0, 9, 210) * 0.95} rot={(i % 2 ? 7 : -7)}><Cut k="e_phone_paid" w={72} /></At>;
       })}
-      <At x={540} y={250} p={pop(t, C.n9500 - 0.1, 10, 200)}><Big text={<>{fmtIN(roll(t, C.n9500 - 0.1, 9500, 1.0))} UPI / सेकंड</>} size={84} color={COL.upi} font={UI} /></At>
+      {Array.from({ length: 22 }, (_, i) => {
+        const per = 1.1 + rnd(i, 6) * 0.6, ph = ((t + rnd(i, 7) * per) % per) / per;
+        if (t < C.n9500 - 0.3 + rnd(i, 8) * 0.5) return null;
+        return <At key={`c${i}`} x={80 + rnd(i, 9) * 920} y={-60 + ph * 900} rot={ph * 360 * (rnd(i, 10) > 0.5 ? 1 : -1)} o={Math.min(1, (1 - ph) * 3)}><div style={{ transform: `scaleX(${Math.cos(ph * 9 + i)})` }}><Rupee s={0.9} /></div></At>;
+      })}
+      <At x={540} y={250} p={pop(t, C.n9500 - 0.1, 10, 200)}><Big text={<>{fmtIN(roll(t, C.n9500 - 0.1, 9500, 1.0))} UPI / सेकंड</>} size={90} color={COL.upi} font={UI} /></At>
     </AbsoluteFill>
   );
 };
-/** Lightning: bolts everywhere, the old 100 crossed out, NASA's 44 (with Null in the split). */
+/** Lightning: storm clouds drift, bolts strike with flashes; the old book says 100, the satellite counts 44 (Null in the split). */
 const Lightning: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const o = win(t, C.dharti2 - 0.2, C.oil + 0.2, 0.3, 0.4);
   if (o <= 0) return null;
-  const bolts = Array.from({ length: 16 }, (_, i) => {
-    const per = 0.55 + rnd(i, 9) * 0.5;
-    const ph = ((t + rnd(i, 10) * per) % per) / per;
-    const lon = -110 + rnd(i, 11) * 250, lat = -25 + rnd(i, 12) * 70;
+  const spots: P[] = [[-60, 0], [20, 5], [100, 20], [-90, 35], [80, 30], [10, 45], [130, 40], [-50, -20], [40, -5], [115, 5]];
+  const bolts = spots.map(([lon, lat], i) => {
+    const per = 0.7 + rnd(i, 9) * 0.6, ph = ((t + rnd(i, 10) * per) % per) / per;
     const [x, y] = toS(c, merc(lon, lat));
-    return { x, y, ph, seed: i * 7 + Math.floor((t + rnd(i, 10) * per) / per) };
+    return { x, y, ph, flip: Math.floor((t + rnd(i, 10) * per) / per) % 2 === 0 };
   });
+  const flash = bolts.reduce((m, b) => Math.max(m, b.ph < 0.06 ? 1 - b.ph / 0.06 : 0), 0) * (t > C.bijli - 0.3 && t < C.purani ? 1 : 0.4);
   const cross = ramp(t, C.n100 + 0.2, C.n100 + 0.6, inOut);
+  const sa = ramp(t, C.sat - 0.4, C.oil, linear);
   return (
     <AbsoluteFill style={{ opacity: o }}>
-      <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
-        {t > C.bijli - 0.3 && bolts.map((b, i) => <Bolt key={i} x={b.x} y={b.y} h={260 + rnd(i, 13) * 160} seed={b.seed} o={b.ph < 0.18 ? 1 - b.ph / 0.18 : 0} />)}
-      </svg>
-      {t > C.n44 - 0.2 && t < C.purani && <At x={540} y={330} p={pop(t, C.n44 - 0.1, 9, 220)} o={1 - ramp(t, C.purani - 0.3, C.purani, linear)}><Big text="44 / सेकंड" size={120} color={COL.bolt} /></At>}
-      {t > C.n100 - 0.2 && <At x={360} y={300} p={pop(t, C.n100 - 0.1, 10, 200)} rot={-6}>
+      {t > C.dharti2 - 0.2 && [[-30, 25], [60, 35], [110, 15]].map(([lon, lat], i) => {
+        const [x, y] = toS(c, merc(lon, lat));
+        return <At key={`cl${i}`} x={x + Math.sin(t * 0.7 + i) * 40 + (t - C.dharti2) * 20} y={y - 180} p={pop(t, C.dharti2 - 0.1 + i * 0.15, 11, 170)} o={0.95}><Cut k="l_storm_cloud" w={420} /></At>;
+      })}
+      {t > C.bijli - 0.4 && bolts.map((b, i) => <Bolt key={i} x={b.x} y={b.y} h={330 + rnd(i, 13) * 140} o={b.ph < 0.16 ? 1 - b.ph / 0.16 : 0} flip={b.flip} />)}
+      <AbsoluteFill style={{ background: '#CFE2FF', opacity: flash * 0.18, mixBlendMode: 'screen' }} />
+      {t > C.n44 - 0.2 && t < C.purani && <At x={540} y={330} p={pop(t, C.n44 - 0.1, 9, 220)} o={1 - ramp(t, C.purani - 0.3, C.purani, linear)}><Big text="44 / सेकंड" size={130} color={COL.bolt} /></At>}
+      {t > C.purani - 0.2 && <At x={330} y={330} p={pop(t, C.purani - 0.1, 10, 180)} rot={-8}>
         <div style={{ position: 'relative' }}>
-          <Big text="100" size={150} color="#BBB" />
-          <svg width={260} height={160} viewBox="0 0 260 160" style={{ position: 'absolute', left: -20, top: 0 }}><path d={`M10 140 L${10 + 240 * cross} ${140 - 130 * cross}`} stroke="#FF3B3B" strokeWidth={18} strokeLinecap="round" /></svg>
-          <div style={{ fontFamily: UI, fontWeight: 700, fontSize: 34, color: '#ddd', textAlign: 'center' }}>1925</div>
+          <Cut k="l_old_book" w={460} />
+          <div style={{ position: 'absolute', left: 0, right: 0, top: '22%', textAlign: 'center' }}><Big text="100" size={120} color="#5A3A14" ink="#F3E3C0" /></div>
+          <svg width={460} height={360} viewBox="0 0 460 360" style={{ position: 'absolute', left: 0, top: 0 }}><path d={`M90 230 L${90 + 280 * cross} ${230 - 170 * cross}`} stroke="#E8141F" strokeWidth={22} strokeLinecap="round" /></svg>
         </div>
       </At>}
-      {t > C.n44b - 0.2 && <At x={760} y={300} p={pop(t, C.n44b - 0.1, 8, 240)} rot={4}>
-        <div style={{ padding: '0 30px', border: `10px solid ${COL.bolt}`, borderRadius: 18 }}><Big text="44" size={170} color={COL.bolt} /></div>
+      {t > C.sat - 0.4 && <At x={-120 + 1320 * sa} y={250 + Math.sin(sa * Math.PI) * -60 + 120} p={pop(t, C.sat - 0.3, 10, 200)} rot={-10 + 6 * sa}><Cut k="l_satellite" w={420} /></At>}
+      {t > C.n44b - 0.2 && <At x={780} y={360} p={pop(t, C.n44b - 0.1, 8, 240)} rot={6}>
+        <div style={{ padding: '0 30px', border: `12px solid ${COL.bolt}`, borderRadius: 22, background: 'rgba(5,10,25,0.6)' }}><Big text="44" size={180} color={COL.bolt} /></div>
       </At>}
-      {t > C.sat - 0.3 && (() => { const a = ramp(t, C.sat - 0.3, C.oil, linear); return <At x={150 + 780 * a} y={150 + Math.sin(a * Math.PI) * -40 + 60} p={pop(t, C.sat - 0.2, 10, 200)} rot={-8}><Satellite /></At>; })()}
     </AbsoluteFill>
   );
 };
-/** Oil burned and CO2 emitted. */
+/** Oil burned (barrels on fire, pump jacks) and CO2 (smoke clouds rising). */
 const Oil: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const o = win(t, C.oil - 0.2, C.roshni + 0.2, 0.3, 0.4);
   if (o <= 0) return null;
   const pts = Object.values(GEO.oil);
   return (
     <AbsoluteFill style={{ opacity: o }}>
-      {pts.map((p, i) => { const [x, y] = toS(c, p); return <At key={i} x={x} y={y} p={pop(t, C.n1200a - 0.3 + i * 0.06, 10, 220)}><Barrel t={t} i={i} s={0.9} /></At>; })}
-      {t > C.co2a - 0.2 && Array.from({ length: 30 }, (_, i) => {
-        const p = pts[i % pts.length];
+      {pts.map((p, i) => { const [x, y] = toS(c, p); return i % 4 === 1 ? <At key={i} x={x} y={y - 40} p={pop(t, C.n1200a - 0.35 + i * 0.05, 10, 210)}><div style={{ transform: `rotate(${3 * Math.sin(t * 3 + i)}deg)` }}><Cut k="o_pumpjack" w={150} /></div></At> : <At key={i} x={x} y={y - 50} p={pop(t, C.n1200a - 0.35 + i * 0.05, 10, 210)}><Barrel t={t} i={i} s={1} /></At>; })}
+      {t > C.co2a - 0.3 && Array.from({ length: 12 }, (_, i) => {
+        const p = pts[(i * 5) % pts.length];
         const [x, y] = toS(c, p);
-        const ph = ((t - C.co2a) * 0.45 + rnd(i, 14)) % 1;
-        return <At key={i} x={x + (rnd(i, 15) - 0.5) * 120} y={y - 80 - ph * 420} p={0.6 + ph * 0.9} o={(1 - ph) * ramp(t, C.co2a - 0.2, C.co2a + 0.6, linear)}>
-          <div style={{ width: 70, height: 70, borderRadius: '50%', background: `radial-gradient(circle at 35% 35%, #B49A88, ${COL.co2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: LABEL, fontWeight: 700, fontSize: 18, color: '#fff' }}>CO₂</div>
-        </At>;
+        const ph = ((t - C.co2a + 0.3) * 0.32 + rnd(i, 14)) % 1;
+        return <At key={`s${i}`} x={x + (rnd(i, 15) - 0.5) * 140 + ph * 120} y={y - 120 - ph * 520} p={0.5 + ph * 1.1} o={Math.sin(ph * Math.PI) * ramp(t, C.co2a - 0.3, C.co2a + 0.5, linear)}><Cut k="o_co2_cloud" w={360} shadow={false} /></At>;
       })}
-      <At x={540} y={300} p={pop(t, C.n1200a - 0.1, 10, 200)} o={1 - ramp(t, C.co2a - 0.2, C.co2a + 0.2, linear)}><Big text={<>{fmtIN(roll(t, C.n1200a - 0.1, 1200))} बैरल तेल</>} size={100} color={COL.oil} font={UI} /></At>
-      {t > C.n1200b - 0.2 && <At x={540} y={300} p={pop(t, C.n1200b - 0.1, 10, 200)}><Big text={<>{fmtIN(roll(t, C.n1200b - 0.1, 1200))} टन CO₂</>} size={100} color="#D7B9A2" font={UI} /></At>}
+      <At x={540} y={300} p={pop(t, C.n1200a - 0.1, 10, 200)} o={1 - ramp(t, C.co2a - 0.2, C.co2a + 0.2, linear)}><Big text={<>{fmtIN(roll(t, C.n1200a - 0.1, 1200))} बैरल तेल</>} size={110} color={COL.oil} font={UI} /></At>
+      {t > C.n1200b - 0.2 && <At x={540} y={300} p={pop(t, C.n1200b - 0.1, 10, 200)}><Big text={<>{fmtIN(roll(t, C.n1200b - 0.1, 1200))} टन CO₂</>} size={110} color="#D7B9A2" font={UI} /></At>}
     </AbsoluteFill>
   );
 };
 
-// ------------------------------------------------------------------ the globe scenes (light ×7.5, the orbit)
-const GLOBE = staticFile('everysecond/maps/globe_eq.jpg');
-/** A spinning globe: the equirectangular texture scrolled inside a circle, with sphere shading on top. */
-const Globe: React.FC<{ t: number; r: number }> = ({ t, r }) => {
-  const off = (t * 0.06) % 1;
-  return (
-    <div style={{ position: 'relative', width: r * 2, height: r * 2, borderRadius: '50%', overflow: 'hidden', boxShadow: `0 0 ${r * 0.35}px rgba(110,190,255,0.55)` }}>
-      <div style={{ position: 'absolute', left: -off * r * 4, top: 0, width: r * 8, height: r * 2, backgroundImage: `url(${GLOBE})`, backgroundSize: `${r * 4}px ${r * 2}px`, backgroundRepeat: 'repeat-x', filter: 'saturate(1.2)' }} />
-      <div style={{ position: 'absolute', inset: 0, borderRadius: '50%', background: 'radial-gradient(circle at 36% 34%, rgba(255,255,255,0.22), rgba(255,255,255,0) 35%), radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 52%, rgba(0,0,10,0.65) 74%, rgba(0,0,10,0.92) 100%)' }} />
-    </div>
-  );
-};
+// ------------------------------------------------------------------ space (light ×7.5, the orbit)
 const SpaceScene: React.FC<{ t: number }> = ({ t }) => {
-  const stars = React.useMemo(() => Array.from({ length: 140 }, (_, i) => [rnd(i, 20) * 1080, rnd(i, 21) * 1920, 0.8 + rnd(i, 22) * 2, rnd(i, 23) * 6]), []);
   const inQ = ramp(t, C.roshni - 0.6, C.roshni + 0.2, inOut);
   const out = ramp(t, C.yesab - 0.4, C.yesab + 0.3, inOut);
   if (inQ <= 0 || out >= 1) return null;
   const orbit = ramp(t, C.tum - 0.2, C.suraj + 0.6, inOut);
-  const r = 330 - 190 * orbit;
-  // the globe moves onto its orbit (an arc around the Sun at the bottom right)
+  const r = 300 - 170 * orbit;
   const a0 = -2.25, a = a0 + 0.35 * ramp(t, C.km30 - 0.4, C.km30 + 1.0, inOut);
   const sx = 1020, sy = 1880, R = 980;
   const gx = 540 + (sx + Math.cos(a) * R - 540) * orbit, gy = 900 + (sy + Math.sin(a) * R - 900) * orbit;
   const loops = 7.5 * ramp(t, C.n7 - 0.4, C.chakkar + 0.8, linear);
   const ringO = win(t, C.n7 - 0.5, C.tum, 0.3, 0.3);
+  const ph = (loops % 1) * Math.PI * 2;
+  const lx = gx + Math.cos(ph) * r * 1.35, ly = gy + Math.sin(ph) * r * 0.36, front = Math.sin(ph) > 0;
+  const tang = (Math.atan2(Math.cos(ph) * r * 0.36, -Math.sin(ph) * r * 1.35) * 180) / Math.PI;
+  const streak = (z: boolean) => ringO > 0 && front === z && (
+    <div style={{ position: 'absolute', left: lx, top: ly, transform: `translate(-100%,-50%) rotate(${tang}deg)`, transformOrigin: '100% 50%', opacity: ringO }}><Cut k="s_light_streak" w={520} screen /></div>
+  );
   return (
-    <AbsoluteFill style={{ opacity: inQ * (1 - out), background: 'radial-gradient(ellipse at 50% 40%, #0F3A4E 0%, #082236 45%, #030A16 100%)' }}>
+    <AbsoluteFill style={{ opacity: inQ * (1 - out), background: '#02040A', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', inset: -80, transform: `translate(${-30 * (t - C.roshni)}px, 0) scale(1.1)` }}><Cut k="s_stars" w={1240} screen shadow={false} /></div>
+      {orbit > 0.01 && <div style={{ position: 'absolute', left: sx - 470, top: sy - 470, opacity: orbit, transform: `rotate(${t * 5}deg)` }}><Cut k="s_sun" w={940} screen /></div>}
       <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0 }}>
-        {stars.map(([x, y, s, ph], i) => <circle key={i} cx={x} cy={y} r={s} fill="#fff" opacity={0.25 + 0.3 * (0.5 + 0.5 * Math.sin(t * LOOPF(9) * (1 + (i % 3)) + ph))} />)}
-        {orbit > 0.01 && <>
-          <circle cx={sx} cy={sy} r={150} fill="#FFC94A" opacity={orbit} />
-          <circle cx={sx} cy={sy} r={230} fill="#FFB020" opacity={0.25 * orbit} />
-          <circle cx={sx} cy={sy} r={R} fill="none" stroke="#fff" strokeWidth={3} strokeDasharray="10 12" opacity={0.6 * orbit} />
-          {(() => { const p = ramp(t, C.km30 - 0.4, C.km30 + 1.0, inOut); if (p <= 0) return null; const d = `M${sx + Math.cos(a0) * R},${sy + Math.sin(a0) * R} A${R} ${R} 0 0 1 ${sx + Math.cos(a) * R},${sy + Math.sin(a) * R}`; return <path d={d} fill="none" stroke={COL.gold} strokeWidth={14} strokeLinecap="round" />; })()}
-        </>}
+        {orbit > 0.01 && <circle cx={sx} cy={sy} r={R} fill="none" stroke="#fff" strokeWidth={3} strokeDasharray="10 12" opacity={0.55 * orbit} />}
+        {(() => { const p = ramp(t, C.km30 - 0.4, C.km30 + 1.0, inOut); if (p <= 0) return null; return <path d={`M${sx + Math.cos(a0) * R},${sy + Math.sin(a0) * R} A${R} ${R} 0 0 1 ${sx + Math.cos(a) * R},${sy + Math.sin(a) * R}`} fill="none" stroke={COL.gold} strokeWidth={14} strokeLinecap="round" />; })()}
+        {ringO > 0 && <ellipse cx={gx} cy={gy} rx={r * 1.35} ry={r * 0.36} fill="none" stroke="#9FD8FF" strokeWidth={4} opacity={0.45 * ringO} />}
       </svg>
-      <div style={{ position: 'absolute', left: gx - r, top: gy - r }}><Globe t={t} r={r} /></div>
-      {ringO > 0 && (() => {
-        const ph = (loops % 1) * Math.PI * 2;
-        const lx = gx + Math.cos(ph) * r * 1.25, ly = gy + Math.sin(ph) * r * 0.32;
-        return (
-          <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: ringO }}>
-            <ellipse cx={gx} cy={gy} rx={r * 1.25} ry={r * 0.32} fill="none" stroke={COL.gold} strokeWidth={6} opacity={0.7} />
-            <circle cx={lx} cy={ly} r={18} fill="#fff" /><circle cx={lx} cy={ly} r={40} fill={COL.gold} opacity={0.35} />
-          </svg>
-        );
-      })()}
-      {ringO > 0 && <At x={540} y={330} p={pop(t, C.n7 - 0.1, 10, 200)} o={ringO}><Big text={<>×{(Math.floor(loops * 2) / 2).toFixed(1)}</>} size={150} color={COL.gold} /></At>}
-      {t > C.km30 - 0.3 && <At x={gx - 40} y={gy - r - 90} p={pop(t, C.km30 - 0.2, 10, 200)} rot={-14}><Big text="30 KM" size={110} color={COL.gold} /></At>}
-      {t > C.tum - 0.1 && <At x={gx + r * 0.25} y={gy - r * 0.05} p={pop(t, C.tumbhi - 0.1, 10, 220)}><Tag text="तुम" size={44} color={COL.in} /></At>}
+      {streak(false)}
+      <At x={gx} y={gy} rot={(t - C.roshni) * 14}><Cut k="s_earth" w={r * 2} /></At>
+      {streak(true)}
+      {ringO > 0 && <At x={540} y={330} p={pop(t, C.n7 - 0.1, 10, 200)} o={ringO}><Big text={<>×{(Math.floor(loops * 2) / 2).toFixed(1)}</>} size={160} color={COL.gold} /></At>}
+      {t > C.km30 - 0.3 && <At x={gx - 40} y={gy - r - 110} p={pop(t, C.km30 - 0.2, 10, 200)} rot={-14}><Big text="30 KM" size={120} color={COL.gold} /></At>}
+      {t > C.tum - 0.3 && <At x={230} y={1380 - 60 * ramp(t, C.tum - 0.3, C.tum + 0.4, easeOut)} p={pop(t, C.tum - 0.25, 10, 180)} o={1 - ramp(t, C.yesab - 0.3, C.yesab, linear)}><Cut k="a_you_lookup" w={230} /></At>}
+      {t > C.tum - 0.1 && <At x={260} y={1000} p={pop(t, C.tum - 0.05, 10, 220)} o={1 - ramp(t, C.yesab - 0.3, C.yesab, linear)}><Tag text="तुम" size={56} color={COL.in} /></At>}
       <div style={{ position: 'absolute', right: 30, bottom: 110, fontFamily: LABEL, fontSize: 22, color: 'rgba(255,255,255,0.55)', opacity: orbit }}>NOT TO SCALE</div>
     </AbsoluteFill>
   );
 };
 
-// ------------------------------------------------------------------ the frame-0 stopwatch (and the loop's end)
-const Clock: React.FC<{ t: number }> = ({ t }) => {
-  const o = 1 - ramp(t, C.n4a - 0.4, C.n4a, linear) + ramp(t, C.yesab + 0.2, DURATION_S - 0.3, linear);
-  const p = ((t % 1) + 1) % 1;
+/** "Ye sab hua": every prop of the video flashes past once, then "aur phir bhi…" lands back on the stopwatch. */
+const Montage: React.FC<{ t: number }> = ({ t }) => {
+  const ks = ['b_baby_1', 'e_envelope', 'e_phone_paid', 'l_storm_cloud', 'o_barrel_fire', 's_earth', 'b_mother_india', 'l_satellite', 'e_coin', 'b_baby_2'];
+  const t0 = C.yesab - 0.1;
+  if (t < t0 || t > C.phirbhi + 0.3) return null;
   return (
     <>
-      <At x={540} y={290} o={clamp01(o)}><Big text={<>1 सेकंड</>} size={140} color="#fff" font={UI} /></At>
-      <At x={540} y={1080} o={clamp01(o)}><Stopwatch p={p} size={470} /></At>
-      {t > C.dharti - 0.2 && t < C.kya + 0.3 && <At x={540} y={480} p={pop(t, C.km30a - 0.1, 10, 200)} o={1 - ramp(t, C.kya, C.kya + 0.3, linear)} rot={-6}><Big text="30 KM" size={120} color={COL.gold} /></At>}
-      {t > C.kya - 0.2 && t < C.har + 0.2 && <At x={540} y={480} p={pop(t, C.kya - 0.1, 9, 220)} o={1 - ramp(t, C.har - 0.1, C.har + 0.2, linear)}><Big text="?" size={220} color="#fff" /></At>}
+      {ks.map((k, i) => {
+        const a = t0 + i * 0.12, d = t - a;
+        if (d < 0 || d > 0.9) return null;
+        const ang = i * 2.4, rad = 300 + 140 * (i % 3);
+        return <At key={k} x={540 + Math.cos(ang) * rad * (0.6 + d)} y={960 + Math.sin(ang) * rad * (0.6 + d)} p={pop(t, a, 9, 230)} o={1 - clamp01((d - 0.5) / 0.4)} rot={(i % 2 ? 1 : -1) * 12}><Cut k={k} w={260} /></At>;
+      })}
     </>
   );
 };
@@ -375,12 +379,12 @@ export const EverySecond: React.FC<{ audio?: string; captions?: boolean }> = ({ 
   const space = ramp(t, C.roshni - 0.6, C.roshni + 0.2, inOut) * (1 - ramp(t, C.yesab - 0.4, C.yesab + 0.3, inOut));
   return (
     <AbsoluteFill style={{ background: 'linear-gradient(180deg, #1D4E8F, #0E2A55)', overflow: 'hidden' }}>
-      {space < 0.999 && <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy}px)` }}>
+      {space < 0.999 && <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy}px) rotate(${rollAt(t).toFixed(3)}deg) scale(1.05)` }}>
         <AbsoluteFill style={{ perspective: '1600px', perspectiveOrigin: '540px 700px' }}>
           <AbsoluteFill style={{ transform: `rotateX(${tilt}deg) scale(${1 + tilt / 120})`, transformOrigin: '540px 1100px', boxShadow: tilt > 0.5 ? '0 -20px 60px rgba(0,0,0,0.5)' : undefined }}>
             <AbsoluteFill style={{ filter: blur > 0.6 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
               <AbsoluteFill style={{ filter: MAP_GRADE }}><MapLayers c={c} /></AbsoluteFill>
-              <Clouds t={t} a={0.5} />
+              <Clouds t={t} a={0.35} />
               <MapVectors t={t} c={c} />
             </AbsoluteFill>
           </AbsoluteFill>
@@ -391,9 +395,11 @@ export const EverySecond: React.FC<{ audio?: string; captions?: boolean }> = ({ 
         <Upi t={t} c={c} />
         <Lightning t={t} c={c} />
         <Oil t={t} c={c} />
-        <Clock t={t} />
       </AbsoluteFill>}
       <SpaceScene t={t} />
+      <HookSpace t={t} />
+      <Clock t={t} />
+      <Montage t={t} />
       {split && <NullPanel t={t} q={split.q} {...split.w} fps={fps} />}
       {captions && <Captions t={t} top={split ? 860 : 1470} />}
       <div style={{ position: 'absolute', left: 20, right: 20, bottom: 16, textAlign: 'center', fontFamily: LABEL, fontSize: 14, color: 'rgba(255,255,255,0.55)' }}>{CREDIT}</div>
