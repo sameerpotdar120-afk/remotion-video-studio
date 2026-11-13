@@ -31,6 +31,25 @@ const MapLabel: React.FC<{ text: string; color?: string; size?: number }> = ({ t
     {text}<div style={{ fontSize: size * 0.8, lineHeight: 0.9 }}>↓</div>
   </div>
 );
+/** A place on the map: a pulsing pin on the exact point and a name plate (Hindi, with the English name below). */
+const Place: React.FC<{ t: number; t0: number; x: number; y: number; hi: string; en: string; color?: string; up?: boolean; o?: number }> = ({ t, t0, x, y, hi, en, color = COL.gold, up = true, o = 1 }) => {
+  const p = pop(t, t0, 10, 200);
+  if (p <= 0 || o <= 0) return null;
+  const ph = ((t - t0) * 1.1) % 1;
+  return (
+    <div style={{ position: 'absolute', left: 0, top: 0, opacity: o }}>
+      <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0, overflow: 'visible' }}>
+        <circle cx={x} cy={y} r={14 + 46 * ph} fill="none" stroke={color} strokeWidth={5} opacity={(1 - ph) * p} />
+        <circle cx={x} cy={y} r={13 * p} fill={color} stroke="#fff" strokeWidth={5} />
+        <line x1={x} y1={y + (up ? -16 : 16)} x2={x} y2={y + (up ? -78 : 78) * p} stroke="#fff" strokeWidth={4} />
+      </svg>
+      <div style={{ position: 'absolute', left: x, top: y + (up ? -84 : 84), transform: `translate(-50%, ${up ? '-100%' : '0'}) scale(${p})`, transformOrigin: up ? '50% 100%' : '50% 0', textAlign: 'center', padding: '6px 22px 8px', background: 'rgba(8,12,20,0.88)', border: `5px solid ${color}`, borderRadius: 18, boxShadow: `0 0 26px ${color}66, 0 10px 18px rgba(0,0,0,0.5)` }}>
+        <div style={{ fontFamily: UI, fontWeight: 800, fontSize: 56, lineHeight: 1.05, color: '#fff', whiteSpace: 'nowrap' }}>{hi}</div>
+        <div style={{ fontFamily: LABEL, fontWeight: 600, fontSize: 24, letterSpacing: 3, color, whiteSpace: 'nowrap' }}>{en}</div>
+      </div>
+    </div>
+  );
+};
 /** An asset if it has arrived, else a simple placeholder card (so a missing image never breaks a render). */
 const Img: React.FC<{ k: string; w: number; label?: string }> = ({ k, w, label }) => has(k) ? <Cut k={k} w={w} /> : (
   <div style={{ width: w, height: w * 0.7, borderRadius: 24, background: 'rgba(255,240,210,0.15)', border: '4px dashed rgba(255,240,210,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: LABEL, fontSize: 30, color: '#FFE7C0' }}>{label ?? k}</div>
@@ -61,8 +80,8 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const far = c.mpp > 600;
   // India (red) and Sri Lanka (blue) rise at "Bharat ka aakhri sira" (wide), Pamban (yellow-red) and Mannar (blue) up close
   const indiaG = win(t, C.ye - 0.2, C.dhanush1 + 0.4, 0.4, 0.5) + win(t, C.angrez - 0.1, C.rahega + 0.3, 0.4, 0.5);
-  const slG = win(t, C.mannar - 0.2, C.ramsetu1 + 1.0, 0.4, 0.5) + win(t, C.angrez + 0.2, C.rahega + 0.3, 0.4, 0.5) + 0.85 * win(t, C.isro2 - 0.2, C.vigyan, 0.4, 0.5);
-  const pambanG = win(t, C.dhanush1 - 0.3, C.yahin + 0.6, 0.4, 0.5) + 0.85 * win(t, C.isro2 - 0.2, C.vigyan, 0.4, 0.5);
+  const slG = win(t, C.mannar - 0.2, C.aastha + 0.3, 0.4, 0.5) + win(t, C.angrez + 0.2, C.rahega + 0.3, 0.4, 0.5) + 0.85 * win(t, C.isro2 - 0.2, C.vigyan, 0.4, 0.5);
+  const pambanG = win(t, C.dhanush1 - 0.3, C.aastha + 0.3, 0.4, 0.5) + 0.85 * win(t, C.isro2 - 0.2, C.vigyan, 0.4, 0.5) + 0.8 * win(t, C.pamban - 0.3, C.sarkar + 0.3, 0.4, 0.5);
   // the gold Setu line: drawn Dhanushkodi→Mannar on "yahin se… ek lakeer", glowing in the faith, ISRO and ending beats
   const draw = ramp(t, C.yahin, C.lakeer + 0.6, inOut);
   const lineO = Math.max(win(t, C.yahin - 0.1, C.aastha + 0.6, 0.2, 0.6), win(t, C.n2024, C.vigyan + 0.2, 0.4, 0.4), win(t, C.jo - 0.2, C.par2 + 0.2, 0.4, 0.4), win(t, C.setu_last - 0.2, DURATION_S - 1.4, 0.5, 1.0));
@@ -162,6 +181,7 @@ const Grade: React.FC<{ t: number }> = ({ t }) => {
 const fmtIN = (n: number) => Math.round(n).toLocaleString('en-IN');
 const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const dk = toS(c, GEO.places.dhanushkodi), tm = toS(c, GEO.places.talaimannar);
+  const rm = toS(c, GEO.places.rameswaram), palk = toS(c, GEO.places.palk), gulf = toS(c, GEO.places.gulf), pb = toS(c, merc(79.37, 9.24)), pbw = toS(c, merc(79.26, 9.21));
   const S = GEO.setu.map((p) => toS(c, p));
   const rail = GEO.rail.map((p) => toS(c, p));
   const w = (a: number, b: number, fi = 0.25, fo = 0.3) => win(t, a, b, fi, fo);
@@ -189,20 +209,21 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         if (o <= 0.01) return null;
         return (
           <>
-            <At x={dk[0] - 40} y={dk[1] - 150} o={o}><Tag text="भारत" size={54} color={COL.red} /></At>
-            <At x={tm[0] + 20} y={tm[1] + 150} o={o}><Tag text="श्रीलंका" size={54} color={COL.blue} /></At>
+            <At x={Math.max(150, dk[0] + 40)} y={dk[1] - 150} o={o}><Tag text="← भारत" size={54} color={COL.red} /></At>
+            <At x={Math.min(900, tm[0] - 40)} y={tm[1] + 150} o={o}><Tag text="श्रीलंका →" size={54} color={COL.blue} /></At>
           </>
         );
       })()}
       {t > C.n1480 - 0.3 && t < C.toofan + 0.6 && <At x={540} y={330} p={pop(t, C.n1480 - 0.1, 9, 220)} o={w(C.n1480 - 0.2, C.toofan + 0.6)} rot={-3}><Big text="1480" size={180} font={SERIF} color="#FFE9B0" ink={INK} /></At>}
-      {t > C.n1480 - 0.6 && t < C.toofan + 0.6 && <At x={780} y={560} p={pop(t, C.n1480 - 0.4, 10, 180)} o={w(C.n1480 - 0.5, C.toofan + 0.6)} rot={8}><Img k="p_palm_leaf" w={380} label="palm-leaf record" /></At>}
+      {t > C.ram0 + 3.0 && t < C.toofan + 0.4 && <At x={270} y={600} p={pop(t, C.ram0 + 3.1, 10, 170)} o={w(C.ram0 + 3.0, C.toofan + 0.4)} rot={-5}><div style={{ textAlign: 'center' }}><Img k="t_rameswaram_temple" w={400} /><Tag text="रामेश्वरम मंदिर" size={40} color={COL.saffron} /></div></At>}
+      {t > C.n1480 - 0.6 && t < C.toofan + 0.6 && <At x={780} y={600} p={pop(t, C.n1480 - 0.4, 10, 180)} o={w(C.n1480 - 0.5, C.toofan + 0.6)} rot={8}><Img k="p_palm_leaf" w={380} label="palm-leaf record" /></At>}
       {t > C.toofan - 0.4 && t < C.ye + 0.2 && <At x={stormX} y={520} o={w(C.toofan - 0.4, C.ye + 0.2, 0.3, 0.4)}><Cut k="l_storm_cloud" w={780} /></At>}
       {t > C.toofan + 0.3 && t < C.ye && has('c_giant_wave') && <At x={1300 - 1700 * ramp(t, C.toofan + 0.3, C.n1964 + 0.8, inOut)} y={1150} o={w(C.toofan + 0.3, C.ye)}><Cut k="c_giant_wave" w={900} /></At>}
       {t > C.n1964 - 0.2 && t < C.ye && <At x={540} y={330} p={pop(t, C.n1964 - 0.1, 8, 240)} o={w(C.n1964 - 0.2, C.ye)} rot={4}><Big text="1964" size={180} font={SERIF} color="#FFB0A0" ink={INK} /></At>}
       {t > C.n1964 - 0.2 && t < C.ye && has('c_cyclone') && <At x={820} y={640} p={pop(t, C.n1964, 10, 180)} o={w(C.n1964 - 0.2, C.ye) * 0.9} rot={-t * 90}><Cut k="c_cyclone" w={360} /></At>}
       {t > C.kaise - 0.2 && t < C.ye + 0.4 && <At x={540} y={1180} p={pop(t, C.kaise - 0.1, 8, 240)} o={w(C.kaise - 0.2, C.ye + 0.4)} rot={6}><Big text="?" size={300} color={COL.gold} /></At>}
       {/* Dhanushkodi, the bow */}
-      {t > C.dhanush1 - 0.3 && t < C.yahin + 0.3 && <At x={dk[0]} y={dk[1] - 120} p={pop(t, C.dhanush1 - 0.2, 10, 200)} o={w(C.dhanush1 - 0.3, C.yahin + 0.3)}><MapLabel text="धनुषकोडी" size={70} /></At>}
+      {t > C.dhanush1 - 0.3 && t < C.aastha + 0.3 && <Place t={t} t0={C.dhanush1 - 0.2} x={dk[0]} y={dk[1]} hi="धनुषकोडी" en="DHANUSHKODI" color={COL.red} o={w(C.dhanush1 - 0.3, C.aastha + 0.3)} />}
       {t > C.matlab - 0.2 && t < C.nok - 0.6 && <At x={540} y={330} p={pop(t, C.matlab - 0.1, 10, 200)} o={w(C.matlab - 0.2, C.nok - 0.6)}><Big text={<>धनुष + कोडी</>} size={120} font={UI} color={COL.gold} /><div style={{ textAlign: 'center' }}><Big text="= धनुष का सिरा" size={70} font={UI} /></div></At>}
       {t > C.matlab + 1.4 && t < C.yahin && <At x={300} y={1180} p={pop(t, C.matlab + 1.5, 10, 160)} o={w(C.matlab + 1.4, C.yahin, 0.4, 0.4)}><Img k="f_shri_ram" w={460} label="Shri Ram" /></At>}
       {t > C.nok - 1.2 && t < C.yahin && (() => {
@@ -210,10 +231,12 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         return <At x={760 + (dk[0] - 760) * q} y={1020 + (dk[1] - 140 - 1020) * q} p={pop(t, C.nok - 1.1, 10, 170)} o={w(C.nok - 1.2, C.yahin, 0.3, 0.4)} rot={-30 + 40 * q}><Img k="f_golden_bow" w={300} label="golden bow" /></At>;
       })()}
       {/* the two bays, Ram Setu */}
-      {t > C.palk - 0.2 && t < C.aastha + 0.3 && <At x={540} y={560} p={pop(t, C.palk - 0.1, 10, 200)} o={w(C.palk - 0.2, C.aastha + 0.3)}><Tag text="पाक की खाड़ी" size={52} color={COL.sky} /></At>}
-      {t > C.mannar2 - 0.2 && t < C.aastha + 0.3 && <At x={540} y={1360} p={pop(t, C.mannar2 - 0.1, 10, 200)} o={w(C.mannar2 - 0.2, C.aastha + 0.3)}><Tag text="मन्नार की खाड़ी" size={52} color={COL.sky} /></At>}
+      {t > C.palk - 0.2 && t < C.aastha + 0.3 && <At x={palk[0]} y={palk[1]} p={pop(t, C.palk - 0.1, 10, 200)} o={w(C.palk - 0.2, C.aastha + 0.3)}><div style={{ textAlign: 'center' }}><Big text="पाक की खाड़ी" size={64} font={UI} color={COL.sky} /><div style={{ fontFamily: LABEL, fontSize: 24, letterSpacing: 4, color: '#DDF1FF' }}>PALK BAY</div></div></At>}
+      {t > C.mannar2 - 0.2 && t < C.aastha + 0.3 && <At x={gulf[0]} y={gulf[1]} p={pop(t, C.mannar2 - 0.1, 10, 200)} o={w(C.mannar2 - 0.2, C.aastha + 0.3)}><div style={{ textAlign: 'center' }}><Big text="मन्नार की खाड़ी" size={64} font={UI} color={COL.sky} /><div style={{ fontFamily: LABEL, fontSize: 24, letterSpacing: 4, color: '#DDF1FF' }}>GULF OF MANNAR</div></div></At>}
+      {t > C.lakeer - 0.6 && t < C.aastha + 0.3 && <Place t={t} t0={C.lakeer - 0.5} x={rm[0]} y={rm[1]} hi="रामेश्वरम" en="RAMESWARAM" color={COL.saffron} o={w(C.lakeer - 0.6, C.aastha + 0.3)} />}
+      {t > C.lakeer - 0.2 && t < C.aastha + 0.3 && <At x={pbw[0]} y={pbw[1] + 70} p={pop(t, C.lakeer - 0.1, 10, 200)} o={w(C.lakeer - 0.2, C.aastha + 0.3)}><Tag text="पंबन द्वीप" size={40} color={COL.red} /></At>}
       {t > C.beech - 0.1 && t < C.aastha + 0.4 && <At x={540} y={320} p={pop(t, C.beech, 9, 210)} o={w(C.beech - 0.1, C.aastha + 0.4)}><Big text="राम सेतु" size={170} font={UI} color={COL.saffron} /></At>}
-      {t > C.mannar - 0.2 && t < C.aastha && <At x={tm[0]} y={tm[1] + 140} p={pop(t, C.mannar - 0.1, 10, 200)} o={w(C.mannar - 0.2, C.aastha)}><Tag text="मन्नार, श्रीलंका" size={44} color={COL.blue} /></At>}
+      {t > C.mannar - 0.2 && t < C.aastha + 0.3 && <Place t={t} t0={C.mannar - 0.1} x={tm[0]} y={tm[1]} hi="तलाईमन्नार" en="TALAIMANNAR · SRI LANKA" color={COL.blue} up={false} o={w(C.mannar - 0.2, C.aastha + 0.3)} />}
       {/* faith */}
       {vs > 0 && <At x={540 + 80 * Math.sin(t * 0.5)} y={1150} p={pop(t, C.aastha - 0.1, 11, 160)} o={vs}><Img k="f_vanar_sena" w={1000} label="Vanar Sena" /></At>}
       {t > C.nal - 0.3 && t < C.tairne + 1.2 && <At x={330} y={1180} p={pop(t, C.nal - 0.2, 10, 180)} o={w(C.nal - 0.3, C.tairne + 1.2)}><Img k="f_nal" w={480} label="Nal" /></At>}
@@ -226,8 +249,8 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         return (
           <At key={i} x={x} y={y - 30 + bob} p={p * 0.95} o={w(C.tairne - 0.4, C.angrez + 0.3)}>
             <div style={{ position: 'relative' }}>
-              {has('f_floating_stone') ? <Cut k="f_floating_stone" w={170} /> : <div style={{ width: 150, height: 90, borderRadius: '45% 50% 40% 55%', background: 'radial-gradient(circle at 40% 35%, #A9A39B, #6E6860 60%, #4A453F)', boxShadow: '0 12px 16px rgba(0,0,0,0.45)' }} />}
-              <div style={{ position: 'absolute', left: 0, right: 0, top: '22%', textAlign: 'center', fontFamily: UI, fontWeight: 800, fontSize: 52, color: COL.saffron, opacity: ramO, textShadow: `0 0 ${18 * ramO}px #FFB347, 0 2px 0 #5A2A00` }}>राम</div>
+              {has('f_floating_stone') ? <Cut k="f_floating_stone" w={215} /> : <div style={{ width: 150, height: 90, borderRadius: '45% 50% 40% 55%', background: 'radial-gradient(circle at 40% 35%, #A9A39B, #6E6860 60%, #4A453F)', boxShadow: '0 12px 16px rgba(0,0,0,0.45)' }} />}
+              <div style={{ position: 'absolute', left: 0, right: 0, top: '22%', textAlign: 'center', fontFamily: UI, fontWeight: 800, fontSize: 64, color: COL.saffron, opacity: ramO, textShadow: `0 0 ${18 * ramO}px #FFB347, 0 2px 0 #5A2A00` }}>राम</div>
             </div>
           </At>
         );
@@ -316,7 +339,9 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {t > C.church - 0.4 && t < C.mita + 0.4 && <At x={300} y={1150} p={pop(t, C.church - 0.3, 11, 160)} o={w(C.church - 0.4, C.mita + 0.4, 0.3, 0.6)}><Img k="r_ruined_church" w={420} label="ruined church" /></At>}
       {t > C.station - 0.4 && t < C.mita + 0.4 && <At x={790} y={1120} p={pop(t, C.station - 0.3, 11, 160)} o={w(C.station - 0.4, C.mita + 0.4, 0.3, 0.6)}><Img k="r_ruined_station" w={380} label="ruined station" /></At>}
       {t > C.machhuare - 0.4 && t < C.mita + 0.4 && <At x={540} y={1430} p={pop(t, C.machhuare - 0.3, 11, 160)} o={w(C.machhuare - 0.4, C.mita + 0.4, 0.3, 0.6)}><Img k="r_fisher_family" w={560} label="fisher family" /></At>}
-      {t > C.sarkar - 0.2 && t < C.mita && <At x={dk[0]} y={dk[1] - 110} p={pop(t, C.sarkar - 0.1, 10, 200)} o={w(C.sarkar - 0.2, C.mita)}><MapLabel text="धनुषकोडी" size={60} color="#FFD2C4" /></At>}
+      {t > C.par2 - 0.3 && t < C.chakravat && <Place t={t} t0={C.par2 - 0.2} x={dk[0]} y={dk[1]} hi="धनुषकोडी" en="DHANUSHKODI · 1964" color={COL.red} o={w(C.par2 - 0.3, C.chakravat)} />}
+      {t > C.pamban - 0.3 && t < C.sarkar + 0.2 && <At x={pb[0]} y={pb[1] - 60} p={pop(t, C.pamban - 0.2, 10, 200)} o={w(C.pamban - 0.3, C.sarkar + 0.2)}><Tag text="पंबन द्वीप" size={50} color={COL.red} /></At>}
+      {t > C.sarkar - 0.2 && t < C.mita && <Place t={t} t0={C.sarkar - 0.1} x={dk[0]} y={dk[1]} hi="धनुषकोडी" en="DHANUSHKODI · TODAY" color="#FFB0A0" o={w(C.sarkar - 0.2, C.mita)} />}
       {t > C.setu_last - 0.2 && t < C.usi + 0.5 && <At x={540} y={330} p={pop(t, C.setu_last - 0.1, 9, 210)} o={w(C.setu_last - 0.2, C.usi + 0.5)}><Big text="राम सेतु" size={170} font={UI} color={COL.saffron} /></At>}
       {t > C.n29b - 0.3 && t < DURATION_S - 1.2 && <At x={(dk[0] + tm[0]) / 2} y={(dk[1] + tm[1]) / 2 + 120} p={pop(t, C.n29b - 0.2, 10, 200)} o={w(C.n29b - 0.3, DURATION_S - 1.2, 0.3, 0.8)}><Tag text="29 km" size={52} /></At>}
     </>
