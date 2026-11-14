@@ -1,0 +1,22 @@
+Reference: "Is the UK a Country? How England, Scotland, Wales & Ireland United" (English Short, 83.4 s, 720x1280, 30 fps).
+Transcribed with faster-whisper (medium, English).
+
+0:00  Did you know that the United Kingdom has one king, one passport, and one army?
+0:04  But inside it, there are four countries. England, Wales, Scotland, and Northern Ireland.
+0:09  And each one has its own capital. So is it one country or four?
+0:14  You see, it all started with England. And in the 13th century, Wales joined it.
+0:18  Well, sort of. England simply conquered it.
+0:21  And, just in case, surrounded it with a ring of massive castles.
+0:25  Next in line was Scotland, but this time it wasn't so easy.
+0:29  The Scots fought back for centuries, until in 1603, their king inherited the English throne.
+0:35  But he moved to London.
+0:37  And Scotland, struggling financially, agreed to a full union, but negotiated to keep its own laws, courts and church.
+0:44  "Wait, that was an option?" Wales thought. But it was too late, and that's how Great Britain was formed.
+0:49  Ireland was conquered by the English too, but it managed to keep its own parliament.
+0:53  And in 1801, that parliament was bought, with titles and money, and it voted for the union.
+0:60  That's how the United Kingdom was formed.
+1:02  But the Irish weren't exactly thrilled.
+1:05  And after the Easter Rising and the War of Independence, most of the island broke away; only the north remained.
+1:10  That's why the country's full name is not just the United Kingdom, but the United Kingdom of Great Britain and Northern Ireland.
+1:17  So they united, but never became one nation.
+1:20  Four countries, but only one sovereign state.
