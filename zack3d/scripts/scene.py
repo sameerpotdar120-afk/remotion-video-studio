@@ -1,0 +1,339 @@
+# Zack-style horsefly scene: Domestic Fly (CC-BY, aramabdulrahim) with reference-matched shading,
+# cyan studio sky with a glow behind the subject, procedural skin ground with pores and hairs.
+import bpy, math, mathutils, random, os
+from mathutils import Vector
+HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(HERE)
+V = Vector
+
+def lin(r, g, b):  # sRGB 0-255 -> linear
+    f = lambda c: (c / 255) / 12.92 if c / 255 <= 0.04045 else ((c / 255 + 0.055) / 1.055) ** 2.4
+    return (f(r), f(g), f(b), 1)
+
+def reset():
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene
+    sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'
+    sc.cycles.use_adaptive_sampling = True; sc.cycles.adaptive_threshold = 0.02
+    sc.cycles.use_denoising = True; sc.cycles.denoiser = 'OPENIMAGEDENOISE'
+    sc.cycles.max_bounces = 6; sc.cycles.transparent_max_bounces = 16
+    sc.render.use_persistent_data = True
+    sc.view_settings.view_transform = 'Standard'; sc.view_settings.look = 'Medium High Contrast'
+    sc.render.film_transparent = False
+    return sc
+
+def mat(name, base, rough=0.5, **kw):
+    m = bpy.data.materials.new(name); m.use_nodes = True
+    b = m.node_tree.nodes['Principled BSDF']; b.inputs['Base Color'].default_value = base; b.inputs['Roughness'].default_value = rough
+    for k, v in kw.items(): b.inputs[k].default_value = v
+    return m
+
+def nodes(m): return m.node_tree.nodes, m.node_tree.links
+
+def add_bump(m, layers, co='Object', mul=1.0):
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); prev = None
+    for kind, scale, strength in layers:
+        if kind == 'noise': t = n.new('ShaderNodeTexNoise'); t.inputs['Scale'].default_value = scale; t.inputs['Detail'].default_value = 8; out = t.outputs['Fac']
+        elif kind == 'cells': t = n.new('ShaderNodeTexVoronoi'); t.inputs['Scale'].default_value = scale; out = t.outputs['Distance']
+        else: t = n.new('ShaderNodeTexVoronoi'); t.feature = 'DISTANCE_TO_EDGE'; t.inputs['Scale'].default_value = scale; out = t.outputs['Distance']
+        l.new(tc.outputs[co], t.inputs['Vector'])
+        bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = strength * mul; bp.inputs['Distance'].default_value = 0.02
+        l.new(out, bp.inputs['Height'])
+        if prev: l.new(prev.outputs['Normal'], bp.inputs['Normal'])
+        prev = bp
+    l.new(prev.outputs['Normal'], b.inputs['Normal'])
+
+def mottle(m, dark, light, scale, lo, hi, co='Object'):
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); t = n.new('ShaderNodeTexNoise')
+    t.inputs['Scale'].default_value = scale; t.inputs['Detail'].default_value = 6; l.new(tc.outputs[co], t.inputs['Vector'])
+    r = n.new('ShaderNodeValToRGB'); r.color_ramp.elements[0].position = lo; r.color_ramp.elements[0].color = dark
+    r.color_ramp.elements[1].position = hi; r.color_ramp.elements[1].color = light
+    l.new(t.outputs['Fac'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color'])
+
+# ── sky: colour ramp on the direction from camera toward the subject → glow right behind the subject ──
+import json as _json, os as _os
+# v3 look: tuned so the rendered sky corner = ref (42,165,208) and skin ground = ref (233,147,99) within 3 units
+LOOK = {'sky': [[0.86, [38, 140, 181]], [0.955, [50, 158, 196]], [0.988, [110, 190, 215]], [1.0, [160, 210, 225]]],
+        'skin': [165, 100, 62], 'skin_lo': [155, 90, 55], 'skin_hi': [175, 112, 70], 'light_k': 1.0}
+LOOK.update(_json.loads(_os.environ.get('ZK_LOOK', '{}')))
+
+def sky(sc, cam_loc, target, light_frac=1.0):
+    w = bpy.data.worlds.new('sky'); sc.world = w; w.use_nodes = True; n, l = w.node_tree.nodes, w.node_tree.links
+    bg = n['Background']; tc = n.new('ShaderNodeTexCoord'); dp = n.new('ShaderNodeVectorMath'); dp.operation = 'DOT_PRODUCT'
+    D = (V(target) - V(cam_loc)).normalized(); dp.inputs[1].default_value = D
+    l.new(tc.outputs['Generated'], dp.inputs[0])
+    r = n.new('ShaderNodeValToRGB'); e = r.color_ramp.elements
+    st = LOOK['sky']; e[0].position = st[0][0]; e[0].color = lin(*st[0][1]); e[1].position = st[-1][0]; e[1].color = lin(*st[-1][1])
+    for pos, col in st[1:-1]: e.new(pos).color = lin(*col)
+    l.new(dp.outputs['Value'], r.inputs['Fac']); l.new(r.outputs['Color'], bg.inputs['Color'])
+    if light_frac < 1:  # light the scene with part of the sky but show all of it to the camera
+        lp = n.new('ShaderNodeLightPath'); mx = n.new('ShaderNodeMath'); mx.operation = 'MULTIPLY_ADD'
+        mx.inputs[1].default_value = 1 - light_frac; mx.inputs[2].default_value = light_frac
+        l.new(lp.outputs['Is Camera Ray'], mx.inputs[0]); l.new(mx.outputs['Value'], bg.inputs['Strength'])
+    else: bg.inputs['Strength'].default_value = 1.0
+
+def area(sc, name, loc, target, power, size, color):
+    d = bpy.data.lights.new(name, 'AREA'); d.energy = power; d.size = size; d.color = color
+    o = bpy.data.objects.new(name, d); sc.collection.objects.link(o); o.location = loc
+    o.rotation_euler = (V(target) - V(loc)).to_track_quat('-Z', 'Y').to_euler(); o.visible_camera = False; return o
+
+def lights(sc, target, k=1.0):
+    t = V(target); k = k * LOOK['light_k']
+    area(sc, 'key', t + V((-4, -6, 7)), t, 1300 * k, 5, (1, .96, .9))
+    area(sc, 'rim', t + V((5, 5, 5)), t, 1100 * k, 3, (.8, .93, 1))
+    area(sc, 'fill', t + V((0, -6, 0.8)), t, 260 * k, 6, (1, 1, 1))
+
+# ── skin ground: a big grid bent into a cylinder so the horizon falls away like a shoulder ──
+def skin_material():
+    m = mat('skin', lin(*LOOK['skin']), 0.72, **{'Subsurface Weight': 0.15, 'Subsurface Radius': (1, .4, .25), 'Specular IOR Level': 0.12})
+    mottle(m, lin(*LOOK['skin_lo']), lin(*LOOK['skin_hi']), 0.6, 0.3, 0.75)
+    add_bump(m, [('noise', 3, 0.35), ('noise', 14, 0.2), ('voronoi', 9, 0.3), ('cells', 140, 0.16)])
+    return m
+
+def skin(sc, R=7.0, size=24, hairs=90, seed=3):
+    bpy.ops.mesh.primitive_grid_add(x_subdivisions=220, y_subdivisions=220, size=size); g = bpy.context.object; g.name = 'skin'
+    for v in g.data.vertices:
+        y = v.co.y; t = y / R; v.co.y = R * math.sin(t) - 1; v.co.z = R * math.cos(t) - R
+    tex = bpy.data.textures.new('sk', 'CLOUDS'); tex.noise_scale = 0.6
+    d = g.modifiers.new('d', 'DISPLACE'); d.texture = tex; d.strength = 0.08; d.mid_level = 0.5
+    g.data.materials.append(skin_material())
+    for p in g.data.polygons: p.use_smooth = True
+    rng = random.Random(seed); hm = mat('hair', lin(30, 20, 16), 0.35)
+    for i in range(hairs):
+        x = rng.uniform(-size / 2.5, size / 2.5); yy = rng.uniform(-6, 6); t = (yy + 1) / R
+        base = V((x, R * math.sin(t) - 1, R * math.cos(t) - R)); L = rng.uniform(*LOOK.get('hair_len', (0.14, 0.32)))
+        dirn = V((rng.uniform(-0.4, 0.4), rng.uniform(0.2, 0.7), 1)).normalized()
+        cu = bpy.data.curves.new(f'h{i}', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.007; cu.bevel_resolution = 2
+        sp = cu.splines.new('POLY'); sp.points.add(3)
+        for k in range(4):
+            u = k / 3; p = base + dirn * L * u + V((0, 0.45 * L * u * u, -0.12 * L * u * u)); sp.points[k].co = (*p, 1); sp.points[k].radius = 1 - 0.9 * u
+        ob = bpy.data.objects.new(f'h{i}', cu); sc.collection.objects.link(ob); cu.materials.append(hm)
+    return g
+
+def skin_z(x, y, R=7.0):  # height of the bent skin surface at (x, y)
+    return R * math.cos(math.asin(max(-1, min(1, (y + 1) / R)))) - R
+
+# ── the fly ──
+FLY_GLB = os.path.join(ROOT, 'assets', 'domestic.glb')
+EYES = {'Object_2.003', 'Object_2.004'}; ANT = {'Object_5.002', 'Object_5.003'}; MOUTH = {'Object_2'}; WINGS = {'Object_2.009', 'Object_2.010'}
+HEADPARTS = {'Object_2.001', 'Object_2.006', 'Object_2'}  # face plate + head capsule + mouth tip (replaced)
+HC = (4.785, -0.20, 2.32)  # head centre in model units
+MOUTH_LEN = 1.0
+def fly_materials():
+    eye = mat('eye', lin(120, 44, 34), 0.5, **{'Coat Weight': 0.35, 'Coat Roughness': 0.22})
+    n, l = nodes(eye); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); vr = n.new('ShaderNodeTexVoronoi'); vr.feature = 'DISTANCE_TO_EDGE'
+    vr.inputs['Scale'].default_value = 220; l.new(tc.outputs['Object'], vr.inputs['Vector'])
+    cr = n.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].position = 0.0; cr.color_ramp.elements[0].color = lin(30, 10, 8)
+    cr.color_ramp.elements[1].position = 0.16; cr.color_ramp.elements[1].color = lin(132, 48, 36); l.new(vr.outputs['Distance'], cr.inputs['Fac'])
+    # darker towards the rim (fresnel-ish)
+    lw = n.new('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.35; mx = n.new('ShaderNodeMix'); mx.data_type = 'RGBA'
+    mx.inputs['B'].default_value = lin(34, 12, 10); l.new(lw.outputs['Facing'], mx.inputs['Factor']); l.new(cr.outputs['Color'], mx.inputs['A']); l.new(mx.outputs['Result'], b.inputs['Base Color'])
+    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = 1.0; bp.inputs['Distance'].default_value = 0.02; l.new(vr.outputs['Distance'], bp.inputs['Height']); l.new(bp.outputs['Normal'], b.inputs['Normal'])
+    body = mat('body', lin(24, 24, 26), 0.45, **{'Coat Weight': 0.28, 'Coat Roughness': 0.2})
+    mottle(body, lin(46, 46, 48), lin(110, 110, 108), 9, 0.45, 0.7); add_bump(body, [('noise', 30, 0.25), ('cells', 120, 0.15)], mul=0.4)
+    # housefly-style grey/black longitudinal stripes across the thorax (model x is lateral, centre 4.78)
+    n, l = nodes(body); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); sx = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Object'], sx.inputs[0])
+    m1 = n.new('ShaderNodeMath'); m1.operation = 'SUBTRACT'; m1.inputs[1].default_value = 4.78; l.new(sx.outputs['X'], m1.inputs[0])
+    m2 = n.new('ShaderNodeMath'); m2.operation = 'MULTIPLY'; m2.inputs[1].default_value = 2 * math.pi / 0.30; l.new(m1.outputs[0], m2.inputs[0])
+    m3 = n.new('ShaderNodeMath'); m3.operation = 'COSINE'; l.new(m2.outputs[0], m3.inputs[0])
+    rp = n.new('ShaderNodeValToRGB'); rp.color_ramp.elements[0].position = 0.35; rp.color_ramp.elements[0].color = lin(20, 20, 22); rp.color_ramp.elements[1].position = 0.75; rp.color_ramp.elements[1].color = lin(118, 118, 114)
+    m4 = n.new('ShaderNodeMath'); m4.operation = 'MULTIPLY_ADD'; m4.inputs[1].default_value = 0.5; m4.inputs[2].default_value = 0.5; l.new(m3.outputs[0], m4.inputs[0]); l.new(m4.outputs[0], rp.inputs['Fac'])
+    mixc = n.new('ShaderNodeMix'); mixc.data_type = 'RGBA'; mixc.blend_type = 'MULTIPLY'; mixc.inputs['Factor'].default_value = 1.0
+    old = [lk for lk in b.inputs['Base Color'].links][0].from_socket; l.new(old, mixc.inputs['A']); l.new(rp.outputs['Color'], mixc.inputs['B'])
+    br = n.new('ShaderNodeMath'); br.operation = 'MULTIPLY'; br.inputs[1].default_value = 3.2; bri = n.new('ShaderNodeMixRGB'); bri.blend_type = 'MULTIPLY'; bri.inputs['Fac'].default_value = 1; bri.inputs['Color2'].default_value = (2.2, 2.2, 2.2, 1)
+    l.new(mixc.outputs['Result'], bri.inputs['Color1']); l.new(bri.outputs['Color'], b.inputs['Base Color'])
+    abd = mat('abd', lin(60, 50, 44), 0.42, **{'Coat Weight': 0.3, 'Coat Roughness': 0.18})
+    mottle(abd, lin(34, 28, 25), lin(96, 80, 68), 7, 0.5, 0.74); add_bump(abd, [('noise', 26, 0.25), ('cells', 110, 0.15)], mul=0.4)
+    leg = mat('leg', lin(24, 22, 23), 0.34, **{'Coat Weight': 0.35, 'Coat Roughness': 0.22}); add_bump(leg, [('noise', 60, 0.4), ('cells', 160, 0.35), ('noise', 9, 0.3), ('voronoi', 25, 0.5)], mul=1.3)
+    bristle = mat('bristle', lin(10, 9, 9), 0.32)
+    wing = mat('wing', lin(190, 200, 210), 0.12, **{'Alpha': LOOK.get('wing_alpha', 0.16), 'Transmission Weight': 0.0, 'Coat Weight': 0.3, 'Thin Film Thickness': 380})
+    mouth = mat('mouth', lin(206, 110, 34), 0.3, **{'Subsurface Weight': 0.3, 'Subsurface Radius': (1, .5, .2), 'Coat Weight': 0.5})
+    ant = mat('ant', lin(22, 18, 16), 0.4)
+    return dict(eye=eye, body=body, abd=abd, leg=leg, bristle=bristle, wing=wing, mouth=mouth, ant=ant)
+
+def bend_legs(o, lift=0.22, knee=0.42, splay=0.35):
+    """raise each leg's knee (insect stance) while keeping the foot and the body attachment fixed (world z up)"""
+    import bmesh
+    if lift <= 0: return
+    mw = o.matrix_world; inv = mw.inverted(); bm = bmesh.new(); bm.from_mesh(o.data); bm.verts.ensure_lookup_table()
+    seen = set(); islands = []
+    for v in bm.verts:
+        if v.index in seen: continue
+        stack = [v]; isl = []; seen.add(v.index)
+        while stack:
+            x = stack.pop(); isl.append(x)
+            for e in x.link_edges:
+                w = e.other_vert(x)
+                if w.index not in seen: seen.add(w.index); stack.append(w)
+        islands.append(isl)
+    W = {v.index: mw @ v.co for v in bm.verts}
+    spans = [max(W[v.index].z for v in isl) - min(W[v.index].z for v in isl) for isl in islands]; big = max(spans)
+    ctr = sum((W[i] for i in W), V((0, 0, 0))) / len(W)
+    for isl, sp in zip(islands, spans):
+        if sp < 0.3 * big: continue
+        zs = sorted(isl, key=lambda v: W[v.index].z); k = max(3, len(zs) // 20)
+        F = sum((W[v.index] for v in zs[:k]), V((0, 0, 0))) / k; A = sum((W[v.index] for v in zs[-k:]), V((0, 0, 0))) / k
+        d = F - A; L2 = d.length_squared; out = V((d.x, d.y, 0)); out = out.normalized() if out.length > 1e-6 else V((0, 0, 0))
+        h = lift * d.length
+        for v in isl:
+            p = W[v.index]; t = max(0.0, min(1.0, (p - A).dot(d) / L2))
+            u = t / knee if t < knee else (1 - t) / (1 - knee); u = u * u * (3 - 2 * u)
+            v.co = inv @ (p + V((0, 0, h * u)) + out * (splay * h * u))
+    bm.to_mesh(o.data); bm.free(); o.data.update()
+
+def load_fly(sc, length=3.4):
+    before = set(sc.objects); bpy.ops.import_scene.gltf(filepath=FLY_GLB)
+    for name in ['Object_2', 'Object_5']:
+        o = sc.objects[name]; bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); bpy.context.view_layer.objects.active = o
+        bpy.ops.object.mode_set(mode='EDIT'); bpy.ops.mesh.select_all(action='SELECT'); bpy.ops.mesh.separate(type='LOOSE'); bpy.ops.object.mode_set(mode='OBJECT')
+    M = fly_materials(); parts = [o for o in sc.objects if o not in before and o.type == 'MESH']
+    for o in parts:
+        n = o.name
+        if n in EYES: m = M['eye']
+        elif n in WINGS: m = M['wing']
+        elif n in MOUTH: m = M['mouth']
+        elif n in ANT: m = M['ant']
+        elif n.startswith('Object_4'): m = M['bristle']
+        elif n.startswith('Object_3'): m = M['leg']
+        elif n == 'Object_5.009': m = M['abd']
+        else: m = M['body']
+        o.data.materials.clear(); o.data.materials.append(m)
+        for p in o.data.polygons: p.use_smooth = True
+        if n.startswith('Object_3'):
+            bend_legs(o, LOOK.get('knee_lift', 0.22))
+            d = o.modifiers.new('thick', 'DISPLACE'); d.strength = LOOK.get('leg_thick', 0.03); d.mid_level = 0
+    # pivot: centre between the feet, fly faces -Y, scale to `length`
+    mn = V((1e9,) * 3); mx = -mn
+    for o in parts:
+        for c in o.bound_box: w = o.matrix_world @ V(c); mn = V(map(min, mn, w)); mx = V(map(max, mx, w))
+    piv = bpy.data.objects.new('PIV', None); sc.collection.objects.link(piv)
+    s = length / (mx.y - mn.y); piv.scale = (s, s, s); piv.location = (-(mn.x + mx.x) / 2 * s, -(mn.y + mx.y) / 2 * s, -mn.z * s)
+    roots = [o for o in sc.objects if o not in before and o.parent is None and o != piv]
+    for o in roots: o.parent = piv
+    fly = bpy.data.objects.new('FLY', None); sc.collection.objects.link(fly); piv.parent = fly
+    for o in parts:
+        if o.name in EYES | ANT | HEADPARTS: o.hide_render = True; o.hide_viewport = True
+    build_head(sc, piv, M); build_mouth(sc, piv, M, length=MOUTH_LEN)
+    for e in [o for o in sc.objects if o not in before and o.type == 'EMPTY' and o.name not in ('PIV', 'FLY')]: pass
+    return fly, parts, M
+
+def head_point(sc):  # world position of the head centre
+    return sc.objects['HEADCAP'].matrix_world.translation.copy()
+
+def camera(sc, loc, target, lens=50, fstop=None, focus=None, roll=0):
+    cam = sc.camera
+    if cam is None: cam = bpy.data.objects.new('cam', bpy.data.cameras.new('cam')); sc.collection.objects.link(cam); sc.camera = cam
+    cam.location = loc; q = (V(target) - V(loc)).to_track_quat('-Z', 'Y'); cam.rotation_euler = q.to_euler(); cam.rotation_euler.rotate_axis('Z', math.radians(roll))
+    cam.data.lens = lens; cam.data.clip_start = 0.005; cam.data.clip_end = 2000; cam.data.sensor_width = 36
+    if fstop: cam.data.dof.use_dof = True; cam.data.dof.aperture_fstop = fstop; cam.data.dof.focus_distance = focus or (V(target) - V(loc)).length
+    return cam
+
+def render(sc, path, w=720, h=1280, spp=32):
+    sc.render.resolution_x, sc.render.resolution_y = w, h; sc.cycles.samples = spp; sc.render.filepath = path
+    bpy.ops.render.render(write_still=True)
+
+# ── fur: tapered hair strands grown on a part's evaluated surface (call after the fly is placed) ──
+import numpy as np
+def fur(sc, objs, n, length, radius, material, sweep=(0, 0.6, 0.2), jitter=0.35, seed=1, parent=None, up_only=False):
+    dg = bpy.context.evaluated_depsgraph_get(); P, N, A = [], [], []
+    for o in objs:
+        ev = o.evaluated_get(dg); me = ev.to_mesh(); me.calc_loop_triangles(); mw = o.matrix_world; nm = mw.to_3x3().inverted().transposed()
+        nt = len(me.loop_triangles)
+        if nt == 0: ev.to_mesh_clear(); continue
+        co = np.empty(len(me.vertices) * 3, dtype=np.float32); me.vertices.foreach_get('co', co); co = co.reshape(-1, 3)
+        tri = np.empty(nt * 3, dtype=np.int32); me.loop_triangles.foreach_get('vertices', tri); tri = tri.reshape(-1, 3)
+        M = np.array(mw); W = co @ M[:3, :3].T + M[:3, 3]
+        a, b, c = W[tri[:, 0]], W[tri[:, 1]], W[tri[:, 2]]; cr = np.cross(b - a, c - a); ar = np.linalg.norm(cr, axis=1) / 2
+        P.append((a, b, c)); N.append(cr / np.maximum(ar[:, None] * 2, 1e-12)); A.append(ar); ev.to_mesh_clear()
+    if not A: return None
+    a = np.concatenate([p[0] for p in P]); b = np.concatenate([p[1] for p in P]); c = np.concatenate([p[2] for p in P]); nn = np.concatenate(N); ar = np.concatenate(A)
+    rng = np.random.default_rng(seed); idx = rng.choice(len(ar), size=n, p=ar / ar.sum()); u = rng.random(n); v = rng.random(n); f = u + v > 1; u[f] = 1 - u[f]; v[f] = 1 - v[f]
+    pts = a[idx] + (b[idx] - a[idx]) * u[:, None] + (c[idx] - a[idx]) * v[:, None]; nor = nn[idx]
+    cu = bpy.data.curves.new('fur', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = radius; cu.bevel_resolution = 1; cu.use_fill_caps = False
+    sw = np.array(sweep)
+    for i in range(n):
+        d = nor[i] + sw + rng.normal(0, jitter, 3); d /= np.linalg.norm(d) + 1e-9; L = length * (0.5 + rng.random())
+        sp = cu.splines.new('POLY'); sp.points.add(2)
+        for k in range(3):
+            t = k / 2; q = pts[i] + d * L * t + np.array((0, 0, -0.25 * L * t * t)); sp.points[k].co = (*q, 1); sp.points[k].radius = 1 - 0.85 * t
+    ob = bpy.data.objects.new('fur', cu); sc.collection.objects.link(ob); cu.materials.append(material)
+    if parent: ob.parent = parent; ob.matrix_parent_inverse = parent.matrix_world.inverted()
+    return ob
+
+def fly_fur(sc, fly, M, k=1.0):
+    bpy.context.view_layer.update()
+    body = [o for o in sc.objects if o.type == 'MESH' and not o.hide_render and o.data.materials and o.data.materials[0].name in ('body', 'abd')]
+    legs = [o for o in sc.objects if o.type == 'MESH' and not o.hide_render and o.data.materials and o.data.materials[0].name == 'leg']
+    hm = mat('furmat', lin(22, 21, 21), 0.4); hm2 = mat('furlight', lin(128, 124, 120), 0.35)
+    fur(sc, body, int(3200 * k), 0.065, 0.0024, hm, sweep=(0, 0.8, 0.1), seed=1, parent=fly)
+    fur(sc, body, int(1400 * k), 0.045, 0.002, hm2, sweep=(0, 0.9, 0.0), seed=2, parent=fly)
+    fur(sc, legs, int(LOOK.get('leg_fur', 1600) * k), 0.03, 0.0016, hm, sweep=(0, 0.2, -0.6), jitter=0.5, seed=3, parent=fly)
+
+def ellipsoid(sc, name, loc, scale, mat_, parent, rot=(0, 0, 0), seg=96, rings=64):
+    bpy.ops.mesh.primitive_uv_sphere_add(segments=seg, ring_count=rings, radius=1)
+    o = bpy.context.object; o.name = name; o.scale = scale; o.location = loc; o.rotation_euler = rot
+    for p in o.data.polygons: p.use_smooth = True
+    o.data.materials.append(mat_); o.parent = parent; return o
+
+def chitin_material():
+    """glossy black-grey wrinkled chitin (reference head/thorax look)"""
+    m = mat('chitin', lin(*LOOK.get('chitin', [26, 24, 26])), 0.3, **{'Coat Weight': 0.7, 'Coat Roughness': 0.06})
+    add_bump(m, [('noise', 7, 0.9), ('voronoi', 16, 0.6), ('noise', 40, 0.4)], mul=LOOK.get('chitin_bump', 1.4))
+    return m
+
+def eye_material():
+    """red-brown compound eye: fine pebbled facets, sparkly coat, dark rim at grazing angles"""
+    E = LOOK.get('eye', {'lo': [46, 22, 19], 'hi': [130, 72, 62], 'rim': [20, 9, 8], 'scale': 45, 'bump': 0.5})
+    m = mat('eye3', lin(*E['hi']), LOOK.get('eye_rough', 0.2), **{'Coat Weight': 0.0, 'Specular IOR Level': 0.6})
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord')
+    vr = n.new('ShaderNodeTexVoronoi'); vr.feature = 'F1'; vr.inputs['Scale'].default_value = E['scale']; l.new(tc.outputs['Object'], vr.inputs['Vector'])
+    cr = n.new('ShaderNodeValToRGB'); cr.color_ramp.elements[0].position = 0.0; cr.color_ramp.elements[0].color = lin(*E['hi'])
+    cr.color_ramp.elements[1].position = 0.9; cr.color_ramp.elements[1].color = lin(*E['lo']); l.new(vr.outputs['Distance'], cr.inputs['Fac'])
+    no = n.new('ShaderNodeTexNoise'); no.inputs['Scale'].default_value = 9; l.new(tc.outputs['Object'], no.inputs['Vector'])
+    mb = n.new('ShaderNodeMix'); mb.data_type = 'RGBA'; mb.blend_type = 'MULTIPLY'; mb.inputs['Factor'].default_value = 0.35
+    l.new(cr.outputs['Color'], mb.inputs['A']); l.new(no.outputs['Color'], mb.inputs['B'])
+    lw = n.new('ShaderNodeLayerWeight'); lw.inputs['Blend'].default_value = 0.18
+    rim = n.new('ShaderNodeMix'); rim.data_type = 'RGBA'; rim.inputs['B'].default_value = lin(*E['rim'])
+    l.new(lw.outputs['Facing'], rim.inputs['Factor']); l.new(mb.outputs['Result'], rim.inputs['A']); l.new(rim.outputs['Result'], b.inputs['Base Color'])
+    bp = n.new('ShaderNodeBump'); bp.inputs['Strength'].default_value = E['bump']; bp.inputs['Distance'].default_value = 0.025; bp.invert = True
+    l.new(vr.outputs['Distance'], bp.inputs['Height']); l.new(bp.outputs['Normal'], b.inputs['Normal'])
+    return m
+
+def build_head(sc, piv, M):
+    """v3 head (matched to reference crop): one dome, eyes wrapping a wide raised chitin ridge, olive antennae in grooves."""
+    hx, hy, hz = HC; eye = eye_material(); ch = chitin_material(); M['chitin'] = ch
+    gap = LOOK.get('eye_gap', 0.30)   # female: clear ridge between the eyes; male: set ~0.18 so the eyes meet
+    for sg in (-1, 1):
+        ellipsoid(sc, f'EYE{sg}', (hx + sg * gap, hy - 0.06, hz + 0.06), (0.36, 0.31, 0.47), eye, piv, rot=(math.radians(6), 0, math.radians(sg * 20)))
+    ellipsoid(sc, 'HEADCAP', (hx, hy + 0.10, hz + 0.02), (0.68, 0.42, 0.60), ch, piv)
+    chd = mat('chitin_dark', lin(22, 20, 22), 0.45, **{'Coat Weight': 0.25, 'Coat Roughness': 0.3}); add_bump(chd, [('noise', 7, 0.9), ('voronoi', 16, 0.6), ('noise', 40, 0.4)], mul=1.4)
+    ellipsoid(sc, 'FRONS', (hx, hy - 0.22, hz + 0.10), (0.15 * gap / 0.30, 0.13, 0.46), chd, piv, rot=(math.radians(-8), 0, 0))
+    ellipsoid(sc, 'FACE', (hx, hy - 0.30, hz - 0.22), (0.22, 0.16, 0.30), ch, piv, rot=(math.radians(-14), 0, 0))
+    am = mat('antenna', lin(58, 52, 20), 0.5, **{'Coat Weight': 0.15, 'Coat Roughness': 0.3, 'Specular IOR Level': 0.2})
+    for sg in (-1, 1):  # antennae: short scape then a long flattened olive blade lying down the face
+        ellipsoid(sc, f'ANT1{sg}', (hx + sg * 0.06, hy - 0.40, hz + 0.10), (0.035, 0.035, 0.06), chd, piv, seg=24, rings=16)
+        ellipsoid(sc, f'ANT2{sg}', (hx + sg * 0.075, hy - 0.45, hz - 0.12), (0.038, 0.022, 0.24), am, piv, rot=(math.radians(-10), 0, math.radians(sg * 4)), seg=32, rings=24)
+
+def tube_obj(sc, name, pts, radii, mat_, parent, res=24):
+    """smooth tapered tube along points (model units), as a curve converted to mesh"""
+    cu = bpy.data.curves.new(name, 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 1.0; cu.bevel_resolution = res // 4; cu.use_fill_caps = True
+    sp = cu.splines.new('NURBS'); sp.points.add(len(pts) - 1); sp.order_u = 4; sp.use_endpoint_u = True
+    for i, (p, r) in enumerate(zip(pts, radii)): sp.points[i].co = (*p, 1); sp.points[i].radius = r
+    ob = bpy.data.objects.new(name, cu); sc.collection.objects.link(ob); cu.materials.append(mat_); ob.parent = parent; return ob
+
+def mouth_material():
+    m = mat('proboscis', lin(214, 96, 40), 0.32, **{'Subsurface Weight': 0.45, 'Subsurface Radius': (1, .45, .15), 'Coat Weight': 0.6, 'Coat Roughness': 0.1})
+    n, l = nodes(m); b = n['Principled BSDF']; tc = n.new('ShaderNodeTexCoord'); sx = n.new('ShaderNodeSeparateXYZ'); l.new(tc.outputs['Object'], sx.inputs[0])
+    mr = n.new('ShaderNodeMapRange'); mr.inputs['From Min'].default_value = HC[2] - 0.45 - 0.95 * MOUTH_LEN; mr.inputs['From Max'].default_value = HC[2] - 0.45; l.new(sx.outputs['Z'], mr.inputs['Value'])
+    r = n.new('ShaderNodeValToRGB'); r.color_ramp.elements[0].color = lin(246, 162, 64); r.color_ramp.elements[1].color = lin(186, 52, 32)
+    l.new(mr.outputs['Result'], r.inputs['Fac']); l.new(r.outputs['Color'], b.inputs['Base Color']); return m
+
+def build_mouth(sc, piv, M, spread=0.0, length=1.0):
+    """horsefly mouthparts: a red-orange labium splitting into two stylet tubes, black palps either side"""
+    hx, hy, hz = HC; pm = mouth_material(); M['proboscis'] = pm; top = (hx, hy - 0.30, hz - 0.42)
+    for sg in (-1, 1):
+        pts = [top, (hx + sg * 0.02, hy - 0.34, hz - 0.62), (hx + sg * (0.025 + 0.12 * spread), hy - 0.36, hz - 0.42 - 0.55 * length), (hx + sg * (0.02 + 0.2 * spread), hy - 0.36, hz - 0.42 - 0.95 * length)]
+        tube_obj(sc, f'STYLET{sg}', pts, [0.075, 0.07, 0.05, 0.012], pm, piv)
+        ppts = [(hx + sg * 0.11, hy - 0.30, hz - 0.36), (hx + sg * 0.15, hy - 0.40, hz - 0.62), (hx + sg * 0.13, hy - 0.42, hz - 0.42 - 0.85 * max(length, 0.7))]
+        tube_obj(sc, f'PALP{sg}', ppts, [0.05, 0.075, 0.015], M.get('chitin', M['leg']), piv)
+    # thinner pale central stylet between them
+    tube_obj(sc, 'STYLET0', [top, (hx, hy - 0.38, hz - 0.62), (hx + 0.01, hy - 0.40, hz - 0.42 - 0.6 * length), (hx + 0.015, hy - 0.40, hz - 0.42 - 0.97 * length)], [0.04, 0.035, 0.025, 0.008], pm, piv)

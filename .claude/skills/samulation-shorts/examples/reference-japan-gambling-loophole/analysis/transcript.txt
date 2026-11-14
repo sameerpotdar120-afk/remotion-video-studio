@@ -1,0 +1,11 @@
+[  0.00-  4.94] Gambling is illegal in Japan, yet there's a gambling hall on almost every street. Inside,
+[  5.32- 10.10] thousands of machines are flashing and screaming while people carry out buckets full of steel balls.
+[ 10.44- 15.10] Police stroll right past the door, but nobody ever gets arrested. So, you win a bucket yourself
+[ 15.10- 20.14] and try to cash it in, but the counter won't give you a single yen. Instead, you can pick cookies,
+[ 20.48- 24.90] chocolate, a bottle of shampoo, or a few tiny plastic tokens. The guy in front of you takes
+[ 24.90- 28.46] the tokens and heads straight outside. You follow him around the corner to a little
+[ 28.46- 33.18] window in a wall with no sign. You see, that window isn't part of the gambling hall. It's
+[ 33.18- 38.02] technically a separate shop that just happens to buy those exact tokens. So, the hall only ever
+[ 38.02- 42.70] gives out prizes and the shop is just buying one. He slides the tokens through, a hand slides
+[ 42.70- 45.00] over cash, and on paper, nobody gambles.
+161 words, 45.00s -> ana/words.json

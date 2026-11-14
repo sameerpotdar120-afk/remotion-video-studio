@@ -1,0 +1,19 @@
+{
+  "title": "How Stitches Heal You",
+  "voice": "elevenlabs (user recording)",
+  "music": "tension",
+  "captions": false,
+  "sources": [
+    "Cleveland Clinic, 'Wound Healing' (stages: hemostasis, inflammation, proliferation with collagen and new blood vessels, maturation/remodeling)",
+    "NCBI StatPearls, 'Wound Healing Phases' (fibroblasts deposit collagen; angiogenesis supplies the granulation tissue)",
+    "NHS, 'Stitches' (stitches are typically removed after days to weeks depending on location)"
+  ],
+  "lines": [
+    { "text": "When you get stitches, a doctor pushes a needle through your skin and pulls it tight to hold the wound shut.", "caps": "" },
+    { "text": "But the thread is only holding things together until your body takes over.", "caps": "" },
+    { "text": "First, the wound swells as your body rushes in to protect it.", "caps": "" },
+    { "text": "Then new cells start weaving collagen across the gap, slowly building fresh skin.", "caps": "" },
+    { "text": "Tiny blood vessels grow through it to feed the new tissue.", "caps": "" },
+    { "text": "And over a few weeks, the skin holds on its own, and the stitches come out.", "caps": "" }
+  ]
+}
