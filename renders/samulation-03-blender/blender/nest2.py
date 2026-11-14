@@ -293,7 +293,7 @@ if SHOT == 'D':
 elif SHOT == 'DM':
     vdir = (SIDE * -1 + Vector((0, 0, 0))).normalized(); shoot(TGW + AX * 0.3 + Vector((0, 0.5, 0.14)), TGW + AX * 0.06 + Vector((0, 0, -0.01)), 50, 4.0, TGW)
 elif SHOT == 'L':
-    shoot((float(A.get('cx', 9)), float(A.get('cy', 10)), float(A.get('cz', 14))), (float(A.get('tx', -2)), float(A.get('ty', -24)), float(A.get('tz', 2))), float(A.get('lens', 18)), 22)
+    shoot((float(A.get('cx', 9)), float(A.get('cy', 10)), float(A.get('cz', 14))), (float(A.get('tx', -2.5)), float(A.get('ty', -26)), float(A.get('tz', -2))), float(A.get('lens', 24)), 22)
 elif SHOT == 'I':
     IX, IY = float(A.get('ix', 7)), float(A.get('iy', -66)); shoot((IX, IY, hT(IX, IY) + float(A.get('iz', 2.0))), (1.5, -28, hT(1.5, -28) + float(A.get('lz', 2.5))), float(A.get('lens', 24)), 22)
 elif SHOT in ('P1',):     shoot((LX + 3.7, LY + 4.3, FLOOR + 1.5), (LX + 0.55, LY + 0.05, FLOOR + 0.95), 32, 5.6, (LX + 0.95, LY + 0.45, FLOOR + 1.0)); army(-24, 0.62, 'march')
