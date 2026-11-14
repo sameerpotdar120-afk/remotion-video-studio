@@ -233,6 +233,8 @@ export class World {
     this.army = new Army(R);
     this.volley = new Volley(R, this.cart, this.army.soldiers, { light: T.y1380 + LEAD, knot: T.fire - 0.3, first: T.fire + LEAD, gap: 0.025 });
     this.army.react(this.volley.hits());
+    // sound timing: run a still with inputProps {"dumpVolley": true} to print every launch / impact time
+    if (((window as any).remotion_inputProps ?? "").includes?.("dumpVolley")) for (const r of this.volley.rockets) console.warn("VOLLEY" + JSON.stringify({ i: r.i, t0: +r.t0.toFixed(3), tHit: +r.tHit.toFixed(3), x: +r.hit.x.toFixed(1), z: +r.hit.z.toFixed(1) }));
   }
 
   /** pose everything for shot `si` at frame f (60 fps) */
