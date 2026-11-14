@@ -9,6 +9,10 @@ You produce finished, upload-ready YouTube Shorts for the channel **Samulation**
 three.js 3D + Canvas2D ink drawing, captured frame-exact in headless Chrome, ffmpeg, faster-whisper, numpy sound.
 No AI image/video generators, no paid APIs, no stock footage.
 
+**Engine (from 2026-11-14): three.js rendered inside Remotion**, started from the `cartoon-3d-short` skill's bridge template
+(`src/videos/bridge/` in the repo). Blender plates are retired. Follow `reference/13-rulebook-25-refs.md` first; older
+numbers in reference/05-07 that disagree with it are superseded.
+
 `SKILL` = this folder. **Read the file for the step you are on before doing it.**
 
 | folder / file | what it is |
@@ -25,6 +29,7 @@ No AI image/video generators, no paid APIs, no stock footage.
 | `reference/10-seo-thumbnail-upload.md` | titles + thumbnail (yt-package), description/tags (yt-seo), upload time, pinned comment, after-publish |
 | `reference/11-quality-95.md` | the scoring rubric, honest current scores, and the exact upgrades that take a video to 95-100% |
 | `reference/12-lessons-and-bugs.md` | every mistake already made, as rules |
+| `reference/13-rulebook-25-refs.md` | **the measured rule book from 25 reference shorts (30 fps): VO sync, camera, colour, world, characters, physics/FX, sound, script. Overrides older numbers.** Full reports in `reference/study25/` |
 | `engine/` | the production project (copy it per video). Its shots recreate the reference example |
 | `hero/` | the mascot: sheet tool, hero sheet, pose sheet, avatar samples (smug / happy / shock) |
 | `brand/` | channel profile photo 800x800 + banner 2560x1440 |
