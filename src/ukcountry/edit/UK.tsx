@@ -62,7 +62,7 @@ const Flag: React.FC<{ k: 'eng' | 'sco' | 'wal' | 'irl'; w?: number }> = ({ k, w
   );
 };
 /** A glowing hex badge with one of the creator's props inside (the reference's crown / passport / soldier badges). */
-const Badge: React.FC<{ color: string; k: string; size?: number; t: number }> = ({ color, k, size = 220, t }) => {
+const Badge: React.FC<{ color: string; k: string; size?: number; t: number }> = ({ color, k, size = 300, t }) => {
   const r = size / 2;
   const pts = Array.from({ length: 6 }, (_, i) => { const a = (Math.PI / 3) * i - Math.PI / 2; return `${(r + Math.cos(a) * r * 0.92).toFixed(1)},${(r + Math.sin(a) * r * 0.92).toFixed(1)}`; }).join(' ');
   return (
@@ -73,7 +73,7 @@ const Badge: React.FC<{ color: string; k: string; size?: number; t: number }> = 
         <polygon points={pts} fill="url(#hexgloss)" />
         <defs><linearGradient id="hexgloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#fff" stopOpacity="0.35" /><stop offset="0.55" stopColor="#fff" stopOpacity="0" /></linearGradient></defs>
       </svg>
-      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{has(k) ? <Cut k={k} w={size * 0.66} /> : <div style={{ fontFamily: LABEL, color: '#fff', fontSize: 22 }}>{k}</div>}</div>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{has(k) ? <Cut k={k} w={size * (ASPECT[k] < 0.6 ? 0.42 : 0.72)} /> : <div style={{ fontFamily: LABEL, color: '#fff', fontSize: 22 }}>{k}</div>}</div>
     </div>
   );
 };
@@ -186,7 +186,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         const [x, y] = ce(k);
         const merge = ramp(t, C.olympics - 0.1, C.olympics + 0.7, inOut);
         const mx = x + (540 - x) * merge, my = y + (900 - y) * merge;
-        return <At key={k} x={mx} y={my} p={pop(t, C.football + i * 0.15, 9, 220) * (1 - 0.6 * merge)} o={w(C.football - 0.2, C.teamgb + 0.2) * (1 - ramp(t, C.olympics + 0.5, C.olympics + 0.8, linear))}><Img k="k_football" w={110} label="⚽" /></At>;
+        return <At key={k} x={mx} y={my} p={pop(t, C.football + i * 0.15, 9, 220) * (1 - 0.6 * merge)} o={w(C.football - 0.2, C.teamgb + 0.2) * (1 - ramp(t, C.olympics + 0.5, C.olympics + 0.8, linear))}><Img k="k_football" w={150} label="⚽" /></At>;
       })}
       {t > C.olympics + 0.4 && t < C.shuruat + 0.3 && <At x={540} y={900} p={pop(t, C.olympics + 0.5, 10, 190)} o={w(C.olympics + 0.4, C.shuruat + 0.3)}><Img k="k_torch_medal" w={360} label="torch + medal" /></At>}
       {t > C.teamgb - 0.2 && t < C.shuruat + 0.3 && <At x={540} y={330} p={pop(t, C.teamgb - 0.1, 9, 220)} o={w(C.teamgb - 0.2, C.shuruat + 0.3)}><Big text="TEAM GB" size={150} color={COL.gold} /></At>}
@@ -197,7 +197,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {t > C.kilon - 0.4 && t < C.baari + 0.3 && Object.entries(GEO.castles).map(([n, p], i) => { const [x, y] = toS(c, p); return <At key={n} x={x} y={y - 30} p={pop(t, C.kilon - 0.3 + i * 0.12, 10, 220)} o={w(C.kilon - 0.4, C.baari + 0.3)}>{has('w_castle') ? <Cut k="w_castle" w={120} /> : <div style={{ width: 40, height: 40, background: '#9A9A9A', border: '3px solid #444' }} />}</At>; })}
       {/* Scotland */}
       {t > C.baari - 0.2 && t < C.n1603 && <At x={ce('Scotland')[0]} y={ce('Scotland')[1]} p={pop(t, C.baari, 10, 200)} o={w(C.baari - 0.2, C.n1603)}><Flag k="sco" w={140} /></At>}
-      {t > C.scots - 0.2 && t < C.n1603 + 0.3 && (() => { const [x, y] = toS(c, merc(-2.6, 55.4)); const clash = Math.max(0, Math.sin((t - C.scots) * 9)) * 10; return <At x={x} y={y} p={pop(t, C.scots - 0.1, 9, 220)} o={w(C.scots - 0.2, C.n1603 + 0.3)} rot={clash}><Img k="s_swords" w={260} label="swords" /></At>; })()}
+      {t > C.scots - 0.2 && t < C.n1603 + 0.3 && (() => { const [x, y] = toS(c, merc(-2.6, 55.4)); const clash = Math.max(0, Math.sin((t - C.scots) * 9)) * 10; return <At x={x} y={y} p={pop(t, C.scots - 0.1, 9, 220)} o={w(C.scots - 0.2, C.n1603 + 0.3)} rot={clash}><Img k="s_swords" w={360} label="swords" /></At>; })()}
       {t > C.n1603 - 0.2 && t < C.panama && <At x={540} y={330} p={pop(t, C.n1603 - 0.1, 9, 220)} o={w(C.n1603 - 0.2, C.panama)}><Big text="1603" size={170} font={SERIF} color="#FFE9B0" /></At>}
       {t > C.raja - 0.3 && t < C.panama && <>
         <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: w(C.raja - 0.3, C.panama) }}><path d={`M${ex},${ey} Q${(ex + lx) / 2 + 120},${Math.min(ey, ly) - 260} ${lx},${ly}`} fill="none" stroke="#FFE9A0" strokeWidth={5} strokeDasharray="14 12" /></svg>
@@ -209,8 +209,8 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         const [px, py] = s('panama');
         return <>
           <Place t={t} t0={C.panama} x={px} y={py} hi="पनामा" en="PANAMA · DARIÉN 1698" color={COL.gold} o={w(C.panama - 0.2, C.n1707)} />
-          <At x={px + 160} y={py + 300 + 120 * sink} p={pop(t, C.panama + 0.2, 10, 180)} o={w(C.panama - 0.2, C.n1707) * (1 - 0.5 * sink)} rot={-6 - 22 * sink}><Img k="s_ship_sinking" w={460} label="sinking ship" /></At>
-          {t > C.doob - 0.4 && <At x={px - 220} y={py + 520} p={pop(t, C.doob - 0.3, 10, 200)} o={w(C.doob - 0.4, C.n1707)}><Img k="s_treasure" w={240} label="treasure" /></At>}
+          <At x={540} y={1180 + 120 * sink} p={pop(t, C.panama + 0.2, 10, 180)} o={w(C.panama - 0.2, C.n1707) * (1 - 0.5 * sink)} rot={-6 - 22 * sink}><Img k="s_ship_sinking" w={620} label="sinking ship" /></At>
+          {t > C.doob - 0.4 && <At x={px - 220} y={py + 520} p={pop(t, C.doob - 0.3, 10, 200)} o={w(C.doob - 0.4, C.n1707)}><Img k="s_treasure" w={300} label="treasure" /></At>}
         </>;
       })()}
       {t > C.n1707 - 0.2 && t < C.gb + 0.4 && <At x={540} y={330} p={pop(t, C.n1707 - 0.1, 9, 220)} o={w(C.n1707 - 0.2, C.gb + 0.4)}><Big text="1707" size={170} font={SERIF} color="#FFE9B0" /></At>}
@@ -222,7 +222,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {t > C.n1801b - 0.2 && t < C.ukd && <At x={540} y={330} p={pop(t, C.n1801b - 0.1, 9, 220)} o={w(C.n1801b - 0.2, C.ukd)}><Big text="1801" size={170} font={SERIF} color="#FFE9B0" /></At>}
       {t > C.khitab - 0.3 && t < C.ukd && (() => { const q = ramp(t, C.khitab - 0.2, C.khitab + 0.7, inOut); return <At x={900 + (dx - 900) * q} y={1500 + (dy - 60 - 1500) * q} p={pop(t, C.khitab - 0.2, 10, 190) * (1 - 0.4 * q)} o={w(C.khitab - 0.3, C.ukd)}><Img k="p_coronet_money" w={280} label="coronet + money" /></At>; })()}
       {t > C.khitab + 0.6 && t < C.ukd && <At x={dx} y={dy + 120} o={w(C.khitab + 0.6, C.ukd)}><Stamp t={t} t0={C.khitab + 0.8} /></At>}
-      {t > C.vote - 0.2 && t < C.ukd && <At x={dx + 230} y={dy - 300} p={pop(t, C.vote - 0.1, 9, 220)} o={w(C.vote - 0.2, C.ukd)}><Tag text="✔ VOTE: UNION" size={44} color="#5BE07F" font={TITLE} /></At>}
+      {t > C.vote - 0.2 && t < C.ukd && <At x={540} y={1260} p={pop(t, C.vote - 0.1, 9, 220)} o={w(C.vote - 0.2, C.ukd)}><Tag text="✔ VOTE: UNION" size={44} color="#5BE07F" font={TITLE} /></At>}
       {t > C.ukd - 0.2 && t < C.irish + 0.2 && <At x={540} y={330} p={pop(t, C.ukd, 9, 220)} o={w(C.ukd - 0.2, C.irish + 0.2)}><Big text="United Kingdom" size={120} font={SERIF} color="#fff" /></At>}
       {t > C.n1916 - 0.3 && t < C.uttar && <At x={dx + 40} y={dy - 150} p={pop(t, C.n1916 - 0.2, 10, 180)} o={w(C.n1916 - 0.3, C.uttar)}><Img k="i_gpo_dublin" w={460} label="GPO Dublin" /></At>}
       {t > C.n1916 - 0.2 && t < C.uttar && <At x={300} y={330} p={pop(t, C.n1916 - 0.1, 10, 200)} o={w(C.n1916 - 0.2, C.uttar)} rot={-4}><Tag text="1916 · Easter Rising" size={44} color={COL.irl} font={TITLE} /></At>}
