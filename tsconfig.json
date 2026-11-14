@@ -8,7 +8,9 @@
     "noEmit": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
-    "lib": ["DOM", "ES2022"]
+    "lib": ["DOM", "ES2022"],
+    "resolveJsonModule": true,
+    "allowJs": false
   },
   "include": ["src"]
 }
