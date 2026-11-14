@@ -25,6 +25,7 @@ export const makeFoes = () => { const out = {}, bodies = ['#d9a82a', '#cf9a22', 
       return make(look, st, null, () => spear(hand, 697)); };
     for (const kind of ['spear', 'shield', 'banner']) {
       out[`f2_march_${kind}_${v}`] = mk('march', { mood: v % 2 ? 'neutral' : 'smug', armR: [40, 60], legSwing: sw, lookAt: [0, 0.1] }, kind);
+      out[`f2_laugh_${kind}_${v}`] = mk('laugh', { mood: 'happy', armL: [-50, 110], armR: [40, 60], legSwing: sw, lookAt: [0, 0] }, kind);
       out[`f2_shock_${kind}_${v}`] = mk('shock', { mood: 'shock', armL: [-60, -150], armR: [40, 60], legSwing: sw, lookAt: [0, -0.2] }, kind); }
     out[`f2_fly_${v}`] = make(look, { mood: 'shock', armL: [-150, -90], armR: [150, -90], legSwing: 0.9, lookAt: [0, -0.3] }, null, null);
     out[`f2_down_${v}`] = make(look, { mood: 'shock', armL: [-120, 40], armR: [120, 40], legSwing: 0.2, lookAt: [0, 0] }, null, null); }

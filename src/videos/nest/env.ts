@@ -105,6 +105,7 @@ export function buildEnv(b: Batch, root: THREE.Object3D) {
 
   // ---------------- small flags on every other merlon ----------------
   for (let x = -38.5, i = 0; x < 40; x += 3.4, i++) {
+    if (x > -6 && x < 7) continue;   // keep the launcher's stretch of the wall walk clear of poles
     cyl(x + 0.47, 8.25, -7.0, 0.025, 1.6, M.darkwood, 5);
     const pos = [x + 0.47, 9.8, -7.0, x + 0.47, 9.25, -7.0, x + 1.25, 9.55, -7.0];
     const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setAttribute("uv", new THREE.Float32BufferAttribute([0, 1, 0, 0, 1, 0.5], 2)); g.computeVertexNormals();

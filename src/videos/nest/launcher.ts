@@ -68,12 +68,14 @@ export class CartLauncher {
   arrows: THREE.InstancedMesh;    // the 32 arrow heads + powder tubes visible in the mouth (scaled to 0 once fired)
   private arrowM: THREE.Matrix4[] = [];
   knotL = V(0, -0.12, BL / 2 + 0.16);
+  wheels: THREE.Group[] = [];
+  slide = 0;                      // arrow #0 pulled out of its hole (m) for the 'paper tube' close-up
   rope: THREE.Vector3[] = [];     // rope polyline in world space (knot -> hero's hand), set by place()
   constructor(parent: THREE.Object3D) {
     const M = mats(), R = this.root;
     // cart: two spoked wheels on an axle, bed, rails, two handles at the back
     for (const sx of [-0.62, 0.62]) {
-      const w = new THREE.Group(); w.position.set(sx, 0.42, 0.05); w.rotation.y = Math.PI / 2; R.add(w);
+      const w = new THREE.Group(); w.position.set(sx, 0.42, 0.05); w.rotation.y = Math.PI / 2; R.add(w); this.wheels.push(w);
       mesh(new THREE.TorusGeometry(0.4, 0.04, 10, 40), M.wood, w); mesh(new THREE.TorusGeometry(0.415, 0.014, 6, 40), M.iron, w);
       const hub = new THREE.CylinderGeometry(0.075, 0.075, 0.15, 14); hub.rotateX(Math.PI / 2); mesh(hub, M.brass, w);
       for (let k = 0; k < 10; k++) { const a = (k / 10) * Math.PI * 2; cylBetween(V(0, 0, 0), V(Math.cos(a) * 0.38, Math.sin(a) * 0.38, 0), 0.016, M.wood, w, 8); }
@@ -91,11 +93,12 @@ export class CartLauncher {
     // arrows: iron head + red paper tube showing in each hole (instanced)
     const head = new THREE.ConeGeometry(0.014, 0.07, 8); head.rotateX(-Math.PI / 2); head.translate(0, 0, -0.04);
     const tb = new THREE.CylinderGeometry(0.017, 0.017, 0.16, 10); tb.rotateX(Math.PI / 2); tb.translate(0, 0, 0.09);
-    const parts = [head.toNonIndexed(), tb.toNonIndexed()], pos: number[] = [], nor: number[] = [], col: number[] = [];
-    parts.forEach((p, i) => { pos.push(...(p.attributes.position.array as Float32Array)); nor.push(...(p.attributes.normal.array as Float32Array)); for (let k = 0; k < p.attributes.position.count; k++) col.push(...(i ? [0.72, 0.2, 0.17] : [0.24, 0.25, 0.3])); });
+    const shaft = new THREE.CylinderGeometry(0.006, 0.006, 0.85, 6); shaft.rotateX(Math.PI / 2); shaft.translate(0, 0, 0.42);
+    const parts = [head.toNonIndexed(), tb.toNonIndexed(), shaft.toNonIndexed()], pos: number[] = [], nor: number[] = [], col: number[] = [];
+    parts.forEach((p, i) => { pos.push(...(p.attributes.position.array as Float32Array)); nor.push(...(p.attributes.normal.array as Float32Array)); for (let k = 0; k < p.attributes.position.count; k++) col.push(...(i === 1 ? [0.72, 0.2, 0.17] : i === 2 ? [0.79, 0.64, 0.42] : [0.24, 0.25, 0.3])); });
     const ag = new THREE.BufferGeometry(); ag.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); ag.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); ag.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
     this.arrows = new THREE.InstancedMesh(ag, twoTone(new THREE.MeshLambertMaterial({ vertexColors: true })), 32);
-    HOLES.forEach(([hx, hy], i) => { const m4 = new THREE.Matrix4().makeTranslation(hx, hy, -BL / 2 + 0.03); this.arrowM.push(m4); this.arrows.setMatrixAt(i, m4); });
+    HOLES.forEach(([hx, hy], i) => { const m4 = new THREE.Matrix4().makeTranslation(hx, hy, -BL / 2 - 0.01); /* heads poke ~4 cm out of the plate */ this.arrowM.push(m4); this.arrows.setMatrixAt(i, m4); });
     this.box.add(this.arrows);
     // fuses: each hole's rear end -> the knot behind the box
     for (const [hx, hy] of HOLES) { const c = new THREE.CatmullRomCurve3([V(hx, hy, BL / 2 + 0.03), V(hx * 0.6, hy * 0.6, BL / 2 + 0.1), this.knotL.clone()]);
@@ -104,6 +107,8 @@ export class CartLauncher {
     parent.add(R);
   }
   /** place the cart (origin, yaw) and lay the rope from the knot to `hand` (world) */
+  /** move the cart (rope stays where it was laid) and turn the wheels by the distance rolled */
+  move(origin: THREE.Vector3, rolled: number) { this.root.position.copy(origin); this.root.updateMatrixWorld(true); for (const w of this.wheels) w.rotation.z = rolled / 0.4; }
   place(origin: THREE.Vector3, yaw: number, hand: THREE.Vector3, ropeParent: THREE.Object3D, ropeMat?: THREE.Material) {
     this.root.position.copy(origin); this.root.rotation.y = yaw; this.root.updateMatrixWorld(true);
     const k = this.knotW(), mid = k.clone().lerp(hand, 0.5); mid.y = Math.min(k.y, hand.y) - 0.35;
@@ -118,6 +123,6 @@ export class CartLauncher {
   /** hide fired arrows */
   setFired(fired: (i: number) => boolean) {
     const z = new THREE.Matrix4().makeScale(0, 0, 0);
-    this.arrowM.forEach((m, i) => this.arrows.setMatrixAt(i, fired(i) ? z : m)); this.arrows.instanceMatrix.needsUpdate = true;
+    this.arrowM.forEach((m, i) => this.arrows.setMatrixAt(i, fired(i) ? z : i === 0 && this.slide ? new THREE.Matrix4().makeTranslation(0, 0, -this.slide).multiply(m) : m)); this.arrows.instanceMatrix.needsUpdate = true;
   }
 }

@@ -38,11 +38,39 @@ export const T = {
 };
 export const LEAD = 4 / FPS;               // actions land +2 f (30 fps) after their word = +4 f at 60 fps
 export const XF = 20;                      // dissolve length (frames at 60 fps) = 10 f at 30 fps
-export type ShotId = "hook" | "wall" | "volley" | "hill" | "hero" | "aerial";
+// ---- the main story (from "A Ming Fort" on: the opening 0-8 s was a flash-forward) ----
+export const M = {
+  an: wordAt("an", 1), and1: wordAt("and", 0), wheels: wordAt("wheels"), inside: wordAt("inside"), paper: wordAt("paper"),
+  every: wordAt("every", 0), one: wordAt("one", 1), spark: wordAt("spark"), enemyThe: wordAt("the", 1), laughs: wordAt("laughs"),
+  then1: wordAt("then", 0), then2: wordAt("then", 1), lights2: wordAt("lights", 1), blastThe: wordAt("the", 2), blasts: wordAt("blasts"),
+  like: wordAt("like", 0), let: wordAt("let"), and2: wordAt("and", 1), n32: wordAt("32", 2), swarm: wordAt("swarm"), you3: wordAt("you", 2),
+  point: wordAt("point"), crowd: wordAt("crowd"), thats: wordAt("thats"), nest: wordAt("nest"), because: wordAt("because"), stings: wordAt("stings"),
+};
+export type ShotId = "hook" | "wall" | "volley" | "hill" | "hero" | "aerial" | "march" | "wheel" | "inside" | "fuses" | "spark" | "laugh" | "closer"
+  | "light" | "blast" | "balloon" | "ride" | "swarm" | "point" | "crowd" | "nest" | "end" | "stings";
+const at = (w: number) => w - 2 / FPS;
 export const SHOTS: { id: ShotId; t0: number }[] = [
-  { id: "hook", t0: 0 }, { id: "wall", t0: T.but - 2 / FPS }, { id: "volley", t0: T.it - 2 / FPS }, { id: "hill", t0: T.at - 2 / FPS },
-  { id: "hero", t0: T.heres - 2 / FPS }, { id: "aerial", t0: T.ming - 2 / FPS },
+  { id: "hook", t0: 0 }, { id: "wall", t0: at(T.but) }, { id: "volley", t0: at(T.it) }, { id: "hill", t0: at(T.at) },
+  { id: "hero", t0: at(T.heres) }, { id: "aerial", t0: at(T.ming) }, { id: "march", t0: at(M.an) }, { id: "wheel", t0: at(M.and1) },
+  { id: "inside", t0: at(M.inside) }, { id: "fuses", t0: at(M.every) }, { id: "spark", t0: at(M.one) }, { id: "laugh", t0: at(M.enemyThe) },
+  { id: "closer", t0: at(M.then1) }, { id: "light", t0: at(M.then2) }, { id: "blast", t0: at(M.blastThe) }, { id: "balloon", t0: at(M.like) },
+  { id: "ride", t0: at(M.and2) }, { id: "swarm", t0: at(M.n32) }, { id: "point", t0: at(M.you3) }, { id: "crowd", t0: at(M.crowd) },
+  { id: "nest", t0: at(M.thats) }, { id: "end", t0: at(M.because) }, { id: "stings", t0: at(M.stings) },
 ];
+/** volley time: the flash-forward runs in real time; the main story replays it — spark demo, then the real launch, a slow-motion
+ *  flight from "blasts" to "crowd", and the impacts in real time on "crowd" */
+const pw = (pts: [number, number][], x: number) => { if (x <= pts[0][0]) return pts[0][1]; for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) { const [x0, y0] = pts[i - 1], [x1, y1] = pts[i]; return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0); } const [xl, yl] = pts[pts.length - 1]; return yl + (x - xl); };
+export const tau = (t: number) => {
+  if (t < T.ming - 2 / FPS) return t;
+  if (t >= M.spark + LEAD && t < M.spark + 1.75) return pw([[M.spark + LEAD, 3.55], [M.spark + 1.75, 3.97]], t);   // demo: spark splits to all 32
+  if (t < M.lights2 + LEAD) return 0.5;                                                                           // loaded, waiting
+  const fire = M.blasts + LEAD;
+  return pw([[M.lights2 + LEAD, T.y1380 + LEAD], [fire, T.fire + LEAD], [fire + 0.3, 4.85], [M.crowd + LEAD, 6.28]], t);
+};
+/** the army's advance up the hill (metres toward the fort, 0 = where the volley lands) */
+export const armyDz = (t: number) => (t < T.ming - 2 / FPS ? 0 : -38 * (1 - smooth((t - M.an) / (M.then2 + 0.3 - M.an))));
+/** the cart rolls into the embrasure on "wheels out" */
+export const cartZ = (t: number) => (t < T.ming - 2 / FPS ? -9.6 : -6.9 - 2.7 * smooth((t - (M.wheels + LEAD)) / 1.6));
 export const shotAt = (t: number) => { let i = 0; while (i < SHOTS.length - 1 && SHOTS[i + 1].t0 <= t) i++; return i; };
 /** what to draw at time t: the current shot, plus the next one fading in during its dissolve */
 export const layersAt = (t: number): { i: number; a: number }[] => {

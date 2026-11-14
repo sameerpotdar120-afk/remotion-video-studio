@@ -18,7 +18,7 @@ export type HeroPose = {
   gripL?: THREE.Vector3; gripR?: THREE.Vector3;   // world points the hands hold (IK)
   armL?: [number, number]; armR?: [number, number];
   mood?: string; turn?: number; lookAt?: [number, number]; lean?: number; legSwing?: number; headDx?: number;
-  bendL?: [number, number]; bendR?: [number, number]; blink?: boolean; torch?: boolean;
+  bendL?: [number, number]; bendR?: [number, number]; blink?: boolean; torch?: boolean; walk?: number | null; balloon?: boolean;
 };
 
 /** a burning torch in the right hand (drawn on the card, design units) */
@@ -68,7 +68,7 @@ export class HeroCard {
     setCtx(g); S.boil = 0; g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, this.cv.width, this.cv.height);
     g.setTransform(AK, 0, 0, AK, 0, 0); g.translate(PX, 50);
     const lean = p.lean || 0; g.translate(320, 1000); g.rotate(lean); g.translate(-320, -1000);
-    char(320, 1000, s, { look: LOOK, mood: p.blink ? "smug" : p.mood || "focus", turn: p.turn ?? 0, lookAt: p.lookAt || [0, 0], armL, armR, legSwing: p.legSwing ?? 0.3,
+    char(320, 1000, s, { look: LOOK, mood: p.blink ? "smug" : p.mood || "focus", turn: p.turn ?? 0, lookAt: p.lookAt || [0, 0], armL, armR, legSwing: p.legSwing ?? 0.3, walk: p.walk ?? undefined,
       headDx: p.headDx || 0, noShadow: true, ik: true, over: p.torch ? () => torch(g, shR, armR || [70, -60], s) : null, armsFront: !!(p.gripL || p.gripR), gripL: !!p.gripL, gripR: !!p.gripR, bendL: p.bendL || [-0.3, 1], bendR: p.bendR || [0.3, 1] });
     this.tex.needsUpdate = true;
   }

@@ -9,7 +9,7 @@ import { LIGHTS, LOOK as WLOOK } from "../bridge/lights";
 import { NOINK } from "../bridge/ink";
 import { HeroCard } from "./hero";
 import { buildEnv, grassField, stoneBlocks } from "./env";
-import { FPS, BRACE_RPS, T, LEAD, SHOTS, ShotId, glide, smooth, lerp3, V3, Cam } from "./story";
+import { lerp, FPS, BRACE_RPS, T, M, M as MW, LEAD, SHOTS, ShotId, glide, smooth, lerp3, V3, Cam, tau, armyDz, cartZ } from "./story";
 import { CartLauncher, plateTex as plateTexAll } from "./launcher";
 import { buildOutside, gY, LX, WALK_Y } from "./outside";
 import { Army } from "./army";
@@ -81,7 +81,7 @@ export class World {
   private padL = new THREE.Vector3(); private gripL = new THREE.Vector3();
   private DS = 0.72;
   private plate!: THREE.Mesh; private plateDone!: THREE.MeshLambertMaterial;
-  cart!: CartLauncher; army!: Army; volley!: Volley;                          // brace length scale (sized for the hero's short bean arms)
+  cart!: CartLauncher; army!: Army; volley!: Volley; balloon!: THREE.Group;                          // brace length scale (sized for the hero's short bean arms)
 
   constructor() {
     const R = this.root;
@@ -232,7 +232,12 @@ export class World {
     this.cart.place(V(LX, WALK_Y, -9.6), 0, HAND, R);
     this.army = new Army(R);
     this.volley = new Volley(R, this.cart, this.army.soldiers, { light: T.y1380 + LEAD, knot: T.fire - 0.3, first: T.fire + LEAD, gap: 0.025 });
-    this.army.react(this.volley.hits());
+    this.volley.big = { t: tau(MW.stings + LEAD), p: V(0.5, gY(0.5, -57), -57) };      // the one hero explosion on "stings"
+    this.army.react([...this.volley.hits(), { t: this.volley.big.t, x: 0.5, z: -57, r: 6 }]);
+    // the red balloon of the analogy ("like a balloon you let go")
+    const bm = twoTone(new THREE.MeshPhongMaterial({ color: "#d8322a", specular: "#ffffff", shininess: 80 }), 0.1);
+    this.balloon = new THREE.Group(); const bb = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 18), bm); bb.scale.set(1, 1.2, 1); bb.castShadow = true; this.balloon.add(bb);
+    const nk = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.07, 10), bm); nk.position.y = -0.27; nk.rotation.x = Math.PI; this.balloon.add(nk); R.add(this.balloon);
     // sound timing: run a still with inputProps {"dumpVolley": true} to print every launch / impact time
     if (((window as any).remotion_inputProps ?? "").includes?.("dumpVolley")) for (const r of this.volley.rockets) console.warn("VOLLEY" + JSON.stringify({ i: r.i, t0: +r.t0.toFixed(3), tHit: +r.tHit.toFixed(3), x: +r.hit.x.toFixed(1), z: +r.hit.z.toFixed(1) }));
   }
@@ -255,7 +260,7 @@ export class World {
     cam.fov = cv.fov; cam.near = 0.1; cam.far = 2000; cam.updateProjectionMatrix(); cam.updateMatrixWorld(); cam.layers.enable(NOINK);
     // ---- light: one fixed day sun for the whole sequence (from the courtyard's left, high) ----
     const sunDir = V(-0.64, 0.74, 0.2).normalize(), focus = V(...cv.look);
-    const R = { hook: 9, wall: 8, volley: 14, hill: 30, hero: 8, aerial: 70 }[id];
+    const R = ({ hook: 9, wall: 8, volley: 14, hill: 30, hero: 8, aerial: 70, march: 30, swarm: 60, crowd: 30, closer: 40, laugh: 12, stings: 40, ride: 20 } as Record<string, number>)[id] ?? 8;
     this.sun.position.copy(focus).addScaledVector(sunDir, 120); this.sun.target.position.copy(focus); this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI;
     const sc = this.sun.shadow.camera; sc.left = -R; sc.right = R; sc.top = R; sc.bottom = -R; sc.near = 20; sc.far = 260; sc.updateProjectionMatrix();
     this.sun.shadow.bias = L.bias; this.sun.shadow.normalBias = L.normalBias * Math.max(0.6, R / 12);
@@ -268,28 +273,58 @@ export class World {
     this.sky.position.copy(cam.position);
     untone("#c8e0f6", this.fog.color); this.fog.near = 40; this.fog.far = 420; scene.fog = this.fog; scene.background = null;
     for (const m of this.clouds) m.lookAt(cam.position.x, m.position.y, cam.position.z);
-    // ---- volley + army (pure functions of t) ----
-    this.volley.update(t, cam.position); this.army.update(t, cam, true);
+    // ---- story state: volley clock, army advance, cart roll (pure functions of t) ----
+    const tv = tau(t), dz = armyDz(t), cz = cartZ(t);
+    this.cart.move(V(LX, WALK_Y, cz), cz + 9.6 === 0 ? 0 : -(cz + 6.9));
+    if (this.cart.ropeMesh) this.cart.ropeMesh.visible = t < T.ming - 2 / FPS || t > M.wheels + 1.8;
+    this.cart.slide = id === "inside" ? 0.62 * smooth((t - (M.paper - 0.35)) / 0.6) : 0;
+    this.volley.update(tv, cam.position);
+    const marching = t > M.an - 0.5 && t < M.then2 + 0.3 && id !== "laugh";
+    this.army.update(tv, cam, true, dz, marching, id === "laugh" && t > M.laughs + LEAD - 0.1);
+    // balloon: held up, let go on "let", zips off on its own jet of air
+    const rel = M.let + LEAD, ba = t - rel, hand = V(HERO_FEET.x + 0.28, WALK_Y + 1.45, HERO_FEET.z - 0.1);
+    this.balloon.visible = id === "balloon";
+    if (ba < 0) this.balloon.position.copy(hand).add(V(0, 0.42, 0));
+    else this.balloon.position.copy(hand).add(V(Math.sin(ba * 13) * 0.3 * ba - ba * 1.5, 0.42 + ba * 2.8 + Math.sin(ba * 9) * 0.25, -ba * 3.2));
+    this.balloon.rotation.z = ba > 0 ? Math.sin(ba * 17) * 0.8 : 0;
     // ---- hero ----
-    this.hero.mesh.visible = true; this.hero.blob.visible = true;
+    const show = (v: boolean) => { this.hero.mesh.visible = v; this.hero.blob.visible = v; };
+    show(true);
     if (id === "hook") {
       const pad = this.padL.clone().applyMatrix4(this.rig.matrixWorld), grip = this.gripL.clone().applyMatrix4(this.rig.matrixWorld), bob = Math.sin(ang) * (1 - out);
-      const feet = this.padL.clone().applyMatrix4(this.rig.matrixWorld.clone()); feet.copy(this.target).addScaledVector(this.drillAxis, (0.84 + 0.012) * this.DS + 0.24); feet.y = 0;
+      const feet = this.target.clone().addScaledVector(this.drillAxis, (0.84 + 0.012) * this.DS + 0.24); feet.y = 0;
       this.hero.update(feet, cam, { gripL: pad, gripR: grip, mood: out > 0.7 ? "smug" : "focus", turn: 0.55, lookAt: [0.75, 0.25], headDx: 8, lean: 0.1 + 0.025 * bob, bendL: [0.2, 1], bendR: [-0.3, 1], legSwing: 0.35 });
-    } else if (id === "volley") { this.hero.mesh.visible = false; this.hero.blob.visible = false;
-    } else if (id === "wall") {
-      const lit = t >= T.y1380 + LEAD, reach = smooth((t - (T.y1380 - 0.25)) / 0.3) * (1 - smooth((t - (T.y1380 + 0.35)) / 0.3));
-      const torchTip = HAND.clone().add(V(0.12, 0.06, 0.02)), fired = t >= T.fire + LEAD;
+    } else if (id === "wall" || id === "light") {
+      const tl = id === "wall" ? T.y1380 : M.lights2, fireT = id === "wall" ? T.fire : M.blasts;
+      const lit = t >= tl + LEAD, reach = smooth((t - (tl - 0.25)) / 0.3) * (1 - smooth((t - (tl + 0.35)) / 0.3));
+      const torchTip = HAND.clone().add(V(0.12, 0.06, 0.02)), fired = t >= fireT + LEAD;
       this.hero.update(HERO_FEET, cam, { gripL: HAND, armR: reach > 0.05 ? undefined : fired ? [90, -140] : [70, -60], gripR: reach > 0.05 ? torchTip.clone().lerp(V(HAND.x + 0.35, HAND.y + 0.35, HAND.z), 1 - reach) : undefined,
         torch: true, mood: fired ? "happy" : lit ? "smug" : "focus", turn: -0.4, lookAt: fired ? [-0.2, -0.3] : [-0.5, 0.3], legSwing: 0.25 });
     } else if (id === "hero") {
       const shrug = smooth((lt - 0.1) / 0.25);
       this.hero.update(HERO_FEET, cam, { armL: [-60 - 70 * shrug, 120 - 190 * shrug], armR: [60 + 70 * shrug, 120 - 190 * shrug], bendL: [-1, 0.2], bendR: [1, 0.2], mood: "smug", turn: -0.05, lookAt: [0.05, 0.05], legSwing: 0.2 });
-    } else this.hero.update(HERO_FEET, cam, { gripL: HAND, armR: [80, -120], torch: true, mood: "happy", turn: -0.3, lookAt: [-0.3, -0.2] });
+    } else if (id === "wheel") {   // he pushes the cart out by its two handles, walking
+      this.cart.root.updateMatrixWorld(true);
+      const hl = V(-0.42, 0.62, 1.62).applyMatrix4(this.cart.root.matrixWorld), hr = V(0.42, 0.62, 1.62).applyMatrix4(this.cart.root.matrixWorld);
+      const moving = t > M.wheels + LEAD && t < M.wheels + LEAD + 1.6;
+      this.hero.update(V(LX, WALK_Y, cz + 2.15), cam, { gripL: hl, gripR: hr, mood: moving ? "focus" : "smug", turn: 0.9, lookAt: [0.2, 0.1], lean: moving ? 0.14 : 0.04, walk: moving ? t * 9 : null, legSwing: 0.3 });
+    } else if (id === "balloon") {
+      const held = t < rel;
+      this.hero.update(HERO_FEET, cam, { armR: held ? [55, -150] : [95, -125], armL: [-60, 110], fistR: held, mood: held ? "smug" : "happy", turn: -0.1, lookAt: held ? [0.3, -0.6] : [-0.2, -0.7], legSwing: 0.2 } as any);
+    } else if (id === "point") {
+      const p = smooth((t - (M.point + LEAD - 0.1)) / 0.2), shrug = 1 - p;
+      this.hero.update(HERO_FEET, cam, { armL: [-60 - 70 * shrug, 120 - 190 * shrug], armR: p > 0.5 ? [175, -55] : [60 + 70 * shrug, 120 - 190 * shrug], bendL: [-1, 0.2], bendR: p > 0.5 ? [0, 1] : [1, 0.2],
+        fistR: p > 0.5, mood: p > 0.5 ? "smug" : "neutral", turn: p > 0.5 ? -0.5 : -0.05, lookAt: p > 0.5 ? [-0.8, 0.1] : [0.05, 0.05], legSwing: 0.2 } as any);
+    } else if (id === "end" || id === "nest") {
+      const pat = Math.max(0, Math.sin((t - M.because) * 9)) * smooth((t - M.because - 0.6) / 0.2) * (1 - smooth((t - M.stings + 0.3) / 0.2));
+      const top = this.cart.box.localToWorld(V(0.05, 0.36, 0.15));
+      this.hero.update(HERO_FEET, cam, { gripR: top.clone().add(V(0, 0.04 + pat * 0.07, 0)), armL: [-40, 120], mood: "smug", turn: -0.35, lookAt: [0.2, 0.05], legSwing: 0.2 });
+    } else if (id === "aerial" || id === "stings") this.hero.update(HERO_FEET, cam, { gripL: HAND, armR: [80, -120], torch: true, mood: "happy", turn: -0.3, lookAt: [-0.3, -0.2] });
+    else show(false);
     return focus;
   }
 
-  dof(id: ShotId, t: number) { return id === "hook" ? 7 + 2 * smooth((t - T.beehive) / 0.4) : id === "wall" ? 4 : id === "hero" ? 6 : id === "hill" ? 2 : 0; }
+  dof(id: ShotId, t: number) { return id === "hook" ? 7 + 2 * smooth((t - T.beehive) / 0.4) : ({ wall: 4, light: 4, hero: 6, hill: 2, crowd: 2, inside: 9, fuses: 8, spark: 8, laugh: 5, balloon: 5, point: 5, nest: 7, end: 6, wheel: 3, blast: 6 } as Record<string, number>)[id] ?? 0; }
   private cam(id: ShotId, t: number, lt: number): Cam {
     const deg = Math.PI / 180;
     switch (id) {
@@ -306,7 +341,41 @@ export class World {
       }
       case "hill": { const y = gY(11, -80); return { pos: lerp3([11.5, y + 7.5, -80.5], [11.0, y + 7.2, -79.3], lt / 2.5), look: [-0.5, gY(0, -50) + 1.0, -50], fov: 44, roll: -3 * deg }; }
       case "hero": return { pos: lerp3([LX + 1.75, WALK_Y + 1.45, -6.35], [LX + 1.6, WALK_Y + 1.42, -6.7], lt / 1.3), look: [HERO_FEET.x - 0.1, WALK_Y + 1.15, HERO_FEET.z - 0.2], fov: 42, roll: -2 * deg };
-      default: { const a = 0.6 + lt * 0.06; return { pos: [Math.sin(a) * 62, 46, -9 + Math.cos(a) * 62], look: [0, 0, -14], fov: 40, roll: 0 }; }
+      case "aerial": { const a = 0.6 + lt * 0.06; return { pos: [Math.sin(a) * 62, 46, -9 + Math.cos(a) * 62], look: [0, 0, -14], fov: 40, roll: 0 }; }
+      case "march": { const dz = armyDz(t), zc = -57 + dz, zc0 = zc + 22; return { pos: lerp3([-10, gY(-10, zc0) + 6.5, zc0], [-9.4, gY(-9.4, zc0 + 0.6) + 6.4, zc0 + 0.6], lt / 2), look: [0, gY(0, zc) + 1.0, zc], fov: 40, roll: 3 * deg }; }
+      case "wheel": { const cz = cartZ(t); return { pos: lerp3([LX + 4.6, WALK_Y + 2.0, -4.2], [LX + 4.3, WALK_Y + 1.95, -4.6], lt / 3.5), look: [LX - 0.2, WALK_Y + 0.75, cz + 1.0], fov: 44, roll: -2 * deg }; }
+      case "inside": {   // at the mouth: 32 arrow heads; on "paper" one arrow slides out and the camera follows its red powder tube
+        this.cart.box.updateMatrixWorld(true); const m = (v: THREE.Vector3) => v.applyMatrix4(this.cart.box.matrixWorld).toArray() as V3;
+        const u = glide((t - (M.paper - 0.4)) / 0.8);
+        return { pos: lerp3(m(V(0.18, 0.12, -1.05)), m(V(0.32, 0.18, -1.3)), u), look: lerp3(m(V(0, 0, -0.5)), m(V(0.0, 0.0, -0.95)), u), fov: lerp(40, 34, u), roll: 0 };
+      }
+      case "fuses": case "spark": {   // behind the box: glide along the fuses to the knot
+        this.cart.box.updateMatrixWorld(true); const m = (v: THREE.Vector3) => v.applyMatrix4(this.cart.box.matrixWorld).toArray() as V3;
+        const u = glide(lt / (id === "fuses" ? 2.2 : 2.2));
+        return id === "fuses" ? { pos: lerp3(m(V(0.85, 0.55, 1.1)), m(V(0.4, 0.18, 1.25)), u), look: lerp3(m(V(0, 0, 0.5)), m(V(0, -0.08, 0.62)), u), fov: 42, roll: 2 * deg }
+          : { pos: m(V(0.42 - 0.05 * u, 0.22, 1.22)), look: m(V(0, -0.02, 0.56)), fov: 44, roll: 0 };
+      }
+      case "laugh": { const dz = armyDz(t), z = -50.6 + dz; return { pos: lerp3([2.2, gY(2, z + 4) + 1.25, z + 4.2], [2.0, gY(2, z + 4) + 1.22, z + 3.8], lt / 1.5), look: [0, gY(0, z) + 1.1, z - 1], fov: 46, roll: -3 * deg }; }
+      case "closer": return { pos: lerp3([LX + 1.6, WALK_Y + 2.6, -8.4], [LX + 1.3, WALK_Y + 2.7, -9.0], lt / 1.7), look: [0, gY(0, -54 + armyDz(t)) + 0.5, -54 + armyDz(t)], fov: 24, roll: 0 };
+      case "light": return { pos: lerp3([LX + 2.2, WALK_Y + 1.45, -7.15], [LX + 2.0, WALK_Y + 1.42, -7.4], lt / 1.6), look: [LX - 0.55, WALK_Y + 0.95, -9.0], fov: 50, roll: 2 * deg };
+      case "blast": {   // side-on close of the box: flame jets out of the back as all 32 leave
+        this.cart.box.updateMatrixWorld(true); const m = (v: THREE.Vector3) => v.applyMatrix4(this.cart.box.matrixWorld).toArray() as V3;
+        return { pos: lerp3(m(V(2.6, 0.9, 1.7)), m(V(2.4, 0.95, 1.5)), lt / 1.8), look: m(V(0, -0.1, 0.35)), fov: 46, roll: -2 * deg };
+      }
+      case "balloon": return { pos: lerp3([LX + 1.0, WALK_Y + 1.5, -6.4], [LX + 0.9, WALK_Y + 1.7, -6.7], lt / 1.4), look: [HERO_FEET.x, WALK_Y + 1.6, HERO_FEET.z - 1.5], fov: 46, roll: 0 };
+      case "ride": {   // ride alongside one rocket in the slow-motion flight
+        const r = this.volley.rockets[3], p = this.volley.posAt(r, tau(t)), q = this.volley.posAt(r, tau(t) - 0.05), d = p.clone().sub(q).normalize(), side = V(-d.z, 0, d.x).normalize();
+        const c = p.clone().addScaledVector(side, 1.6).addScaledVector(d, -1.4).add(V(0, 0.45, 0)); return { pos: c.toArray() as V3, look: p.clone().addScaledVector(d, 1.2).toArray() as V3, fov: 48, roll: 4 * deg };
+      }
+      case "swarm": return { pos: lerp3([26, 26, -22], [24, 27, -26], lt / 3.5), look: [0, 3, -34], fov: 46, roll: -4 * deg };
+      case "point": return { pos: lerp3([LX + 1.75, WALK_Y + 1.45, -6.35], [LX + 1.6, WALK_Y + 1.42, -6.7], lt / 2), look: [HERO_FEET.x - 0.4, WALK_Y + 1.3, HERO_FEET.z - 0.6], fov: 46, roll: -2 * deg };
+      case "crowd": { const y = gY(11, -80); return { pos: lerp3([11.5, y + 7.5, -80.5], [11.2, y + 7.3, -79.8], lt / 0.8), look: [-0.5, gY(0, -50) + 1.0, -50], fov: 44, roll: -3 * deg }; }
+      case "nest": {   // outside the embrasure looking back at the empty, smoking honeycomb; push in on "nest"
+        this.cart.box.updateMatrixWorld(true); const m = (v: THREE.Vector3) => v.applyMatrix4(this.cart.box.matrixWorld).toArray() as V3;
+        const u = glide((t - (M.nest - 0.6)) / 1.0); return { pos: lerp3(m(V(0.5, 0.35, -2.4)), m(V(0.15, 0.12, -1.25)), u), look: m(V(0, 0, -0.5)), fov: 42, roll: 0 };
+      }
+      case "end": return { pos: lerp3([LX + 2.3, WALK_Y + 1.55, -6.3], [LX + 2.1, WALK_Y + 1.5, -6.65], lt / 1.9), look: [LX - 0.7, WALK_Y + 1.05, -8.9], fov: 46, roll: 2 * deg };
+      default: return { pos: lerp3([LX + 0.9, WALK_Y + 3.3, -6.6], [LX + 0.7, WALK_Y + 3.4, -7.3], lt / 1.5), look: [0.5, gY(0.5, -57) + 3, -57], fov: 40, roll: 0 };   // "stings": the hero blast over the parapet
     }
   }
 }

@@ -74,6 +74,7 @@ const ramp = (u: number, out: THREE.Color) => { const x = Math.max(0, Math.min(0
 
 export class Volley {
   rockets: Rocket[] = [];
+  big: { t: number; p: THREE.Vector3 } | null = null;   // the one hero explosion (climax)
   private smoke: Puffs; private glow: Puffs;
   private bodies: THREE.InstancedMesh; private fire: THREE.InstancedMesh; private clouds: THREE.InstancedMesh; private debris: THREE.InstancedMesh;
   private c = new THREE.Color(); private m4 = new THREE.Matrix4(); private q = new THREE.Quaternion(); private s3 = new THREE.Vector3();
@@ -95,9 +96,9 @@ export class Volley {
     this.smoke = new Puffs(parent, 9000, false, 4); this.glow = new Puffs(parent, 3000, true, 6);
     const shaft = new THREE.CylinderGeometry(0.008, 0.008, 0.9, 5); shaft.rotateX(Math.PI / 2); shaft.translate(0, 0, 0.45);
     this.bodies = new THREE.InstancedMesh(shaft, twoTone(new THREE.MeshLambertMaterial({ color: "#c9a46a" })), 32); this.bodies.frustumCulled = false; parent.add(this.bodies);
-    this.fire = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshBasicMaterial({ color: "#ffffff", toneMapped: true }), 32 * 10); this.fire.frustumCulled = false; parent.add(this.fire);
-    this.clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), twoTone(new THREE.MeshLambertMaterial({ color: "#ffffff" })), 32 * 12); this.clouds.frustumCulled = false; this.clouds.castShadow = false; parent.add(this.clouds);
-    this.debris = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.6, 0.8), twoTone(new THREE.MeshLambertMaterial({ color: "#4a3420" })), 32 * 16); this.debris.frustumCulled = false; parent.add(this.debris);
+    this.fire = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), new THREE.MeshBasicMaterial({ color: "#ffffff", toneMapped: true }), 33 * 10); this.fire.frustumCulled = false; parent.add(this.fire);
+    this.clouds = new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1, 2), twoTone(new THREE.MeshLambertMaterial({ color: "#ffffff" })), 33 * 12); this.clouds.frustumCulled = false; this.clouds.castShadow = false; parent.add(this.clouds);
+    this.debris = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.6, 0.8), twoTone(new THREE.MeshLambertMaterial({ color: "#4a3420" })), 33 * 16); this.debris.frustumCulled = false; parent.add(this.debris);
   }
   hits() { return this.rockets.map((r) => ({ t: r.tHit, x: r.hit.x, z: r.hit.z })); }
   posAt(r: Rocket, t: number) {
@@ -119,7 +120,8 @@ export class Volley {
     for (const r of this.rockets) {
       const a = t - r.t0; if (a < 0) continue;
       const mouth = L.holeW(r.i), rear = L.rearW(r.i), ax = L.axisW();
-      if (a < 0.12) { gl.add(mouth.x, mouth.y, mouth.z, 0.9 * (1 - a / 0.12) + 0.2, c.set("#ffd27a"), 1); gl.add(rear.x, rear.y, rear.z, 0.6, c.set("#ffae48"), 0.8); }
+      if (a < 0.12) gl.add(mouth.x, mouth.y, mouth.z, 0.9 * (1 - a / 0.12) + 0.2, c.set("#ffd27a"), 1);
+      if (a < 0.45) for (let k = 0; k < 4; k++) { const d = a * 2 + k * 0.12; gl.add(rear.x - ax.x * d, rear.y - ax.y * d + k * 0.02, rear.z - ax.z * d, 0.35 + k * 0.12, c.set(k ? "#ff9d38" : "#fff2c0"), (1 - a / 0.45) * (1 - k * 0.2)); }   // flame jet out of the back
       for (let k = 0; k < 3; k++) { const ag = a - k * 0.06; if (ag < 0 || ag > 5) continue; const e = Math.exp(-ag / 1.8);
         sm.add(mouth.x + ax.x * ag * 0.8 + (hash(r.i * 9 + k) - 0.5) * ag * 0.6, mouth.y + ag * 0.35, mouth.z + ax.z * ag * 0.8, 0.25 + ag * 0.7, c.set("#eceae4"), 0.35 * e);
         sm.add(rear.x - ax.x * ag * 0.6, rear.y + ag * 0.45, rear.z - ax.z * ag * 0.6, 0.22 + ag * 0.6, c.set("#e2dfd8"), 0.28 * e); }
@@ -134,25 +136,27 @@ export class Volley {
     this.bodies.count = nb; this.bodies.instanceMatrix.needsUpdate = true;
     // ---- impacts ----
     let nf = 0, nc = 0, nd = 0;
-    for (const r of this.rockets) {
-      const a = t - r.tHit; if (a < 0 || a > 8) continue; const h = r.hit, y0 = gY(h.x, h.z), sd = r.i * 17;
-      if (a < 0.14) { gl.add(h.x, y0 + 1, h.z, 9 * (1 - a / 0.14) + 2, c.set("#fff3c4"), 0.9); }
+    const booms = this.rockets.map((r) => ({ i: r.i, tHit: r.tHit, hit: r.hit, sc: 1 }));
+    if (this.big) booms.push({ i: 40, tHit: this.big.t, hit: this.big.p, sc: 3.4 });
+    for (const r of booms) {
+      const a = t - r.tHit, S = r.sc; if (a < 0 || a > 8) continue; const h = r.hit, y0 = gY(h.x, h.z), sd = r.i * 17;
+      if (a < 0.14 * S) { gl.add(h.x, y0 + S, h.z, (9 * (1 - a / (0.14 * S)) + 2) * S, c.set("#fff3c4"), 0.9); }
       for (let k = 0; k < 10; k++) {   // fireball: cel spheres growing fast (full size in ~3 f at 30 fps), colour ramp over 35 f, then smoke
-        const g = hash(sd + k * 5), ox = (hash(sd + k * 7) - 0.5) * 1.4, oz = (hash(sd + k * 11) - 0.5) * 1.4, grow = 1 - Math.exp(-a / 0.07);
-        const sz = (0.32 + g * 0.38) * grow * (1 + a * 0.3), rise = a * (1.0 + g * 0.8);
-        if (a < 1.17) { this.m4.compose(V(h.x + ox * grow, y0 + 0.5 + rise + g * 0.9, h.z + oz * grow), this.q.identity(), this.s3.setScalar(sz)); this.fire.setMatrixAt(nf, this.m4); this.fire.setColorAt(nf++, ramp(a / 1.17 * 0.75 + g * 0.1, c)); }
+        const g = hash(sd + k * 5), ox = (hash(sd + k * 7) - 0.5) * 1.4 * S, oz = (hash(sd + k * 11) - 0.5) * 1.4 * S, grow = 1 - Math.exp(-a / 0.07);
+        const sz = (0.32 + g * 0.38) * S * grow * (1 + a * 0.3), rise = a * (1.0 + g * 0.8) * S;
+        if (a < 1.17) { this.m4.compose(V(h.x + ox * grow, y0 + 0.5 * S + rise + g * 0.9 * S, h.z + oz * grow), this.q.identity(), this.s3.setScalar(sz)); this.fire.setMatrixAt(nf, this.m4); this.fire.setColorAt(nf++, ramp(a / 1.17 * 0.75 + g * 0.1, c)); }
       }
       for (let k = 0; k < 12; k++) {   // smoke column: cumulus that takes over and holds >= 70 f (30 fps), drifting up
         const g = hash(sd + k * 13), st = 0.35 + g * 0.5; if (a < st) continue; const aa = a - st;
-        const sz = (0.45 + g * 0.5) * (1 + aa * 0.35) * Math.min(1, aa * 4) * (a > 6 ? Math.max(0, 1 - (a - 6) / 2) : 1);
-        this.m4.compose(V(h.x + (hash(sd + k) - 0.5) * 2.2, y0 + 0.8 + aa * (0.9 + g) + g * 1.6, h.z + (hash(sd + k * 3) - 0.5) * 2.2), this.q.identity(), this.s3.setScalar(sz));
+        const sz = (0.45 + g * 0.5) * S * (1 + aa * 0.35) * Math.min(1, aa * 4) * (a > 6 ? Math.max(0, 1 - (a - 6) / 2) : 1);
+        this.m4.compose(V(h.x + (hash(sd + k) - 0.5) * 2.2 * S, y0 + (0.8 + aa * (0.9 + g) + g * 1.6) * S, h.z + (hash(sd + k * 3) - 0.5) * 2.2 * S), this.q.identity(), this.s3.setScalar(sz));
         this.clouds.setMatrixAt(nc, this.m4); this.clouds.setColorAt(nc++, c.set(k % 3 ? "#5e5148" : "#7d7064"));
       }
-      for (let k = 0; k < 16; k++) { const vh = 2 + hash(sd + k * 13) * 6, an = hash(sd + k * 17) * 6.283, vz = 3 + hash(sd + k * 19) * 6, y = y0 + 0.3 + vz * a - 4.9 * a * a;
+      for (let k = 0; k < 16; k++) { const vh = (2 + hash(sd + k * 13) * 6) * Math.sqrt(S), an = hash(sd + k * 17) * 6.283, vz = (3 + hash(sd + k * 19) * 6) * Math.sqrt(S), y = y0 + 0.3 + vz * a - 4.9 * a * a;
         if (a > 3 || y < y0 - 0.3) continue; this.m4.compose(V(h.x + Math.cos(an) * vh * a, y, h.z + Math.sin(an) * vh * a), this.q.setFromAxisAngle(V(1, 0.3, 0.2).normalize(), a * 9 + k), this.s3.setScalar(0.08 + hash(k + sd) * 0.1));
         this.debris.setMatrixAt(nd++, this.m4); }
-      if (a < 2) for (let k = 0; k < 10; k++) { const an = k / 10 * 6.283 + r.i, rr = 0.3 + a * 3.2 * Math.exp(-a * 0.6);   // dust ring along the ground
-        sm.add(h.x + Math.cos(an) * rr, y0 + 0.3 + a * 0.3, h.z + Math.sin(an) * rr, 1.0 + a * 1.2, c.set("#b59a78"), 0.35 * Math.exp(-a / 1.1) * Math.min(1, a * 8)); }
+      if (a < 2) for (let k = 0; k < 10; k++) { const an = k / 10 * 6.283 + r.i, rr = (0.3 + a * 3.2 * Math.exp(-a * 0.6)) * S;   // dust ring along the ground
+        sm.add(h.x + Math.cos(an) * rr, y0 + 0.3 + a * 0.3, h.z + Math.sin(an) * rr, (1.0 + a * 1.2) * S, c.set("#b59a78"), 0.35 * Math.exp(-a / 1.1) * Math.min(1, a * 8)); }
       if (a < 0.5) for (let k = 0; k < 14; k++) { const vh = 8 + hash(sd + k * 23) * 14, an = hash(sd + k * 29) * 6.283, vz = 6 + hash(sd + k * 31) * 12;
         gl.add(h.x + Math.cos(an) * vh * a, y0 + 0.5 + vz * a - 4.9 * a * a, h.z + Math.sin(an) * vh * a, 0.12, c.set("#ffd27a"), 1 - a / 0.5); }
     }

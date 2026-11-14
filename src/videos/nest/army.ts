@@ -44,28 +44,31 @@ export class Army {
     return this.cards.get(key)!;
   }
   /** pose every soldier at time t (seconds) for the given camera */
-  update(t: number, cam: THREE.Camera, visible: boolean) {
+  update(t: number, cam: THREE.Camera, visible: boolean, dz = 0, marching = false, laugh = false) {
     this.soldiers.forEach((s, i) => {
       const m = this.meshes[i]; m.visible = visible; if (!visible) return;
-      let x = s.x, z = s.z, y = s.y, roll = 0, pose = t >= s.tShock ? "shock" : "march";
+      let x = s.x, z = s.z + dz, y = dz ? gY(s.x, s.z + dz) : s.y, roll = 0, pose = t >= s.tShock ? "shock" : laugh && s.z > -55 && s.id % 3 !== 1 ? "laugh" : "march";
       if (s.fling && t >= s.fling.t) {
         const f = s.fling, tt = t - f.t, T = (2 * f.vy) / 9.81;
         if (tt < T) { x += f.vx * tt; z += f.vz * tt; y = Math.max(gY(x, z), s.y + f.vy * tt - 4.9 * tt * tt); roll = f.w * tt; pose = "fly"; }
         else { x += f.vx * T; z += f.vz * T; y = gY(x, z); roll = Math.sign(f.w) * Math.PI / 2; pose = "down"; }
       } else if (pose === "shock") { y += Math.abs(Math.sin((t - s.tShock) * 14 + s.id)) * 0.06; roll = Math.sin((t - s.tShock) * 9 + s.id) * 0.08; }
+      else if (marching) { const ph = t * 3.6 + (s.id % 2) * Math.PI; y += Math.abs(Math.sin(ph)) * 0.07; roll = Math.sin(ph) * 0.05; }
+      else if (pose === "laugh") { y += Math.abs(Math.sin(t * 16 + s.id)) * 0.05; roll = Math.sin(t * 8 + s.id) * 0.1; }
       else { y += Math.abs(Math.sin(t * 6 + s.id)) * 0.02; }
       const c = this.card(s, pose); if (m.material !== c.mat) { m.material = c.mat; m.geometry = c.geo; }
       m.position.set(x, y, z); m.rotation.set(0, Math.atan2(cam.position.x - x, cam.position.z - z), roll); m.scale.x = s.flip ? -1 : 1;
     });
   }
   /** reactions from the impacts: shock wave timing, and ballistic throws for the ones beside a blast */
-  react(hits: { t: number; x: number; z: number }[]) {
+  react(hits: { t: number; x: number; z: number; r?: number }[]) {
     for (const s of this.soldiers) {
       s.tShock = 99; s.fling = null;
       for (const h of hits) {
         const d = Math.hypot(s.x - h.x, s.z - h.z);
         s.tShock = Math.min(s.tShock, h.t + 0.1 + d / 45 + (s.id % 7) * 0.02);
-        if (d < 1.9 && (!s.fling || h.t < s.fling.t)) { const k = (1.9 - d) / 1.9, a = Math.atan2(s.z - h.z, s.x - h.x);
+        const R = h.r ?? 1.9;
+        if (d < R && (!s.fling || h.t < s.fling.t)) { const k = Math.min(1, (R - d) / 1.9), a = Math.atan2(s.z - h.z, s.x - h.x);
           s.fling = { t: h.t, vx: Math.cos(a) * (2 + 2.5 * k), vz: Math.sin(a) * (2 + 2.5 * k), vy: 2.5 + 2.5 * k, w: (s.id % 2 ? 1 : -1) * (4 + 4 * k) }; }
       }
     }
