@@ -8,7 +8,7 @@ import { twoTone, TONE, CHAR, untone } from "../bridge/shade";
 import { LIGHTS, LOOK as WLOOK } from "../bridge/lights";
 import { NOINK } from "../bridge/ink";
 import { HeroCard } from "./hero";
-import { buildEnv } from "./env";
+import { buildEnv, grassField, stoneBlocks } from "./env";
 import { FPS, BRACE_RPS, camHook } from "./story";
 
 // ---------------- the launcher box (Ming "nest of bees": hexagonal tube of 32 fire-arrows) ----------------
@@ -100,7 +100,7 @@ export class World {
     // ---- static set (one batch per material) ----
     const b = new Batch();
     const M = {
-      grass: lam("n_grass", () => ({ map: rep(grassHD(), 1, 1), color: "#a9bf86" })),
+      grass: lam("n_grass", () => ({ map: rep(grassHD(), 1, 1), color: "#7d9a5a" })),
       cobble: lam("n_cobble", () => ({ map: cobbleHD() })),
       wall: lam("n_wall", () => ({ map: stoneHD("n_wallHD", ["#cbbda6", "#c1b39b", "#d3c6b0", "#b9ab93"], "#8f816d") })),
       cope: lam("n_cope", () => ({ map: stoneHD("n_copeHD", ["#e2d6c3", "#d8ccb8", "#e9dfcf", "#d1c4b0"], "#a89b88") })),
@@ -137,12 +137,12 @@ export class World {
     const dirt = lam("n_dirt", () => ({ map: dirtTex() })), sack = lam("n_sack", () => ({ color: "#d9c39a" })), iron = lam("n_iron", () => ({ color: "#4a4f5a" }));
     const paper = lam("n_paper", () => ({ color: "#b8322c" })), shaft = lam("n_shaft", () => ({ color: "#c9a46a" })), shav = lam("n_shav", () => ({ color: "#f0d6a2" }));
     // worn dirt patch under the work area
-    const dp = new THREE.CircleGeometry(1.7, 40); dp.rotateX(-Math.PI / 2); dp.scale(1.3, 1, 0.75); dp.translate(-0.1, 0.004, 8.0);
+    const dp = new THREE.CircleGeometry(1.0, 40); dp.rotateX(-Math.PI / 2); dp.scale(1.4, 1, 0.8); dp.translate(0.15, 0.004, 8.0);
     { const u = dp.attributes.uv as THREE.BufferAttribute; for (let i = 0; i < u.count; i++) u.setXY(i, u.getX(i) * 4, u.getY(i) * 4); } b.add(dp, dirt);
     // banners hanging on the wall (our own design: red cloth, gold border, black hex emblem)
     for (const x of [-4.2, 2.4, 9.0]) { const g = new THREE.PlaneGeometry(1.5, 3.4, 1, 8); const pos = g.attributes.position as THREE.BufferAttribute;
-      for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getY(i) * 2.2 + x) * 0.04); g.computeVertexNormals(); g.translate(x, 5.0, -6.72); b.add(g, red);
-      b.add(boxGeo(V(x - 0.85, 6.7, -6.78), V(x + 0.85, 6.78, -6.62)), M.wood); }
+      for (let i = 0; i < pos.count; i++) pos.setZ(i, Math.sin(pos.getY(i) * 2.2 + x) * 0.04); g.computeVertexNormals(); g.translate(x, 5.0, -6.5); b.add(g, red);
+      b.add(boxGeo(V(x - 0.85, 6.7, -6.6), V(x + 0.85, 6.78, -6.45)), M.wood); }
     // workbench behind the hero with a mallet, a saw and a bowl of nails
     b.add(boxGeo(V(-2.5, 0.86, 4.75), V(-0.9, 0.94, 5.45)), M.plank);
     for (const [x, z] of [[-2.4, 4.82], [-1.0, 4.82], [-2.4, 5.38], [-1.0, 5.38]]) b.add(boxGeo(V(x - 0.04, 0, z - 0.04), V(x + 0.04, 0.86, z + 0.04)), M.wood);
@@ -179,6 +179,9 @@ export class World {
       b.add(boxGeo(V(c.x + dx - 0.05, 0.52, c.z - 0.36), V(c.x + dx + 0.05, 0.6, c.z + 0.36)), M.wood);
     }
     buildEnv(b, R);
+    // dense grass around the action (clear where the work area is trodden), 3D blocks on the inner wall face
+    grassField(R, V(-0.6, 0, 8.6), (x, z) => { const d = Math.hypot((x - 0.15) / 1.4, (z - 8.0) / 0.8); return d < 0.85 ? 0 : d < 1.25 ? (d - 0.85) / 0.4 : z < -6.5 ? 0 : 1; });
+    stoneBlocks(R, -30, 30, 0, 7, -6.8);
     b.build(R);
     // brass rings at both ends (Phong, small highlight)
     const brass = twoTone(new THREE.MeshPhongMaterial({ color: "#c8952e", specular: "#ffe2a0", shininess: 50 }), 0.15);

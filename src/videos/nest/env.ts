@@ -4,6 +4,7 @@
 //   barracks hall, wall stair | courtyard life (trees, well, weapon rack, hay cart, training dummy, firewood, path, rocks,
 //   flowers) | instanced grass tufts.
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { Batch, V, boxGeo, lam } from "../bridge/build";
 import { roofHD, ctex, rng, stoneHD, planksHD, beam } from "../bridge/paint";
 import { twoTone } from "../bridge/shade";
@@ -170,18 +171,48 @@ export function buildEnv(b: Batch, root: THREE.Object3D) {
   for (let i = 0; i < 70; i++) { const r = rng(i + 900), x = -9 + r() * 18, z = -3 + r() * 16; if (Math.hypot(x + 0.1, (z - 8) * 1.3) < 2.4) continue;
     const g = new THREE.IcosahedronGeometry(0.05, 0); g.translate(x, 0.12, z); add(g, petal[i % 3]); }
 
-  // ---------------- instanced grass tufts (refs: grass is never a flat field) ----------------
-  const blade = new THREE.ConeGeometry(0.035, 0.32, 4); blade.translate(0, 0.16, 0);
-  const tuftGeo = new THREE.BufferGeometry(); { const parts: THREE.BufferGeometry[] = []; for (let k = 0; k < 5; k++) { const c = blade.clone(); c.rotateZ((k - 2) * 0.22); c.rotateY(k * 1.3); c.translate((k - 2) * 0.03, 0, (k % 2) * 0.03); parts.push(c.toNonIndexed()); }
-    const pos: number[] = [], nor: number[] = []; for (const p of parts) { pos.push(...(p.attributes.position.array as Float32Array)); nor.push(...(p.attributes.normal.array as Float32Array)); }
-    tuftGeo.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); tuftGeo.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3)); }
-  const tuftMat = twoTone(new THREE.MeshLambertMaterial({ color: "#ffffff" }));
-  const N = 1400, inst = new THREE.InstancedMesh(tuftGeo, tuftMat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), sc = new THREE.Vector3(), col = new THREE.Color();
-  let n = 0; const r = rng(4242);
-  for (let i = 0; i < N * 3 && n < N; i++) { const x = -12 + r() * 24, z = -4.5 + r() * 18.5;
-    if (Math.hypot(x + 0.1, (z - 8.0) * 1.33) < 2.25) continue;           // keep the trodden work area clear
-    if (Math.hypot(x - 8.6, z - 1.2) < 1.0 || z > 10.8 || (x > 5.4 && x < 8.0 && z > 3.9 && z < 5.3)) continue;
-    const s = 0.32 + r() * 0.3; m4.compose(V(x, 0, z), q.setFromAxisAngle(V(0, 1, 0), r() * 6.28), sc.set(s, s * (0.8 + r() * 0.6), s)); inst.setMatrixAt(n, m4);
-    inst.setColorAt(n, col.set(r() > 0.5 ? "#7cbf4c" : r() > 0.5 ? "#8ccb57" : "#69ad42")); n++; }
-  inst.count = n; inst.castShadow = false; inst.receiveShadow = true; inst.layers.set(NOINK); root.add(inst);
+}
+
+// ---------------- dense blade grass (refs: thousands of blades, dark roots -> light yellow-green tips) ----------------
+/** instanced curved blades; density falls off with distance from `focus` (where the camera looks) */
+export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: (x: number, z: number) => number) {
+  // one blade: 4 segments, tapered, bent, vertex colour root -> tip
+  const seg = 4, pos: number[] = [], colr: number[] = [], idx: number[] = [];
+  const root0 = new THREE.Color("#2c5a1c"), mid = new THREE.Color("#4f8f2e"), tip = new THREE.Color("#b5d860"), c = new THREE.Color();
+  for (let i = 0; i <= seg; i++) { const t = i / seg, w = 0.022 * (1 - t * 0.92), bend = t * t * 0.09;
+    pos.push(-w, t, bend, w, t, bend);
+    (t < 0.5 ? c.copy(root0).lerp(mid, t * 2) : c.copy(mid).lerp(tip, (t - 0.5) * 2)); colr.push(c.r, c.g, c.b, c.r, c.g, c.b);
+    if (i < seg) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); } }
+  const blade = new THREE.BufferGeometry(); blade.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); blade.setAttribute("color", new THREE.Float32BufferAttribute(colr, 3)); blade.setIndex(idx); blade.computeVertexNormals();
+  // normals point up-ish so blades light like a lawn, not like paper strips
+  const nr = blade.attributes.normal as THREE.BufferAttribute; for (let i = 0; i < nr.count; i++) nr.setXYZ(i, 0, 0.85, 0.53);
+  const mat = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
+  const N = 90000, inst = new THREE.InstancedMesh(blade, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), tint = new THREE.Color();
+  const r = rng(7777); let n = 0;
+  for (let i = 0; i < N * 6 && n < N; i++) {
+    const rad = Math.pow(r(), 0.55) * 22, a = r() * Math.PI * 2, x = focus.x + Math.cos(a) * rad, z = focus.z + Math.sin(a) * rad * 0.85;
+    const keep = keepOut(x, z); if (keep <= 0 || r() > keep) continue;
+    const h = 0.16 + r() * 0.22 + (r() > 0.93 ? 0.18 : 0);
+    e.set((r() - 0.5) * 0.5, r() * Math.PI * 2, (r() - 0.5) * 0.5); m4.compose(V(x, 0, z), q.setFromEuler(e), sc.set(1, h, 1)); inst.setMatrixAt(n, m4);
+    const k = 0.82 + r() * 0.3; inst.setColorAt(n, tint.setRGB(k * (0.95 + r() * 0.1), k, k * (0.85 + r() * 0.15))); n++;
+  }
+  inst.count = n; inst.receiveShadow = true; inst.castShadow = false; inst.layers.set(NOINK); inst.frustumCulled = false; root.add(inst);
+  return n;
+}
+
+// ---------------- 3D stone blocks on the inner wall face (refs: bevelled blocks with real relief) ----------------
+export function stoneBlocks(root: THREE.Object3D, x0: number, x1: number, y0: number, y1: number, zFace: number, seed = 1) {
+  const geo = new RoundedBoxGeometry(1, 1, 1, 2, 0.07);
+  const mat = twoTone(new THREE.MeshLambertMaterial({ map: stoneHD("e_block", ["#d6c9b2", "#d6c9b2", "#d6c9b2", "#d6c9b2"], "#d6c9b2") }));
+  const list: THREE.Matrix4[] = [], cols: THREE.Color[] = [], r = rng(seed), H = 0.46;
+  const pal = ["#d9ccb4", "#cfc1a8", "#e1d5bf", "#c7b89e", "#d3c3a6", "#bfb196"];
+  for (let row = 0, y = y0; y < y1 - 0.05; row++, y += H) {
+    let x = x0 - (row % 2) * 0.5 - r() * 0.3;
+    while (x < x1) { const w = 0.8 + r() * 0.5, h = Math.min(H, y1 - y) - 0.035, d = 0.16 + r() * 0.05;
+      list.push(new THREE.Matrix4().compose(V(x + w / 2, y + h / 2 + 0.017, zFace + d / 2 - 0.06), new THREE.Quaternion(), V(w - 0.035, h, d)));
+      cols.push(new THREE.Color(pal[Math.floor(r() * pal.length)])); x += w; }
+  }
+  const inst = new THREE.InstancedMesh(geo, mat, list.length);
+  list.forEach((m, i) => { inst.setMatrixAt(i, m); inst.setColorAt(i, cols[i]); });
+  inst.castShadow = true; inst.receiveShadow = true; inst.layers.set(NOINK); root.add(inst);
 }
