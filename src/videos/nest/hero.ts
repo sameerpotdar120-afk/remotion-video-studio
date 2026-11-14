@@ -5,7 +5,7 @@ import * as THREE from "three";
 // @ts-ignore  our own JS drawing rig
 import { char, HERO } from "./toon/char.js";
 // @ts-ignore
-import { setCtx, S } from "./toon/kit.js";
+import { setCtx, S, F, tube, rectD } from "./toon/kit.js";
 import { cardShade, blobMaterial } from "../bridge/cardshade";
 import { NOINK } from "../bridge/ink";
 
@@ -18,9 +18,15 @@ export type HeroPose = {
   gripL?: THREE.Vector3; gripR?: THREE.Vector3;   // world points the hands hold (IK)
   armL?: [number, number]; armR?: [number, number];
   mood?: string; turn?: number; lookAt?: [number, number]; lean?: number; legSwing?: number; headDx?: number;
-  bendL?: [number, number]; bendR?: [number, number]; blink?: boolean;
+  bendL?: [number, number]; bendR?: [number, number]; blink?: boolean; torch?: boolean;
 };
 
+/** a burning torch in the right hand (drawn on the card, design units) */
+const torch = (c: CanvasRenderingContext2D, shR: number[], aR: number[], s: number) => {
+  const x = shR[0] + aR[0] * s, y = shR[1] + aR[1] * s;
+  F(tube([[x - 6, y + 46], [x, y], [x + 8, y - 70]], [14, 14, 12]), "#6b4426", { line: 4, seed: 501, shadow: 0.3, soft: 0.2, hi: 0.3 }); F(rectD(x - 4, y - 92, 26, 26, 6), "#3a2a20", { line: 4, seed: 502, shadow: 0.3, soft: 0.2, hi: 0.2 });
+  for (const [r, col] of [[34, "rgba(255,140,30,0.85)"], [22, "rgba(255,210,90,0.95)"], [11, "rgba(255,250,220,1)"]] as [number, string][]) { c.fillStyle = col; c.beginPath(); c.moveTo(x + 9 - r, y - 90); c.quadraticCurveTo(x + 9 - r * 0.8, y - 100 - r * 1.6, x + 9 + r * 0.1, y - 100 - r * 2.4); c.quadraticCurveTo(x + 9 + r * 0.9, y - 100 - r * 1.2, x + 9 + r, y - 90); c.closePath(); c.fill(); }
+};
 export class HeroCard {
   mesh: THREE.Mesh; mat: THREE.MeshLambertMaterial; tex: THREE.CanvasTexture; cv: HTMLCanvasElement; blob: THREE.Mesh;
   private plane = new THREE.Plane(); private ray = new THREE.Ray(); private hit = new THREE.Vector3();
@@ -63,7 +69,7 @@ export class HeroCard {
     g.setTransform(AK, 0, 0, AK, 0, 0); g.translate(PX, 50);
     const lean = p.lean || 0; g.translate(320, 1000); g.rotate(lean); g.translate(-320, -1000);
     char(320, 1000, s, { look: LOOK, mood: p.blink ? "smug" : p.mood || "focus", turn: p.turn ?? 0, lookAt: p.lookAt || [0, 0], armL, armR, legSwing: p.legSwing ?? 0.3,
-      headDx: p.headDx || 0, noShadow: true, ik: true, armsFront: !!(p.gripL || p.gripR), gripL: !!p.gripL, gripR: !!p.gripR, bendL: p.bendL || [-0.3, 1], bendR: p.bendR || [0.3, 1] });
+      headDx: p.headDx || 0, noShadow: true, ik: true, over: p.torch ? () => torch(g, shR, armR || [70, -60], s) : null, armsFront: !!(p.gripL || p.gripR), gripL: !!p.gripL, gripR: !!p.gripR, bendL: p.bendL || [-0.3, 1], bendR: p.bendR || [0.3, 1] });
     this.tex.needsUpdate = true;
   }
 }

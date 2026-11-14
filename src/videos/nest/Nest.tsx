@@ -11,12 +11,12 @@ import { World } from "./world";
 import { InkPass, noInkFallback } from "../bridge/ink";
 import { LensBlur } from "../bridge/lensblur";
 import { GradeEffect, GRADES, GRADE_STRENGTH, gradeFor } from "../bridge/grade";
-import { TOTAL } from "./story";
+import { TOTAL, FPS, layersAt, SHOTS } from "./story";
 
 export const NEST_FRAMES = TOTAL;
 const fwd = new THREE.Vector3();
 
-const Inner: React.FC = () => {
+const Inner: React.FC<{ si: number }> = ({ si }) => {
   const f = useCurrentFrame();
   const { camera, scene } = useThree();
   const world = useMemo(() => new World(), []);
@@ -30,11 +30,11 @@ const Inner: React.FC = () => {
   }), [camera, scene]);
   useEffect(() => () => fx.ink.dispose(), [fx]);
   const cam = camera as THREE.PerspectiveCamera;
-  const focus = world.update(f, cam, scene);
+  const focus = world.update(si, f, cam, scene);
   noInkFallback(world.root);
   cam.getWorldDirection(fwd);
   fx.lens.focus = Math.max(0.3, focus.clone().sub(cam.position).dot(fwd));
-  fx.lens.cInf = 7;                       // soft background like the reference drill shot (focus on the hero)
+  fx.lens.cInf = world.dof(SHOTS[si].id, f / FPS);   // refs: DOF on close/medium shots only, wides stay sharp
   gradeFor(fx.grade, "day");
   return (
     <>
@@ -52,10 +52,18 @@ const Inner: React.FC = () => {
   );
 };
 
-export const NestShort: React.FC = () => (
-  <AbsoluteFill style={{ background: "#c8e0f6" }}>
-    <ThreeCanvas width={1080} height={1920} shadows gl={{ antialias: false, stencil: false, toneMappingExposure: 1.0 }} camera={{ fov: 38, near: 0.1, far: 1500 }}>
-      <Inner />
+const ShotView: React.FC<{ si: number; alpha: number }> = ({ si, alpha }) => (
+  <AbsoluteFill style={{ opacity: alpha }}>
+    <ThreeCanvas width={1080} height={1920} shadows gl={{ antialias: false, stencil: false, toneMappingExposure: 1.0 }} camera={{ fov: 38, near: 0.1, far: 2000 }}>
+      <Inner si={si} />
     </ThreeCanvas>
   </AbsoluteFill>
 );
+export const NestShort: React.FC = () => {
+  const f = useCurrentFrame();
+  return (
+    <AbsoluteFill style={{ background: "#c8e0f6" }}>
+      {layersAt(f / FPS).map((l, k) => <ShotView key={k ? "over" : "base"} si={l.i} alpha={l.a} />)}
+    </AbsoluteFill>
+  );
+};

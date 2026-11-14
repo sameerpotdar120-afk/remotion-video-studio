@@ -82,7 +82,7 @@ export function buildEnv(b: Batch, root: THREE.Object3D) {
   };
   ridge(-330, 14, 70, 3, "#a9bfd6"); ridge(-240, 8, 48, 7, "#8fb0b8"); ridge(-150, 2, 30, 11, "#78a07a");
   // treeline just outside the wall: canopy tops peek over the battlements
-  for (let i = 0; i < 26; i++) { const r = rng(i + 300), x = -36 + i * 2.9 + r() * 1.5, z = -14 - r() * 6, s = 2.2 + r() * 1.6;
+  for (let i = 0; i < 26; i++) { const r = rng(i + 300), x = (i % 2 ? -1 : 1) * (30 + (i >> 1) * 4 + r() * 3), z = -16 - r() * 30, s = 2.2 + r() * 1.6;
     for (let k = 0; k < 3; k++) { const g = new THREE.IcosahedronGeometry(s * (0.7 + r() * 0.4), 1); g.translate(x + (r() - 0.5) * s, 6.5 + s * 1.3 + r() * s * 0.8, z + (r() - 0.5) * s); add(g, k % 2 ? M.leafB : M.leafA); } }
 
   // ---------------- gate tower on the wall (right of the action): two-tier hall, red pillars, upturned tile roofs ----------------
@@ -175,7 +175,7 @@ export function buildEnv(b: Batch, root: THREE.Object3D) {
 
 // ---------------- dense blade grass (refs: thousands of blades, dark roots -> light yellow-green tips) ----------------
 /** instanced curved blades; density falls off with distance from `focus` (where the camera looks) */
-export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: (x: number, z: number) => number) {
+export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: (x: number, z: number) => number, height: (x: number, z: number) => number = () => 0, count = 170000, hk = 1) {
   // one blade: 4 segments, tapered, bent, vertex colour root -> tip
   const seg = 4, pos: number[] = [], colr: number[] = [], idx: number[] = [];
   const root0 = new THREE.Color("#3a7222"), mid = new THREE.Color("#72b83a"), tip = new THREE.Color("#d2ec82"), c = new THREE.Color();
@@ -187,13 +187,13 @@ export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: 
   // normals point up-ish so blades light like a lawn, not like paper strips
   const nr = blade.attributes.normal as THREE.BufferAttribute; for (let i = 0; i < nr.count; i++) nr.setXYZ(i, 0, 0.85, 0.53);
   const mat = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
-  const N = 170000, inst = new THREE.InstancedMesh(blade, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), tint = new THREE.Color();
+  const N = count, inst = new THREE.InstancedMesh(blade, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), tint = new THREE.Color();
   const r = rng(7777); let n = 0;
   for (let i = 0; i < N * 6 && n < N; i++) {
     const rad = Math.pow(r(), 0.75) * 20, a = r() * Math.PI * 2, x = focus.x + Math.cos(a) * rad, z = focus.z + Math.sin(a) * rad * 0.85;
     const keep = keepOut(x, z); if (keep <= 0 || r() > keep) continue;
-    const h = 0.2 + r() * 0.26 + (r() > 0.9 ? 0.2 : 0);
-    e.set((r() - 0.5) * 0.5, r() * Math.PI * 2, (r() - 0.5) * 0.5); m4.compose(V(x, 0, z), q.setFromEuler(e), sc.set(1, h, 1)); inst.setMatrixAt(n, m4);
+    const h = (0.2 + r() * 0.26 + (r() > 0.9 ? 0.2 : 0)) * hk;
+    e.set((r() - 0.5) * 0.5, r() * Math.PI * 2, (r() - 0.5) * 0.5); m4.compose(V(x, height(x, z), z), q.setFromEuler(e), sc.set(1, h, 1)); inst.setMatrixAt(n, m4);
     const k = 0.82 + r() * 0.3; inst.setColorAt(n, tint.setRGB(k * (0.95 + r() * 0.1), k, k * (0.85 + r() * 0.15))); n++;
   }
   inst.count = n; inst.receiveShadow = true; inst.castShadow = false; inst.layers.set(NOINK); inst.frustumCulled = false; root.add(inst);

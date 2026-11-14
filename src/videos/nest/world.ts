@@ -9,7 +9,11 @@ import { LIGHTS, LOOK as WLOOK } from "../bridge/lights";
 import { NOINK } from "../bridge/ink";
 import { HeroCard } from "./hero";
 import { buildEnv, grassField, stoneBlocks } from "./env";
-import { FPS, BRACE_RPS, camHook } from "./story";
+import { FPS, BRACE_RPS, T, LEAD, SHOTS, ShotId, glide, smooth, lerp3, V3, Cam } from "./story";
+import { CartLauncher, plateTex as plateTexAll } from "./launcher";
+import { buildOutside, gY, LX, WALK_Y } from "./outside";
+import { Army } from "./army";
+import { Volley } from "./volley";
 
 // ---------------- the launcher box (Ming "nest of bees": hexagonal tube of 32 fire-arrows) ----------------
 export const BOX = { c: V(0.62, 0.8, 8), R: 0.34, L: 1.0 }; // axis along x, mouth (front plate) at x = c.x - L/2
@@ -75,7 +79,9 @@ export class World {
   private drillAxis = V(-1, 0, 0);
   private target = new THREE.Vector3();
   private padL = new THREE.Vector3(); private gripL = new THREE.Vector3();
-  private DS = 0.72;                          // brace length scale (sized for the hero's short bean arms)
+  private DS = 0.72;
+  private plate!: THREE.Mesh; private plateDone!: THREE.MeshLambertMaterial;
+  cart!: CartLauncher; army!: Army; volley!: Volley;                          // brace length scale (sized for the hero's short bean arms)
 
   constructor() {
     const R = this.root;
@@ -179,9 +185,11 @@ export class World {
       b.add(boxGeo(V(c.x + dx - 0.05, 0.52, c.z - 0.36), V(c.x + dx + 0.05, 0.6, c.z + 0.36)), M.wood);
     }
     buildEnv(b, R);
+    buildOutside(b, R);
     // dense grass around the action (clear where the work area is trodden), 3D blocks on the inner wall face
     grassField(R, V(-0.6, 0, 8.6), (x, z) => { const d = Math.hypot((x - 0.15) / 1.4, (z - 8.0) / 0.8); return d < 0.85 ? 0 : d < 1.25 ? (d - 0.85) / 0.4 : z < -6.5 ? 0 : 1; });
     stoneBlocks(R, -30, 30, 0, 7, -6.8);
+    grassField(R, V(1.5, 0, -62), (x, z) => (z < -14 ? 1 : 0), gY, 120000, 0.55);
     b.build(R);
     // ink only on props and machines (refs: walls, ground, architecture carry no world ink)
     const NOINK_MATS = new Set(["n_wall", "n_cope", "n_grass", "n_cobble", "n_dirt", "e_stone", "e_plaster", "e_roof", "e_roofRed", "e_red", "e_lattice", "e_door", "e_darkwood", "e_flagS", "e_leafA", "e_leafB", "e_leafC", "e_bark", "e_flagY", "e_flagR", "n_red", "n_leaf", "n_leaf2"].map((k) => lam(k, () => ({}))));
@@ -194,7 +202,7 @@ export class World {
     const pg = new THREE.ExtrudeGeometry(hex, { depth: 0.04, bevelEnabled: true, bevelThickness: 0.006, bevelSize: 0.006, bevelSegments: 1 });
     const ptex = plateTex(HOLES.map((_, i) => i).filter((i) => i !== TARGET)); ptex.wrapS = ptex.wrapT = THREE.ClampToEdgeWrapping; ptex.repeat.set(1 / (2 * BR), 1 / (2 * BR)); ptex.offset.set(0.5, 0.5);
     const plateFace = lam("n_plate", () => ({ map: ptex })), plateSide = lam("n_plateSide", () => ({ color: "#b98647" }));
-    const plate = new THREE.Mesh(pg, [plateFace, plateSide]); plate.rotation.y = -Math.PI / 2; plate.position.set(c.x - BL / 2 - 0.045, c.y, c.z); plate.castShadow = plate.receiveShadow = true; R.add(plate);
+    const plate = new THREE.Mesh(pg, [plateFace, plateSide]); this.plate = plate; plate.rotation.y = -Math.PI / 2; plate.position.set(c.x - BL / 2 - 0.045, c.y, c.z); plate.castShadow = plate.receiveShadow = true; R.add(plate);
     // ---- brace drill (steel crank, cherry pad + grip, brass ferrules, auger bit) built along +z of the rig, rig z = out of the plate ----
     const steel = twoTone(new THREE.MeshPhongMaterial({ color: "#4a5868", specular: "#c8d0da", shininess: 70 }), 0.15);
     const cherry = twoTone(new THREE.MeshPhongMaterial({ color: "#8a3b22", specular: "#e0a080", shininess: 35 }), 0.15);
@@ -217,43 +225,89 @@ export class World {
     // ---- hero ----
     this.hero = new HeroCard(R);
     this.hero.mesh.renderOrder = 2;
+    // ---- the loaded launcher on the wall walk, the army on the plain, the solved volley ----
+    const ptAll = plateTexAll(HOLES.map((_, i) => i)); ptAll.wrapS = ptAll.wrapT = THREE.ClampToEdgeWrapping; ptAll.repeat.set(1 / (2 * BOX.R), 1 / (2 * BOX.R)); ptAll.offset.set(0.5, 0.5);
+    this.plateDone = lam("n_plate32", () => ({ map: ptAll }));
+    this.cart = new CartLauncher(R);
+    this.cart.place(V(LX, WALK_Y, -9.6), 0, HAND, R);
+    this.army = new Army(R);
+    this.volley = new Volley(R, this.cart, this.army.soldiers, { light: T.y1380 + LEAD, knot: T.fire - 0.3, first: T.fire + LEAD, gap: 0.025 });
+    this.army.react(this.volley.hits());
   }
 
-  /** pose everything for frame f (60 fps) */
-  update(f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
-    const t = f / FPS, L = LIGHTS.day, K = WLOOK.day;
-    const cv = camHook(t);
+  /** pose everything for shot `si` at frame f (60 fps) */
+  update(si: number, f: number, cam: THREE.PerspectiveCamera, scene: THREE.Scene) {
+    const t = f / FPS, L = LIGHTS.day, K = WLOOK.day, id: ShotId = SHOTS[si].id, lt = t - SHOTS[si].t0;
+    // ---- drill (hook shot) ----
+    const [hx, hy] = HOLES[TARGET];
+    this.target.set(BOX.c.x - BOX.L / 2 - 0.05, BOX.c.y + hy, BOX.c.z - hx);
+    const ang = t * BRACE_RPS * Math.PI * 2, out = smooth((t - (T.beehive + LEAD)) / 0.42);   // on "beehive" the bit backs out of the new hole
+    const adv = (0.012 + 0.004 * Math.sin(ang * 2)) * (1 - out) + 0.19 * out;
+    this.rig.position.copy(this.target).addScaledVector(this.drillAxis, adv * this.DS);
+    this.rig.quaternion.setFromUnitVectors(V(0, 0, 1), this.drillAxis).multiply(new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), ang * (1 - out * 0.6)));
+    this.rig.updateMatrixWorld(true); this.rig.visible = id === "hook";
+    (this.plate.material as THREE.Material[])[0] = out > 0.55 ? this.plateDone : lam("n_plate", () => ({}));
+    // ---- camera per shot ----
+    const cv = this.cam(id, t, lt);
     cam.position.set(...cv.pos); cam.up.set(0, 1, 0); cam.lookAt(...cv.look); cam.rotateZ(cv.roll);
-    cam.fov = cv.fov; cam.near = 0.1; cam.far = 1500; cam.updateProjectionMatrix(); cam.updateMatrixWorld(); cam.layers.enable(NOINK);
-    // light: day preset, sun camera-relative (az from the camera's forward axis, el), frozen for the shot
-    const fwd = new THREE.Vector3(); cam.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
-    const az = THREE.MathUtils.degToRad(-40), el = THREE.MathUtils.degToRad(L.el), right = V(-fwd.z, 0, fwd.x);
-    const sunDir = fwd.clone().multiplyScalar(-Math.cos(az)).addScaledVector(right, Math.sin(az)).multiplyScalar(Math.cos(el)).add(V(0, Math.sin(el), 0)).normalize();
-    const focus = V(...cv.look);
-    this.sun.position.copy(focus).addScaledVector(sunDir, 60); this.sun.target.position.copy(focus); this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI;
-    const sc = this.sun.shadow.camera; sc.left = -9; sc.right = 9; sc.top = 9; sc.bottom = -9; sc.near = 5; sc.far = 140; sc.updateProjectionMatrix();
-    this.sun.shadow.bias = L.bias; this.sun.shadow.normalBias = L.normalBias * 0.6;
+    cam.fov = cv.fov; cam.near = 0.1; cam.far = 2000; cam.updateProjectionMatrix(); cam.updateMatrixWorld(); cam.layers.enable(NOINK);
+    // ---- light: one fixed day sun for the whole sequence (from the courtyard's left, high) ----
+    const sunDir = V(-0.64, 0.74, 0.2).normalize(), focus = V(...cv.look);
+    const R = { hook: 9, wall: 8, volley: 14, hill: 30, hero: 8, aerial: 70 }[id];
+    this.sun.position.copy(focus).addScaledVector(sunDir, 120); this.sun.target.position.copy(focus); this.sun.color.set(L.sunCol); this.sun.intensity = L.sunI;
+    const sc = this.sun.shadow.camera; sc.left = -R; sc.right = R; sc.top = R; sc.bottom = -R; sc.near = 20; sc.far = 260; sc.updateProjectionMatrix();
+    this.sun.shadow.bias = L.bias; this.sun.shadow.normalBias = L.normalBias * Math.max(0.6, R / 12);
     this.hemi.color.set(L.sky); this.hemi.groundColor.set(L.ground); this.hemi.intensity = L.hemiI;
-    TONE.uLitCol.value.set(...L.lit); TONE.uShadeCol.value.set(0.42, 0.38, 0.6); TONE.uShadeLift.value.set(...L.lift);   // violet day shadow (refs #7c7388 on sand)
+    TONE.uLitCol.value.set(...L.lit); TONE.uShadeCol.value.set(0.42, 0.38, 0.6); TONE.uShadeLift.value.set(...L.lift);
     TONE.uLambert.value = L.lambert; TONE.uSideK.value = L.sideK; TONE.uTerm.value = L.term; TONE.uBounce.value.set(0, 0, 0); TONE.uSat.value = K.sat;
     CHAR.uCharTint.value.set(...L.charTint); CHAR.uCharShade.value = L.charShade; CHAR.uGrad.value = L.charGrad; CHAR.uBodyGrad.value = L.bodyGrad; CHAR.uSideTint.value.set(...L.sideTint);
     const su = this.skyMat.uniforms; ["#c8e0f6", "#a9c8ee", "#83a7e4", "#5d8fdb", "#3e79cd"].forEach((h, i) => untone(h, su["c" + i].value));
     su.e.value.set(...[3, 9, 18, 40].map((d) => THREE.MathUtils.degToRad(d)) as [number, number, number, number]);
     this.sky.position.copy(cam.position);
-    untone("#c8e0f6", this.fog.color); this.fog.near = 30; this.fog.far = 320; scene.fog = this.fog; scene.background = null;
+    untone("#c8e0f6", this.fog.color); this.fog.near = 40; this.fog.far = 420; scene.fog = this.fog; scene.background = null;
     for (const m of this.clouds) m.lookAt(cam.position.x, m.position.y, cam.position.z);
-    // ---- brace drill on the target hole: axis = out of the plate (-x), turning at BRACE_RPS ----
-    const [hx, hy] = HOLES[TARGET];
-    this.target.set(BOX.c.x - BOX.L / 2 - 0.05, BOX.c.y + hy, BOX.c.z - hx);   // plate local x -> world -z (plate faces -x)
-    const ang = t * BRACE_RPS * Math.PI * 2, adv = 0.012 + 0.004 * Math.sin(ang * 2);
-    this.rig.position.copy(this.target).addScaledVector(this.drillAxis, adv * this.DS);
-    this.rig.quaternion.setFromUnitVectors(V(0, 0, 1), this.drillAxis).multiply(new THREE.Quaternion().setFromAxisAngle(V(0, 0, 1), ang));
-    this.rig.updateMatrixWorld(true);
-    const pad = this.padL.clone().applyMatrix4(this.rig.matrixWorld), grip = this.gripL.clone().applyMatrix4(this.rig.matrixWorld);
-    // hero stands behind the pad, chest on it, leaning into each turn
-    const bob = Math.sin(ang);
-    const feet = pad.clone().addScaledVector(this.drillAxis, 0.24); feet.y = 0;
-    this.hero.update(feet, cam, { gripL: pad, gripR: grip, mood: "focus", turn: 0.55, lookAt: [0.75, 0.25], headDx: 8, lean: 0.1 + 0.025 * bob, bendL: [0.2, 1], bendR: [-0.3, 1], legSwing: 0.35 });
+    // ---- volley + army (pure functions of t) ----
+    this.volley.update(t, cam.position); this.army.update(t, cam, true);
+    // ---- hero ----
+    this.hero.mesh.visible = true; this.hero.blob.visible = true;
+    if (id === "hook") {
+      const pad = this.padL.clone().applyMatrix4(this.rig.matrixWorld), grip = this.gripL.clone().applyMatrix4(this.rig.matrixWorld), bob = Math.sin(ang) * (1 - out);
+      const feet = this.padL.clone().applyMatrix4(this.rig.matrixWorld.clone()); feet.copy(this.target).addScaledVector(this.drillAxis, (0.84 + 0.012) * this.DS + 0.24); feet.y = 0;
+      this.hero.update(feet, cam, { gripL: pad, gripR: grip, mood: out > 0.7 ? "smug" : "focus", turn: 0.55, lookAt: [0.75, 0.25], headDx: 8, lean: 0.1 + 0.025 * bob, bendL: [0.2, 1], bendR: [-0.3, 1], legSwing: 0.35 });
+    } else if (id === "volley") { this.hero.mesh.visible = false; this.hero.blob.visible = false;
+    } else if (id === "wall") {
+      const lit = t >= T.y1380 + LEAD, reach = smooth((t - (T.y1380 - 0.25)) / 0.3) * (1 - smooth((t - (T.y1380 + 0.35)) / 0.3));
+      const torchTip = HAND.clone().add(V(0.12, 0.06, 0.02)), fired = t >= T.fire + LEAD;
+      this.hero.update(HERO_FEET, cam, { gripL: HAND, armR: reach > 0.05 ? undefined : fired ? [90, -140] : [70, -60], gripR: reach > 0.05 ? torchTip.clone().lerp(V(HAND.x + 0.35, HAND.y + 0.35, HAND.z), 1 - reach) : undefined,
+        torch: true, mood: fired ? "happy" : lit ? "smug" : "focus", turn: -0.4, lookAt: fired ? [-0.2, -0.3] : [-0.5, 0.3], legSwing: 0.25 });
+    } else if (id === "hero") {
+      const shrug = smooth((lt - 0.1) / 0.25);
+      this.hero.update(HERO_FEET, cam, { armL: [-60 - 70 * shrug, 120 - 190 * shrug], armR: [60 + 70 * shrug, 120 - 190 * shrug], bendL: [-1, 0.2], bendR: [1, 0.2], mood: "smug", turn: -0.05, lookAt: [0.05, 0.05], legSwing: 0.2 });
+    } else this.hero.update(HERO_FEET, cam, { gripL: HAND, armR: [80, -120], torch: true, mood: "happy", turn: -0.3, lookAt: [-0.3, -0.2] });
     return focus;
   }
+
+  dof(id: ShotId, t: number) { return id === "hook" ? 7 + 2 * smooth((t - T.beehive) / 0.4) : id === "wall" ? 4 : id === "hero" ? 6 : id === "hill" ? 2 : 0; }
+  private cam(id: ShotId, t: number, lt: number): Cam {
+    const deg = Math.PI / 180;
+    switch (id) {
+      case "hook": {   // wide drill, then on "beehive" a 0.45 s glide onto the plate as the bit backs out
+        const k = t / 1.25, wide: Cam = { pos: lerp3([-2.35, 0.95, 11.55], [-2.24, 0.95, 11.27], k), look: [-0.05, 1.42, 7.9], fov: 44, roll: -2.5 * deg };
+        const tg: V3 = [this.target.x, this.target.y, this.target.z], u = glide((t - (T.beehive - 0.12)) / 0.45);
+        const macroPos: V3 = [tg[0] - 0.7 - 0.04 * (t - 1.5), tg[1] + 0.14, tg[2] + 0.5], macroLook: V3 = [tg[0] + 0.05, tg[1] - 0.02, tg[2] - 0.05];
+        return { pos: lerp3(wide.pos, macroPos, u), look: lerp3(wide.look, macroLook, u), fov: 44 - 6 * u, roll: -2.5 * deg * (1 - u) };
+      }
+      case "wall": return { pos: lerp3([LX + 2.2, WALK_Y + 1.45, -7.15], [LX + 2.0, WALK_Y + 1.42, -7.4], lt / 1.6), look: [LX - 0.55, WALK_Y + 0.95, -9.0], fov: 50, roll: 2 * deg };
+      case "volley": {   // behind the breech, whole weapon + the army in frame; push forward after the rockets
+        const u = glide((lt - 0.25) / 1.6);
+        return { pos: lerp3([LX + 0.9, WALK_Y + 3.3, -6.6], [LX + 0.5, WALK_Y + 3.9, -8.2], u), look: lerp3([LX - 0.3, -3.0, -50], [LX - 0.6, -5.0, -56], u), fov: 44, roll: 0 };
+      }
+      case "hill": { const y = gY(11, -80); return { pos: lerp3([11.5, y + 7.5, -80.5], [11.0, y + 7.2, -79.3], lt / 2.5), look: [-0.5, gY(0, -50) + 1.0, -50], fov: 44, roll: -3 * deg }; }
+      case "hero": return { pos: lerp3([LX + 1.75, WALK_Y + 1.45, -6.35], [LX + 1.6, WALK_Y + 1.42, -6.7], lt / 1.3), look: [HERO_FEET.x - 0.1, WALK_Y + 1.15, HERO_FEET.z - 0.2], fov: 42, roll: -2 * deg };
+      default: { const a = 0.6 + lt * 0.06; return { pos: [Math.sin(a) * 62, 46, -9 + Math.cos(a) * 62], look: [0, 0, -14], fov: 40, roll: 0 }; }
+    }
+  }
 }
+/** the hero's spot on the wall walk (right-rear of the cart) and the rope end in his left hand */
+const HERO_FEET = V(LX - 0.95, WALK_Y, -8.45);
+const HAND = V(LX - 0.6, WALK_Y + 0.9, -8.7);
