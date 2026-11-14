@@ -8,6 +8,7 @@ import { twoTone, TONE, CHAR, untone } from "../bridge/shade";
 import { LIGHTS, LOOK as WLOOK } from "../bridge/lights";
 import { NOINK } from "../bridge/ink";
 import { HeroCard } from "./hero";
+import { buildEnv } from "./env";
 import { FPS, BRACE_RPS, camHook } from "./story";
 
 // ---------------- the launcher box (Ming "nest of bees": hexagonal tube of 32 fire-arrows) ----------------
@@ -177,6 +178,7 @@ export class World {
       for (const dz of [-0.3, 0.3]) { const leg = new THREE.CylinderGeometry(0.035, 0.04, 0.62, 8); leg.rotateX(dz > 0 ? -0.35 : 0.35); leg.translate(c.x + dx, 0.29, c.z + dz * 0.8); b.add(leg, M.wood); }
       b.add(boxGeo(V(c.x + dx - 0.05, 0.52, c.z - 0.36), V(c.x + dx + 0.05, 0.6, c.z + 0.36)), M.wood);
     }
+    buildEnv(b, R);
     b.build(R);
     // brass rings at both ends (Phong, small highlight)
     const brass = twoTone(new THREE.MeshPhongMaterial({ color: "#c8952e", specular: "#ffe2a0", shininess: 50 }), 0.15);

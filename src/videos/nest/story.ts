@@ -31,6 +31,6 @@ export type Cam = { pos: V3; look: V3; fov: number; roll: number };
 /** camera of shot 1: a 3/4 view on the plate face, continuous push-in (~0.3 %/frame at 30 fps), slight dutch */
 export const camHook = (t: number): Cam => {
   const k = t / 1.25;
-  const pos = lerp3([-3.15, 1.32, 12.95], [-3.0, 1.31, 12.62], k);
-  return { pos, look: [-0.08, 1.12, 7.95], fov: 44, roll: (-2.5 * Math.PI) / 180 };
+  const pos = lerp3([-3.5, 1.45, 13.7], [-3.34, 1.44, 13.35], k);
+  return { pos, look: [-0.05, 1.75, 7.95], fov: 46, roll: (-2.5 * Math.PI) / 180 };
 };
