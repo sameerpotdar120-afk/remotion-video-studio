@@ -178,7 +178,7 @@ export function buildEnv(b: Batch, root: THREE.Object3D) {
 export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: (x: number, z: number) => number) {
   // one blade: 4 segments, tapered, bent, vertex colour root -> tip
   const seg = 4, pos: number[] = [], colr: number[] = [], idx: number[] = [];
-  const root0 = new THREE.Color("#2c5a1c"), mid = new THREE.Color("#4f8f2e"), tip = new THREE.Color("#b5d860"), c = new THREE.Color();
+  const root0 = new THREE.Color("#3a7222"), mid = new THREE.Color("#72b83a"), tip = new THREE.Color("#d2ec82"), c = new THREE.Color();
   for (let i = 0; i <= seg; i++) { const t = i / seg, w = 0.022 * (1 - t * 0.92), bend = t * t * 0.09;
     pos.push(-w, t, bend, w, t, bend);
     (t < 0.5 ? c.copy(root0).lerp(mid, t * 2) : c.copy(mid).lerp(tip, (t - 0.5) * 2)); colr.push(c.r, c.g, c.b, c.r, c.g, c.b);
@@ -187,12 +187,12 @@ export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: 
   // normals point up-ish so blades light like a lawn, not like paper strips
   const nr = blade.attributes.normal as THREE.BufferAttribute; for (let i = 0; i < nr.count; i++) nr.setXYZ(i, 0, 0.85, 0.53);
   const mat = twoTone(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
-  const N = 90000, inst = new THREE.InstancedMesh(blade, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), tint = new THREE.Color();
+  const N = 170000, inst = new THREE.InstancedMesh(blade, mat, N), m4 = new THREE.Matrix4(), q = new THREE.Quaternion(), e = new THREE.Euler(), sc = new THREE.Vector3(), tint = new THREE.Color();
   const r = rng(7777); let n = 0;
   for (let i = 0; i < N * 6 && n < N; i++) {
-    const rad = Math.pow(r(), 0.55) * 22, a = r() * Math.PI * 2, x = focus.x + Math.cos(a) * rad, z = focus.z + Math.sin(a) * rad * 0.85;
+    const rad = Math.pow(r(), 0.75) * 20, a = r() * Math.PI * 2, x = focus.x + Math.cos(a) * rad, z = focus.z + Math.sin(a) * rad * 0.85;
     const keep = keepOut(x, z); if (keep <= 0 || r() > keep) continue;
-    const h = 0.16 + r() * 0.22 + (r() > 0.93 ? 0.18 : 0);
+    const h = 0.2 + r() * 0.26 + (r() > 0.9 ? 0.2 : 0);
     e.set((r() - 0.5) * 0.5, r() * Math.PI * 2, (r() - 0.5) * 0.5); m4.compose(V(x, 0, z), q.setFromEuler(e), sc.set(1, h, 1)); inst.setMatrixAt(n, m4);
     const k = 0.82 + r() * 0.3; inst.setColorAt(n, tint.setRGB(k * (0.95 + r() * 0.1), k, k * (0.85 + r() * 0.15))); n++;
   }
@@ -203,12 +203,12 @@ export function grassField(root: THREE.Object3D, focus: THREE.Vector3, keepOut: 
 // ---------------- 3D stone blocks on the inner wall face (refs: bevelled blocks with real relief) ----------------
 export function stoneBlocks(root: THREE.Object3D, x0: number, x1: number, y0: number, y1: number, zFace: number, seed = 1) {
   const geo = new RoundedBoxGeometry(1, 1, 1, 2, 0.07);
-  const mat = twoTone(new THREE.MeshLambertMaterial({ map: stoneHD("e_block", ["#d6c9b2", "#d6c9b2", "#d6c9b2", "#d6c9b2"], "#d6c9b2") }));
-  const list: THREE.Matrix4[] = [], cols: THREE.Color[] = [], r = rng(seed), H = 0.46;
-  const pal = ["#d9ccb4", "#cfc1a8", "#e1d5bf", "#c7b89e", "#d3c3a6", "#bfb196"];
+  const mat = twoTone(new THREE.MeshLambertMaterial({ map: stoneHD("e_block", ["#e4e0d8", "#e4e0d8", "#e4e0d8", "#e4e0d8"], "#e4e0d8") }));
+  const list: THREE.Matrix4[] = [], cols: THREE.Color[] = [], r = rng(seed), H = 0.62;
+  const pal = ["#bdb8ad", "#b1aca1", "#c8c3b8", "#a7a297", "#c1bbae", "#9f9a90"];
   for (let row = 0, y = y0; y < y1 - 0.05; row++, y += H) {
     let x = x0 - (row % 2) * 0.5 - r() * 0.3;
-    while (x < x1) { const w = 0.8 + r() * 0.5, h = Math.min(H, y1 - y) - 0.035, d = 0.16 + r() * 0.05;
+    while (x < x1) { const w = 1.0 + r() * 0.7, h = Math.min(H, y1 - y) - 0.035, d = 0.16 + r() * 0.05;
       list.push(new THREE.Matrix4().compose(V(x + w / 2, y + h / 2 + 0.017, zFace + d / 2 - 0.06), new THREE.Quaternion(), V(w - 0.035, h, d)));
       cols.push(new THREE.Color(pal[Math.floor(r() * pal.length)])); x += w; }
   }

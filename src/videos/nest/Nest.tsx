@@ -12,8 +12,6 @@ import { InkPass, noInkFallback } from "../bridge/ink";
 import { LensBlur } from "../bridge/lensblur";
 import { GradeEffect, GRADES, GRADE_STRENGTH, gradeFor } from "../bridge/grade";
 import { TOTAL } from "./story";
-// @ts-ignore  ISC-licensed ambient occlusion pass (ships with @react-three/postprocessing)
-import { N8AOPostPass } from "n8ao";
 
 export const NEST_FRAMES = TOTAL;
 const fwd = new THREE.Vector3();
@@ -22,9 +20,6 @@ const Inner: React.FC = () => {
   const f = useCurrentFrame();
   const { camera, scene } = useThree();
   const world = useMemo(() => new World(), []);
-  const ao = useMemo(() => { const p = new N8AOPostPass(scene, camera, 1080, 1920);
-    Object.assign(p.configuration, { aoRadius: 1.1, distanceFalloff: 0.6, intensity: 2.6, aoSamples: 16, denoiseSamples: 8, denoiseRadius: 8, halfRes: false, color: new THREE.Color("#2a1f3a"), gammaCorrection: false });
-    return p; }, [camera, scene]);
   const fx = useMemo(() => ({
     ink: new InkPass(scene, camera as THREE.PerspectiveCamera),
     lens: new LensBlur({ maxCoC: 24, nearScale: 1.2 }),
@@ -39,14 +34,14 @@ const Inner: React.FC = () => {
   noInkFallback(world.root);
   cam.getWorldDirection(fwd);
   fx.lens.focus = Math.max(0.3, focus.clone().sub(cam.position).dot(fwd));
-  fx.lens.cInf = 0;                       // refs: DOF on ~18 % of frames; the hook stays sharp
+  fx.lens.cInf = 7;                       // soft background like the reference drill shot (focus on the hero)
   gradeFor(fx.grade, "day");
   return (
     <>
       <primitive object={world.root} dispose={null} />
       <EffectComposer multisampling={4}>
-        <primitive object={ao} dispose={null} />
         <primitive object={fx.ink} dispose={null} />
+        <primitive object={fx.lens.pre} dispose={null} />
         <primitive object={fx.lens.main} dispose={null} />
         <primitive object={fx.bloom} dispose={null} />
         <primitive object={fx.tone} dispose={null} />

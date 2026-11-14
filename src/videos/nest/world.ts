@@ -100,10 +100,10 @@ export class World {
     // ---- static set (one batch per material) ----
     const b = new Batch();
     const M = {
-      grass: lam("n_grass", () => ({ map: rep(grassHD(), 1, 1), color: "#7d9a5a" })),
+      grass: lam("n_grass", () => ({ map: rep(grassHD(), 1, 1), color: "#8fb066" })),
       cobble: lam("n_cobble", () => ({ map: cobbleHD() })),
-      wall: lam("n_wall", () => ({ map: stoneHD("n_wallHD", ["#cbbda6", "#c1b39b", "#d3c6b0", "#b9ab93"], "#8f816d") })),
-      cope: lam("n_cope", () => ({ map: stoneHD("n_copeHD", ["#e2d6c3", "#d8ccb8", "#e9dfcf", "#d1c4b0"], "#a89b88") })),
+      wall: lam("n_wall", () => ({ map: stoneHD("n_wallHD", ["#b8b3a8", "#ada89d", "#c2bdb2", "#a39e94"], "#7f7a72") })),
+      cope: lam("n_cope", () => ({ map: stoneHD("n_copeHD", ["#cfcbc1", "#c6c1b7", "#d6d2c9", "#bdb8ae"], "#8f8a81") })),
       wood: lam("n_wood", () => ({ map: beam() })),
       plank: lam("n_plank", () => ({ map: planksHD() })),
       dark: lam("n_dark", () => ({ color: "#5b3a24" })),
@@ -183,6 +183,9 @@ export class World {
     grassField(R, V(-0.6, 0, 8.6), (x, z) => { const d = Math.hypot((x - 0.15) / 1.4, (z - 8.0) / 0.8); return d < 0.85 ? 0 : d < 1.25 ? (d - 0.85) / 0.4 : z < -6.5 ? 0 : 1; });
     stoneBlocks(R, -30, 30, 0, 7, -6.8);
     b.build(R);
+    // ink only on props and machines (refs: walls, ground, architecture carry no world ink)
+    const NOINK_MATS = new Set(["n_wall", "n_cope", "n_grass", "n_cobble", "n_dirt", "e_stone", "e_plaster", "e_roof", "e_roofRed", "e_red", "e_lattice", "e_door", "e_darkwood", "e_flagS", "e_leafA", "e_leafB", "e_leafC", "e_bark", "e_flagY", "e_flagR", "n_red", "n_leaf", "n_leaf2"].map((k) => lam(k, () => ({}))));
+    R.traverse((o) => { const m = o as THREE.Mesh; if (m.isMesh && !Array.isArray(m.material) && NOINK_MATS.has(m.material as THREE.MeshLambertMaterial)) m.layers.set(NOINK); });
     // brass rings at both ends (Phong, small highlight)
     const brass = twoTone(new THREE.MeshPhongMaterial({ color: "#c8952e", specular: "#ffe2a0", shininess: 50 }), 0.15);
     for (const x of [c.x - BL / 2, c.x + BL / 2]) { const t = new THREE.TorusGeometry(BR * 1.01, 0.026, 8, 6); t.rotateY(Math.PI / 2); t.rotateX(Math.PI / 6); const m = new THREE.Mesh(t, brass); m.position.set(x, c.y, c.z); m.castShadow = true; R.add(m); }
