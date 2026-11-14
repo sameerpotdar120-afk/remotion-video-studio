@@ -28,3 +28,4 @@ exports/hormuz_4k120_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/everysecond_4k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/pangea_4k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
 exports/ramsetu_4k60_master.mp4 filter=lfs diff=lfs merge=lfs -text
+exports/uk_parts/h3/*.mp4 filter=lfs diff=lfs merge=lfs -text
