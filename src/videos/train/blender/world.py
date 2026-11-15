@@ -213,24 +213,11 @@ for k in range(10):
     rocks.objects.link(o); o.location = (0, -50, -10)
     for p in me.polygons: p.use_smooth = True
 sc.view_layers[0].layer_collection.children['rocks'].exclude = False
-def scatter(name, size, loc, density, coll_, scale, scale_rand, seed=1, upright=False, c=None):
-    """static Geometry Nodes scatter (particle systems re-evaluate on every frame change: ~2 min/frame here)"""
-    o = box(name, size, loc, None, c)
-    ng = bpy.data.node_groups.new(name, 'GeometryNodeTree'); ng.interface.new_socket('Geometry', in_out='INPUT', socket_type='NodeSocketGeometry')
-    ng.interface.new_socket('Geometry', in_out='OUTPUT', socket_type='NodeSocketGeometry'); nd = ng.nodes
-    gi = nd.new('NodeGroupInput'); go = nd.new('NodeGroupOutput')
-    top = nd.new('GeometryNodeMeshBoolean') if False else None
-    dist = nd.new('GeometryNodeDistributePointsOnFaces'); dist.inputs['Density'].default_value = density; dist.inputs['Seed'].default_value = seed
-    ci = nd.new('GeometryNodeCollectionInfo'); ci.inputs['Collection'].default_value = coll_; ci.inputs['Separate Children'].default_value = True; ci.inputs['Reset Children'].default_value = True
-    iop = nd.new('GeometryNodeInstanceOnPoints'); iop.inputs['Pick Instance'].default_value = True
-    rv = nd.new('FunctionNodeRandomValue'); rv.data_type = 'FLOAT_VECTOR'; rv.inputs['Min'].default_value = (0, 0, 0); rv.inputs['Max'].default_value = (0 if upright else 6.3, 0 if upright else 6.3, 6.3); rv.inputs['Seed'].default_value = seed + 1
-    rs = nd.new('FunctionNodeRandomValue'); rs.data_type = 'FLOAT'; rs.inputs[2].default_value = scale * (1 - scale_rand); rs.inputs[3].default_value = scale; rs.inputs['Seed'].default_value = seed + 2
-    ii = nd.new('FunctionNodeRandomValue'); ii.data_type = 'INT'; ii.inputs[4].default_value = 0; ii.inputs[5].default_value = len(coll_.objects) - 1; ii.inputs['Seed'].default_value = seed + 3
-    lk = ng.links.new
-    lk(gi.outputs[0], dist.inputs['Mesh']); lk(dist.outputs['Points'], iop.inputs['Points']); lk(ci.outputs[0], iop.inputs['Instance'])
-    lk(rv.outputs[0], iop.inputs['Rotation']); lk(rs.outputs[1], iop.inputs['Scale']); lk(ii.outputs[2], iop.inputs['Instance Index']); lk(iop.outputs[0], go.inputs[0])
-    mod = o.modifiers.new(name, 'NODES'); mod.node_group = ng; return o
-emit = scatter('ballast_emit', (3.4, 68.0, 0.001), (0, 28.0, -0.035), 560.0, rocks, 0.032, 0.6, 3, c=CT)
+emit = box('ballast_emit', (3.4, 68.0, 0.001), (0, 28.0, -0.035), None, CT)
+ps = emit.modifiers.new('rocks', 'PARTICLE_SYSTEM').particle_system; pst = ps.settings
+pst.type = 'HAIR'; pst.count = 130000; pst.hair_length = 1.0; pst.render_type = 'COLLECTION'; pst.instance_collection = rocks; pst.use_collection_pick_random = True
+pst.particle_size = 0.032; pst.size_random = 0.6; pst.use_rotations = True; pst.rotation_mode = 'NONE'; pst.phase_factor_random = 2.0; pst.rotation_factor_random = 1.0
+pst.use_advanced_hair = True; emit.show_instancer_for_render = False
 for o in rocks.all_objects: o.hide_render = False
 
 # ---------------------------------------------------------------- terrain + mesas
@@ -299,7 +286,12 @@ for k in range(6):
     for v in bm.verts: v.co = Vector((v.co.x, v.co.y, max(v.co.z, -0.2) * 0.62)) * (1 + 0.28 * noise.noise(v.co * 4 + Vector((k * 3.1, 0, 0))))
     bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('sh%d' % k, me); me.materials.append(M_SHRUB if k % 2 else M_SHRUB2); shr.objects.link(o); o.location = (0, -60, -20)
     for p in me.polygons: p.use_smooth = True
-for sx in (-1, 1): scatter('shrub_emit', (60.0, 300.0, 0.001), (sx * 34.0, 140.0, -0.3), 2600 / 18000.0, shr, 0.45, 0.7, 11 + sx, upright=True)
+for sx in (-1, 1):
+    em = box('shrub_emit', (60.0, 300.0, 0.001), (sx * 34.0, 140.0, -0.3), None)
+    ps2 = em.modifiers.new('sh', 'PARTICLE_SYSTEM').particle_system; st = ps2.settings
+    st.type = 'HAIR'; st.count = 2600; st.hair_length = 1.0; st.render_type = 'COLLECTION'; st.instance_collection = shr; st.use_collection_pick_random = True
+    st.particle_size = 0.45; st.size_random = 0.7; st.use_advanced_hair = True; st.use_rotations = True; st.rotation_mode = 'GLOB_Z'; st.phase_factor_random = 2.0
+    em.show_instancer_for_render = False
 # far landmarks of the town: wooden water tower + station, left of the track
 M_TANK = mat('tank', lambda nt, out: m_wood(nt, out, '#8a5a36', '#5a3820', '#b07a4a', 0.2))
 M_ROOF = mat('roof', lambda nt, out: principled(nt, out, color=hexc('#7a2e22'), rough=0.8))
