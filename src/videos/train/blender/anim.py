@@ -90,8 +90,9 @@ class Card:
         return M, p
     def apply(self, M, path):
         self.obj.matrix_world = M
-        old = self.img; self.img = bpy.data.images.load(path, check_existing=True); self.tx.image = self.img
-        if old and old != self.img and old.users == 0: bpy.data.images.remove(old)
+        # one image datablock per card, reloaded in place: swapping datablocks makes EEVEE recompile the material every frame
+        if self.img is None: self.img = bpy.data.images.load(path); self.tx.image = self.img; self.cur = path
+        elif self.cur != path: self.img.filepath = path; self.img.reload(); self.cur = path
 
 # ---------------------------------------------------------------- props
 SPIKE = Vector((-RX + 0.085, 4.25, 0.05))
@@ -238,11 +239,14 @@ def frame_aerial(f):
 SETUP = {'hook': setup_hook, 'glide': setup_glide, 'town': setup_town, 'smug': setup_smug, 'kink': setup_kink, 'aerial': setup_aerial}
 FRAME = {'hook': frame_hook, 'glide': frame_glide, 'town': frame_town, 'smug': frame_smug, 'kink': frame_kink, 'aerial': frame_aerial}
 SETUP[SHOT]()
+for o in bpy.data.objects:   # gravel: no cast shadows (43 s/frame), and only where the camera is near the track
+    if o.name.startswith('rk'): o.visible_shadow = False
+    if o.name.startswith('ballast_emit') and SHOT in ('town', 'aerial'): o.hide_render = True
 
 # ---------------------------------------------------------------- render settings (shared look)
 sc.render.engine = 'BLENDER_EEVEE_NEXT'; ee = sc.eevee
 ee.taa_render_samples = int(arg('--spp', '24')); ee.use_shadows = True; ee.shadow_ray_count = 2; ee.shadow_step_count = 8
-ee.use_raytracing = True; ee.ray_tracing_options.resolution_scale = '2'
+ee.use_raytracing = False; ee.shadow_ray_count = 1; ee.shadow_step_count = 6
 sc.render.resolution_x, sc.render.resolution_y = 2160, 3840; sc.render.resolution_percentage = int(round(100 * float(arg('--scale', '0.6667'))))
 sc.view_settings.view_transform = 'Standard'; sc.view_settings.exposure = -0.35
 sc.render.use_motion_blur = False   # EEVEE Next re-renders shadow maps per blur step (~20x slower on CPU); vector blur in the compositor instead
