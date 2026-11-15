@@ -1,0 +1,401 @@
+# Samulation #4 (train): Blender world. Run: blender -b --python scene.py -- --shot hook --out out.png [--scale 0.25]
+# EEVEE Next on software GL. Everything is procedural (our own code); the hero is our Canvas2D rig on a camera-facing card.
+import bpy, bmesh, math, random, sys, json, os, subprocess
+from mathutils import Vector, Matrix, noise
+
+argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
+def arg(k, d=None):
+    return argv[argv.index(k) + 1] if k in argv else d
+OUT = arg('--out', '/tmp/train.png'); SCALE = float(arg('--scale', '1')); SHOT = arg('--shot', 'hook')
+HERE = os.path.dirname(os.path.abspath(__file__)); CARD = os.path.join(HERE, '..', 'card'); TMP = arg('--tmp', '/tmp/train_tmp'); os.makedirs(TMP, exist_ok=True)
+R = random.Random(7)
+
+# ---------------------------------------------------------------- reset
+bpy.ops.wm.read_factory_settings(use_empty=True)
+sc = bpy.context.scene
+def coll(name):
+    c = bpy.data.collections.new(name); sc.collection.children.link(c); return c
+def link(o, c=None): (c or sc.collection).objects.link(o); return o
+
+# ---------------------------------------------------------------- materials
+def mat(name, build):
+    m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear()
+    out = nt.nodes.new('ShaderNodeOutputMaterial'); build(nt, out); return m
+def N(nt, t, **kw):
+    n = nt.nodes.new(t)
+    for k, v in kw.items():
+        if k in n.inputs: n.inputs[k].default_value = v
+        else: setattr(n, k, v)
+    return n
+def L(nt, a, b): nt.links.new(a, b)
+def ramp(nt, stops, fac):
+    r = N(nt, 'ShaderNodeValToRGB'); el = r.color_ramp.elements
+    el[0].position, el[0].color = stops[0][0], stops[0][1]; el[1].position, el[1].color = stops[-1][0], stops[-1][1]
+    for p, c in stops[1:-1]: e = el.new(p); e.color = c
+    L(nt, fac, r.inputs['Fac']); return r
+def hexc(h, a=1.0):
+    h = h.lstrip('#'); c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+    return tuple([x / 12.92 if x <= 0.04045 else ((x + 0.055) / 1.055) ** 2.4 for x in c] + [a])
+def principled(nt, out, col_socket=None, color=None, rough=0.8, metal=0.0, spec=0.3):
+    p = N(nt, 'ShaderNodeBsdfPrincipled'); p.inputs['Roughness'].default_value = rough; p.inputs['Metallic'].default_value = metal
+    p.inputs['Specular IOR Level'].default_value = spec
+    if col_socket is not None: L(nt, col_socket, p.inputs['Base Color'])
+    elif color: p.inputs['Base Color'].default_value = color
+    L(nt, p.outputs[0], out.inputs['Surface']); return p
+
+def m_sand(nt, out):   # warm red-orange desert sand: two noise scales -> ramp, darker speckles
+    tc = N(nt, 'ShaderNodeTexCoord'); n1 = N(nt, 'ShaderNodeTexNoise', Scale=0.08, Detail=6.0); n2 = N(nt, 'ShaderNodeTexNoise', Scale=2.5, Detail=4.0)
+    L(nt, tc.outputs['Object'], n1.inputs['Vector']); L(nt, tc.outputs['Object'], n2.inputs['Vector'])
+    mx = N(nt, 'ShaderNodeMix', data_type='FLOAT'); mx.inputs['Factor'].default_value = 0.35; L(nt, n1.outputs['Fac'], mx.inputs['A']); L(nt, n2.outputs['Fac'], mx.inputs['B'])
+    r = ramp(nt, [(0.3, hexc('#b4522c')), (0.5, hexc('#d9773f')), (0.68, hexc('#eba062'))], mx.outputs['Result'])
+    p = principled(nt, out, r.outputs['Color'], rough=0.95, spec=0.2)
+    b = N(nt, 'ShaderNodeBump', Strength=0.25); L(nt, n2.outputs['Fac'], b.inputs['Height']); L(nt, b.outputs['Normal'], p.inputs['Normal'])
+M_SAND = mat('sand', m_sand)
+
+def m_strata(nt, out):   # mesa rock: horizontal strata bands (object Z), warped by noise; pale cap
+    tc = N(nt, 'ShaderNodeTexCoord'); n = N(nt, 'ShaderNodeTexNoise', Scale=0.02, Detail=5.0, Distortion=0.4)
+    L(nt, tc.outputs['Object'], n.inputs['Vector'])
+    sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, tc.outputs['Object'], sep.inputs[0])
+    add = N(nt, 'ShaderNodeMath', operation='MULTIPLY_ADD'); add.inputs[1].default_value = 9.0
+    L(nt, n.outputs['Fac'], add.inputs[0]); L(nt, sep.outputs['Z'], add.inputs[2])
+    w = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); w.inputs[1].default_value = 0.045; L(nt, add.outputs[0], w.inputs[0])
+    fr = N(nt, 'ShaderNodeMath', operation='FRACT'); L(nt, w.outputs[0], fr.inputs[0])
+    r = ramp(nt, [(0.0, hexc('#9c3b22')), (0.22, hexc('#c4552c')), (0.4, hexc('#e08547')), (0.55, hexc('#b8482a')), (0.72, hexc('#d96a36')), (0.86, hexc('#f0b27a')), (1.0, hexc('#9c3b22'))], fr.outputs[0])
+    p = principled(nt, out, r.outputs['Color'], rough=0.9, spec=0.15)
+    b = N(nt, 'ShaderNodeBump', Strength=0.5); n3 = N(nt, 'ShaderNodeTexNoise', Scale=0.6, Detail=8.0); L(nt, tc.outputs['Object'], n3.inputs['Vector'])
+    L(nt, n3.outputs['Fac'], b.inputs['Height']); L(nt, b.outputs['Normal'], p.inputs['Normal'])
+M_ROCK = mat('strata', m_strata)
+
+def m_wood(nt, out, base='#6e4a30', dark='#3e2718', light='#9a6c45', bump=0.4):
+    tc = N(nt, 'ShaderNodeTexCoord'); mp = N(nt, 'ShaderNodeMapping'); mp.inputs['Scale'].default_value = (1.0, 14.0, 1.0)
+    L(nt, tc.outputs['Object'], mp.inputs['Vector'])
+    mp.inputs['Scale'].default_value = (0.6, 9.0, 9.0)
+    wv = N(nt, 'ShaderNodeTexNoise', Scale=2.2, Detail=3.0, Roughness=0.45); L(nt, mp.outputs[0], wv.inputs['Vector'])
+    n = N(nt, 'ShaderNodeTexNoise', Scale=6.0, Detail=6.0); L(nt, tc.outputs['Object'], n.inputs['Vector'])
+    mx = N(nt, 'ShaderNodeMix', data_type='FLOAT'); mx.inputs['Factor'].default_value = 0.4; L(nt, wv.outputs['Fac'], mx.inputs['A']); L(nt, n.outputs['Fac'], mx.inputs['B'])
+    r = ramp(nt, [(0.25, hexc(dark)), (0.55, hexc(base)), (0.8, hexc(light))], mx.outputs['Result'])
+    p = principled(nt, out, r.outputs['Color'], rough=0.85, spec=0.2)
+    b = N(nt, 'ShaderNodeBump', Strength=bump); L(nt, wv.outputs['Fac'], b.inputs['Height']); L(nt, b.outputs['Normal'], p.inputs['Normal'])
+M_TIE = mat('tie', m_wood)
+M_POLE = mat('pole', lambda nt, out: m_wood(nt, out, '#7a5638', '#4a3020', '#a07650', 0.3))
+
+def m_rail(nt, out):   # polished running surface on top, rusty brown everywhere else
+    g = N(nt, 'ShaderNodeNewGeometry'); sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, g.outputs['Normal'], sep.inputs[0])
+    gt = N(nt, 'ShaderNodeMath', operation='GREATER_THAN'); gt.inputs[1].default_value = 0.9; L(nt, sep.outputs['Z'], gt.inputs[0])
+    tc = N(nt, 'ShaderNodeTexCoord'); n = N(nt, 'ShaderNodeTexNoise', Scale=9.0, Detail=8.0); L(nt, tc.outputs['Object'], n.inputs['Vector'])
+    rust = ramp(nt, [(0.35, hexc('#4a2a1c')), (0.6, hexc('#7a4128')), (0.8, hexc('#9c5a34'))], n.outputs['Fac'])
+    mc = N(nt, 'ShaderNodeMix', data_type='RGBA'); L(nt, gt.outputs[0], mc.inputs['Factor']); L(nt, rust.outputs['Color'], mc.inputs['A']); mc.inputs['B'].default_value = hexc('#b4b0ac')
+    rg = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], rg.inputs['Factor']); rg.inputs['A'].default_value = 0.75; rg.inputs['B'].default_value = 0.45
+    mt = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], mt.inputs['Factor']); mt.inputs['A'].default_value = 0.2; mt.inputs['B'].default_value = 0.85
+    p = principled(nt, out, mc.outputs['Result']); L(nt, rg.outputs['Result'], p.inputs['Roughness']); L(nt, mt.outputs['Result'], p.inputs['Metallic'])
+M_RAIL = mat('rail', m_rail)
+M_IRON = mat('iron', lambda nt, out: principled(nt, out, color=hexc('#3d3533'), rough=0.6, metal=0.7))
+M_PLATE = mat('plate', lambda nt, out: principled(nt, out, color=hexc('#5a3a2a'), rough=0.7, metal=0.5))
+def m_rock(nt, out):
+    oi = N(nt, 'ShaderNodeObjectInfo')
+    r = ramp(nt, [(0.0, hexc('#6f625c')), (0.35, hexc('#9a8c84')), (0.6, hexc('#b07a5a')), (0.85, hexc('#c9b8a8')), (1.0, hexc('#7d4b36'))], oi.outputs['Random'])
+    p = principled(nt, out, r.outputs['Color'], rough=0.9, spec=0.25)
+M_BALLAST = mat('ballast', m_rock)
+def m_emit(col, strength):
+    def b(nt, out):
+        e = N(nt, 'ShaderNodeEmission', Strength=strength); e.inputs['Color'].default_value = hexc(col); L(nt, e.outputs[0], out.inputs['Surface'])
+    return b
+M_SPARK = mat('spark', m_emit('#ffc35a', 40.0))
+M_WIRE = mat('wire', lambda nt, out: principled(nt, out, color=hexc('#2a2422'), rough=0.6))
+M_HANDLE = mat('handle', lambda nt, out: m_wood(nt, out, '#b8854f', '#7a5230', '#d9a86c', 0.15))
+M_MAUL = mat('maulhead', lambda nt, out: principled(nt, out, color=hexc('#4a4f57'), rough=0.35, metal=0.9))
+
+# ---------------------------------------------------------------- mesh helpers
+def box(name, size, loc=(0, 0, 0), m=None, c=None, bevel=0.0):
+    me = bpy.data.meshes.new(name); bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts: v.co = Vector((v.co.x * size[0], v.co.y * size[1], v.co.z * size[2]))
+    if bevel: bmesh.ops.bevel(bm, geom=list(bm.edges), offset=bevel, segments=2, affect='EDGES')
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(name, me); o.location = loc
+    if m: me.materials.append(m)
+    return link(o, c)
+def cyl(name, r, h, loc=(0, 0, 0), m=None, c=None, verts=12, rot=(0, 0, 0)):
+    me = bpy.data.meshes.new(name); bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=verts, radius1=r, radius2=r, depth=h)
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new(name, me); o.location = loc; o.rotation_euler = rot
+    if m: me.materials.append(m)
+    for p in me.polygons: p.use_smooth = True
+    return link(o, c)
+def join(objs, name):
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in objs: o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)   # bake every part's offset, origin -> world origin
+    bpy.ops.object.join(); objs[0].name = name; return objs[0]
+def apply_all(o):
+    bpy.ops.object.select_all(action='DESELECT'); o.select_set(True); bpy.context.view_layer.objects.active = o
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+
+# ---------------------------------------------------------------- track (gauge 1.435 m, 39 ft = 11.887 m rails, joint gaps)
+GAUGE, RAIL_LEN, GAP = 1.435, 11.887, 0.026     # gap drawn ~2x real width so it reads on screen
+TIE_SP, TRACK_END = 0.56, 420.0
+RX = GAUGE / 2 + 0.036                            # rail centre line
+CT = coll('track')
+def rail_mesh(length):   # head / web / foot profile, extruded along +Y
+    parts = [box('h', (0.072, length, 0.045), (0, length / 2, 0.137)), box('w', (0.018, length, 0.09), (0, length / 2, 0.07)), box('f', (0.14, length, 0.022), (0, length / 2, 0.011))]
+    o = join(parts, 'rail'); o.data.materials.append(M_RAIL); return o
+rail_proto = rail_mesh(RAIL_LEN - GAP); sc.collection.objects.unlink(rail_proto)
+JOINT0 = 2.05                                     # a joint sits right in the foreground
+joints = [JOINT0 + k * RAIL_LEN for k in range(-1, int(TRACK_END / RAIL_LEN) + 1)]
+for side in (-1, 1):
+    for j in joints:
+        o = rail_proto.copy(); o.location = (side * RX, j + GAP / 2, 0.0); link(o, CT)
+        if j < 60:   # joint bars + 4 bolts each side of the web
+            for s2 in (-1, 1):
+                b = box('jbar', (0.016, 0.6, 0.075), (side * RX + s2 * 0.018, j, 0.075), M_IRON, CT, bevel=0.003)
+                for k in (-0.21, -0.07, 0.07, 0.21):
+                    cyl('bolt', 0.013, 0.05, (side * RX + s2 * 0.034, j + k, 0.075), M_IRON, CT, 6, (0, math.pi / 2, 0))
+# tie unit: tie + 2 plates + 4 spikes
+def tie_unit():
+    parts = [box('tie', (2.6, 0.23, 0.17), (0, 0, -0.085), bevel=0.012)]
+    for side in (-1, 1):
+        parts.append(box('plate', (0.2, 0.18, 0.016), (side * RX, 0, 0.008)))
+        for s2 in (-1, 1):
+            parts.append(box('spike', (0.016, 0.016, 0.03), (side * RX + s2 * 0.085, s2 * 0.04, 0.03)))
+            parts.append(box('shead', (0.03, 0.022, 0.01), (side * RX + s2 * 0.078, s2 * 0.04, 0.047)))
+    o = join(parts, 'tieunit'); o.data.materials.append(M_TIE); o.data.materials.append(M_PLATE)
+    for p in o.data.polygons:
+        if p.center.z > 0.0005 or abs(abs(p.center.x) - RX) < 0.12 and p.center.z > -0.001: p.material_index = 1
+    sc.collection.objects.unlink(o); return o
+TU = tie_unit()
+n_near = 70
+for i in range(n_near):    # near ties: individually jittered
+    o = TU.copy(); o.data = TU.data; o.location = (R.uniform(-0.04, 0.04), -3.0 + i * TIE_SP + R.uniform(-0.03, 0.03), R.uniform(-0.01, 0.0))
+    o.rotation_euler = (0, 0, math.radians(R.uniform(-1.6, 1.6))); link(o, CT)
+far = TU.copy(); far.location = (0, -3.0 + n_near * TIE_SP, 0); link(far, CT)
+am = far.modifiers.new('arr', 'ARRAY'); am.count = int((TRACK_END - n_near * TIE_SP) / TIE_SP); am.use_relative_offset = False; am.use_constant_offset = True; am.constant_offset_displace = (0, TIE_SP, 0)
+
+# ballast bed: trapezoid + rocks scattered near the camera
+def ballast_bed():
+    me = bpy.data.meshes.new('bed'); bm = bmesh.new()
+    prof = [(-2.6, -0.32), (-1.7, -0.03), (1.7, -0.03), (2.6, -0.32)]
+    for y in (-6.0, TRACK_END):
+        for (x, z) in prof: bm.verts.new((x, y, z))
+    bm.verts.ensure_lookup_table()
+    for i in range(3): bm.faces.new([bm.verts[i], bm.verts[i + 1], bm.verts[i + 5], bm.verts[i + 4]])
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('bed', me); me.materials.append(M_BALLAST); return link(o, CT)
+bed = ballast_bed()
+rocks = coll('rocks'); rocks.hide_render = False
+for k in range(10):
+    me = bpy.data.meshes.new('rk'); bm = bmesh.new(); bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+    for v in bm.verts: v.co = Vector((v.co.x * R.uniform(0.7, 1.2), v.co.y * R.uniform(0.7, 1.2), v.co.z * R.uniform(0.45, 0.8))) * (1 + 0.15 * noise.noise(v.co * 3 + Vector((k, 0, 0))))
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('rk%d' % k, me); me.materials.append(M_BALLAST)
+    rocks.objects.link(o); o.location = (0, -50, -10)
+    for p in me.polygons: p.use_smooth = True
+sc.view_layers[0].layer_collection.children['rocks'].exclude = False
+emit = box('ballast_emit', (3.4, 46.0, 0.001), (0, 17.0, -0.035), None, CT)
+ps = emit.modifiers.new('rocks', 'PARTICLE_SYSTEM').particle_system; pst = ps.settings
+pst.type = 'HAIR'; pst.count = 90000; pst.hair_length = 1.0; pst.render_type = 'COLLECTION'; pst.instance_collection = rocks; pst.use_collection_pick_random = True
+pst.particle_size = 0.032; pst.size_random = 0.6; pst.use_rotations = True; pst.rotation_mode = 'NONE'; pst.phase_factor_random = 2.0; pst.rotation_factor_random = 1.0
+pst.use_advanced_hair = True; emit.show_instancer_for_render = False
+for o in rocks.all_objects: o.hide_render = False
+
+# ---------------------------------------------------------------- terrain + mesas
+def terrain():
+    nx, ny, size = 220, 260, (2400.0, 2600.0); me = bpy.data.meshes.new('ground'); bm = bmesh.new()
+    vs = []
+    for j in range(ny):
+        row = []
+        for i in range(nx):
+            u, v = i / (nx - 1), j / (ny - 1); x = (u - 0.5) * size[0]; y = -400 + v * size[1]
+            x = math.copysign(abs(x / (size[0] / 2)) ** 1.8 * size[0] / 2, x)       # denser near the track
+            w = min(1.0, max(0.0, (abs(x) - 4.0) / 70.0)) ** 1.5
+            h = noise.fractal(Vector((x * 0.004, y * 0.004, 0.3)), 0.7, 2.0, 5) * 9.0 + noise.noise(Vector((x * 0.03, y * 0.03, 1.7))) * 1.2
+            row.append(bm.verts.new((x, y, -0.33 + w * h)))
+        vs.append(row)
+    for j in range(ny - 1):
+        for i in range(nx - 1): bm.faces.new([vs[j][i], vs[j][i + 1], vs[j + 1][i + 1], vs[j + 1][i]])
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('ground', me); me.materials.append(M_SAND)
+    for p in me.polygons: p.use_smooth = True
+    return link(o)
+terrain()
+def mesa(x, y, rad, h, seed, cap=0.12):
+    me = bpy.data.meshes.new('mesa'); bm = bmesh.new(); seg, rings = 160, 70
+    rows = []
+    for k in range(rings + 1):
+        t = k / rings; z = t * h
+        rr = rad * (1.0 + 0.55 * max(0, 0.18 - t) / 0.18)       # talus skirt at the base
+        rr *= 1.0 - 0.06 * (t > 0.92)
+        row = []
+        for s in range(seg):
+            a = s / seg * math.tau; d = Vector((math.cos(a), math.sin(a), 0))
+            jag = noise.fractal(Vector((d.x * 2 + seed, d.y * 2, t * 3)), 0.6, 2.0, 4) * 0.2 + noise.noise(Vector((a * 3 + seed, t * 9, 0))) * 0.04 + abs(noise.noise(Vector((a * 22 + seed, t * 1.5, 3)))) * 0.05 + (0.03 if (int(t * 9 + noise.noise(Vector((a, seed, 0))) * 2) % 2) else 0.0)
+            row.append(bm.verts.new((x + d.x * rr * (1 + jag), y + d.y * rr * (1 + jag), z - 2)))
+        rows.append(row)
+    for k in range(rings):
+        for s in range(seg): bm.faces.new([rows[k][s], rows[k][(s + 1) % seg], rows[k + 1][(s + 1) % seg], rows[k + 1][s]])
+    bm.faces.new(rows[-1]); bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('mesa', me); me.materials.append(M_ROCK)
+    for p in me.polygons: p.use_smooth = True
+    return link(o)
+for (x, y, rad, h) in [(-90, 420, 70, 95), (140, 520, 110, 120), (-260, 700, 160, 150), (40, 1100, 220, 170), (330, 900, 140, 110), (-60, 1500, 300, 210), (-520, 1200, 240, 190), (520, 1400, 260, 160)]:
+    mesa(x, y, rad, h, R.uniform(0, 50))
+
+# telegraph poles + wires along the right side
+CP = coll('poles'); tops = []
+for k in range(14):
+    y = 6 + k * 34.0; x = 3.4
+    cyl('pole', 0.09, 7.2, (x, y, 3.3), M_POLE, CP, 10); box('arm', (1.4, 0.1, 0.1), (x, y, 6.6), M_POLE, CP)
+    for dx in (-0.55, -0.18, 0.18, 0.55): cyl('ins', 0.035, 0.12, (x + dx, y, 6.72), M_IRON, CP, 8); tops.append((k, dx, Vector((x + dx, y, 6.76))))
+for dx in (-0.55, -0.18, 0.18, 0.55):
+    pts = [p for (k, d, p) in tops if d == dx]
+    cu = bpy.data.curves.new('wire', 'CURVE'); cu.dimensions = '3D'; cu.bevel_depth = 0.008
+    for a, b in zip(pts, pts[1:]):
+        sp = cu.splines.new('POLY'); sp.points.add(8)
+        for i in range(9):
+            t = i / 8; p = a.lerp(b, t); p.z -= 0.9 * 4 * t * (1 - t); sp.points[i].co = (p.x, p.y, p.z, 1)
+    o = bpy.data.objects.new('wire', cu); cu.materials.append(M_WIRE); link(o, CP)
+
+M_SHRUB = mat('shrub', lambda nt, out: principled(nt, out, color=hexc('#7d7a3c'), rough=0.9))
+M_SHRUB2 = mat('shrub2', lambda nt, out: principled(nt, out, color=hexc('#a39a55'), rough=0.9))
+shr = coll('shrubs')
+for k in range(6):
+    me = bpy.data.meshes.new('sh'); bm = bmesh.new(); bmesh.ops.create_icosphere(bm, subdivisions=2, radius=1.0)
+    for v in bm.verts: v.co = Vector((v.co.x, v.co.y, max(v.co.z, -0.2) * 0.62)) * (1 + 0.28 * noise.noise(v.co * 4 + Vector((k * 3.1, 0, 0))))
+    bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('sh%d' % k, me); me.materials.append(M_SHRUB if k % 2 else M_SHRUB2); shr.objects.link(o); o.location = (0, -60, -20)
+    for p in me.polygons: p.use_smooth = True
+for sx in (-1, 1):
+    em = box('shrub_emit', (60.0, 300.0, 0.001), (sx * 34.0, 140.0, -0.3), None)
+    ps2 = em.modifiers.new('sh', 'PARTICLE_SYSTEM').particle_system; st = ps2.settings
+    st.type = 'HAIR'; st.count = 2600; st.hair_length = 1.0; st.render_type = 'COLLECTION'; st.instance_collection = shr; st.use_collection_pick_random = True
+    st.particle_size = 0.45; st.size_random = 0.7; st.use_advanced_hair = True; st.use_rotations = True; st.rotation_mode = 'GLOB_Z'; st.phase_factor_random = 2.0
+    em.show_instancer_for_render = False
+# far landmarks of the town: wooden water tower + station, left of the track
+M_TANK = mat('tank', lambda nt, out: m_wood(nt, out, '#8a5a36', '#5a3820', '#b07a4a', 0.2))
+M_ROOF = mat('roof', lambda nt, out: principled(nt, out, color=hexc('#7a2e22'), rough=0.8))
+M_WALL = mat('wall', lambda nt, out: m_wood(nt, out, '#c9a36a', '#9a7448', '#e2c08a', 0.15))
+CT2 = coll('town'); TX, TY = -9.0, 150.0
+for dx in (-1.6, 1.6):
+    for dy in (-1.6, 1.6): cyl('leg', 0.18, 9.0, (TX + dx, TY + dy, 4.2), M_POLE, CT2, 8)
+cyl('tank', 2.6, 3.6, (TX, TY, 10.4), M_TANK, CT2, 32); bpy.ops.mesh.primitive_cone_add(vertices=32, radius1=2.9, depth=1.6, location=(TX, TY, 13.0)); c = bpy.context.object; c.data.materials.append(M_ROOF)
+box('station', (8.0, 18.0, 4.2), (-7.5, 190.0, 1.8), M_WALL, CT2); box('sroof', (10.0, 20.0, 0.5), (-7.5, 190.0, 4.2), M_ROOF, CT2)
+box('platform', (3.0, 24.0, 0.6), (-3.4, 190.0, 0.0), M_TIE, CT2)
+
+# ---------------------------------------------------------------- sky + sun
+SUN_EL, SUN_AZ = math.radians(32), math.radians(-35)     # sun behind-right of the camera, front-lights the hero
+w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True; nt = w.node_tree; nt.nodes.clear()
+sky = N(nt, 'ShaderNodeTexSky', sky_type='NISHITA'); sky.sun_elevation = SUN_EL; sky.sun_rotation = SUN_AZ + math.pi; sky.altitude = 1200; sky.air_density = 1.4; sky.dust_density = 0.6; sky.sun_disc = False
+bg = N(nt, 'ShaderNodeBackground', Strength=0.55); wo = N(nt, 'ShaderNodeOutputWorld')
+# push the sky toward the refs' saturated blue
+hsv = N(nt, 'ShaderNodeHueSaturation', Saturation=1.6, Value=0.9, Hue=0.545); L(nt, sky.outputs[0], hsv.inputs['Color'])
+L(nt, hsv.outputs[0], bg.inputs['Color']); L(nt, bg.outputs[0], wo.inputs['Surface'])
+sd = bpy.data.lights.new('sun', 'SUN'); sd.energy = 4.2; sd.angle = math.radians(2.5); sd.color = (1.0, 0.93, 0.82)
+sun = bpy.data.objects.new('sun', sd); link(sun)
+d = Vector((math.cos(SUN_EL) * math.sin(SUN_AZ), -math.cos(SUN_EL) * math.cos(SUN_AZ), math.sin(SUN_EL)))   # direction toward the sun
+sun.rotation_euler = d.to_track_quat('Z', 'Y').to_euler()
+# soft cumulus cards (procedural)
+def m_cloud(nt, out):
+    tc = N(nt, 'ShaderNodeTexCoord'); n = N(nt, 'ShaderNodeTexNoise', Scale=2.2, Detail=6.0, Roughness=0.55); L(nt, tc.outputs['Generated'], n.inputs['Vector'])
+    gr = N(nt, 'ShaderNodeTexGradient', gradient_type='SPHERICAL'); mp = N(nt, 'ShaderNodeMapping'); mp.inputs['Location'].default_value = (-0.5, -0.5, 0); mp.inputs['Scale'].default_value = (2, 2, 1)
+    L(nt, tc.outputs['Generated'], mp.inputs['Vector']); L(nt, mp.outputs[0], gr.inputs['Vector'])
+    m1 = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); L(nt, n.outputs['Fac'], m1.inputs[0]); L(nt, gr.outputs['Fac'], m1.inputs[1])
+    a = ramp(nt, [(0.2, (0, 0, 0, 1)), (0.32, (1, 1, 1, 1))], m1.outputs[0])
+    shade = ramp(nt, [(0.25, hexc('#b9c6e4')), (0.5, hexc('#ffffff'))], n.outputs['Fac'])
+    e = N(nt, 'ShaderNodeEmission', Strength=0.95); L(nt, shade.outputs['Color'], e.inputs['Color'])
+    tr = N(nt, 'ShaderNodeBsdfTransparent'); mx = N(nt, 'ShaderNodeMixShader'); L(nt, a.outputs['Color'], mx.inputs['Fac']); L(nt, tr.outputs[0], mx.inputs[1]); L(nt, e.outputs[0], mx.inputs[2])
+    L(nt, mx.outputs[0], out.inputs['Surface'])
+M_CLOUD = mat('cloud', m_cloud)
+for (x, y, z, s) in [(-380, 1500, 470, 700), (360, 1700, 600, 760), (-40, 1900, 900, 900), (-820, 1500, 330, 520), (760, 1400, 300, 460), (520, 2000, 1150, 700), (-620, 2100, 1250, 760)]:
+    bpy.ops.mesh.primitive_plane_add(size=1, location=(x, y, z)); c = bpy.context.object; c.scale = (s, s * 0.55, 1); c.rotation_euler = (math.radians(90), 0, 0)
+    c.data.materials.append(M_CLOUD); c.visible_shadow = False
+
+# ---------------------------------------------------------------- camera
+cd = bpy.data.cameras.new('cam'); cam = bpy.data.objects.new('cam', cd); link(cam); sc.camera = cam
+cd.lens = 36; cd.sensor_fit = 'VERTICAL'; cd.sensor_height = 36; cd.clip_start = 0.02; cd.clip_end = 6000
+def aim(pos, target, roll=0.0):
+    cam.location = pos; q = (Vector(target) - Vector(pos)).to_track_quat('-Z', 'Y'); cam.rotation_euler = q.to_euler()
+    cam.rotation_euler.rotate_axis('Z', math.radians(roll))
+
+# ---------------------------------------------------------------- hero card
+UNIT = 1.72 / 690; PX = 300; CW, CH = 640 + 2 * PX, 1100
+def hero_card(feet, pose, name='hero'):
+    """render our Canvas2D rig for `pose` (hands solved onto world grip points), put it on a camera-facing card at `feet`"""
+    feet = Vector(feet); fwd = Vector((cam.location.x - feet.x, cam.location.y - feet.y, 0)).normalized()
+    rotz = math.atan2(fwd.x, -fwd.y)     # card normal (+Y local after rotation x=90) faces the camera
+    M = Matrix.Translation(feet) @ Matrix.Rotation(rotz, 4, 'Z')
+    nrm = (M.to_3x3() @ Vector((0, -1, 0))).normalized()
+    def to_design(w):
+        o = cam.location; dvec = (Vector(w) - o).normalized(); t = (feet - o).dot(nrm) / dvec.dot(nrm); hit = o + dvec * t
+        loc = M.inverted() @ hit; x, y = 320 + loc.x / UNIT, 1000 - loc.z / UNIT
+        lean = pose.get('lean', 0.0); cx, cy = 320, 1000; c, s = math.cos(-lean), math.sin(-lean)   # undo the card lean
+        return [cx + (x - cx) * c - (y - cy) * s, cy + (x - cx) * s + (y - cy) * c]
+    p = dict(pose); shL, shR = (320 - 69.4, 635.9), (320 + 69.4, 635.9)
+    if 'gripLw' in p: q = to_design(p.pop('gripLw')); p['armL'] = [(q[0] - shL[0]) / 1.02, (q[1] - shL[1]) / 1.02]; p['gripL'] = True
+    if 'gripRw' in p: q = to_design(p.pop('gripRw')); p['armR'] = [(q[0] - shR[0]) / 1.02, (q[1] - shR[1]) / 1.02]; p['gripR'] = True
+    p['out'] = os.path.join(TMP, name + '.png'); p['ak'] = 3
+    js = os.path.join(TMP, name + '.json'); json.dump([p], open(js, 'w'))
+    subprocess.run(['node', os.path.join(CARD, 'render_card.mjs'), js], check=True, cwd=CARD)
+    img = bpy.data.images.load(p['out'])
+    m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; nt.nodes.clear(); out = nt.nodes.new('ShaderNodeOutputMaterial')
+    tx = N(nt, 'ShaderNodeTexImage'); tx.image = img; tx.interpolation = 'Cubic'
+    pb = N(nt, 'ShaderNodeBsdfPrincipled', Roughness=1.0); pb.inputs['Specular IOR Level'].default_value = 0.0
+    L(nt, tx.outputs['Color'], pb.inputs['Base Color']); L(nt, tx.outputs['Color'], pb.inputs['Emission Color']); pb.inputs['Emission Strength'].default_value = 0.42
+    L(nt, tx.outputs['Alpha'], pb.inputs['Alpha']); L(nt, pb.outputs[0], out.inputs['Surface'])
+    m.surface_render_method = 'DITHERED'
+    me = bpy.data.meshes.new(name); w, h = CW * UNIT, CH * UNIT; yb = -(1050 - 0) * UNIT    # design y 1050 (=1000+50 translate) at the feet
+    top = (CH - 1050) * UNIT   # canvas bottom is at design y 1100 -> 50 units below the feet
+    bm = bmesh.new(); vs = [bm.verts.new(v) for v in [(-w / 2, 0, -50 * UNIT), (w / 2, 0, -50 * UNIT), (w / 2, 0, (CH - 50) * UNIT), (-w / 2, 0, (CH - 50) * UNIT)]]
+    f = bm.faces.new(vs); uv = bm.loops.layers.uv.new()
+    for l, c in zip(f.loops, [(0, 0), (1, 0), (1, 1), (0, 1)]): l[uv].uv = c
+    bm.to_mesh(me); bm.free(); me.materials.append(m)
+    o = bpy.data.objects.new(name, me); o.matrix_world = M; link(o)
+    # the lean pivots at the feet in the drawing already; card stays upright
+    return o
+
+# ---------------------------------------------------------------- shots
+def hook():
+    """0:00 'You'd fire a man for leaving a gap...' - our guy drives a spike, joint gap big in the foreground"""
+    aim((0.62, -0.25, 0.6), (-0.35, 6.0, 0.92), roll=0.0)
+    cd.dof.use_dof = True; cd.dof.aperture_fstop = 4.0; cd.dof.focus_distance = 4.6
+    # maul: head on the spike at the left rail (outside), handle up to the hands
+    spike = Vector((-RX - 0.085, 4.25, 0.05))
+    hands_end = Vector((-0.30, 4.15, 0.64)); hands_mid = spike.lerp(hands_end, 0.72)
+    ax = (hands_end - spike); length = ax.length + 0.12
+    hd = cyl('maulhead', 0.05, 0.42, (0, 0, 0), M_MAUL, None, 14)
+    hd.matrix_world = Matrix.Translation(spike + Vector((0, -0.02, 0.07))) @ ax.to_track_quat('Z', 'Y').to_matrix().to_4x4() @ Matrix.Rotation(math.pi / 2, 4, 'Y')
+    hdl = cyl('handle', 0.022, length, (0, 0, 0), M_HANDLE, None, 10)
+    hdl.matrix_world = Matrix.Translation(spike + ax.normalized() * (length / 2)) @ ax.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+    # sparks at the strike: thin emissive streaks fanning up and out
+    for k in range(18):
+        a = R.uniform(-2.6, 2.6); el = R.uniform(0.25, 1.25); ln = R.uniform(0.04, 0.16); dvec = Vector((math.cos(el) * math.sin(a), math.cos(el) * math.cos(a) * 0.6, math.sin(el)))
+        st = spike + Vector((0.0, 0.03, 0.03)) + dvec * R.uniform(0.06, 0.26)
+        s = cyl('spark', 0.0035, ln, (0, 0, 0), M_SPARK, None, 5); s.matrix_world = Matrix.Translation(st) @ dvec.to_track_quat('Z', 'Y').to_matrix().to_4x4()
+        s.visible_shadow = False
+    hero_card((-0.1, 4.05, 0.0), {'gripLw': hands_end, 'gripRw': hands_mid, 'mood': 'focus', 'lookAt': [-1, 1], 'turn': -0.35, 'lean': -0.16,
+                                   'armsFront': True, 'legSwing': 0.5, 'bendL': [-0.4, 1], 'bendR': [0.2, 1],
+                                   'look': {'body': '#2e7a5e', 'sh': '#0f3326'}})
+
+SHOTS = {'hook': hook}
+SHOTS[SHOT]()
+
+# ---------------------------------------------------------------- render settings
+sc.render.engine = 'BLENDER_EEVEE_NEXT'; ee = sc.eevee
+ee.taa_render_samples = int(arg('--spp', '48')); ee.use_shadows = True; ee.shadow_ray_count = 2; ee.shadow_step_count = 8
+ee.use_raytracing = True; ee.ray_tracing_options.resolution_scale = '2'
+ee.use_volumetric_shadows = False
+sc.render.resolution_x, sc.render.resolution_y = 2160, 3840; sc.render.resolution_percentage = int(100 * SCALE)
+sc.view_settings.view_transform = 'Standard'
+try: sc.view_settings.look = 'AgX - Punchy'
+except Exception: pass
+sc.view_settings.exposure = -0.35
+sc.render.film_transparent = False
+# mist pass -> aerial perspective in the compositor (warm-blue haze on far mesas)
+vl = sc.view_layers[0]; vl.use_pass_mist = True; w.mist_settings.start = 60; w.mist_settings.depth = 1600; w.mist_settings.falloff = 'QUADRATIC'
+sc.use_nodes = True; ct = sc.node_tree; ct.nodes.clear()
+rl = ct.nodes.new('CompositorNodeRLayers'); comp = ct.nodes.new('CompositorNodeComposite')
+mix = ct.nodes.new('CompositorNodeMixRGB'); mix.blend_type = 'MIX'; mix.inputs[2].default_value = (0.55, 0.68, 0.95, 1)
+mf = ct.nodes.new('CompositorNodeMath'); mf.operation = 'MULTIPLY'; mf.inputs[1].default_value = 0.32
+ct.links.new(rl.outputs['Mist'], mf.inputs[0]); ct.links.new(mf.outputs[0], mix.inputs[0]); ct.links.new(rl.outputs['Image'], mix.inputs[1])
+gl = ct.nodes.new('CompositorNodeGlare'); gl.glare_type = 'FOG_GLOW'; gl.quality = 'MEDIUM'
+for k, v in (('threshold', 1.6), ('size', 7)):
+    try: setattr(gl, k, v)
+    except Exception: pass
+for k, v in (('Threshold', 1.6), ('Size', 0.5)):
+    if k in gl.inputs: gl.inputs[k].default_value = v
+ct.links.new(mix.outputs[0], gl.inputs['Image'])
+ct.links.new(gl.outputs[0], comp.inputs['Image'])
+sc.render.filepath = OUT; sc.render.image_settings.file_format = 'PNG'
+if arg('--blend'): bpy.ops.wm.save_as_mainfile(filepath=arg('--blend'))
+import time; t0 = time.time(); bpy.ops.render.render(write_still=True); print('RENDER_DONE %.1fs' % (time.time() - t0), OUT)
