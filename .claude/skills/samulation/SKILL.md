@@ -47,6 +47,7 @@ QA sheet (every 0.5 s) ──▶ **deliver** with honest weak spots ──▶ SE
 | `reference/04-case-study-train-reference.md` | the long-form story reference (65 s, 3.36 w/s): structure, heat-map mechanism, timing, sound, what we took |
 | `reference/05-script-voice-timing.md` | story formula, hook scoring (yt-script), fact-checking, ElevenLabs paste-ready rules and settings, speed-up without pitch change, word timing |
 | `reference/06-look-and-characters.md` | colour/light presets, the toon look, the mascot and the cast system (hats, moods, IK grips), card rules |
+| `reference/06b-mascot-full-spec.md` | **the mascot in full**: locked identity table (head, Flame Spikes hair, gold S chain, bean body, limbs, face), every pose/mood/prop API, sheet tool, avatars |
 | `reference/07-engine-threejs-remotion.md` | the three.js-in-Remotion engine (video #3), post chain, what it is best at |
 | `reference/08-shot-design-and-vo-sync.md` | turning words.json into shots/events, frame offsets, dissolves, camera glides, worked shot list |
 | `reference/09-physics-and-mechanisms.md` | physics recipes: ballistic sparks, swing arcs, rockets with drag, rail thermal expansion + sun kink, rolling wheels and rods, smoke, impact geography |
@@ -59,7 +60,8 @@ QA sheet (every 0.5 s) ──▶ **deliver** with honest weak spots ──▶ SE
 | `blender/` | working Blender engine: world.py (track/terrain/mesas/sky), town.py, loco.py, anim.py (shots), scene.py (stills) |
 | `card/` | hero/cast card renderer (headless Chromium → transparent PNG): card.html, extras.js (hats, mustache), toon/ rig |
 | `youtube/` | yt-script, yt-package, yt-seo, yt-retention, yt-comment, yt-plan, yt-viral, yt-audit… + `voice.md` |
-| `hero/`, `brand/` | mascot sheets, a Blender example frame, channel profile + banner |
+| `hero/` | **the mascot**: hero-sheet (body + 4 expressions), 8-pose sheet, avatars (smug/happy/shock), `sheet-tool/` to re-render sheets, Blender example frame |
+| `brand/` | channel profile 800x800 + banner 2560x1440 |
 
 ## 3. Which engine?
 | need | engine |
