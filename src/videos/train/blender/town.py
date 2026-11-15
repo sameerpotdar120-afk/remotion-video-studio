@@ -26,7 +26,7 @@ for k in range(-3, 4):
     y = SY + k * 2.1
     if k == 0: box('door', (0.06, 1.3, 2.4), (SX - 3.02, y, 1.55), M_WIN, CT3); continue
     box('win', (0.06, 1.0, 1.4), (SX - 3.02, y, 2.15), M_WIN, CT3); box('wtrim', (0.08, 1.2, 0.12), (SX - 3.03, y, 2.9), M_TRIM, CT3)
-roof = box('roof', (10.4, 18.6, 0.28), (SX - 2.0, SY, 4.05), M_ROOF, CT3); roof.rotation_euler = (0, math.radians(-8), 0)
+roof = box('roof', (8.6, 18.6, 0.28), (SX - 1.0, SY, 4.15), M_ROOF, CT3); roof.rotation_euler = (0, math.radians(-8), 0)   # overhang stops at the platform edge, clear of the loco stack
 for k in range(-4, 5): cyl('post', 0.09, 3.6, (PLAT_X + 0.5, SY + k * 2.2, 2.1), M_TRIM, CT3, 8)
 box('platform', (3.6, 24.0, 0.5), (PLAT_X + 1.8, SY, PLAT_TOP - 0.25), M_TIE, CT3)
 box('pedge', (0.12, 24.0, 0.1), (PLAT_X + 0.06, SY, PLAT_TOP + 0.01), M_TRIM, CT3)

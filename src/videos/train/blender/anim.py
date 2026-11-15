@@ -175,15 +175,15 @@ FOLK_Y = [-2.6, -1.3, 0.0, 1.3, 2.6, 3.9]
 def setup_town(): pass
 def frame_town(f):
     tt = sstep((f - 121) / 35.0)
-    look(vlerp((-0.7, SY - 1.0, 1.25), (0.55, SY - 0.45, 1.3), tt), (PLAT_X + 0.9, SY + 0.2, 1.35))
-    cd.dof.use_dof = True; cd.dof.aperture_fstop = 3.2; cd.dof.focus_distance = (Vector((PLAT_X + 0.9, SY, 1.2)) - cam.location).length
+    look(vlerp((-2.6, SY - 1.3, 1.45), (-1.7, SY - 0.8, 1.5), tt), (PLAT_X + 0.6, SY + 0.4, 1.75))
+    cd.dof.use_dof = True; cd.dof.aperture_fstop = 4.0; cd.dof.focus_distance = (Vector((PLAT_X + 0.3, SY, 1.2)) - cam.location).length
     out = []; names = ['cow', 'lady', 'mayor', 'kid', 'farmer', 'clerk']
     jab = sstep((f - (WF['did'] - 3)) / 3.0); over = 1 + 0.25 * math.sin(clamp((f - WF['did']) / 5.0) * math.pi)
     for i, n in enumerate(names):
         pose = {'mood': 'angry', 'lean': 0.03 * math.sin(f * 0.1 + i), 'legSwing': 0.25, 'lookAt': [-0.6, 0.2]}
         if n == 'mayor': pose.update(armR=[lerp(55, 95, jab) * over, lerp(60, -55, jab)], armL=[-45, 70], turn=-0.1, lean=-0.06 * jab)
         else: pose.update(armL=[-38, 85], armR=[38, 85])
-        out.append((card(n, FOLKS[n]), (PLAT_X + 0.9 + (0.25 if i % 2 else 0), SY + FOLK_Y[i] - 0.65, PLAT_TOP), pose))
+        out.append((card(n, FOLKS[n]), (PLAT_X + 0.3 + (0.12 if i % 2 else 0), SY + FOLK_Y[i] * 0.85 - 0.55, PLAT_TOP), pose))
     return out
 
 def setup_smug():
@@ -216,7 +216,7 @@ def frame_kink(f):
     for i, (o, ph, sx, sz) in enumerate(state['puffs']):
         born = 190 + i * 2.6; age = (f - born) / FPS
         if age < 0: o.hide_render = True; continue
-        o.hide_render = False; ypos = loco_y(born); o.location = (sx * 0.4 * age, ypos - 4.2 + age * 2.0, 5.3 + age * 2.6 + sz * 0.3); s = 0.5 + age * 1.6; o.scale = (s, s, s * 0.85)
+        o.hide_render = False; ypos = loco_y(born); o.location = (sx * 0.4 * age, ypos - 4.2 + age * 2.0, 5.3 + age * 2.2 + sz * 0.3); s = 0.3 + age * 0.9; o.scale = (s, s, s * 0.85)
     tt = sstep((f - 201) / 78.0); p = vlerp((1.0, 30.2, 0.42), (0.55, 32.6, 0.5), tt) + shake(f, [203, 225, 240], 0.008, 0.15)
     look(p, vlerp((-0.2, 50.0, 0.8), (-0.1, 60.0, 1.5), tt), roll=lerp(-2.5, 1.5, tt))
     cd.dof.use_dof = True; cd.dof.aperture_fstop = 5.6; cd.dof.focus_distance = 11.0
@@ -226,15 +226,15 @@ def setup_aerial():
     root, wheels, rods = build_loco('loco', ribbon=True); root.location = (0, SY + 1.5, 0); state.update(loco=root, puffs=smoke_puffs(18, 9))
 def frame_aerial(f):
     tt = eio((f - 276) / 112.0)
-    p = Vector((pchip([(276, -42), (330, -22), (390, -8.5)], f), pchip([(276, 118), (330, 156), (390, 177.5)], f), pchip([(276, 46), (330, 20), (390, 6.2)], f)))
-    look(p, vlerp((6.0, 192.0, 0.0), (2.2, 194.0, 2.4), tt))
+    p = Vector((pchip([(276, -44), (330, -24), (390, -11.0)], f), pchip([(276, 118), (330, 158), (390, 180.0)], f), pchip([(276, 46), (330, 16), (390, 2.7)], f)))
+    look(p, vlerp((6.0, 192.0, 0.0), (3.6, 193.0, 2.2), tt))
     cd.dof.use_dof = False
     for i, (o, ph, sx, sz) in enumerate(state['puffs']):
-        age = ((f - 260 + i * 4.0) / FPS) % 3.0; o.location = (sx * 0.3 * age, SY + 1.5 + 4.2 - age * 0.6, 5.3 + age * 1.9); s = 0.35 + age * 0.9; o.scale = (s, s, s * 0.85)
+        age = ((f - 260 + i * 5.0) / FPS) % 3.0; o.location = (sx * 0.35 * age, SY + 1.5 + 4.2 - age * 0.9, 5.2 + age * 1.5); s = 0.16 + age * 0.38; o.scale = (s, s, s * 0.85)
     out = []; names = ['cow', 'lady', 'mayor', 'kid', 'farmer', 'clerk']
     for i, n in enumerate(names):
         pose = {'mood': 'happy', 'legSwing': 0.25, 'armL': [-38, 85], 'armR': [lerp(38, 60, 0.5 + 0.5 * math.sin(f * 0.3 + i)), lerp(85, -60, 0.5 + 0.5 * math.sin(f * 0.3 + i))]}
-        out.append((card(n, FOLKS[n]), (PLAT_X + 0.9 + (0.25 if i % 2 else 0), SY + FOLK_Y[i] - 0.65, PLAT_TOP), pose))
+        out.append((card(n, FOLKS[n]), (PLAT_X + 0.3 + (0.12 if i % 2 else 0), SY + FOLK_Y[i] * 0.85 - 0.55, PLAT_TOP), pose))
     return out
 
 SETUP = {'hook': setup_hook, 'glide': setup_glide, 'town': setup_town, 'smug': setup_smug, 'kink': setup_kink, 'aerial': setup_aerial}

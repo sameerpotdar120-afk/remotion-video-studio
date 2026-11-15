@@ -77,7 +77,7 @@ def loco_update(root, wheels, rods, travelled):
     ang = -travelled / 0.86
     for (rd, s) in rods: rd.location.y = -0.5 - 0.43 * math.sin(ang); rd.location.z = 0.16 + 0.86 + 0.43 * math.cos(ang)
 
-M_SMOKE = mat('smoke', lambda nt, out: principled(nt, out, color=hexc('#d8d2cc'), rough=1.0, spec=0.0))
+M_SMOKE = mat('smoke', lambda nt, out: principled(nt, out, color=hexc('#a9a19b'), rough=1.0, spec=0.0))
 def smoke_puffs(n, seed=3):
     rs = random.Random(seed); out = []
     for i in range(n):
