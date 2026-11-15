@@ -175,7 +175,7 @@ FOLK_Y = [-2.6, -1.3, 0.0, 1.3, 2.6, 3.9]
 def setup_town(): pass
 def frame_town(f):
     tt = sstep((f - 121) / 35.0)
-    look(vlerp((-2.6, SY - 1.3, 1.45), (-1.7, SY - 0.8, 1.5), tt), (PLAT_X + 0.6, SY + 0.4, 1.75))
+    look(vlerp((-2.6, SY - 1.3, 1.45), (-1.7, SY - 0.8, 1.5), tt), (PLAT_X + 0.6, SY - 0.1, 1.75))
     cd.dof.use_dof = True; cd.dof.aperture_fstop = 4.0; cd.dof.focus_distance = (Vector((PLAT_X + 0.3, SY, 1.2)) - cam.location).length
     out = []; names = ['cow', 'lady', 'mayor', 'kid', 'farmer', 'clerk']
     jab = sstep((f - (WF['did'] - 3)) / 3.0); over = 1 + 0.25 * math.sin(clamp((f - WF['did']) / 5.0) * math.pi)
@@ -183,7 +183,7 @@ def frame_town(f):
         pose = {'mood': 'angry', 'lean': 0.03 * math.sin(f * 0.1 + i), 'legSwing': 0.25, 'lookAt': [-0.6, 0.2]}
         if n == 'mayor': pose.update(armR=[lerp(55, 95, jab) * over, lerp(60, -55, jab)], armL=[-45, 70], turn=-0.1, lean=-0.06 * jab)
         else: pose.update(armL=[-38, 85], armR=[38, 85])
-        out.append((card(n, FOLKS[n]), (PLAT_X + 0.3 + (0.12 if i % 2 else 0), SY + FOLK_Y[i] * 0.85 - 0.55, PLAT_TOP), pose))
+        out.append((card(n, FOLKS[n]), (PLAT_X + 0.3 + (0.12 if i % 2 else 0), SY + FOLK_Y[i] * 0.6 - 0.3, PLAT_TOP), pose))
     return out
 
 def setup_smug():
