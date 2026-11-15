@@ -190,7 +190,7 @@ def setup_smug():
     state['maul'] = Maul(); ANIM.extend([state['maul'].head, state['maul'].handle])
 def frame_smug(f):
     hands = Vector((-0.33, 3.98, 0.93)); state['maul'].set(hands, Vector((0, 0, -1)), 0.86)
-    tt = sstep((f - 152) / 53.0); look(vlerp((1.0, 0.75, 0.5), (0.72, 1.35, 0.56), tt), vlerp((0.05, 4.0, 0.95), (0.0, 4.0, 1.02), tt))
+    tt = sstep((f - 152) / 53.0); look(vlerp((1.0, 0.05, 0.56), (0.82, 0.6, 0.6), tt), vlerp((0.1, 4.0, 0.9), (0.05, 4.0, 0.95), tt))   # joint gap (RX, JOINT0) sits in the lower-right foreground
     # rack focus from the hero to the joint gap right after "why"
     rf = sstep((f - WF['why']) / 8.0); dh = (Vector((0.12, 4.0, 0.9)) - cam.location).length; dg = (Vector((RX, JOINT0, 0.15)) - cam.location).length
     cd.dof.use_dof = True; cd.dof.aperture_fstop = 2.0; cd.dof.focus_distance = lerp(dh, dg, rf)
