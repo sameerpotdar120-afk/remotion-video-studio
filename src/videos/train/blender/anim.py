@@ -7,6 +7,7 @@ from mathutils import Vector, Matrix
 
 argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
 def arg(k, d=None): return argv[argv.index(k) + 1] if k in argv else d
+ARGS = {k: arg(k) for k in ('--scale', '--spp', '--tmp')}   # world.py defines its own arg(); keep ours
 SHOT = arg('--shot', 'hook'); F0 = int(arg('--from', '0')); F1 = int(arg('--to', '10'))
 HERE = os.path.dirname(os.path.abspath(__file__)); OUTDIR = os.path.abspath(arg('--outdir', os.path.join(HERE, '..', 'out', SHOT))); os.makedirs(OUTDIR, exist_ok=True)
 FPS = 30
@@ -26,7 +27,7 @@ sys.argv = [sys.argv[0], '--', '--tmp', arg('--tmp', '/tmp/train_tmp')]
 exec(open(os.path.join(HERE, 'world.py')).read(), G)
 exec(open(os.path.join(HERE, 'loco.py')).read(), G)
 globals().update({k: v for k, v in G.items() if not k.startswith('__')})
-TMPD = os.path.abspath(arg('--tmp', '/tmp/train_tmp')); os.makedirs(TMPD, exist_ok=True)
+TMPD = os.path.abspath(ARGS['--tmp'] or '/tmp/train_tmp'); os.makedirs(TMPD, exist_ok=True)
 
 # ---------------------------------------------------------------- helpers
 def clamp(x, a=0.0, b=1.0): return max(a, min(b, x))
@@ -245,9 +246,9 @@ for o in bpy.data.objects:   # gravel: no cast shadows (43 s/frame), and only wh
 
 # ---------------------------------------------------------------- render settings (shared look)
 sc.render.engine = 'BLENDER_EEVEE_NEXT'; ee = sc.eevee
-ee.taa_render_samples = int(arg('--spp', '24')); ee.use_shadows = True; ee.shadow_ray_count = 2; ee.shadow_step_count = 8
+ee.taa_render_samples = int(ARGS['--spp'] or 16); ee.use_shadows = True; ee.shadow_ray_count = 2; ee.shadow_step_count = 8
 ee.use_raytracing = False; ee.shadow_ray_count = 1; ee.shadow_step_count = 6
-sc.render.resolution_x, sc.render.resolution_y = 2160, 3840; sc.render.resolution_percentage = int(round(100 * float(arg('--scale', '0.6667'))))
+sc.render.resolution_x, sc.render.resolution_y = 2160, 3840; sc.render.resolution_percentage = int(round(100 * float(ARGS['--scale'] or 0.6667)))
 sc.view_settings.view_transform = 'Standard'; sc.view_settings.exposure = -0.35
 sc.render.use_motion_blur = False   # EEVEE Next re-renders shadow maps per blur step (~20x slower on CPU); vector blur in the compositor instead
 
