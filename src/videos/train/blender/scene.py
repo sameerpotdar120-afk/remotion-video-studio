@@ -58,7 +58,7 @@ def m_strata(nt, out):   # mesa rock: horizontal strata bands (object Z), warped
     sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, tc.outputs['Object'], sep.inputs[0])
     add = N(nt, 'ShaderNodeMath', operation='MULTIPLY_ADD'); add.inputs[1].default_value = 9.0
     L(nt, n.outputs['Fac'], add.inputs[0]); L(nt, sep.outputs['Z'], add.inputs[2])
-    w = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); w.inputs[1].default_value = 0.045; L(nt, add.outputs[0], w.inputs[0])
+    w = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); w.inputs[1].default_value = 0.06; L(nt, add.outputs[0], w.inputs[0])
     fr = N(nt, 'ShaderNodeMath', operation='FRACT'); L(nt, w.outputs[0], fr.inputs[0])
     r = ramp(nt, [(0.0, hexc('#9c3b22')), (0.22, hexc('#c4552c')), (0.4, hexc('#e08547')), (0.55, hexc('#b8482a')), (0.72, hexc('#d96a36')), (0.86, hexc('#f0b27a')), (1.0, hexc('#9c3b22'))], fr.outputs[0])
     p = principled(nt, out, r.outputs['Color'], rough=0.9, spec=0.15)
@@ -85,9 +85,9 @@ def m_rail(nt, out):   # polished running surface on top, rusty brown everywhere
     tc = N(nt, 'ShaderNodeTexCoord'); n = N(nt, 'ShaderNodeTexNoise', Scale=9.0, Detail=8.0); L(nt, tc.outputs['Object'], n.inputs['Vector'])
     rust = ramp(nt, [(0.35, hexc('#4a2a1c')), (0.6, hexc('#7a4128')), (0.8, hexc('#9c5a34'))], n.outputs['Fac'])
     mc = N(nt, 'ShaderNodeMix', data_type='RGBA'); L(nt, gt.outputs[0], mc.inputs['Factor']); L(nt, rust.outputs['Color'], mc.inputs['A']); mc.inputs['B'].default_value = hexc('#b4b0ac')
-    rg = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], rg.inputs['Factor']); rg.inputs['A'].default_value = 0.75; rg.inputs['B'].default_value = 0.45
-    mt = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], mt.inputs['Factor']); mt.inputs['A'].default_value = 0.2; mt.inputs['B'].default_value = 0.85
-    p = principled(nt, out, mc.outputs['Result']); L(nt, rg.outputs['Result'], p.inputs['Roughness']); L(nt, mt.outputs['Result'], p.inputs['Metallic'])
+    rg = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], rg.inputs['Factor']); rg.inputs['A'].default_value = 0.9; rg.inputs['B'].default_value = 0.45
+    mt = N(nt, 'ShaderNodeMix', data_type='FLOAT'); L(nt, gt.outputs[0], mt.inputs['Factor']); mt.inputs['A'].default_value = 0.0; mt.inputs['B'].default_value = 0.85
+    p = principled(nt, out, mc.outputs['Result'], spec=0.08); L(nt, rg.outputs['Result'], p.inputs['Roughness']); L(nt, mt.outputs['Result'], p.inputs['Metallic'])
 M_RAIL = mat('rail', m_rail)
 M_IRON = mat('iron', lambda nt, out: principled(nt, out, color=hexc('#3d3533'), rough=0.6, metal=0.7))
 M_PLATE = mat('plate', lambda nt, out: principled(nt, out, color=hexc('#5a3a2a'), rough=0.7, metal=0.5))
@@ -213,20 +213,23 @@ def terrain():
     return link(o)
 terrain()
 def mesa(x, y, rad, h, seed, cap=0.12):
-    me = bpy.data.meshes.new('mesa'); bm = bmesh.new(); seg, rings = 160, 70
-    rows = []
+    """butte: talus skirt, then near-vertical cliff bands with small ledges (hard and soft strata), flat cap"""
+    me = bpy.data.meshes.new('mesa'); bm = bmesh.new(); seg, rings = 180, 90
+    bands = 7; rows = []
     for k in range(rings + 1):
         t = k / rings; z = t * h
-        rr = rad * (1.0 + 0.55 * max(0, 0.18 - t) / 0.18)       # talus skirt at the base
-        rr *= 1.0 - 0.06 * (t > 0.92)
+        skirt = max(0.0, 0.16 - t) / 0.16; rr = rad * (1.0 + 0.7 * skirt ** 1.6)
+        bt = (t * bands) % 1.0; band = int(t * bands)
+        rr *= 1.0 - 0.025 * band - (0.035 if bt > 0.82 else 0.0)        # each band steps back; soft layer undercut at its top
         row = []
-        for s in range(seg):
-            a = s / seg * math.tau; d = Vector((math.cos(a), math.sin(a), 0))
-            jag = noise.fractal(Vector((d.x * 2 + seed, d.y * 2, t * 3)), 0.6, 2.0, 4) * 0.2 + noise.noise(Vector((a * 3 + seed, t * 9, 0))) * 0.04 + abs(noise.noise(Vector((a * 22 + seed, t * 1.5, 3)))) * 0.05 + (0.03 if (int(t * 9 + noise.noise(Vector((a, seed, 0))) * 2) % 2) else 0.0)
-            row.append(bm.verts.new((x + d.x * rr * (1 + jag), y + d.y * rr * (1 + jag), z - 2)))
+        for s_ in range(seg):
+            a = s_ / seg * math.tau; d = Vector((math.cos(a), math.sin(a), 0))
+            jag = noise.fractal(Vector((d.x * 1.5 + seed, d.y * 1.5, band * 0.35)), 0.5, 2.0, 3) * 0.10
+            flute = abs(noise.noise(Vector((a * 30 + seed, t * 2.0, 5)))) * 0.035
+            row.append(bm.verts.new((x + d.x * rr * (1 + jag - flute), y + d.y * rr * (1 + jag - flute), z - 2)))
         rows.append(row)
     for k in range(rings):
-        for s in range(seg): bm.faces.new([rows[k][s], rows[k][(s + 1) % seg], rows[k + 1][(s + 1) % seg], rows[k + 1][s]])
+        for s_ in range(seg): bm.faces.new([rows[k][s_], rows[k][(s_ + 1) % seg], rows[k + 1][(s_ + 1) % seg], rows[k + 1][s_]])
     bm.faces.new(rows[-1]); bm.to_mesh(me); bm.free(); o = bpy.data.objects.new('mesa', me); me.materials.append(M_ROCK)
     for p in me.polygons: p.use_smooth = True
     return link(o)
@@ -291,13 +294,13 @@ def m_cloud(nt, out):
     gr = N(nt, 'ShaderNodeTexGradient', gradient_type='SPHERICAL'); mp = N(nt, 'ShaderNodeMapping'); mp.inputs['Location'].default_value = (-0.5, -0.5, 0); mp.inputs['Scale'].default_value = (2, 2, 1)
     L(nt, tc.outputs['Generated'], mp.inputs['Vector']); L(nt, mp.outputs[0], gr.inputs['Vector'])
     m1 = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); L(nt, n.outputs['Fac'], m1.inputs[0]); L(nt, gr.outputs['Fac'], m1.inputs[1])
-    a = ramp(nt, [(0.2, (0, 0, 0, 1)), (0.32, (1, 1, 1, 1))], m1.outputs[0])
+    a = ramp(nt, [(0.12, (0, 0, 0, 1)), (0.24, (1, 1, 1, 1))], m1.outputs[0])
     shade = ramp(nt, [(0.25, hexc('#b9c6e4')), (0.5, hexc('#ffffff'))], n.outputs['Fac'])
     e = N(nt, 'ShaderNodeEmission', Strength=0.95); L(nt, shade.outputs['Color'], e.inputs['Color'])
     tr = N(nt, 'ShaderNodeBsdfTransparent'); mx = N(nt, 'ShaderNodeMixShader'); L(nt, a.outputs['Color'], mx.inputs['Fac']); L(nt, tr.outputs[0], mx.inputs[1]); L(nt, e.outputs[0], mx.inputs[2])
     L(nt, mx.outputs[0], out.inputs['Surface'])
 M_CLOUD = mat('cloud', m_cloud)
-for (x, y, z, s) in [(-380, 1500, 470, 700), (360, 1700, 600, 760), (-40, 1900, 900, 900), (-820, 1500, 330, 520), (760, 1400, 300, 460), (520, 2000, 1150, 700), (-620, 2100, 1250, 760)]:
+for (x, y, z, s) in [(-420, 1500, 520, 1000), (380, 1700, 650, 1100), (-60, 1900, 950, 1300), (-900, 1500, 380, 760), (820, 1400, 360, 700), (560, 2000, 1250, 1000), (-640, 2100, 1350, 1100)]:
     bpy.ops.mesh.primitive_plane_add(size=1, location=(x, y, z)); c = bpy.context.object; c.scale = (s, s * 0.55, 1); c.rotation_euler = (math.radians(90), 0, 0)
     c.data.materials.append(M_CLOUD); c.visible_shadow = False
 
@@ -350,20 +353,20 @@ def hook():
     aim((0.62, -0.25, 0.6), (-0.35, 6.0, 0.92), roll=0.0)
     cd.dof.use_dof = True; cd.dof.aperture_fstop = 4.0; cd.dof.focus_distance = 4.6
     # maul: head on the spike at the left rail (outside), handle up to the hands
-    spike = Vector((-RX - 0.085, 4.25, 0.05))
-    hands_end = Vector((-0.30, 4.15, 0.64)); hands_mid = spike.lerp(hands_end, 0.72)
+    spike = Vector((-RX + 0.085, 4.25, 0.05))
+    hands_end = Vector((-0.12, 4.12, 0.66)); hands_mid = spike.lerp(hands_end, 0.72)
     ax = (hands_end - spike); length = ax.length + 0.12
-    hd = cyl('maulhead', 0.05, 0.42, (0, 0, 0), M_MAUL, None, 14)
-    hd.matrix_world = Matrix.Translation(spike + Vector((0, -0.02, 0.07))) @ ax.to_track_quat('Z', 'Y').to_matrix().to_4x4() @ Matrix.Rotation(math.pi / 2, 4, 'Y')
+    hd = cyl('maulhead', 0.055, 0.46, (0, 0, 0), M_MAUL, None, 14)
+    hd.matrix_world = Matrix.Translation(spike + Vector((0, -0.03, 0.075))) @ ax.to_track_quat('Z', 'Y').to_matrix().to_4x4() @ Matrix.Rotation(math.pi / 2, 4, 'Y')
     hdl = cyl('handle', 0.022, length, (0, 0, 0), M_HANDLE, None, 10)
     hdl.matrix_world = Matrix.Translation(spike + ax.normalized() * (length / 2)) @ ax.to_track_quat('Z', 'Y').to_matrix().to_4x4()
     # sparks at the strike: thin emissive streaks fanning up and out
-    for k in range(18):
-        a = R.uniform(-2.6, 2.6); el = R.uniform(0.25, 1.25); ln = R.uniform(0.04, 0.16); dvec = Vector((math.cos(el) * math.sin(a), math.cos(el) * math.cos(a) * 0.6, math.sin(el)))
-        st = spike + Vector((0.0, 0.03, 0.03)) + dvec * R.uniform(0.06, 0.26)
+    for k in range(14):
+        a = R.uniform(-2.6, 2.6); el = R.uniform(0.1, 0.9); ln = R.uniform(0.03, 0.11); dvec = Vector((math.cos(el) * math.sin(a), math.cos(el) * math.cos(a) * 0.6, math.sin(el)))
+        st = spike + Vector((0.0, 0.0, 0.02)) + dvec * R.uniform(0.08, 0.3)
         s = cyl('spark', 0.0035, ln, (0, 0, 0), M_SPARK, None, 5); s.matrix_world = Matrix.Translation(st) @ dvec.to_track_quat('Z', 'Y').to_matrix().to_4x4()
         s.visible_shadow = False
-    hero_card((-0.1, 4.05, 0.0), {'gripLw': hands_end, 'gripRw': hands_mid, 'mood': 'focus', 'lookAt': [-1, 1], 'turn': -0.35, 'lean': -0.16,
+    hero_card((0.12, 4.0, 0.0), {'gripLw': hands_end, 'gripRw': hands_mid, 'mood': 'focus', 'lookAt': [-1, 1], 'turn': -0.35, 'lean': -0.16,
                                    'armsFront': True, 'legSwing': 0.5, 'bendL': [-0.4, 1], 'bendR': [0.2, 1],
                                    'look': {'body': '#2e7a5e', 'sh': '#0f3326'}})
 
