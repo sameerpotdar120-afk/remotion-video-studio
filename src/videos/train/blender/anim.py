@@ -250,7 +250,7 @@ ee.use_raytracing = False; ee.shadow_ray_count = 1; ee.shadow_step_count = 6
 sc.render.resolution_x, sc.render.resolution_y = 2160, 3840; sc.render.resolution_percentage = int(round(100 * float(arg('--scale', '0.6667'))))
 sc.view_settings.view_transform = 'Standard'; sc.view_settings.exposure = -0.35
 sc.render.use_motion_blur = False   # EEVEE Next re-renders shadow maps per blur step (~20x slower on CPU); vector blur in the compositor instead
-vl0 = sc.view_layers[0]; vl0.use_pass_vector = True
+
 vl = sc.view_layers[0]; vl.use_pass_mist = True; sc.world.mist_settings.start = 60; sc.world.mist_settings.depth = 1600; sc.world.mist_settings.falloff = 'QUADRATIC'
 sc.use_nodes = True; ct = sc.node_tree; ct.nodes.clear()
 rl = ct.nodes.new('CompositorNodeRLayers'); comp = ct.nodes.new('CompositorNodeComposite')
@@ -264,7 +264,7 @@ for k, v in (('threshold', 1.6), ('size', 7)):
 for k, v in (('Threshold', 1.6), ('Size', 0.5)):
     if k in gl.inputs: gl.inputs[k].default_value = v
 ct.links.new(mix.outputs[0], gl.inputs['Image']); last = gl.outputs[0]
-if SHOT in ('glide', 'aerial', 'kink'):   # camera-motion blur from the vector pass (camera + props are keyframed)
+if False:   # camera-motion blur from the vector pass (camera + props are keyframed)
     vb = ct.nodes.new('CompositorNodeVecBlur'); vb.samples = 16; vb.factor = 0.6 if SHOT == 'glide' else 0.35
     ct.links.new(last, vb.inputs['Image']); ct.links.new(rl.outputs['Depth'], vb.inputs['Z']); ct.links.new(rl.outputs['Vector'], vb.inputs['Speed']); last = vb.outputs[0]
 if SHOT == 'kink':   # flash-forward grade: warm, a touch of contrast
@@ -276,10 +276,7 @@ sc.render.image_settings.file_format = 'PNG'
 # ---------------------------------------------------------------- pass 0 + 1: evaluate, keyframe, collect + render cards
 t0 = time.time(); plan = {}
 for f in range(F0, F1):
-    sc.frame_set(f); items = FRAME[SHOT](f); plan[f] = []
-    for o in ANIM:
-        o.keyframe_insert('location', frame=f); o.keyframe_insert('rotation_euler', frame=f)
-        if o.type == 'EMPTY' or o.name.startswith(('maul', 'handle')): o.keyframe_insert('scale', frame=f)
+    sc.frame_current = f; items = FRAME[SHOT](f); plan[f] = []
     for (c, feet, pose) in items: M, p = c.solve(feet, pose); plan[f].append((c, M, p))
 for o in ANIM:
     if o.animation_data and o.animation_data.action:
@@ -295,7 +292,7 @@ print('PREP %.1fs, %d cards' % (time.time() - t0, len(todo)), flush=True)
 for f in range(F0, F1):
     out = os.path.join(OUTDIR, 'f%04d.png' % f)
     if os.path.exists(out): continue
-    t1 = time.time(); sc.frame_set(f); FRAME[SHOT](f)      # non-keyframed state (cards, sparks, shape keys, materials)
+    t1 = time.time(); sc.frame_current = f; FRAME[SHOT](f)      # non-keyframed state (cards, sparks, shape keys, materials)
     for (c, M, p) in plan[f]: c.apply(M, p['out'])
     sc.render.filepath = out; bpy.ops.render.render(write_still=True)
     print('FRAME %d %.1fs' % (f, time.time() - t1), flush=True)
