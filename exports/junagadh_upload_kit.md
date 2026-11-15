@@ -1,7 +1,14 @@
-# Junagadh: SEO kit (draft, before the edit)
+# Junagadh: upload kit
 
-Written with /yt-seo before the video exists; the thumbnail and upload file get added after the render. The video
-will loop ("और पाकिस्तान का नक्शा आज भी कहता है…" runs into "1947 में गुजरात का एक हिस्सा…"); no end card, no CTA.
+Upload file: `junagadh_4k60_master.mp4` (4K 60 fps, 2160×3840, 6,672 frames, 1:51; in the repo through Git LFS).
+Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/junagadh_4k60_master.mp4
+Thumbnail: `junagadh_thumbnail.jpg` (1080×1920) and `junagadh_thumbnail_4k.jpg` (2160×3840), one for YouTube and
+Instagram (JgCover: Gujarat on the satellite map, India red, Pakistan green, Junagadh as a raised green slab with the
+hatched 2020 claim; your new Somnath temple on it and Sardar Patel beside it; "आज भी उनके नक्शे में!" in the top third).
+Inside the 3:4 crop. It pairs with title 1 without repeating its words.
+
+The video is a seamless loop: "और Pakistan का Map आज भी कहता है…" runs into "1947 में Gujarat का एक हिस्सा…", and the last
+frame matches frame 0. No end card and no CTA.
 
 ## Search queries this should win
 
@@ -46,7 +53,8 @@ Junagadh history in Hindi: Nawab का फ़ैसला, Somnath का प�
 Satellite: Sentinel-2 cloudless 2024 by EOX IT Services GmbH (s2maps.eu), contains modified Copernicus Sentinel data, CC BY 4.0.
 Relief: AWS Terrain Tiles (Mapzen terrarium; SRTM/NASA), open data. Borders: Natural Earth (India point-of-view edition; public domain).
 Images are the creator's own (AI-generated); host "Null" is an AI-generated character; the voiceover is AI-generated.
-Music and sound effects: credited after the edit.
+The Junagadh state outline is approximate. Portraits of real people are AI illustrations.
+Music: "I Won't Surrender" (Mixkit free licence). Sound effects: Sonniss GDC Game Audio Bundle.
 ```
 
 **Tags** (15)
@@ -75,5 +83,24 @@ junagadh, जूनागढ़, junagadh 1947, junagadh pakistan, junagadh hist
 ये reel हर गुजराती दोस्त को भेजो 📩
 
 #Junagadh #Somnath #SardarPatel #Gujarat #History #MapFacts #NullDynasty
+
+Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). Relief: AWS Terrain Tiles (SRTM/NASA). Borders: Natural Earth (India POV). Junagadh outline approximate. Portraits: AI illustration. Host and voice AI. Music: Mixkit "I Won't Surrender". SFX: Sonniss.
 ```
 Turn on Instagram's "AI info" label in Advanced settings.
+
+## Fact notes (checked 15 November 2026)
+
+- **"1947 में… Pakistan में चला गया था":** the Nawab signed the Instrument of Accession to Pakistan, dated 15 September 1947.
+- **"करीब 80% लोग हिंदू":** about 80% of the state's people were Hindu.
+- **"नवाब महाबत ख़ान":** Muhammad Mahabat Khanji III, Nawab of Junagadh from 1911.
+- **"ज़मीन Pakistan से जुड़ी भी नहीं थी":** Junagadh had no land border with Pakistan; Karachi was across the sea.
+- **"नाकाबंदी… Mumbai में… आरज़ी हुकूमत":** India blockaded the state; the Arzi Hukumat (provisional government) was
+  formed in Bombay on 25 September 1947 and took over villages of the state.
+- **"October में नवाब Karachi भाग गया":** the Nawab left for Karachi in late October 1947.
+- **"9 नवंबर 1947… दीवान के कहने पर":** Dewan Sir Shah Nawaz Bhutto asked India to take over the administration;
+  India did on 9 November 1947. He was the father of Zulfikar Ali Bhutto (Pakistan's Prime Minister, 1973–77).
+- **"13 नवंबर को Patel सोमनाथ पहुँचे… 1951 में नया मंदिर":** Patel visited Somnath on 13 November 1947 and announced
+  its rebuilding; the new temple was inaugurated in May 1951.
+- **"February 1948… 1,90,870 vote… Pakistan के लिए 91":** the referendum of 20 February 1948: 1,90,870 votes cast, 91 for
+  Pakistan.
+- **"2020 में Pakistan ने नया Map":** Pakistan's "political map" of 4 August 2020 shows Junagadh and Manavadar as its own.
