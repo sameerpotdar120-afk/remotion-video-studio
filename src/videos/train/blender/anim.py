@@ -26,7 +26,7 @@ if SHOT == 'kink':
 sys.argv = [sys.argv[0], '--', '--tmp', arg('--tmp', '/tmp/train_tmp')]
 exec(open(os.path.join(HERE, 'world.py')).read(), G)
 exec(open(os.path.join(HERE, 'loco.py')).read(), G)
-globals().update({k: v for k, v in G.items() if not k.startswith('__')})
+globals().update({k: v for k, v in G.items() if not k.startswith('__') and k not in ('SHOT', 'OUT', 'SCALE', 'argv', 'arg', 'HERE', 'SHOTS')})
 TMPD = os.path.abspath(ARGS['--tmp'] or '/tmp/train_tmp'); os.makedirs(TMPD, exist_ok=True)
 
 # ---------------------------------------------------------------- helpers
