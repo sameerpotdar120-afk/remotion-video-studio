@@ -293,7 +293,8 @@ for f in range(F0, F1):
     out = os.path.join(OUTDIR, 'f%04d.png' % f)
     if os.path.exists(out): continue
     t1 = time.time(); sc.frame_current = f; FRAME[SHOT](f)      # non-keyframed state (cards, sparks, shape keys, materials)
+    t2 = time.time()
     for (c, M, p) in plan[f]: c.apply(M, p['out'])
-    sc.render.filepath = out; bpy.ops.render.render(write_still=True)
-    print('FRAME %d %.1fs' % (f, time.time() - t1), flush=True)
+    t3 = time.time(); sc.render.filepath = out; bpy.ops.render.render(write_still=True)
+    print('FRAME %d %.1fs (frame %.1f, cards %.1f, render %.1f) res %d%% spp %d' % (f, time.time() - t1, t2 - t1, t3 - t2, time.time() - t3, sc.render.resolution_percentage, sc.eevee.taa_render_samples), flush=True)
 print('SHOT_DONE', SHOT, F0, F1)
