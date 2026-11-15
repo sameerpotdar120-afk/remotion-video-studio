@@ -15,13 +15,15 @@ for job in "$@"; do
   set -- $job
   blender -b --python src/videos/train/blender/anim.py -- --shot "$1" --from "$2" --to "$3" --scale 0.6667 --spp 16 --outdir "$OUT/png" --tmp /tmp/train_cards 2>&1 | grep -E "FRAME|SHOT_DONE|Error|Traceback" || true
 done
-N=$(ls "$OUT/png" | wc -l); echo "frames: $N"
-FIRST=$(ls "$OUT/png" | head -1 | sed 's/f0*\([0-9]\)/\1/; s/\.png//'); [ -z "$FIRST" ] && FIRST=0
-ffmpeg -nostdin -v error -y -framerate 30 -start_number "$FIRST" -i "$OUT/png/f%04d.png" -vf "scale=2160:3840:flags=lanczos,unsharp=5:5:0.35" -c:v libx264 -preset slow -crf 16 -pix_fmt yuv420p "out/train/$NAME.mp4"
-ls "$OUT/png" > "out/train/$NAME.frames.txt"
+# one mp4 per job (frame runs have gaps between jobs; an image2 sequence stops at the first missing number)
+k=0; for job in "$@"; do set -- $job; k=$((k + 1)); SUF=$([ $k -eq 1 ] && echo "" || echo "_$k")
+  ffmpeg -nostdin -v error -y -framerate 30 -start_number "$2" -i "$OUT/png/f%04d.png" -frames:v $(($3 - $2)) -vf "scale=2160:3840:flags=lanczos,unsharp=5:5:0.35" -c:v libx264 -preset slow -crf 16 -pix_fmt yuv420p "out/train/$NAME$SUF.mp4"
+done
+ls "$OUT/png" > "out/train/$NAME.frames.txt"; echo "frames: $(ls "$OUT/png" | wc -l)"
 if [ "$BRANCH" != "-" ]; then
-  SZ=$(stat -c %s "out/train/$NAME.mp4")
-  if [ "$SZ" -gt 94000000 ]; then split -b 90m -d "out/train/$NAME.mp4" "out/train/$NAME.mp4.part"; rm "out/train/$NAME.mp4"; fi
+  for f in out/train/"$NAME"*.mp4; do
+    if [ "$(stat -c %s "$f")" -gt 94000000 ]; then split -b 90m -d "$f" "$f.part"; rm "$f"; fi
+  done
   git checkout -B "$BRANCH"; git add -f out/train/"$NAME"* ; git commit -qm "train render part $NAME";
   for i in 1 2 3 4; do git push -u origin "$BRANCH" && break || sleep $((i * 8)); done
 fi
