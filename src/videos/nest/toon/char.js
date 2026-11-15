@@ -67,6 +67,10 @@ export function face(hx0, hy, r, mood = 'neutral', look = [0, 0], turn = 0) {
     brow(L - r * 0.13, ey - r * 0.24, L + r * 0.1, ey - r * 0.33, bw, 8); brow(R - r * 0.1, ey - r * 0.33, R + r * 0.13, ey - r * 0.24, bw, 9);
     Ln(sm([[hx - r * 0.15, my + r * 0.06], [hx - r * 0.05, my - r * 0.01], [hx + r * 0.05, my + r * 0.03], [hx + r * 0.15, my - r * 0.02]], false), r * 0.05, 10);
     F(sm([[hx + r * 0.62, hy - r * 0.42], [hx + r * 0.7, hy - r * 0.22], [hx + r * 0.6, hy - r * 0.18], [hx + r * 0.57, hy - r * 0.3]]), '#9fd8f2', { line: 3.5, shadow: 0, soft: 0, hi: 0.3, tex: 0 });
+  } else if (mood === 'angry') {   // glare: lids cut flat, brows slammed down to the centre, tight frown
+    for (const x of [L, R]) { ctx.save(); ctx.beginPath(); ctx.rect(x - r, ey - ery * 0.35, 2 * r, r); ctx.clip(); eyeOval(x, ey, erx, ery, lx, ly); ctx.restore(); }
+    brow(L - r * 0.15, ey - r * 0.34, L + r * 0.12, ey - r * 0.17, bw * 1.25, 14); brow(R - r * 0.12, ey - r * 0.17, R + r * 0.15, ey - r * 0.34, bw * 1.25, 15);
+    Ln(sm([[hx - r * 0.15, my + r * 0.05], [hx, my - r * 0.03], [hx + r * 0.15, my + r * 0.05]], false), r * 0.055, 16);
   } else { // neutral, slightly pleased
     for (const x of [L, R]) eyeOval(x, ey, erx, ery, lx, ly);
     brow(L - r * 0.12, ey - r * 0.27, L + r * 0.1, ey - r * 0.29, bw, 11, r * 0.02); brow(R - r * 0.1, ey - r * 0.29, R + r * 0.12, ey - r * 0.27, bw, 12, r * 0.02);

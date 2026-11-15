@@ -2,6 +2,7 @@
 <script type="module">
 import { char, HERO } from '/toon/char.js';
 import { setCtx, S } from '/toon/kit.js';
+import { extras } from '/card/extras.js';
 window.drawCard = (p) => {
   const PX = 300, CW = 640 + 2 * PX, CH = 1100, AK = p.ak || 3;
   const cv = document.getElementById('c'); cv.width = Math.round(CW * AK); cv.height = Math.round(CH * AK);
@@ -11,7 +12,7 @@ window.drawCard = (p) => {
   const look = { ...HERO, ...(p.look || {}) };
   char(320, 1000, 1.02, { look, mood: p.mood || 'focus', turn: p.turn ?? 0, lookAt: p.lookAt || [0, 0], armL: p.armL, armR: p.armR,
     legSwing: p.legSwing ?? 0.3, headDx: p.headDx || 0, noShadow: true, ik: true, armsFront: !!p.armsFront, gripL: !!p.gripL, gripR: !!p.gripR,
-    bendL: p.bendL || [-0.3, 1], bendR: p.bendR || [0.3, 1] });
+    bendL: p.bendL || [-0.3, 1], bendR: p.bendR || [0.3, 1], over: p.extras ? (hx, hy, r) => extras(p.extras, hx, hy, r) : null, noChain: !!p.noChain, sit: !!p.sit });
   return cv.toDataURL('image/png');
 };
 window.ready = true;
