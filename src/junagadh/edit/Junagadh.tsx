@@ -6,7 +6,8 @@ import { C, CAPS, Cam, DURATION_S, GEO, LOOPF, P, camAt, camSpeed, lineD, merc, 
 import { ASPECT, FILE } from './assets';
 import { LABEL, SERIF, TITLE, UI, useFonts } from './font';
 import { MapLayers } from './Map';
-import { Cut, Hue, Slab } from './Studio';
+import { Cut } from './Studio';
+import { Fill, FlatHL, MapPerson, Person } from './Doc';
 
 export const JG_DURATION_S = DURATION_S;
 const AUDIO = 'junagadh/audio/mix.wav';
@@ -65,53 +66,23 @@ const Stamp: React.FC<{ t: number; t0: number; hi: string; en?: string; color?: 
   );
 };
 
-// ------------------------------------------------------------------ portraits: documentary cards, labelled "AI illustration"
-type Who = { k: string; hi: string; en: string; sub: string; full?: boolean };
-const WHO: Record<string, Who> = {
-  patel: { k: 'p_patel', hi: 'सरदार वल्लभभाई पटेल', en: 'SARDAR VALLABHBHAI PATEL', sub: 'गृह मंत्री, भारत · 1947', full: true },
-  nawab: { k: 'n_nawab', hi: 'नवाब महाबत ख़ान III', en: 'NAWAB MAHABAT KHAN III', sub: 'जूनागढ़ के नवाब', full: true },
-  diwan: { k: 'b_shahnawaz_bhutto', hi: 'शाहनवाज़ भुट्टो', en: 'SIR SHAH NAWAZ BHUTTO', sub: 'जूनागढ़ के दीवान · 1947' },
-  zulfi: { k: 'b_zulfikar_bhutto', hi: 'ज़ुल्फ़िक़ार अली भुट्टो', en: 'ZULFIKAR ALI BHUTTO', sub: 'Pakistan के Prime Minister · 1973–77' },
-};
-const Portrait: React.FC<{ who: Who; t: number; t0: number; w?: number; color?: string; name?: number; hiOverride?: string }> = ({ who, t, t0, w = 440, color = COL.gold, name = 1, hiOverride }) => {
-  const h = w * 1.28;
-  const a = ASPECT[who.k] ?? 0.6;
-  const imgH = who.full ? h * 1.95 : h * 1.04;
-  const imgW = imgH * a;
-  const kb = 1 + 0.07 * clamp01((t - t0) / 6);
-  const sweep = (((t - t0) * 0.35) % 1.6) - 0.3;
-  const lift = Math.sin(t * 1.6 + w) * 6;
-  return (
-    <div style={{ width: w, transform: `translateY(${lift}px)`, filter: 'drop-shadow(0 22px 26px rgba(0,0,0,0.6))' }}>
-      <div style={{ position: 'relative', width: w, height: h, borderRadius: 22, overflow: 'hidden', border: `6px solid ${color}`, background: 'radial-gradient(circle at 50% 32%, #6B5638 0%, #2E2416 48%, #120E09 100%)' }}>
-        <div style={{ position: 'absolute', inset: 0, transform: `scale(${kb})`, transformOrigin: '50% 28%' }}>
-          {has(who.k) && <Img src={staticFile(`junagadh/img/${FILE[who.k]}`)} style={{ position: 'absolute', width: imgW, height: imgH, left: (w - imgW) / 2, top: who.full ? h * 0.03 : h - imgH }} />}
-        </div>
-        <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(105deg, rgba(255,255,255,0) ${sweep * 100 - 12}%, rgba(255,240,200,0.18) ${sweep * 100}%, rgba(255,255,255,0) ${sweep * 100 + 12}%)` }} />
-        <div style={{ position: 'absolute', inset: 0, boxShadow: 'inset 0 0 60px rgba(0,0,0,0.55)' }} />
-        <div style={{ position: 'absolute', right: 10, top: 10, padding: '2px 10px', borderRadius: 8, background: 'rgba(0,0,0,0.55)', fontFamily: LABEL, fontSize: 15, letterSpacing: 1, color: 'rgba(255,255,255,0.8)' }}>AI illustration</div>
-      </div>
-      {name > 0 && (
-        <div style={{ marginTop: -26, position: 'relative', textAlign: 'center', opacity: name, transform: `scale(${0.9 + 0.1 * name})` }}>
-          <div style={{ display: 'inline-block', padding: '6px 22px 8px', background: 'rgba(8,12,20,0.94)', border: `4px solid ${color}`, borderRadius: 14 }}>
-            <div style={{ fontFamily: UI, fontWeight: 800, fontSize: w * 0.105, lineHeight: 1.1, color: '#fff', whiteSpace: 'nowrap' }}>{hiOverride ?? who.hi}</div>
-            {!hiOverride && <div style={{ fontFamily: LABEL, fontWeight: 600, fontSize: w * 0.043, letterSpacing: 2, color, whiteSpace: 'nowrap' }}>{who.en}</div>}
-            <div style={{ fontFamily: UI, fontWeight: 600, fontSize: w * 0.055, color: 'rgba(255,255,255,0.8)', whiteSpace: 'nowrap' }}>{who.sub}</div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+// ------------------------------------------------------------------ people: cut-outs rising out of the map, labelled "AI illustration"
+const PEOPLE: Record<string, Person> = {
+  patel: { k: 'p_patel', hi: 'सरदार वल्लभभाई पटेल', en: 'SARDAR VALLABHBHAI PATEL', full: true, bar: '#FF8A1E' },
+  nawab: { k: 'n_nawab', hi: 'नवाब महाबत ख़ान III', en: 'NAWAB OF JUNAGADH', full: true, bar: '#F2D21B' },
+  diwan: { k: 'b_shahnawaz_bhutto', hi: 'शाहनवाज़ भुट्टो', en: 'DEWAN OF JUNAGADH · 1947', bar: '#F2D21B' },
+  zulfi: { k: 'b_zulfikar_bhutto', hi: 'ज़ुल्फ़िक़ार अली भुट्टो', en: 'PM OF PAKISTAN · 1973–77', bar: '#1E9A46' },
 };
 
 // ------------------------------------------------------------------ the map layer
-/** Junagadh's colour over the story: Pakistan green in the hook and after the Nawab's choice, India red after 9 November. */
-const jgState = (t: number): { hue: Hue; g: number } => {
-  if (t < C.yehai - 0.3) return { hue: 'green', g: 1 };
-  if (t < C.chose) return { hue: 'gold', g: 1 };
-  if (t < C.haath) return { hue: 'green', g: 1 };
-  if (t < C.pak_last) return { hue: 'red', g: 1 };
-  return { hue: 'green', g: 1 };
+/** Junagadh's colour over the story: Pakistan green in the hook and after the Nawab's choice, India's tricolour after
+ * 9 November, gold as a princely state. Each change wipes in from the centre over the previous colour. */
+const JG_STATES = (): [number, Fill][] => [[-10, 'pakistan'], [C.yehai - 0.3, 'gold'], [C.chose, 'pakistan'], [C.haath, 'india'], [C.pak_last, 'pakistan']];
+const jgState = (t: number) => {
+  const st = JG_STATES();
+  let i = 0;
+  for (let k = 0; k < st.length; k++) if (t >= st[k][0]) i = k;
+  return { fill: st[i][1], prev: i > 0 ? st[i - 1][1] : null, g: clamp01((t - st[i][0]) / 0.7), i };
 };
 const inRing = (r: P[], x: number, y: number) => {
   let c = false;
@@ -134,8 +105,8 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const [jx, jy] = toS(c, GEO.jg_center);
   const jd = ringsD(c, GEO.junagadh);
   // India and Pakistan as slabs when the camera is out wide
-  const indO = wide ? clamp01((c.mpp - 420) / 200) * (win(t, -1, C.yehai, 0.01, 0.5) + win(t, C.azadi - 0.2, C.sardar + 0.4, 0.4, 0.5) + win(t, C.mumbai - 0.3, C.gaon, 0.4, 0.4) + win(t, C.karachi - 0.4, C.n9 + 0.3, 0.4, 0.4) + win(t, C.n2020 - 0.3, C.somnath3, 0.4, 0.5) + win(t, C.pak_last - 0.2, DURATION_S + 1, 0.5, 0.01)) : 0;
-  const pakO = wide ? clamp01((c.mpp - 420) / 200) * clamp01(win(t, -1, C.yehai, 0.01, 0.5) + win(t, C.pakc - 0.2, C.sardar + 0.4, 0.4, 0.5) + win(t, C.karachi - 0.4, C.n9 + 0.3, 0.4, 0.4) + win(t, C.n2020 - 0.3, C.somnath3, 0.4, 0.5) + win(t, C.pak_last - 0.2, DURATION_S + 1, 0.5, 0.01)) : 0;
+  const indO = wide ? clamp01((c.mpp - 420) / 200) * (win(t, -1, C.yehai, 0.01, 0.5) + win(t, C.pm - 0.4, C.n13, 0.4, 0.4) + win(t, C.azadi - 0.2, C.sardar + 0.4, 0.4, 0.5) + win(t, C.mumbai - 0.3, C.gaon, 0.4, 0.4) + win(t, C.karachi - 0.4, C.n9 + 0.3, 0.4, 0.4) + win(t, C.n2020 - 0.3, C.somnath3, 0.4, 0.5) + win(t, C.pak_last - 0.2, DURATION_S + 1, 0.5, 0.01)) : 0;
+  const pakO = wide ? clamp01((c.mpp - 420) / 200) * clamp01(win(t, -1, C.yehai, 0.01, 0.5) + win(t, C.pm - 0.4, C.n13, 0.4, 0.4) + win(t, C.pakc - 0.2, C.sardar + 0.4, 0.4, 0.5) + win(t, C.karachi - 0.4, C.n9 + 0.3, 0.4, 0.4) + win(t, C.n2020 - 0.3, C.somnath3, 0.4, 0.5) + win(t, C.pak_last - 0.2, DURATION_S + 1, 0.5, 0.01)) : 0;
   const gujO = win(t, C.gujarat1 - 0.1, C.somnath1, 0.3, 0.5);
   // Pakistan's 2020 map: a hatched claim over Junagadh (and Manavadar)
   const claimO = win(t, C.map1 - 0.1, C.yehai - 0.2, 0.3, 0.4) + win(t, C.newmap - 0.2, C.somnath3 - 0.2, 0.3, 0.4) + win(t, C.map_last - 0.3, DURATION_S + 1, 0.4, 0.01) + win(t, -1, 0.6, 0.01, 0.4);
@@ -144,17 +115,21 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const villO = win(t, C.gaon - 0.4, C.october, 0.3, 0.4);
   const centroid = (k: string): P => { const r = GEO.countries[k][0]; let x = 0, y = 0; for (const p of r) { x += p[0]; y += p[1]; } return toS(c, [x / r.length, y / r.length]); };
   const [ix, iy] = centroid('India'), [px, py] = centroid('Pakistan');
-  return (
+  const HL = (pass: 'fill' | 'line') => <>
+      {indO > 0.01 && <FlatHL id="ind" d={ringsD(c, GEO.countries.India)} fill="india" g={clamp01(indO)} cx={ix} cy={iy} mark={180000 / c.mpp} pass={pass} />}
+      {pakO > 0.01 && <FlatHL id="pak" d={ringsD(c, GEO.countries.Pakistan)} fill="pakistan" g={clamp01(pakO)} cx={px} cy={py} mark={130000 / c.mpp} pass={pass} />}
+      {gujO > 0.01 && <FlatHL id="guj" d={ringsD(c, GEO.countries.Gujarat)} fill="blue" g={gujO} cx={jx} cy={jy} pass={pass} />}
+      {js.prev && js.g < 1 && <FlatHL id={`jgp${js.i}`} d={jd} fill={js.prev} g={1} cx={jx} cy={jy} stroke={wide ? 3 : 5} pass={pass} alpha={wide ? 1 : 0.3 + 0.7 * clamp01((c.mpp - 70) / 130)} />}
+      <FlatHL id={`jg${js.i}`} d={jd} fill={js.fill} g={js.i === 0 ? 1 : Math.max(0.001, js.g)} cx={jx} cy={jy} stroke={wide ? 3 : 5} pass={pass} alpha={wide ? 1 : 0.3 + 0.7 * clamp01((c.mpp - 70) / 130)} />
+  </>;
+  return (<>
+    <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, overflow: 'visible', mixBlendMode: 'hard-light' }}>{HL('fill')}</svg>
     <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, overflow: 'visible' }}>
       <defs>
         <pattern id="hatch" width="18" height="18" patternUnits="userSpaceOnUse" patternTransform={`rotate(45) translate(${(t * 20) % 18} 0)`}><rect width="18" height="18" fill="rgba(31,163,74,0.25)" /><rect width="7" height="18" fill="#1FC25A" /></pattern>
       </defs>
       {wide && <path d={GEO.borders.map((l) => lineD(c, l)).join('')} fill="none" stroke="#fff" strokeWidth={1.4} opacity={0.35} />}
-      {indO > 0.01 && <Slab id="ind" t={t} d={ringsD(c, GEO.countries.India)} hue="red" g={clamp01(indO)} depth={16} cx={ix} cy={iy} s={0.99 + 0.02 * Math.sin(t * LOOPF(23))} />}
-      {pakO > 0.01 && <Slab id="pak" t={t} d={ringsD(c, GEO.countries.Pakistan)} hue="green" g={clamp01(pakO)} depth={16} cx={px} cy={py} s={0.99 + 0.02 * Math.sin(t * LOOPF(19) + 1)} />}
-      {gujO > 0.01 && <Slab id="guj" t={t} d={ringsD(c, GEO.countries.Gujarat)} hue="blue" g={gujO} depth={12} cx={jx} cy={jy} />}
-      <Slab id={`jg_${js.hue}`} t={t} d={jd} hue={js.hue} g={js.g} depth={wide ? 10 : 18} cx={jx} cy={jy} alpha={wide ? 1 : 0.22 + 0.38 * clamp01((c.mpp - 80) / 110)}
-        s={1 + 0.05 * pop(t, C.yehai, 9, 200) * (t < C.zila ? 1 : 0) + 0.04 * Math.sin(t * LOOPF(29))} />
+      {HL('line')}
       {[C.yehai, C.chose, C.haath, C.pak_last].map((t0, i) => flash(t0) > 0 && <path key={i} d={jd} fill="#fff" opacity={flash(t0)} />)}
       {claimO > 0.01 && <g opacity={clamp01(claimO)}>
         <path d={jd} fill="url(#hatch)" stroke="#1FC25A" strokeWidth={4} strokeDasharray="14 10" />
@@ -170,7 +145,7 @@ const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
         return <g key={i} opacity={villO}><circle cx={x} cy={y} r={9 + 5 * pop(t, C.gaon + i * 0.03, 8, 260)} fill={flip > 0.5 ? COL.saffron : COL.green} stroke="#fff" strokeWidth={3} /></g>;
       })}
     </svg>
-  );
+  </>);
 };
 
 // ------------------------------------------------------------------ the scenes
@@ -231,7 +206,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           </div>
         </At>;
       })()}
-      {t > C.nawab1 - 0.2 && t < C.azadi + 0.4 && <At x={540} y={1060} p={pop(t, C.nawab1 - 0.1, 11, 170)} o={w(C.nawab1 - 0.2, C.azadi + 0.4)}><Portrait who={WHO.nawab} t={t} t0={C.nawab1} w={500} color={COL.gold} /></At>}
+      {t > C.nawab1 - 0.2 && t < C.azadi + 0.4 && <MapPerson who={PEOPLE.nawab} t={t} t0={C.nawab1 - 0.1} x={540} bottom={1300} h={700} o={w(C.nawab1 - 0.2, C.azadi + 0.4)} />}
       {t > C.nawab1 + 0.2 && t < C.azadi + 0.4 && <At x={540} y={300} p={pop(t, C.nawab1 + 0.3, 9, 220)} o={w(C.nawab1 + 0.2, C.azadi + 0.4)}><Tag text={<>पर राजा: <span style={{ color: COL.gold }}>नवाब</span></>} size={56} /></At>}
 
       {/* ---------------- the choice */}
@@ -242,7 +217,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       {t > C.n15 - 0.2 && t < C.zameen && <At x={540} y={290} p={pop(t, C.n15 - 0.1, 9, 220)} o={w(C.n15 - 0.2, C.zameen)}><DatePlate d="15 सितंबर 1947" sub="ACCESSION TO PAKISTAN" size={92} /></At>}
       {t > C.n15 + 0.2 && t < C.zameen && <At x={560} y={1120} p={pop(t, C.n15 + 0.3, 11, 170)} o={w(C.n15 + 0.2, C.zameen)} rot={-3 + Math.sin(t * 1.3) * 1.5}><Cut k="d_accession" w={800} /></At>}
       {t > C.chose - 0.3 && t < C.zameen && <At x={600} y={1190} o={w(C.chose - 0.3, C.zameen)}><Stamp t={t} t0={C.chose - 0.1} hi="Pakistan ✔" color="#169B4A" size={84} /></At>}
-      {t > C.n15 + 0.5 && t < C.zameen && <At x={240} y={760} p={pop(t, C.n15 + 0.6, 11, 170)} o={w(C.n15 + 0.5, C.zameen)}><Portrait who={WHO.nawab} t={t} t0={C.n15} w={300} name={0} /></At>}
+      {t > C.n15 + 0.5 && t < C.zameen && <MapPerson who={PEOPLE.nawab} t={t} t0={C.n15 + 0.5} x={250} bottom={960} h={400} label={false} o={w(C.n15 + 0.5, C.zameen)} />}
 
       {/* ---------------- not even connected */}
       {t > C.zameen - 0.2 && t < C.teen && (() => {
@@ -272,7 +247,7 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
       })()}
 
       {/* ---------------- Patel, the blockade, the Arzi Hukumat */}
-      {t > C.sardar - 0.3 && t < C.mumbai && <At x={540} y={1000 + 30 * ramp(t, C.naka, C.mumbai, linear)} p={pop(t, C.sardar - 0.2, 11, 170) * (1 - 0.35 * ramp(t, C.naka - 0.2, C.naka + 0.4, inOut))} o={w(C.sardar - 0.3, C.mumbai)}><Portrait who={WHO.patel} t={t} t0={C.sardar} w={520} color={COL.saffron} /></At>}
+      {t > C.sardar - 0.3 && t < C.mumbai && (() => { const sh = ramp(t, C.naka - 0.2, C.naka + 0.5, inOut); return <MapPerson who={PEOPLE.patel} t={t} t0={C.sardar - 0.2} x={540 + 250 * sh} bottom={1310 - 60 * sh} h={760 * (1 - 0.42 * sh)} o={w(C.sardar - 0.3, C.mumbai)} />; })()}
       {t > C.naka - 0.2 && t < C.mumbai + 0.2 && <At x={540} y={300} o={w(C.naka - 0.2, C.mumbai + 0.2)}><Stamp t={t} t0={C.naka - 0.1} hi="नाकाबंदी" en="BLOCKADE" rot={-6} size={84} /></At>}
       {t > C.mumbai - 0.3 && t < C.gaon && <>
         <Place t={t} t0={C.mumbai} x={mx} y={my} hi="बॉम्बे (मुंबई)" en="BOMBAY · 25 SEPT 1947" color={COL.saffron} o={w(C.mumbai - 0.3, C.gaon)} />
@@ -291,27 +266,27 @@ const Scenes: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
           <path d={`M${cx},${cy} Q${(cx + kx) / 2},${Math.min(cy, ky) - 520} ${kx},${ky}`} fill="none" stroke="#fff" strokeWidth={6} strokeDasharray="16 14" opacity={0.85} />
         </svg>
         {t > C.karachi - 0.3 && <Place t={t} t0={C.karachi - 0.2} x={kx} y={ky} hi="कराची" en="KARACHI" color="#1FC25A" up={false} o={w(C.karachi - 0.3, C.n9 + 0.2)} />}
-        {(() => { const [x, y] = arc(fl); return <At x={x} y={y - 120} p={pop(t, C.october + 0.1, 11, 170) * (1 - 0.3 * fl)} o={w(C.october, C.n9)} rot={-6 + 10 * fl}><Portrait who={WHO.nawab} t={t} t0={C.october} w={240} name={0} /></At>; })()}
+        {(() => { const [x, y] = arc(fl); return <MapPerson who={PEOPLE.nawab} t={t} t0={C.october + 0.1} x={x} bottom={y - 20} h={280 * (1 - 0.25 * fl)} label={false} o={w(C.october, C.n9)} />; })()}
       </>}
 
       {/* ---------------- 9 November, the Dewan, the Bhuttos */}
       {t > C.n9 - 0.2 && t < C.diwan1 + 0.6 && <At x={540} y={290} p={pop(t, C.n9 - 0.1, 9, 220)} o={w(C.n9 - 0.2, C.diwan1 + 0.6)}><DatePlate d="9 नवंबर 1947" sub="INDIA TAKES OVER" size={96} /></At>}
       {t > C.diwan1 - 0.3 && t < C.n13 && (() => {
-        const x = 540 + (300 - 540) * diwanSlide, y = 1000 + (860 - 1000) * diwanSlide;
         const named = ramp(t, C.shahnawaz - 0.2, C.shahnawaz + 0.2, linear);
-        return <At x={x} y={y} p={pop(t, C.diwan1 - 0.2, 11, 170) * (1 - 0.28 * diwanSlide)} o={w(C.diwan1 - 0.3, C.n13)}>
-          <Portrait who={WHO.diwan} t={t} t0={C.diwan1} w={480} color={COL.gold} hiOverride={named < 0.5 ? 'नवाब के दीवान' : undefined} />
-        </At>;
+        return <MapPerson who={PEOPLE.diwan} t={t} t0={C.diwan1 - 0.2} x={540 + (cx - 540) * diwanSlide} bottom={1300 + (cy + 40 - 1300) * diwanSlide} h={720 + (400 - 720) * diwanSlide} o={w(C.diwan1 - 0.3, C.n13)}
+          hiOverride={named < 0.5 ? 'नवाब के दीवान' : undefined} enOverride={named < 0.5 ? "THE NAWAB'S DEWAN" : undefined} />;
       })()}
       {t > C.haath - 0.2 && t < C.shahnawaz && <At x={540} y={290} o={w(C.haath - 0.2, C.shahnawaz)}><Stamp t={t} t0={C.haath - 0.1} hi="भारत ✔" color={COL.red} size={84} rot={-7} /></At>}
-      {t > C.pm - 0.3 && t < C.n13 && <At x={790} y={860} p={pop(t, C.pm - 0.2, 11, 170) * 0.72} o={w(C.pm - 0.3, C.n13)}><Portrait who={WHO.zulfi} t={t} t0={C.pm} w={480} color="#1FC25A" /></At>}
+      {t > C.pm - 0.3 && t < C.n13 && <MapPerson who={PEOPLE.zulfi} t={t} t0={C.pm - 0.1} x={kx} bottom={ky + 60} h={400} o={w(C.pm - 0.3, C.n13)} />}
       {t > C.pita - 0.4 && t < C.n13 && (() => {
         const q = ramp(t, C.pita - 0.4, C.pita + 0.3, inOut);
+        const ax = cx, ay = cy + 40 - 400 * 0.95, bx = kx, by = ky + 60 - 400 * 0.95;
+        const mx2 = (ax + bx) / 2, my2 = Math.min(ay, by) - 120;
         return <>
           <svg width={1080} height={1920} style={{ position: 'absolute', inset: 0, opacity: w(C.pita - 0.4, C.n13) }}>
-            <path d={`M420,${560} Q540,${470} 660,${560}`} fill="none" stroke={COL.gold} strokeWidth={8} strokeDasharray={`${300 * q} 300`} strokeLinecap="round" />
+            <path d={`M${ax},${ay} Q${mx2},${my2} ${bx},${by}`} fill="none" stroke={COL.gold} strokeWidth={8} strokeDasharray={`${900 * q} 900`} strokeLinecap="round" />
           </svg>
-          <At x={540} y={440} p={pop(t, C.pita - 0.2, 9, 220)} o={w(C.pita - 0.4, C.n13)}><Tag text="पिता → बेटा" size={50} /></At>
+          <At x={mx2} y={my2 - 10} p={pop(t, C.pita - 0.2, 9, 220)} o={w(C.pita - 0.4, C.n13)}><Tag text="पिता → बेटा" size={50} /></At>
         </>;
       })()}
 
@@ -463,18 +438,18 @@ const Captions: React.FC<{ t: number; top: number }> = ({ t, top }) => {
     </div>
   );
 };
+/** The reference's grade: neutral and dark, crushed blacks, a strong vignette; only the highlights carry colour. */
 const Grade: React.FC<{ t: number }> = ({ t }) => {
-  const lx = 50 + 38 * Math.sin(t * LOOPF(3) + 1.1), ly = 30 + 22 * Math.sin(t * LOOPF(2) + 0.4);
+  const lx = 50 + 30 * Math.sin(t * LOOPF(3) + 1.1), ly = 32 + 18 * Math.sin(t * LOOPF(2) + 0.4);
   const sombre = win(t, C.chose - 0.2, C.teen, 0.5, 0.6) * 0.7 + win(t, C.october - 0.2, C.n9, 0.4, 0.4) * 0.6;
   const saffron = win(t, C.n1951 - 0.3, C.feb + 0.2, 0.6, 0.6) + win(t, C.somnath3 - 0.3, C.signature, 0.6, 0.6);
   return (
     <AbsoluteFill style={{ pointerEvents: 'none' }}>
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,92,118,0.3), rgba(0,70,96,0.15) 45%, rgba(0,60,90,0.28))', mixBlendMode: 'soft-light' }} />
-      <AbsoluteFill style={{ background: `radial-gradient(circle at ${lx}% ${ly}%, rgba(255,196,128,0.28), rgba(255,140,70,0.06) 26%, rgba(255,120,60,0) 46%)`, mixBlendMode: 'screen', opacity: 0.5 + 0.2 * Math.sin(t * LOOPF(8)) }} />
-      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 56%, rgba(0,4,12,0.42) 100%)' }} />
-      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,8,16,0.26), rgba(0,0,0,0) 18%, rgba(0,0,0,0) 76%, rgba(0,6,12,0.4))' }} />
-      <AbsoluteFill style={{ background: 'rgba(10,14,24,1)', mixBlendMode: 'multiply', opacity: 0.3 * sombre }} />
-      <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 40%, rgba(255,150,40,0.5), rgba(255,110,20,0.15) 50%, rgba(0,0,0,0) 80%)', mixBlendMode: 'soft-light', opacity: saffron }} />
+      <AbsoluteFill style={{ background: `radial-gradient(circle at ${lx}% ${ly}%, rgba(255,255,255,0.10), rgba(255,255,255,0) 40%)`, mixBlendMode: 'soft-light' }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 48%, rgba(0,0,0,0.62) 100%)' }} />
+      <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0) 16%, rgba(0,0,0,0) 78%, rgba(0,0,0,0.45))' }} />
+      <AbsoluteFill style={{ background: 'rgba(0,0,0,1)', mixBlendMode: 'multiply', opacity: 0.3 * sombre }} />
+      <AbsoluteFill style={{ background: 'radial-gradient(circle at 50% 40%, rgba(255,150,40,0.45), rgba(255,110,20,0.12) 50%, rgba(0,0,0,0) 80%)', mixBlendMode: 'soft-light', opacity: saffron }} />
     </AbsoluteFill>
   );
 };
@@ -494,7 +469,7 @@ export const Junagadh: React.FC<{ audio?: string; captions?: boolean }> = ({ aud
     <AbsoluteFill style={{ background: '#0E2A55', overflow: 'hidden' }}>
       <AbsoluteFill style={{ transform: `translate(${sx}px, ${sy}px) rotate(${rollAt(t).toFixed(3)}deg) scale(1.05)` }}>
         <AbsoluteFill style={{ filter: blur > 0.7 ? `blur(${blur.toFixed(1)}px)` : undefined }}>
-          <AbsoluteFill style={{ filter: 'contrast(1.08) saturate(1.2) brightness(1.03)' }}><MapLayers c={c} /></AbsoluteFill>
+          <AbsoluteFill style={{ filter: 'grayscale(1) contrast(1.38) brightness(0.8)' }}><MapLayers c={c} /></AbsoluteFill>
           <MapVectors t={t} c={c} />
         </AbsoluteFill>
         <Grade t={t} />
