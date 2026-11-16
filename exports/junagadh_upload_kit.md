@@ -1,10 +1,12 @@
 # Junagadh: upload kit
 
-Upload file: `junagadh_4k60_master.mp4` (4K 60 fps, 2160×3840, 6,672 frames, 1:51; in the repo through Git LFS).
-Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/junagadh_4k60_master.mp4
+Upload file: `junagadh_4k30_master.mp4` (v2, 4K 30 fps, 2160×3840, 3,336 frames, 1:51; in the repo through Git LFS).
+v2 (Nov 16) is in the documentary style from the creator's reference: a black-and-white satellite map, flat highlights
+(textured colour on the terrain, flags drawn in code, white outlines), people rising out of the map with name boxes.
+Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/junagadh_4k30_master.mp4
 Thumbnail: `junagadh_thumbnail.jpg` (1080×1920) and `junagadh_thumbnail_4k.jpg` (2160×3840), one for YouTube and
-Instagram (JgCover: Gujarat on the satellite map, India red, Pakistan green, Junagadh as a raised green slab with the
-hatched 2020 claim; your new Somnath temple on it and Sardar Patel beside it; "आज भी उनके नक्शे में!" in the top third).
+Instagram (JgCover, v2 style: Gujarat on the black-and-white satellite map, India in its tricolour, Pakistan green, Junagadh flat
+green with the hatched 2020 claim; your new Somnath temple on it and Sardar Patel beside it; "आज भी उनके नक्शे में!" in the top third).
 Inside the 3:4 crop. It pairs with title 1 without repeating its words.
 
 The video is a seamless loop: "और Pakistan का Map आज भी कहता है…" runs into "1947 में Gujarat का एक हिस्सा…", and the last
