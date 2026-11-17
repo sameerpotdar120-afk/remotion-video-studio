@@ -16,8 +16,9 @@ const mx = (lon: number) => R * (lon * Math.PI) / 180;
 const my = (lat: number) => R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360));
 export type V3 = [number, number, number];
 
-let heightP: Promise<Float32Array> | null = null;
-const loadHeights = () => (heightP ??= fetch(staticFile('aravalli/3d/height.bin')).then((r) => r.arrayBuffer()).then((b) => new Float32Array(b)));
+const cache: Record<string, Promise<Float32Array>> = {};
+const loadBin = (n: string) => (cache[n] ??= fetch(staticFile(`aravalli/3d/${n}.bin`)).then((r) => r.arrayBuffer()).then((b) => new Float32Array(b)));
+const loadHeights = () => loadBin('height');
 
 /** lon/lat → scene x, z (km). */
 export const xz = (lon: number, lat: number): [number, number] => {
@@ -51,17 +52,26 @@ export const project = (cam: { pos: V3; look: V3; fov: number }, w: number, hgt:
   return [(v.x * 0.5 + 0.5) * w, (-v.y * 0.5 + 0.5) * hgt, v.z < 1];
 };
 
-const Ground: React.FC<{ h: Float32Array; tex: THREE.Texture }> = ({ h, tex }) => {
+/** The ground: the flat charcoal map, the green highlight fading in over it (hl), and the range rising (rise 0..1). */
+const Ground: React.FC<{ full: Float32Array; flat: Float32Array; bw: THREE.Texture; tex: THREE.Texture; rise: number; hl: number }> = ({ full, flat, bw, tex, rise, hl }) => {
   const geom = useMemo(() => {
     const [GW, GH] = M.grid, [W, H] = M.size_km;
     const g = new THREE.PlaneGeometry(W, H, GW - 1, GH - 1);
     g.rotateX(-Math.PI / 2);
-    const p = g.attributes.position as THREE.BufferAttribute;
-    for (let i = 0; i < p.count; i++) p.setY(i, h[i]);
-    g.computeVertexNormals();
     return g;
-  }, [h]);
-  return <mesh geometry={geom}><meshStandardMaterial map={tex} roughness={0.92} metalness={0} /></mesh>;
+  }, []);
+  const p = geom.attributes.position as THREE.BufferAttribute;
+  for (let i = 0; i < p.count; i++) p.setY(i, flat[i] + (full[i] - flat[i]) * rise);
+  p.needsUpdate = true;
+  geom.computeVertexNormals();
+  return (
+    <>
+      <mesh geometry={geom}><meshStandardMaterial map={bw} roughness={0.92} metalness={0} /></mesh>
+      {hl > 0.001 && <mesh geometry={geom} renderOrder={1}>
+        <meshStandardMaterial map={tex} roughness={0.92} metalness={0} transparent opacity={hl} depthFunc={THREE.LessEqualDepth} depthWrite={false} polygonOffset polygonOffsetFactor={-1} polygonOffsetUnits={-1} />
+      </mesh>}
+    </>
+  );
 };
 
 const CamRig: React.FC<{ pos: V3; look: V3; fov: number }> = ({ pos, look, fov }) => {
@@ -74,23 +84,21 @@ const CamRig: React.FC<{ pos: V3; look: V3; fov: number }> = ({ pos, look, fov }
 };
 
 export const FOG = '#16181b';
-export const Aravalli3D: React.FC<{ h: Float32Array; pos: V3; look: V3; fov: number; width: number; height: number }> = ({ h, pos, look, fov, width, height }) => {
+const loadTex = (n: string) => new Promise<THREE.Texture>((res) => new THREE.TextureLoader().load(staticFile(`aravalli/3d/${n}.jpg`), (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; res(t); }));
+export const Aravalli3D: React.FC<{ h: Float32Array; pos: V3; look: V3; fov: number; width: number; height: number; rise?: number; hl?: number }> = ({ h, pos, look, fov, width, height, rise = 1, hl = 1 }) => {
   const dist = Math.hypot(pos[0] - look[0], pos[1] - look[1], pos[2] - look[2]);
-  const [tex, setTex] = useState<THREE.Texture | null>(null);
-  const [handle] = useState(() => delayRender('aravalli texture'));
-  useEffect(() => {
-    new THREE.TextureLoader().load(staticFile('aravalli/3d/tex.jpg'), (t) => { t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 16; setTex(t); });
-  }, []);
-  useEffect(() => { if (tex) requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle)))); }, [tex, handle]);
-  if (!tex) return <div style={{ width, height, background: FOG }} />;
+  const [d, setD] = useState<{ flat: Float32Array; bw: THREE.Texture; tex: THREE.Texture } | null>(null);
+  const [handle] = useState(() => delayRender('aravalli 3d'));
+  useEffect(() => { Promise.all([loadBin('height_flat'), loadTex('tex_bw'), loadTex('tex')]).then(([flat, bw, tex]) => setD({ flat, bw, tex })); }, []);
+  useEffect(() => { if (d) requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle)))); }, [d, handle]);
+  if (!d) return <div style={{ width, height, background: FOG }} />;
   return (
-    <ThreeCanvas width={width} height={height} camera={{ fov, near: 0.5, far: 6000, position: pos }} gl={{ antialias: true, preserveDrawingBuffer: true }}
-      style={{ background: FOG }}>
+    <ThreeCanvas width={width} height={height} camera={{ fov, near: 0.5, far: 6000, position: pos }} gl={{ antialias: true, preserveDrawingBuffer: true }} style={{ background: FOG }}>
       <CamRig pos={pos} look={look} fov={fov} />
-      <fog attach="fog" args={[FOG, dist * 1.6, dist * 4.2]} />
+      <fog attach="fog" args={[FOG, dist * 0.8, dist * 1.85]} />
       <hemisphereLight args={['#e8eef5', '#2a2622', 1.1]} />
       <directionalLight position={[-900, 520, -700]} intensity={2.4} color="#fff4e6" />
-      <Ground h={h} tex={tex} />
+      <Ground full={h} flat={d.flat} bw={d.bw} tex={d.tex} rise={rise} hl={hl} />
     </ThreeCanvas>
   );
 };

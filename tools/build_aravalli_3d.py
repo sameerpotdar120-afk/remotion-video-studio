@@ -80,7 +80,7 @@ def main() -> None:
     relief = np.clip((dem - base - 8) / 55, 0, 1)
     cor_g = raster([corridor], GW, GH, 6)
     hill_g = np.clip(ndimage.gaussian_filter(relief, 1.2) * 1.4, 0, 1) * cor_g
-    vex = 1.6 + 18.0 * ndimage.gaussian_filter(cor_g, 4)  # exaggeration: 1.6x outside, up to ~20x on the range
+    vex = 1.6 + 24.0 * ndimage.gaussian_filter(cor_g, 4)  # exaggeration: 1.6x outside, up to ~26x on the range
     # the plains stay calm: smooth the ground outside the range so its relief doesn't shimmer
     dem = dem * cor_g + ndimage.gaussian_filter(dem, 3) * (1 - cor_g)
     km_per_m = 1 / 1000
@@ -91,6 +91,8 @@ def main() -> None:
     demc = np.where(dem > 850, 850 + (dem - 850) * 0.45, dem)
     heights = (np.maximum(demc, 0) * km_per_m * vex).astype(np.float32)
     heights.tofile(OUT / "height.bin")
+    # the same ground before the range rises: everything at the gentle 1.6x
+    (np.maximum(demc, 0) * km_per_m * 1.6).astype(np.float32).tofile(OUT / "height_flat.bin")
 
     # ---- the texture
     a = np.asarray(sat.convert("RGB")).astype(np.float32) / 255
@@ -104,31 +106,34 @@ def main() -> None:
     charcoal = np.clip(grey * (0.45 + 0.75 * hs), 0, 1)[..., None] * np.array([0.98, 0.98, 1.0])
     # the Aravalli in colour: the real satellite colour, a touch greener, with the same relief shading
     hillT = np.asarray(Image.fromarray((hill_g * 255).astype(np.uint8)).resize((TW, TH), Image.BILINEAR)).astype(np.float32)[..., None] / 255
-    # grass on the lower slopes, rock on the tops (the photoreal-miniature look), with a little real satellite detail
-    hn = np.clip((demT - np.asarray(Image.fromarray(base.astype(np.float32), mode="F").resize((TW, TH), Image.BILINEAR))) / 260, 0, 1)[..., None] ** 0.8
-    grass, rock = np.array([0.30, 0.47, 0.16]), np.array([0.55, 0.45, 0.35])
-    tone = grass * (1 - hn) + rock * hn
-    detail = (lum[..., None] - lum.mean()) * 0.9
-    col = np.clip((tone + detail) * (0.30 + 1.05 * hs[..., None]) * 1.1, 0, 1)
+    # the highlight: the documentary green laid onto the relief (hard light), so the hills stay readable
+    G = np.array([0.36, 0.80, 0.24])
+    hl = np.where(G < 0.5, 2 * charcoal * G, 1 - 2 * (1 - charcoal) * (1 - G))
+    col = np.clip(hl * 1.05, 0, 1)
+    bw = charcoal.copy()
     out = charcoal * (1 - hillT) + col * hillT
     # a soft lime glow on the ground around the range (flat, part of the map)
     glow = np.asarray(Image.fromarray((cor_g * 255).astype(np.uint8)).resize((TW, TH), Image.BILINEAR).filter(ImageFilter.GaussianBlur(30))).astype(np.float32)[..., None] / 255
     glow = glow * 0.6
-    out = out + (1 - hillT) * glow * np.array([0.10, 0.16, 0.02])
-    # the Thar, tinted sand
-    thar = raster([Polygon(THAR)], TW, TH, 60)[..., None] * (1 - hillT)
-    sand = np.clip(charcoal * np.array([1.35, 1.05, 0.62]) + np.array([0.06, 0.03, 0.0]), 0, 1)
-    out = out * (1 - 0.85 * thar) + sand * 0.85 * thar
-    # outside India darker; India's boundary white
+    out = out + (1 - hillT) * glow * np.array([0.12, 0.22, 0.03])
     sf = shapefile.Reader(glob.glob(str(ne / "ne_10m_admin_0_countries_ind*.shp"))[0])
-    india = next(shape(s.__geo_interface__).buffer(0) for r, s in zip(sf.records(), sf.shapes()) if r["ADMIN"] == "India")
+    india = next(shape(s_.__geo_interface__).buffer(0) for r, s_ in zip(sf.records(), sf.shapes()) if r["ADMIN"] == "India")
     ind = raster([india], TW, TH, 3)[..., None]
-    out = out * (0.55 + 0.45 * ind)
-    img = Image.fromarray((np.clip(out, 0, 1) * 255).astype(np.uint8))
-    d = ImageDraw.Draw(img)
-    for poly in (india.geoms if india.geom_type == "MultiPolygon" else [india]):
-        d.line([px(x, y, TW, TH) for x, y in poly.exterior.coords], fill=(245, 245, 245), width=5)
-    img.filter(ImageFilter.GaussianBlur(0.8)).save(OUT / "tex.jpg", quality=92)
+    thar = raster([Polygon(THAR)], TW, TH, 60)[..., None]
+
+    def finish(img_arr, name, hillmask):
+        th = thar * (1 - hillmask)
+        sand = np.clip(img_arr * np.array([1.35, 1.05, 0.62]) + np.array([0.06, 0.03, 0.0]), 0, 1)
+        o = img_arr * (1 - 0.85 * th) + sand * 0.85 * th
+        o = o * (0.55 + 0.45 * ind)
+        im = Image.fromarray((np.clip(o, 0, 1) * 255).astype(np.uint8))
+        d = ImageDraw.Draw(im)
+        for poly in (india.geoms if india.geom_type == "MultiPolygon" else [india]):
+            d.line([px(x, y, TW, TH) for x, y in poly.exterior.coords], fill=(245, 245, 245), width=5)
+        im.filter(ImageFilter.GaussianBlur(0.8)).save(OUT / name, quality=92)
+
+    finish(out, "tex.jpg", hillT)
+    finish(bw, "tex_bw.jpg", np.zeros_like(hillT))
     meta = {"box": BOX, "bounds": b, "grid": [GW, GH], "tex": [TW, TH], "size_km": [W_km, H_km], "scale": scale,
             "max_h": float(heights.max()), "ridge": [[x, y] for x, y, _ in RIDGE]}
     (OUT / "meta.json").write_text(json.dumps(meta))
