@@ -95,7 +95,7 @@ def m_dirt(nt, out, a='#5e4e38', b='#857058'):
 M_GRAVEL = mat('gravel', m_dirt)
 def m_grass(nt, out):       # roadside verge: green-gold grass with dry patches
     n = N(nt, 'ShaderNodeTexNoise', Scale=0.4, Detail=8.0); L(nt, ovec(nt), n.inputs['Vector']); f = N(nt, 'ShaderNodeTexNoise', Scale=30.0, Detail=4.0); L(nt, ovec(nt), f.inputs['Vector'])
-    r = ramp(nt, [(0.3, hexc('#26380f')), (0.55, hexc('#364f14')), (0.75, hexc('#5a5a24'))], n.outputs['Fac']); p = pb(nt, out, sock=r.outputs['Color'], rough=0.9, spec=0.25)
+    r = ramp(nt, [(0.3, hexc('#1c2a0c')), (0.55, hexc('#2c3e12')), (0.75, hexc('#3e3a1c'))], n.outputs['Fac']); p = pb(nt, out, sock=r.outputs['Color'], rough=0.9, spec=0.25)
     p.inputs['Sheen Weight'].default_value = 0.4; bump(nt, p, f.outputs['Fac'], 1.0, 0.03)
 M_GRASS = mat('verge', m_grass)
 def m_bark(nt, out):        # oak bark: deep vertical furrows, lichen patches
@@ -197,12 +197,12 @@ for k in range(3): cyl('silo', 4.2, 22, (-260 - k * 9.5, 1450, 11), M_SILO, 24);
 box('barn', (26, 16, 9), (-215, 1460, 4.5), M_BARN); box('barnroof', (27, 17.5, 0.4), (-215, 1460, 10.2), M_ROOFB, (math.radians(4), 0, 0))
 # "NEXT TREE 20 MI" sign on the right shoulder, ahead of the camera
 SIGN_Y = -60.0
-for dx in (-1.8, 1.8): cyl('signpost', 0.1, 6.0, (ROADW / 2 + 3.2 + dx, SIGN_Y, 3.0), M_GALV, 10)
-box('signface', (6.0, 0.1, 3.3), (ROADW / 2 + 3.2, SIGN_Y, 5.6), M_SIGN, bevel=0.08)
-box('signrim', (5.75, 0.105, 3.05), (ROADW / 2 + 3.2, SIGN_Y - 0.003, 5.6), M_SIGNW, bevel=0.06); box('signface2', (5.5, 0.11, 2.8), (ROADW / 2 + 3.2, SIGN_Y - 0.006, 5.6), M_SIGN, bevel=0.05)
+for dx in (-1.8, 1.8): cyl('signpost', 0.1, 6.0, (ROADW / 2 + 2.4 + dx, SIGN_Y, 3.0), M_GALV, 10)
+box('signface', (6.0, 0.1, 3.3), (ROADW / 2 + 2.4, SIGN_Y, 5.6), M_SIGN, bevel=0.08)
+box('signrim', (5.75, 0.105, 3.05), (ROADW / 2 + 2.4, SIGN_Y - 0.003, 5.6), M_SIGNW, bevel=0.06); box('signface2', (5.5, 0.11, 2.8), (ROADW / 2 + 2.4, SIGN_Y - 0.006, 5.6), M_SIGN, bevel=0.05)
 for (txt, z, size) in (('NEXT TREE', 6.25, 0.85), ('20 MI', 4.95, 1.05)):
     cu = bpy.data.curves.new('t', 'FONT'); cu.body = txt; cu.size = size; cu.extrude = 0.005; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
-    o = bpy.data.objects.new('t', cu); o.location = (ROADW / 2 + 3.2, SIGN_Y - 0.08, z); o.rotation_euler = (math.pi / 2, 0, 0); cu.materials.append(M_SIGNW); link(o)
+    o = bpy.data.objects.new('t', cu); o.location = (ROADW / 2 + 2.4, SIGN_Y - 0.08, z); o.rotation_euler = (math.pi / 2, 0, 0); cu.materials.append(M_SIGNW); link(o)
 
 
 # ---------------------------------------------------------------- real 3D vegetation near the camera path (photoreal close-ups)
@@ -239,20 +239,65 @@ WHEATC = bpy.data.collections.new('wheatstalks'); sc.collection.children.link(WH
 for k in range(8):
     o = bpy.data.objects.new('stalk%d' % k, wheat_stalk(k)); WHEATC.objects.link(o); o.location = (0, 0, -50)
 def scatter_particles(name, x0, x1, y0, y1, count, coll, size, size_rand, seed):
-    em = plane(name, x0, x1, y0, y1, 0, None, 4, 40, terr)
-    ps = em.modifiers.new(name, 'PARTICLE_SYSTEM').particle_system; st = ps.settings
-    st.type = 'HAIR'; st.count = count; st.hair_length = 1.0; st.render_type = 'COLLECTION'; st.instance_collection = coll; st.use_collection_pick_random = True
-    st.particle_size = size; st.size_random = size_rand; st.use_rotations = True; st.rotation_mode = 'GLOB_Z'; st.phase_factor_random = 2.0; st.rotation_factor_random = 0.08
-    st.use_advanced_hair = True; ps.seed = seed; em.show_instancer_for_render = False; return em
+    """Geometry Nodes scatter: points on the ground patch -> random pick from coll, random yaw, random scale; instances stay upright"""
+    em = plane(name, x0, x1, y0, y1, 0, None, 4, 40, terr); area = abs((x1 - x0) * (y1 - y0))
+    ng = bpy.data.node_groups.new(name, 'GeometryNodeTree'); ng.interface.new_socket('Geometry', in_out='INPUT', socket_type='NodeSocketGeometry'); ng.interface.new_socket('Geometry', in_out='OUTPUT', socket_type='NodeSocketGeometry')
+    nd = ng.nodes; lk = ng.links.new; gi = nd.new('NodeGroupInput'); go = nd.new('NodeGroupOutput')
+    dist = nd.new('GeometryNodeDistributePointsOnFaces'); dist.inputs['Density'].default_value = count / area; dist.inputs['Seed'].default_value = seed
+    ci = nd.new('GeometryNodeCollectionInfo'); ci.inputs['Collection'].default_value = coll; ci.inputs['Separate Children'].default_value = True; ci.inputs['Reset Children'].default_value = True
+    iop = nd.new('GeometryNodeInstanceOnPoints'); iop.inputs['Pick Instance'].default_value = True
+    rot = nd.new('FunctionNodeRandomValue'); rot.data_type = 'FLOAT_VECTOR'; rot.inputs['Min'].default_value = (-0.06, -0.06, 0); rot.inputs['Max'].default_value = (0.06, 0.06, 6.283); rot.inputs['Seed'].default_value = seed + 1
+    scl = nd.new('FunctionNodeRandomValue'); scl.data_type = 'FLOAT'; scl.inputs[2].default_value = size * (1 - size_rand); scl.inputs[3].default_value = size; scl.inputs['Seed'].default_value = seed + 2
+    idx = nd.new('FunctionNodeRandomValue'); idx.data_type = 'INT'; idx.inputs[4].default_value = 0; idx.inputs[5].default_value = len(coll.objects) - 1; idx.inputs['Seed'].default_value = seed + 3
+    lk(gi.outputs[0], dist.inputs['Mesh']); lk(dist.outputs['Points'], iop.inputs['Points']); lk(ci.outputs[0], iop.inputs['Instance'])
+    lk(rot.outputs[0], iop.inputs['Rotation']); lk(scl.outputs[1], iop.inputs['Scale']); lk(idx.outputs[2], iop.inputs['Instance Index']); lk(iop.outputs[0], go.inputs[0])
+    em.modifiers.new(name, 'NODES').node_group = ng; return em
+WHEATC = bpy.data.collections.new('wheatstalks'); sc.collection.children.link(WHEATC)
+for k in range(8):
+    o = bpy.data.objects.new('stalk%d' % k, wheat_stalk(k)); WHEATC.objects.link(o); o.location = (0, 0, -50)
 for s_ in (-1, 1):
     a, b = sorted((s_ * 10.6, s_ * 46.0)); scatter_particles('wheatnear', a, b, -170, 25, 520000, WHEATC, 1.0, 0.2, 3 + s_)
     a, b = sorted((s_ * 46.0, s_ * 120.0)); scatter_particles('wheatmid', a, b, -120, 60, 260000, WHEATC, 1.0, 0.2, 7 + s_)
-M_GBLADE = mat('blade', lambda nt, out: (lambda hi: pb(nt, out, sock=ramp(nt, [(0.0, hexc('#2c3d12')), (0.6, hexc('#55702a')), (1.0, hexc('#a39a52'))], hi.outputs['Intercept']).outputs['Color'], rough=0.6, spec=0.4))(N(nt, 'ShaderNodeHairInfo')))
-for s_ in (-1, 1):   # verge grass as real strands (Cycles curves)
-    a, b = sorted((s_ * (ROADW / 2 + 1.25), s_ * 10.5)); em = plane('vergehair', a, b, -200, 40, 0, M_GBLADE, 4, 80, terr)
-    ps = em.modifiers.new('grass', 'PARTICLE_SYSTEM').particle_system; st = ps.settings
-    st.type = 'HAIR'; st.count = 420000; st.hair_length = 0.32; st.root_radius = 0.6; st.tip_radius = 0.0; st.radius_scale = 0.008; st.length_random = 0.6; ps.seed = 11 + s_
-    st.use_advanced_hair = True; st.brownian_factor = 0.05; st.factor_random = 0.25; st.material_slot = 'blade'; em.show_instancer_for_render = True
+def m_blade(nt, out):     # grass blade: dark green root -> lush mid -> sun-yellowed tip (UV v = along the blade), per-clump hue jitter, translucent
+    tc = N(nt, 'ShaderNodeTexCoord'); sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, tc.outputs['UV'], sep.inputs[0]); oi = N(nt, 'ShaderNodeObjectInfo')
+    r = ramp(nt, [(0.0, hexc('#10280a')), (0.3, hexc('#26580e')), (0.7, hexc('#3f7d16')), (1.0, hexc('#86a830'))], sep.outputs['Y'])
+    j = N(nt, 'ShaderNodeHueSaturation'); L(nt, r.outputs['Color'], j.inputs['Color']); hm = N(nt, 'ShaderNodeMapRange'); hm.inputs['To Min'].default_value = 0.47; hm.inputs['To Max'].default_value = 0.53
+    L(nt, oi.outputs['Random'], hm.inputs['Value']); L(nt, hm.outputs[0], j.inputs['Hue'])
+    p = N(nt, 'ShaderNodeBsdfPrincipled', Roughness=0.62); p.inputs['Specular IOR Level'].default_value = 0.3; L(nt, j.outputs['Color'], p.inputs['Base Color'])
+    tr = N(nt, 'ShaderNodeBsdfTranslucent'); L(nt, j.outputs['Color'], tr.inputs['Color']); mx = N(nt, 'ShaderNodeMixShader'); mx.inputs['Fac'].default_value = 0.25
+    L(nt, p.outputs[0], mx.inputs[1]); L(nt, tr.outputs[0], mx.inputs[2]); L(nt, mx.outputs[0], out.inputs['Surface'])
+M_BLADE = mat('blade', m_blade)
+M_FLOWER = mat('flower', lambda nt, out: pb(nt, out, hexc('#f2c418'), rough=0.6))
+def grass_clump(k, flower=False):
+    """a clump of 14-26 curved, tapered blades (2-sided quads with UV along the length)"""
+    rs = random.Random(300 + k); V = []; F = []; UV = []
+    nb = rs.randint(14, 26)
+    for i in range(nb):
+        a = rs.uniform(0, math.tau); base = Vector((math.cos(a), math.sin(a), 0)) * rs.uniform(0, 0.05); h = rs.uniform(0.12, 0.5) * (1.0 if rs.random() > 0.25 else 0.5)
+        lean = Vector((math.cos(a), math.sin(a), 0)) * rs.uniform(0.02, 0.13); w = rs.uniform(0.008, 0.017); side = Vector((-math.sin(a), math.cos(a), 0)) * w
+        segs = 5; b0 = len(V)
+        for j in range(segs + 1):
+            t = j / segs; c = base + Vector((0, 0, h * t)) + lean * h * t * t; ww = 1 - t ** 1.5
+            V += [tuple(c - side * ww), tuple(c + side * ww)]; UV += [(0, t), (1, t)]
+        for j in range(segs): F.append((b0 + 2 * j, b0 + 2 * j + 1, b0 + 2 * j + 3, b0 + 2 * j + 2))
+    me = bpy.data.meshes.new('clump%d' % k); me.from_pydata(V, [], F); me.update(); uvl = me.uv_layers.new()
+    for poly in me.polygons:
+        for li in poly.loop_indices: uvl.data[li].uv = UV[me.loops[li].vertex_index]
+    me.materials.append(M_BLADE)
+    if flower:
+        bm = bmesh.new(); bm.from_mesh(me); top = Vector((0.03, 0, rs.uniform(0.35, 0.5)))
+        bmesh.ops.create_icosphere(bm, subdivisions=1, radius=0.018, matrix=Matrix.Translation(top) @ Matrix.Diagonal((1, 1, 0.5, 1)))
+        bm.to_mesh(me); bm.free(); me.materials.append(M_FLOWER)
+        for p in me.polygons:
+            if p.center.z > top.z - 0.02 and abs(p.center.x - 0.03) < 0.03: p.material_index = 1
+    for p in me.polygons: p.use_smooth = True
+    return me
+GRASSC = bpy.data.collections.new('grassclumps'); sc.collection.children.link(GRASSC)
+for k in range(10):
+    o = bpy.data.objects.new('clump%d' % k, grass_clump(k, flower=False)); GRASSC.objects.link(o); o.location = (0, 0, -60)
+for s_ in (-1, 1):   # verge: dense clumps near the camera path, sparser toward the far end
+    a_, b_ = sorted((s_ * (ROADW / 2 + 1.3), s_ * 10.4)); scatter_particles('vergeA', a_, b_, -165, -40, 140000, GRASSC, 1.0, 0.5, 21 + s_)
+    scatter_particles('vergeB', a_, b_, -40, 40, 70000, GRASSC, 1.0, 0.45, 31 + s_)
 
 # ---------------------------------------------------------------- the oak: recursive branches (tubes) + leaf-card clusters
 def tube_mesh(segs):
@@ -338,12 +383,12 @@ cd = bpy.data.cameras.new('cam'); cam = link(bpy.data.objects.new('cam', cd)); s
 def ease(x): x = max(0.0, min(1.0, x)); return x * x * (3 - 2 * x)
 def lerpv(a, b, t): return Vector(a).lerp(Vector(b), t)
 def shot_1A(f):
-    """drone glide over the wheat toward the lone oak; tilting down; NEXT TREE 20 MI sign passes low on the right around f44"""
-    t = f / 66.0; e = ease(t) * 0.55 + t * 0.45
-    p = lerpv((1.6, -150.0, 2.6), (2.4, -72.0, 2.2), e)
-    tgt = lerpv((4.0, 120.0, 6.0), TREE + Vector((0, 0, 4.0)), ease(t * 1.2))
-    cam.location = p; cam.rotation_euler = (tgt - p).to_track_quat('-Z', 'Y').to_euler(); cam.rotation_euler.rotate_axis('Z', math.radians(-1.5 + 1.5 * t))
-    cd.lens = 28 + 17 * ease(t)
+    """low glide through the verge grass toward the lone oak; NEXT TREE 20 MI sign passes overhead-left around f44"""
+    t = f / 66.0; e = t * 0.75 + ease(t) * 0.25
+    p = lerpv((9.4, -150.0, 1.2), (9.2, -72.0, 1.35), e) + Vector((0, 0, 0.015 * math.sin(f * 0.4)))
+    tgt = lerpv((5.5, 0.0, 2.6), TREE + Vector((-0.5, 0, 5.0)), ease(t))
+    cam.location = p; cam.rotation_euler = (tgt - p).to_track_quat('-Z', 'Y').to_euler(); cam.rotation_euler.rotate_axis('Z', math.radians(-1.0 + 1.0 * t))
+    cd.lens = 28 + 14 * ease(t)
 SHOTS = {'1A': shot_1A}
 
 def world_time(f):
@@ -358,7 +403,7 @@ sc.render.engine = 'CYCLES'; cy = sc.cycles; cy.device = 'CPU'; cy.samples = SPP
 cy.use_denoising = True; cy.denoiser = 'OPENIMAGEDENOISE'; cy.max_bounces = 6; cy.diffuse_bounces = 3; cy.glossy_bounces = 3; cy.transparent_max_bounces = 16; cy.transmission_bounces = 4
 sc.render.use_persistent_data = True; cy.caustics_reflective = False; cy.caustics_refractive = False
 sc.render.resolution_x, sc.render.resolution_y = RESW, int(RESW * 16 / 9); sc.render.resolution_percentage = 100; sc.render.fps = FPS
-sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Punchy'; sc.view_settings.exposure = 0.25
+sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'None'; sc.view_settings.exposure = 0.5   # flat render; grade.py grades to the reference
 vl = sc.view_layers[0]; vl.use_pass_mist = True; w.mist_settings.start = 300; w.mist_settings.depth = 3000; w.mist_settings.falloff = 'QUADRATIC'
 sc.use_nodes = True; ct = sc.node_tree; ct.nodes.clear(); rl = ct.nodes.new('CompositorNodeRLayers'); comp = ct.nodes.new('CompositorNodeComposite')
 def cn(t, **kw):
@@ -371,18 +416,6 @@ bl = cn('CompositorNodeGlare', glare_type='BLOOM' if 'BLOOM' in [i.identifier fo
 for k, v in (('Threshold', 0.9), ('Size', 0.6), ('Strength', 0.35), ('Mix', -0.7)):
     if k in bl.inputs: bl.inputs[k].default_value = v
 ct.links.new(last, bl.inputs['Image']); last = bl.outputs[0]
-cb = cn('CompositorNodeColorBalance', correction_method='LIFT_GAMMA_GAIN')   # cool shadows, warm highlights (reference split)
-cb.lift = (0.985, 1.0, 1.03); cb.gamma = (1.0, 1.0, 0.99); cb.gain = (1.04, 1.01, 0.96)
-ct.links.new(last, cb.inputs['Image']); last = cb.outputs[0]
-cv = cn('CompositorNodeCurveRGB'); c0 = cv.mapping.curves[3]; c0.points[0].location = (0.0, 0.0); c0.points[1].location = (1.0, 1.0)
-c0.points.new(0.15, 0.08); c0.points.new(0.5, 0.52); c0.points.new(0.85, 0.93); cv.mapping.update()   # filmic S: deep shadows, lifted highs
-ct.links.new(last, cv.inputs['Image']); last = cv.outputs[0]
-hs = cn('CompositorNodeHueSat'); hs.inputs['Saturation'].default_value = 1.12; ct.links.new(last, hs.inputs['Image']); last = hs.outputs[0]
-ld = cn('CompositorNodeLensdist'); ld.inputs['Dispersion'].default_value = 0.012; ld.inputs['Distortion'].default_value = -0.005; ct.links.new(last, ld.inputs['Image']); last = ld.outputs[0]
-em_ = cn('CompositorNodeEllipseMask'); em_.width = 1.15; em_.height = 1.0; bmk = cn('CompositorNodeBlur', size_x=160, size_y=160, filter_type='GAUSS')
-ct.links.new(em_.outputs[0], bmk.inputs['Image']); vg = cn('CompositorNodeMixRGB', blend_type='MULTIPLY'); vg.inputs[0].default_value = 0.35
-mr = cn('CompositorNodeMapRange'); mr.inputs['To Min'].default_value = 0.55; ct.links.new(bmk.outputs[0], mr.inputs['Value'])
-ct.links.new(last, vg.inputs[1]); ct.links.new(mr.outputs[0], vg.inputs[2]); last = vg.outputs[0]
 ct.links.new(last, comp.inputs['Image'])
 sc.render.image_settings.file_format = 'PNG'
 for f in range(F0, F1):
