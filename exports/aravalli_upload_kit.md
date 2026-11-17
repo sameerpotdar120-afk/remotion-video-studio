@@ -80,9 +80,9 @@ aravalli, अरावली, aravalli range, aravalli parvat, save aravalli, ar
 ये reel दिल्ली वाले दोस्त को भेजो 📩
 
 #Aravalli #SaveAravalli #RashtrapatiBhavan #Rajasthan #Delhi #Geography #NullDynasty
-```
-Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). 3D terrain: AWS Terrain Tiles (SRTM/NASA). Borders: Natural Earth (India POV). Props, host and voice AI. Music: Mixkit "Epical Drums 06". SFX: Sonniss.
 
+Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). 3D terrain: AWS Terrain Tiles (SRTM/NASA). Borders: Natural Earth (India POV). Props, host and voice AI. Music: Mixkit "Epical Drums 06". SFX: Sonniss.
+```
 Turn on Instagram's "AI info" label in Advanced settings.
 
 ## Fact notes
