@@ -22,7 +22,7 @@ export type Look = {
 export const LAYER_CHAR = 1; // drawn characters: no edge pass
 export const LAYER_FX = 2; // sky, snow, glows: no edge pass
 
-const SS = 1.5; // supersampling for clean lines
+const ssFor = (w: number) => (w >= 1400 ? 1.2 : 1.5); // supersampling for clean lines (lighter at 2K)
 
 const fsVert = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 
@@ -91,7 +91,7 @@ function Pipeline({ look, focusOverride }: { look: Look; focusOverride?: number 
   const { gl, scene, camera, size } = useThree();
   const frame = useCurrentFrame();
   const P = useMemo(() => {
-    const W = Math.round(size.width * SS), H = Math.round(size.height * SS);
+    const SS = ssFor(size.width), W = Math.round(size.width * SS), H = Math.round(size.height * SS);
     const mk = (type: THREE.TextureDataType) => {
       const rt = new THREE.WebGLRenderTarget(W, H, { type, samples: 0 });
       rt.depthTexture = new THREE.DepthTexture(W, H);

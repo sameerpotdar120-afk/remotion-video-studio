@@ -7,7 +7,7 @@ const fontFamily = "MontserratLocal";
 if (typeof document !== "undefined" && !document.fonts.check(`900 20px ${fontFamily}`)) {
   const h = delayRender("caption font");
   const face = new FontFace(fontFamily, `url(${staticFile("fonts/Montserrat-latin-var.woff2")}) format("woff2")`, { weight: "100 900" });
-  face.load().then((f) => { document.fonts.add(f); continueRender(h); }).catch((e) => { console.error(e); continueRender(h); });
+  face.load().then((f) => { (document.fonts as unknown as { add: (x: FontFace) => void }).add(f); continueRender(h); }).catch((e) => { console.error(e); continueRender(h); });
 }
 
 export type Word = { w: string; start: number; end: number };

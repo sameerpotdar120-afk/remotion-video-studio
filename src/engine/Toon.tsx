@@ -6,6 +6,7 @@ import { useCurrentFrame, useVideoConfig } from "remotion";
 import { drawToon, drawHorse, ToonSpec, ToonPose } from "./draw";
 import { LAYER_CHAR, V3 } from "./Stage";
 
+const _v = new THREE.Vector3(), _q = new THREE.Quaternion(), _yaw = new THREE.Quaternion(), _up = new THREE.Vector3(0, 1, 0);
 type Path = { from: V3; to: V3; start?: number; end?: number }; // walk path in seconds of the shot
 
 const useCard = (w: number, h: number) =>
@@ -39,7 +40,11 @@ export const Toon: React.FC<{
   useFrame(({ camera }) => {
     if (!grp.current) return;
     if (yaw !== undefined) { grp.current.rotation.y = yaw; return; }
-    grp.current.rotation.y = Math.atan2(camera.position.x - grp.current.position.x, camera.position.z - grp.current.position.z);
+    // face the camera in WORLD space, also when the card rides inside a moving / rotated parent (a car seat)
+    const wp = grp.current.getWorldPosition(_v);
+    _yaw.setFromAxisAngle(_up, Math.atan2(camera.position.x - wp.x, camera.position.z - wp.z));
+    const pq = grp.current.parent ? grp.current.parent.getWorldQuaternion(_q).invert() : _q.identity();
+    grp.current.quaternion.copy(pq.multiply(_yaw));
   });
   const W = h * 0.75, feet = (24 / 1024) * h * 1.0;
   return (

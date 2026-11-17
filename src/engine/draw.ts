@@ -2,9 +2,9 @@
 // dot eyes + thick brows, bean-shaped coat, thin black stick limbs, round white hands, ink outline everywhere).
 // Drawn fresh every frame, so walking, blinking, talking and props are just numbers.
 
-export type Hat = "none" | "top" | "bowler" | "flatcap" | "stripecap" | "cabbie" | "boater" | "helmet";
-export type Eyes = "dot" | "wide" | "closed" | "half" | "angry" | "happy" | "sad";
-export type Mouth = "smile" | "flat" | "open" | "frown" | "o" | "grin" | "wavy";
+export type Hat = "none" | "top" | "bowler" | "flatcap" | "stripecap" | "cabbie" | "boater" | "helmet" | "spikes" | "sheriff" | "hardhat" | "cap";
+export type Eyes = "dot" | "wide" | "closed" | "half" | "angry" | "happy" | "sad" | "smug" | "shock" | "glow";
+export type Mouth = "smile" | "flat" | "open" | "frown" | "o" | "grin" | "wavy" | "smirk";
 export type Arm = "down" | "hips" | "wave" | "point" | "hold" | "up" | "cross" | "shrug" | "drink" | "warm";
 export type Prop = "none" | "newspaper" | "mug" | "teacup" | "sandwich" | "coin" | "cane" | "whip" | "plate";
 
@@ -14,6 +14,12 @@ export type ToonSpec = {
   hair?: string; moustache?: boolean; whiskers?: boolean; beard?: boolean; glasses?: boolean;
   height?: number; // 0.6 (child) .. 1.0
   wide?: number; // body width factor
+  chain?: boolean; // gold rope chain + "S" medallion (our hero)
+  plain?: boolean; // plain top: no lapels / buttons
+  badge?: boolean; // sheriff star on the chest
+  limbs?: string; // thick coloured limbs with an ink outline (our hero: dark grey) instead of thin black lines
+  shoes?: string; // shoe colour (default ink)
+  head?: number; // head size factor
 };
 export type ToonPose = {
   t: number; // seconds (drives blink, idle, walk)
@@ -21,11 +27,52 @@ export type ToonPose = {
   eyes?: Eyes; mouth?: Mouth; talk?: boolean;
   armL?: Arm; armR?: Arm; prop?: Prop; propHand?: "L" | "R";
   look?: number; // -1 .. 1 pupils left/right
-  shiver?: boolean; sit?: boolean;
+  shiver?: boolean; sit?: boolean; sweat?: boolean;
 };
 
 const INK = "#161212";
 const LW = 9;
+
+function star(g: CanvasRenderingContext2D, x: number, y: number, r: number, col: string) {
+  g.fillStyle = col; g.strokeStyle = INK; g.lineWidth = 4; g.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, rr = i % 2 ? r * 0.45 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  g.closePath(); g.fill(); g.stroke();
+}
+
+// Our hero's gold rope chain + round "S" medallion (locked design, characters/samulation-hero)
+function chain(g: CanvasRenderingContext2D, hx: number, top: number, tw: number, th: number) {
+  const cy = top + th * 0.42, rx = tw * 0.3;
+  g.lineWidth = 3; g.strokeStyle = "#6b4a10";
+  for (let i = 0; i <= 18; i++) {
+    const a = Math.PI * (0.08 + 0.84 * (i / 18)), x = hx - Math.cos(a) * rx, y = top + 10 + Math.sin(a) * (cy - top - 10);
+    g.fillStyle = i % 2 ? "#f2c53d" : "#d9a21f"; g.beginPath(); g.ellipse(x, y, 7, 5.5, a, 0, Math.PI * 2); g.fill(); g.stroke();
+  }
+  const my = cy + 34, R = 30;
+  g.fillStyle = "#b07a14"; g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.arc(hx, my, R, 0, Math.PI * 2); g.fill(); g.stroke();
+  const gr = g.createRadialGradient(hx - 8, my - 10, 4, hx, my, R * 0.8); gr.addColorStop(0, "#ffe27a"); gr.addColorStop(1, "#e8b52a");
+  g.fillStyle = gr; g.beginPath(); g.arc(hx, my, R * 0.78, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#8a5a0c"; g.font = "900 38px Arial Black, Arial, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("S", hx, my + 2);
+  g.strokeStyle = "#6b4a10"; g.lineWidth = 3; g.beginPath(); g.moveTo(hx, cy + 2); g.lineTo(hx, my - R); g.stroke();
+}
+
+// "Flame Spikes": ginger hair, five spikes sweeping up and to the right, wavy fringe, two highlight streaks
+function flameSpikes(g: CanvasRenderingContext2D, hx: number, hy: number, R: number) {
+  const P = (x: number, y: number) => [hx + x * R, hy + y * R] as const;
+  const pts: (readonly [number, number])[] = [P(-1.02, 0.05), P(-1.02, -0.6), P(-0.9, -1.3), P(-0.6, -0.92), P(-0.3, -1.7), P(-0.02, -1.0), P(0.35, -1.78),
+    P(0.5, -1.02), P(1.0, -1.62), P(0.92, -0.92), P(1.75, -1.0), P(1.04, -0.5), P(1.06, -0.05)];
+  g.lineJoin = "round";
+  const fill = g.createLinearGradient(hx, hy - R * 1.6, hx, hy);
+  fill.addColorStop(0, "#f39a52"); fill.addColorStop(0.6, "#e8742c"); fill.addColorStop(1, "#c4561e");
+  g.fillStyle = fill; g.strokeStyle = INK; g.lineWidth = 9;
+  g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]);
+  // wavy fringe back across the forehead
+  const f = [P(0.98, -0.12), P(0.6, -0.38), P(0.25, -0.22), P(-0.15, -0.42), P(-0.55, -0.25), P(-0.95, -0.4), P(-1.02, 0.05)];
+  for (let i = 0; i < f.length - 1; i++) g.quadraticCurveTo(f[i][0], f[i][1] + R * 0.06, (f[i][0] + f[i + 1][0]) / 2, (f[i][1] + f[i + 1][1]) / 2);
+  g.closePath(); g.fill(); g.stroke();
+  g.strokeStyle = "rgba(255,240,220,0.85)"; g.lineWidth = 4; g.lineCap = "round";
+  for (const [a, b] of [[P(-0.3, -0.8), P(-0.12, -1.1)], [P(0.12, -0.7), P(0.3, -1.0)]]) { g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
+}
 
 const darker = (hex: string, k: number) => {
   const n = parseInt(hex.slice(1), 16);
@@ -38,12 +85,13 @@ function hand(g: CanvasRenderingContext2D, x: number, y: number, r = 15) {
   g.beginPath(); g.arc(x, y, r, 0, Math.PI * 2); g.fill(); g.stroke();
 }
 
+let LIMB: string | undefined;
 function limb(g: CanvasRenderingContext2D, pts: number[][], w = LW) {
-  g.strokeStyle = INK; g.lineWidth = w; g.lineCap = "round"; g.lineJoin = "round";
-  g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
-  if (pts.length === 3) g.quadraticCurveTo(pts[1][0], pts[1][1], pts[2][0], pts[2][1]);
-  else for (const p of pts.slice(1)) g.lineTo(p[0], p[1]);
-  g.stroke();
+  const path = () => { g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
+    if (pts.length === 3) g.quadraticCurveTo(pts[1][0], pts[1][1], pts[2][0], pts[2][1]); else for (const p of pts.slice(1)) g.lineTo(p[0], p[1]); };
+  g.lineCap = "round"; g.lineJoin = "round";
+  if (LIMB) { g.strokeStyle = INK; g.lineWidth = 26; path(); g.stroke(); g.strokeStyle = LIMB; g.lineWidth = 16; path(); g.stroke(); return; }
+  g.strokeStyle = INK; g.lineWidth = w; path(); g.stroke();
 }
 
 function drawProp(g: CanvasRenderingContext2D, p: Prop, x: number, y: number, t: number, side = 1) {
@@ -88,6 +136,7 @@ function drawProp(g: CanvasRenderingContext2D, p: Prop, x: number, y: number, t:
 // Draws one character into a 768 x 1024 canvas (room for pointing arms); feet stand on y = 1000.
 export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) {
   g.clearRect(0, 0, 768, 1024);
+  LIMB = s.limbs;
   const H = 940 * (s.height ?? 1), cx = 384, ground = 1000;
   const W = s.wide ?? 1;
   const walk = p.walk ?? 0, ph = p.t * 7.5 * (walk || 1);
@@ -95,7 +144,7 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
   const shiverX = p.shiver ? Math.sin(p.t * 60) * 3 : 0;
   const sit = !!p.sit;
 
-  const headR = H * 0.16;
+  const headR = H * 0.16 * (s.head ?? 1);
   const legLen = sit ? H * 0.2 : H * 0.34;
   const hipY = ground - legLen - bob * 0.3;
   const torsoH = H * 0.3, torsoW = H * 0.22 * W;
@@ -112,10 +161,10 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
     if (sit) {
       const kx = cx + side * legSpread + 60, ky = hipY + 6;
       limb(g, [[cx + side * legSpread, hipY - 4], [kx, ky], [kx + 6, ground - 6]]);
-      g.fillStyle = INK; g.beginPath(); g.ellipse(kx + 22, ground - 4, 24, 11, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = s.shoes ?? INK; g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.ellipse(kx + 22, ground - 4, 26, 12, 0, 0, Math.PI * 2); g.fill(); if (s.shoes) g.stroke();
     } else {
       limb(g, [[cx + side * legSpread, hipY - 4], [(cx + side * legSpread + fx) / 2 + sw * 8, (hipY + fy) / 2], [fx, fy - 6]]);
-      g.fillStyle = INK; g.beginPath(); g.ellipse(fx + 12, fy - 6, 25, 11, 0, 0, Math.PI * 2); g.fill();
+      g.fillStyle = s.shoes ?? INK; g.strokeStyle = INK; g.lineWidth = 5; g.beginPath(); g.ellipse(fx + 12, fy - 6, 27, 12, 0, 0, Math.PI * 2); g.fill(); if (s.shoes) g.stroke();
     }
   }
 
@@ -158,12 +207,16 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
     g.beginPath(); g.moveTo(hx - torsoW * 0.2, torsoTop + 8); g.lineTo(hx, torsoTop + torsoH * 0.55); g.lineTo(hx + torsoW * 0.2, torsoTop + 8);
     g.lineTo(hx + torsoW * 0.16, torsoTop + torsoH + 10); g.lineTo(hx - torsoW * 0.16, torsoTop + torsoH + 10); g.closePath(); g.fill(); g.lineWidth = 5; g.stroke();
   }
+  if (!s.plain) {
   // lapels
   g.lineWidth = 5; g.strokeStyle = INK;
   g.beginPath(); g.moveTo(hx - torsoW * 0.22, torsoTop + 10); g.lineTo(hx - 4, torsoTop + torsoH * 0.5); g.moveTo(hx + torsoW * 0.22, torsoTop + 10); g.lineTo(hx + 4, torsoTop + torsoH * 0.5); g.stroke();
   // buttons
   g.fillStyle = s.buttons ?? "#e9c35a";
   for (let i = 0; i < 3; i++) { g.beginPath(); g.arc(hx + 2, torsoTop + torsoH * (0.58 + i * 0.13), 7, 0, Math.PI * 2); g.fill(); g.lineWidth = 3; g.stroke(); }
+  }
+  if (s.badge) star(g, hx - torsoW * 0.2, torsoTop + torsoH * 0.32, 20, "#e8c34a");
+  if (s.chain) chain(g, hx, torsoTop, torsoW, torsoH);
   if (s.scarf) {
     g.fillStyle = s.scarf; g.lineWidth = 5;
     g.beginPath(); g.ellipse(hx, neckY + 6, torsoW * 0.3, 18, 0, 0, Math.PI * 2); g.fill(); g.stroke();
@@ -209,6 +262,8 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
     if (eyes === "closed") { g.lineWidth = 6; g.beginPath(); g.moveTo(x - 13, ey); g.lineTo(x + 13, ey); g.stroke(); }
     else if (eyes === "happy") { g.lineWidth = 6; g.beginPath(); g.arc(x, ey + 6, 12, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); }
     else if (eyes === "wide") { g.fillStyle = "#fff"; g.lineWidth = 5; g.beginPath(); g.arc(x, ey, 20, 0, Math.PI * 2); g.fill(); g.stroke(); g.fillStyle = INK; g.beginPath(); g.arc(x + look * 0.5, ey, 8, 0, Math.PI * 2); g.fill(); }
+    else if (eyes === "smug") { g.beginPath(); g.ellipse(x, ey + 4, 8.5, 8, 0, 0, Math.PI * 2); g.fill(); g.lineWidth = 6; g.beginPath(); g.moveTo(x - 15, ey - 2); g.quadraticCurveTo(x, ey - 7, x + 15, ey - 2); g.stroke(); }
+    else if (eyes === "shock" || eyes === "glow") { g.fillStyle = eyes === "glow" ? "#ffe9a8" : "#fff"; g.lineWidth = 5; g.beginPath(); g.arc(x, ey, 21, 0, Math.PI * 2); g.fill(); g.stroke(); g.beginPath(); g.arc(x, ey, 13, 0, Math.PI * 2); g.stroke(); g.fillStyle = eyes === "glow" ? "#ff7a1a" : INK; g.beginPath(); g.arc(x, ey, 6, 0, Math.PI * 2); g.fill(); g.fillStyle = INK; }
     else if (eyes === "half") { g.beginPath(); g.ellipse(x, ey + 3, 9, 7, 0, 0, Math.PI * 2); g.fill(); g.lineWidth = 6; g.beginPath(); g.moveTo(x - 15, ey - 3); g.lineTo(x + 15, ey - 3); g.stroke(); }
     else { g.beginPath(); g.ellipse(x, ey, 8.5, 11.5, 0, 0, Math.PI * 2); g.fill(); }
     // brows
@@ -218,6 +273,8 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
     if (eyes === "angry") { g.moveTo(x - side * 16, by - 6); g.lineTo(x + side * 14, by + 8); }
     else if (eyes === "sad") { g.moveTo(x - side * 16, by + 6); g.lineTo(x + side * 14, by - 6); }
     else if (eyes === "wide") { g.moveTo(x - 14, by - 10); g.quadraticCurveTo(x, by - 18, x + 14, by - 10); }
+    else if (eyes === "smug") { if (side > 0) { g.moveTo(x - 14, by - 10); g.quadraticCurveTo(x, by - 20, x + 14, by - 12); } else { g.moveTo(x - 14, by + 2); g.lineTo(x + 14, by); } }
+    else if (eyes === "shock" || eyes === "glow") { g.moveTo(x - 14, by - 14); g.quadraticCurveTo(x, by - 22, x + 14, by - 14); }
     else { g.moveTo(x - 14, by); g.lineTo(x + 14, by - 2); }
     g.stroke();
   }
@@ -240,6 +297,7 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
   else if (mouth === "grin") { g.moveTo(hx - 24, my - 6); g.quadraticCurveTo(hx, my + 22, hx + 24, my - 6); g.closePath(); g.fill(); g.stroke(); }
   else if (mouth === "open") { g.ellipse(hx, my, 13, 11, 0, 0, Math.PI * 2); g.fill(); g.stroke(); }
   else if (mouth === "o") { g.ellipse(hx, my, 9, 12, 0, 0, Math.PI * 2); g.fill(); g.stroke(); }
+  else if (mouth === "smirk") { g.moveTo(hx - 16, my - 2); g.quadraticCurveTo(hx + 4, my + 8, hx + 22, my - 8); g.stroke(); }
   else if (mouth === "frown") { g.arc(hx, my + 14, 16, Math.PI * 1.2, Math.PI * 1.8); g.stroke(); }
   else if (mouth === "wavy") { g.moveTo(hx - 18, my); g.quadraticCurveTo(hx - 9, my - 8, hx, my); g.quadraticCurveTo(hx + 9, my + 8, hx + 18, my); g.stroke(); }
   else { g.moveTo(hx - 14, my); g.lineTo(hx + 14, my); g.stroke(); }
@@ -285,6 +343,24 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
     g.beginPath(); g.roundRect(hx - headR * 0.6, top - headR * 0.4, headR * 1.2, headR * 0.42, 4); g.fill(); g.stroke();
     if (s.band) { g.fillStyle = s.band; g.fillRect(hx - headR * 0.6 + 3, top - headR * 0.12, headR * 1.2 - 6, headR * 0.12); }
   }
+
+  else if (s.hat === "spikes") flameSpikes(g, hx, headY, headR);
+  else if (s.hat === "sheriff") {
+    g.fillStyle = hc; g.beginPath(); g.ellipse(hx, top + 6, headR * 1.35, headR * 0.2, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(hx - headR * 0.68, top + 4); g.bezierCurveTo(hx - headR * 0.75, top - headR * 0.9, hx - headR * 0.1, top - headR * 0.55, hx, top - headR * 0.7);
+    g.bezierCurveTo(hx + headR * 0.1, top - headR * 0.55, hx + headR * 0.75, top - headR * 0.9, hx + headR * 0.68, top + 4); g.closePath(); g.fill(); g.stroke();
+    g.fillStyle = s.band ?? "#5a3a1e"; g.fillRect(hx - headR * 0.66, top - headR * 0.12, headR * 1.32, headR * 0.13);
+    star(g, hx, top - headR * 0.35, 15, "#e8c34a");
+  } else if (s.hat === "hardhat") {
+    g.fillStyle = hc; g.beginPath(); g.ellipse(hx, top + 8, headR * 1.12, headR * 0.15, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.beginPath(); g.moveTo(hx - headR * 0.85, top + 6); g.bezierCurveTo(hx - headR * 0.85, top - headR * 0.9, hx + headR * 0.85, top - headR * 0.9, hx + headR * 0.85, top + 6); g.closePath(); g.fill(); g.stroke();
+    g.lineWidth = 5; g.beginPath(); g.moveTo(hx, top - headR * 0.6); g.lineTo(hx, top + 4); g.stroke();
+  } else if (s.hat === "cap") {
+    g.fillStyle = hc; g.beginPath(); g.moveTo(hx - headR * 0.9, top + headR * 0.25); g.bezierCurveTo(hx - headR * 0.9, top - headR * 0.75, hx + headR * 0.9, top - headR * 0.75, hx + headR * 0.92, top + headR * 0.25); g.closePath(); g.fill(); g.stroke();
+    g.beginPath(); g.ellipse(hx + headR * 0.55, top + headR * 0.27, headR * 0.62, headR * 0.12, 0.08, 0, Math.PI * 2); g.fill(); g.stroke();
+    if (s.band) { g.fillStyle = s.band; g.beginPath(); g.roundRect(hx - headR * 0.35, top - headR * 0.45, headR * 0.7, headR * 0.35, 6); g.fill(); g.lineWidth = 4; g.stroke(); }
+  }
+  if (p.sweat) { g.fillStyle = "#8fd0ff"; g.strokeStyle = INK; g.lineWidth = 4; const sx = hx + headR * 0.72, sy = headY - headR * 0.45; g.beginPath(); g.moveTo(sx, sy - 22); g.quadraticCurveTo(sx + 14, sy + 4, sx, sy + 10); g.quadraticCurveTo(sx - 14, sy + 4, sx, sy - 22); g.fill(); g.stroke(); }
 
   // props held in hand
   const prop = p.prop ?? "none";
