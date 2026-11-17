@@ -2,6 +2,12 @@
 
 Hindi geography and map-story Shorts (YouTube @null_dynasty, Instagram @nulldynasty), built in Remotion.
 
+## Topics: India yes, Hindu-Muslim no (creator, Nov 17)
+
+India topics are preferred, but never pick or angle a video on Hindu-Muslim lines (communal conflict, a ruler of one
+faith over a majority of another, riots, partition violence). Hyderabad/Operation Polo was dropped for this reason.
+Prefer geography, science, engineering, borders, money, people and places.
+
 ## Copyright-free sources only
 
 Never use anything copyrighted by someone else: no Google Earth or Google Maps imagery, no Flightradar24 (or any app's)
