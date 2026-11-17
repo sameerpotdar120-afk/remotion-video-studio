@@ -48,6 +48,8 @@ only, no other background.
 | P3 | `p_pearl.png` | the String of Pearls title |
 | D1 | `d_diamond.png` | the Necklace of Diamonds title |
 | S1 | `s_carrier.png` | "2035 tak… kareeb 200 jahaaz" |
+| X1 | `x_xi_jinping.png` | rises out of China: "China ke paas duniya ki sabse badi Navy", and again at "Malacca Dilemma" |
+| M1 | `m_narendra_modi.png` | rises out of India: "Bharat ke paas kareeb 140", and again at "Bharat ka jawab: Necklace of Diamonds" |
 
 #### A1 · `a_beach_island.png` (PNG-T)
 ```
@@ -142,7 +144,43 @@ forward with a white wake, three-quarter view from 45 degrees above.
 Generic design, no hull number, no flag, no markings. PNG-T.
 ```
 
+## The two leaders (like the reference)
+
+They rise out of their country on the map, the way the reference does it and the way Junagadh did it: a head-and-
+shoulders cut-out, the bottom fading into the map, a dark halo behind, and a white name box under it (शी जिनपिंग · XI
+JINPING / नरेंद्र मोदी · NARENDRA MODI), with a small **"AI illustration"** label. Shown with respect: neutral,
+dignified, no caricature. These two use their own style line instead of the miniature Style Lock, so paste them in a
+**new chat**.
+
+```
+Photorealistic, respectful news-portrait style, like a high-quality press
+photograph: natural skin texture, soft even studio light, neutral calm
+expression, head and shoulders, facing the camera with a slight three-
+quarter turn. No text, no logos, no flags, no lapel pins with symbols, no
+watermark. PNG-T: a fully transparent background with a real alpha channel.
+```
+
+#### X1 · `x_xi_jinping.png` (PNG-T, tall)
+```
+A respectful photorealistic head-and-shoulders portrait of Xi Jinping,
+President of China: short neatly combed black hair, a dark navy suit, white
+shirt and a plain dark red tie, a calm neutral expression, facing the camera
+with a slight three-quarter turn. PNG-T.
+```
+
+#### M1 · `m_narendra_modi.png` (PNG-T, tall)
+```
+A respectful photorealistic head-and-shoulders portrait of Narendra Modi,
+Prime Minister of India: white hair and a neatly trimmed white beard, a
+light cream kurta with a dark sleeveless Nehru jacket, a calm, confident
+expression, facing the camera with a slight three-quarter turn. PNG-T.
+```
+
+**If GPT won't draw real leaders,** tell me. I'll use freely licensed real photos instead and credit them on screen:
+Xi from the Kremlin's photo archive (kremlin.ru, CC BY 4.0) and Modi from the Government of India's PIB/PMO photos
+(Government Open Data Licence – India), both on Wikimedia Commons.
+
 ## Priority
 
-If you're short on time, these 6 matter most: **A1, T1, W1, L1, P1, S1**. The tri-service badges (C1–C3) and the
+If you're short on time, these 8 matter most: **A1, T1, W1, L1, P1, S1, X1, M1**. The tri-service badges (C1–C3) and the
 pearl/diamond can be drawn in code if needed.
