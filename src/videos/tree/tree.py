@@ -63,7 +63,7 @@ def m_asphalt(nt, out):     # aged asphalt: aggregate speckle, tyre-polished whe
     tc = N(nt, 'ShaderNodeTexCoord'); sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, tc.outputs['Object'], sep.inputs[0])
     ag = N(nt, 'ShaderNodeTexVoronoi', Scale=180.0); L(nt, tc.outputs['Object'], ag.inputs['Vector'])
     n = N(nt, 'ShaderNodeTexNoise', Scale=0.25, Detail=8.0); L(nt, tc.outputs['Object'], n.inputs['Vector'])
-    base = ramp(nt, [(0.3, hexc('#2c2c2e')), (0.55, hexc('#3d3d3f')), (0.8, hexc('#4c4b4a'))], n.outputs['Fac'])
+    base = ramp(nt, [(0.3, hexc('#58585a')), (0.55, hexc('#6a6a6b')), (0.8, hexc('#7a7876'))], n.outputs['Fac'])
     agc = ramp(nt, [(0.0, (0.75, 0.75, 0.75, 1)), (0.5, (1.0, 1.0, 1.0, 1)), (1.0, (1.25, 1.22, 1.18, 1))], ag.outputs['Distance'])
     # wheel tracks: lighter polished bands at |x| ~ 0.9 and 2.7
     ax = N(nt, 'ShaderNodeMath', operation='ABSOLUTE'); L(nt, sep.outputs['X'], ax.inputs[0])
@@ -72,8 +72,8 @@ def m_asphalt(nt, out):     # aged asphalt: aggregate speckle, tyre-polished whe
     tk = ramp(nt, [(0.0, (1.12, 1.12, 1.12, 1)), (0.35, (1.0, 1.0, 1.0, 1))], trk.outputs[0])
     c = mixc(nt, mixc(nt, base.outputs['Color'], agc.outputs['Color'], 1.0, 'MULTIPLY'), tk.outputs['Color'], 1.0, 'MULTIPLY')
     # tar-seal cracks
-    cr = N(nt, 'ShaderNodeTexVoronoi', feature='DISTANCE_TO_EDGE', Scale=0.25, Randomness=1.0); L(nt, ovec(nt, (1, 0.12, 1)), cr.inputs['Vector'])
-    crk = ramp(nt, [(0.0, (0.55, 0.55, 0.55, 1)), (0.006, (1, 1, 1, 1))], cr.outputs['Distance']); c = mixc(nt, c, crk.outputs['Color'], 1.0, 'MULTIPLY')
+    cr = N(nt, 'ShaderNodeTexVoronoi', feature='DISTANCE_TO_EDGE', Scale=0.9, Randomness=1.0); L(nt, ovec(nt, (1, 0.25, 1)), cr.inputs['Vector'])
+    crk = ramp(nt, [(0.0, (0.7, 0.7, 0.7, 1)), (0.004, (1, 1, 1, 1))], cr.outputs['Distance']); c = mixc(nt, c, crk.outputs['Color'], 1.0, 'MULTIPLY')
     # paint: double yellow centre (solid), white edge lines at |x| = 3.45
     yl = N(nt, 'ShaderNodeMath', operation='LESS_THAN'); yl.inputs[1].default_value = 0.22; L(nt, ax.outputs[0], yl.inputs[0])
     gap = N(nt, 'ShaderNodeMath', operation='GREATER_THAN'); gap.inputs[1].default_value = 0.06; L(nt, ax.outputs[0], gap.inputs[0])
@@ -86,7 +86,7 @@ def m_asphalt(nt, out):     # aged asphalt: aggregate speckle, tyre-polished whe
     yel = [n_ for n_ in nt.nodes if n_.bl_idname == 'ShaderNodeRGB'][-1]; yel.outputs[0].default_value = hexc('#e8b21c')
     wht = N(nt, 'ShaderNodeRGB'); wht.outputs[0].default_value = hexc('#e9e6df')
     c = mixc(nt, c, mixc(nt, wht.outputs[0], wr.outputs['Color'], 1.0, 'MULTIPLY'), wl.outputs[0])
-    rough = N(nt, 'ShaderNodeMapRange'); rough.inputs['To Min'].default_value = 0.55; rough.inputs['To Max'].default_value = 0.9; L(nt, n.outputs['Fac'], rough.inputs['Value'])
+    rough = N(nt, 'ShaderNodeMapRange'); rough.inputs['To Min'].default_value = 0.75; rough.inputs['To Max'].default_value = 0.95; L(nt, n.outputs['Fac'], rough.inputs['Value'])
     p = pb(nt, out, sock=c, spec=0.4); L(nt, rough.outputs[0], p.inputs['Roughness']); bump(nt, p, ag.outputs['Distance'], 0.35, 0.004)
 M_ROAD = mat('asphalt', m_asphalt)
 def m_dirt(nt, out, a='#5e4e38', b='#857058'):
@@ -196,13 +196,63 @@ for dx in (-0.75, 0.0, 0.75):
 for k in range(3): cyl('silo', 4.2, 22, (-260 - k * 9.5, 1450, 11), M_SILO, 24); cyl('silocap', 4.4, 3, (-260 - k * 9.5, 1450, 23.5), M_SILO, 24, r2=0.6)
 box('barn', (26, 16, 9), (-215, 1460, 4.5), M_BARN); box('barnroof', (27, 17.5, 0.4), (-215, 1460, 10.2), M_ROOFB, (math.radians(4), 0, 0))
 # "NEXT TREE 20 MI" sign on the right shoulder, ahead of the camera
-SIGN_Y = -72.0
+SIGN_Y = -60.0
 for dx in (-1.8, 1.8): cyl('signpost', 0.1, 6.0, (ROADW / 2 + 3.2 + dx, SIGN_Y, 3.0), M_GALV, 10)
 box('signface', (6.0, 0.1, 3.3), (ROADW / 2 + 3.2, SIGN_Y, 5.6), M_SIGN, bevel=0.08)
 box('signrim', (5.75, 0.105, 3.05), (ROADW / 2 + 3.2, SIGN_Y - 0.003, 5.6), M_SIGNW, bevel=0.06); box('signface2', (5.5, 0.11, 2.8), (ROADW / 2 + 3.2, SIGN_Y - 0.006, 5.6), M_SIGN, bevel=0.05)
 for (txt, z, size) in (('NEXT TREE', 6.25, 0.85), ('20 MI', 4.95, 1.05)):
     cu = bpy.data.curves.new('t', 'FONT'); cu.body = txt; cu.size = size; cu.extrude = 0.005; cu.align_x = 'CENTER'; cu.align_y = 'CENTER'
     o = bpy.data.objects.new('t', cu); o.location = (ROADW / 2 + 3.2, SIGN_Y - 0.08, z); o.rotation_euler = (math.pi / 2, 0, 0); cu.materials.append(M_SIGNW); link(o)
+
+
+# ---------------------------------------------------------------- real 3D vegetation near the camera path (photoreal close-ups)
+M_STALK = mat('stalk', lambda nt, out: (lambda at: pb(nt, out, sock=ramp(nt, [(0.0, hexc('#8a7a2c')), (0.5, hexc('#b39a3e')), (1.0, hexc('#d1b55a'))], at.outputs['Random']).outputs['Color'], rough=0.55, spec=0.45))(N(nt, 'ShaderNodeObjectInfo')))
+def wheat_stalk(k):
+    rs = random.Random(100 + k); bm = bmesh.new(); h = rs.uniform(0.85, 1.05); lean = Vector((rs.uniform(-0.08, 0.08), rs.uniform(-0.08, 0.08), 0))
+    # stem: 4-sided thin tube with a curve
+    ring_prev = None
+    for i in range(7):
+        t = i / 6; c = Vector((0, 0, h * t)) + lean * (t * t) * h; r = 0.0045 * (1 - 0.4 * t)
+        ring = [bm.verts.new(c + Vector((math.cos(a) * r, math.sin(a) * r, 0))) for a in (0, 1.57, 3.14, 4.71)]
+        if ring_prev:
+            for j in range(4): bm.faces.new([ring_prev[j], ring_prev[(j + 1) % 4], ring[(j + 1) % 4], ring[j]])
+        ring_prev = ring
+    top = Vector((0, 0, h)) + lean * h
+    # ear: stacked kernel bumps along a 9 cm spindle + awns
+    d = (Vector((0, 0, 1)) + lean * 1.6).normalized()
+    for i in range(10):
+        p = top + d * (0.01 + i * 0.0085)
+        for sgn in (-1, 1):
+            bmesh.ops.create_icosphere(bm, subdivisions=1, radius=0.0055, matrix=Matrix.Translation(p + Vector((sgn * 0.0045, 0, 0))) @ Matrix.Diagonal((0.8, 0.8, 1.4, 1)))
+            a0 = bm.verts.new(p + Vector((sgn * 0.005, 0, 0.004))); a1 = bm.verts.new(p + Vector((sgn * 0.02, 0, 0.06))); a2 = bm.verts.new(p + Vector((sgn * 0.0055, 0.0015, 0.004)))
+            bm.faces.new([a0, a1, a2])
+    # two leaves
+    for j in range(2):
+        z = h * rs.uniform(0.3, 0.6); ang = rs.uniform(0, math.tau); dd = Vector((math.cos(ang), math.sin(ang), 0.4)).normalized(); side = Vector((-dd.y, dd.x, 0)) * 0.006
+        b0 = Vector((0, 0, z)); m1 = b0 + dd * 0.12 + Vector((0, 0, 0.02)); tip = b0 + dd * 0.24 + Vector((0, 0, -0.04))
+        v = [bm.verts.new(b0 - side), bm.verts.new(b0 + side), bm.verts.new(m1 + side), bm.verts.new(m1 - side), bm.verts.new(tip)]
+        bm.faces.new([v[0], v[1], v[2], v[3]]); bm.faces.new([v[3], v[2], v[4]])
+    me = bpy.data.meshes.new('stalk%d' % k); bm.to_mesh(me); bm.free(); me.materials.append(M_STALK)
+    for p in me.polygons: p.use_smooth = True
+    return me
+WHEATC = bpy.data.collections.new('wheatstalks'); sc.collection.children.link(WHEATC)
+for k in range(8):
+    o = bpy.data.objects.new('stalk%d' % k, wheat_stalk(k)); WHEATC.objects.link(o); o.location = (0, 0, -50)
+def scatter_particles(name, x0, x1, y0, y1, count, coll, size, size_rand, seed):
+    em = plane(name, x0, x1, y0, y1, 0, None, 4, 40, terr)
+    ps = em.modifiers.new(name, 'PARTICLE_SYSTEM').particle_system; st = ps.settings
+    st.type = 'HAIR'; st.count = count; st.hair_length = 1.0; st.render_type = 'COLLECTION'; st.instance_collection = coll; st.use_collection_pick_random = True
+    st.particle_size = size; st.size_random = size_rand; st.use_rotations = True; st.rotation_mode = 'GLOB_Z'; st.phase_factor_random = 2.0; st.rotation_factor_random = 0.08
+    st.use_advanced_hair = True; ps.seed = seed; em.show_instancer_for_render = False; return em
+for s_ in (-1, 1):
+    a, b = sorted((s_ * 10.6, s_ * 46.0)); scatter_particles('wheatnear', a, b, -170, 25, 520000, WHEATC, 1.0, 0.2, 3 + s_)
+    a, b = sorted((s_ * 46.0, s_ * 120.0)); scatter_particles('wheatmid', a, b, -120, 60, 260000, WHEATC, 1.0, 0.2, 7 + s_)
+M_GBLADE = mat('blade', lambda nt, out: (lambda hi: pb(nt, out, sock=ramp(nt, [(0.0, hexc('#2c3d12')), (0.6, hexc('#55702a')), (1.0, hexc('#a39a52'))], hi.outputs['Intercept']).outputs['Color'], rough=0.6, spec=0.4))(N(nt, 'ShaderNodeHairInfo')))
+for s_ in (-1, 1):   # verge grass as real strands (Cycles curves)
+    a, b = sorted((s_ * (ROADW / 2 + 1.25), s_ * 10.5)); em = plane('vergehair', a, b, -200, 40, 0, M_GBLADE, 4, 80, terr)
+    ps = em.modifiers.new('grass', 'PARTICLE_SYSTEM').particle_system; st = ps.settings
+    st.type = 'HAIR'; st.count = 420000; st.hair_length = 0.32; st.root_radius = 0.6; st.tip_radius = 0.0; st.radius_scale = 0.008; st.length_random = 0.6; ps.seed = 11 + s_
+    st.use_advanced_hair = True; st.brownian_factor = 0.05; st.factor_random = 0.25; st.material_slot = 'blade'; em.show_instancer_for_render = True
 
 # ---------------------------------------------------------------- the oak: recursive branches (tubes) + leaf-card clusters
 def tube_mesh(segs):
@@ -241,7 +291,7 @@ def build_oak(root, seed=3):
     cyl('flare', 0.95, 0.9, (root.x, root.y, root.z + 0.3), M_BARK, 12, r2=0.55)
     # leaves: clustered cards around each tip, denser outward = full round crown
     LV = []; LF = []; LUV = []; LC = []
-    greens = [hexc(c) for c in ('#2f5a1c', '#3d6e22', '#4c7f2a', '#5a8f30', '#6c9a3a', '#3a5f24')]
+    greens = [hexc(c) for c in ('#3a6a1c', '#467a22', '#548a28', '#62982e', '#71a636', '#4a7424')]
     for t in tips:
         for i in range(170):
             c = t + Vector((rs.gauss(0, 1.15), rs.gauss(0, 1.15), rs.gauss(0, 0.75)))
@@ -267,27 +317,22 @@ for o in (oak_wood, oak_leaves):     # pivot at the trunk base so the crown sway
     o.data.transform(Matrix.Translation(-TREE)); o.location = TREE
 
 # ---------------------------------------------------------------- sky, sun, clouds
+HDRI = arg('--hdri', '/root/proj/tree/hdri/kloofendal_48d_partly_cloudy_puresky.hdr')   # CC0, Poly Haven
+SUN_AZ = math.radians(float(arg('--sunaz', '-115')))   # desired sun azimuth (deg, 0 = +Y down the road, -90 = from the left)
 w = bpy.data.worlds.new('w'); sc.world = w; w.use_nodes = True; nt = w.node_tree; nt.nodes.clear()
-sky = N(nt, 'ShaderNodeTexSky', sky_type='NISHITA'); sky.sun_elevation = math.radians(42); sky.sun_rotation = math.radians(150); sky.sun_disc = True; sky.sun_size = math.radians(0.6); sky.air_density = 1.0; sky.dust_density = 0.9
-bg = N(nt, 'ShaderNodeBackground', Strength=0.6); wo = N(nt, 'ShaderNodeOutputWorld'); L(nt, sky.outputs[0], bg.inputs['Color']); L(nt, bg.outputs[0], wo.inputs['Surface'])
-sd = bpy.data.lights.new('sun', 'SUN'); sd.energy = 4.0; sd.angle = math.radians(0.6); sd.color = (1.0, 0.95, 0.88); sun = link(bpy.data.objects.new('sun', sd))
-sdir = Vector((math.cos(math.radians(42)) * math.sin(math.radians(150)), math.cos(math.radians(42)) * math.cos(math.radians(150)), math.sin(math.radians(42))))
+img = bpy.data.images.load(HDRI); W_, H_ = img.size; px = np.array(img.pixels[:], dtype=np.float32).reshape(H_, W_, 4)
+lum_ = px[..., 0] * 0.2126 + px[..., 1] * 0.7152 + px[..., 2] * 0.0722; vy, ux = np.unravel_index(np.argmax(lum_), lum_.shape)
+u_, v_ = (ux + 0.5) / W_, (vy + 0.5) / H_; phi = (u_ - 0.5) * 2 * math.pi; th = (v_ - 0.5) * math.pi
+hdir = Vector((-math.cos(th) * math.cos(phi), math.cos(th) * math.sin(phi), math.sin(th)))     # sun direction inside the HDRI
+rotz = SUN_AZ - math.atan2(hdir.x, hdir.y)
+tc = N(nt, 'ShaderNodeTexCoord'); mp = N(nt, 'ShaderNodeMapping'); mp.inputs['Rotation'].default_value = (0, 0, -rotz); L(nt, tc.outputs['Generated'], mp.inputs['Vector'])
+env = N(nt, 'ShaderNodeTexEnvironment'); env.image = img; L(nt, mp.outputs[0], env.inputs['Vector'])
+bg = N(nt, 'ShaderNodeBackground', Strength=1.0); wo = N(nt, 'ShaderNodeOutputWorld'); L(nt, env.outputs['Color'], bg.inputs['Color']); L(nt, bg.outputs[0], wo.inputs['Surface'])
+sdir = Matrix.Rotation(rotz, 3, 'Z') @ hdir
+print('HDRI sun elevation %.1f deg' % math.degrees(th))
+sd = bpy.data.lights.new('sun', 'SUN'); sd.energy = 3.5; sd.angle = math.radians(0.8); sd.color = (1.0, 0.96, 0.9); sun = link(bpy.data.objects.new('sun', sd))
 sun.rotation_euler = sdir.to_track_quat('Z', 'Y').to_euler()
-def m_cloud(nt, out):   # soft cumulus cards: fbm alpha, bright tops, grey-blue bellies
-    tc = N(nt, 'ShaderNodeTexCoord'); n = N(nt, 'ShaderNodeTexNoise', Scale=2.6, Detail=8.0, Roughness=0.62); L(nt, tc.outputs['Generated'], n.inputs['Vector'])
-    gr = N(nt, 'ShaderNodeTexGradient', gradient_type='SPHERICAL'); mp = N(nt, 'ShaderNodeMapping'); mp.inputs['Location'].default_value = (-0.5, -0.5, 0); mp.inputs['Scale'].default_value = (2, 2, 1)
-    L(nt, tc.outputs['Generated'], mp.inputs['Vector']); L(nt, mp.outputs[0], gr.inputs['Vector'])
-    m1 = N(nt, 'ShaderNodeMath', operation='MULTIPLY'); L(nt, n.outputs['Fac'], m1.inputs[0]); L(nt, gr.outputs['Fac'], m1.inputs[1])
-    a = ramp(nt, [(0.1, (0, 0, 0, 1)), (0.24, (1, 1, 1, 1))], m1.outputs[0])
-    sep = N(nt, 'ShaderNodeSeparateXYZ'); L(nt, tc.outputs['Generated'], sep.inputs[0]); sh = ramp(nt, [(0.25, hexc('#9aa6bd')), (0.65, hexc('#ffffff'))], sep.outputs['Y'])
-    e = N(nt, 'ShaderNodeEmission', Strength=9.0); L(nt, sh.outputs['Color'], e.inputs['Color']); tr = N(nt, 'ShaderNodeBsdfTransparent'); mx = N(nt, 'ShaderNodeMixShader')
-    L(nt, a.outputs['Color'], mx.inputs['Fac']); L(nt, tr.outputs[0], mx.inputs[1]); L(nt, e.outputs[0], mx.inputs[2]); L(nt, mx.outputs[0], out.inputs['Surface'])
-M_CLOUD = mat('cloud', m_cloud)
 CLOUDS = []
-for k in range(16):
-    x = R.uniform(-1600, 1600); y = R.uniform(900, 3200); z = R.uniform(380, 900); s = R.uniform(260, 520)
-    o = plane('cloud', -s, s, -s * 0.55, s * 0.55, 0, M_CLOUD); o.location = (x, y, z); o.rotation_euler = (math.radians(90), 0, 0); o.visible_shadow = False; CLOUDS.append((o, x))
-
 # ---------------------------------------------------------------- camera per shot
 cd = bpy.data.cameras.new('cam'); cam = link(bpy.data.objects.new('cam', cd)); sc.camera = cam; cd.sensor_fit = 'VERTICAL'; cd.sensor_height = 24; cd.clip_end = 6000; cd.lens = 24
 def ease(x): x = max(0.0, min(1.0, x)); return x * x * (3 - 2 * x)
@@ -295,10 +340,10 @@ def lerpv(a, b, t): return Vector(a).lerp(Vector(b), t)
 def shot_1A(f):
     """drone glide over the wheat toward the lone oak; tilting down; NEXT TREE 20 MI sign passes low on the right around f44"""
     t = f / 66.0; e = ease(t) * 0.55 + t * 0.45
-    p = lerpv((-4.0, -215.0, 30.0), (-1.0, -82.0, 13.0), e)
+    p = lerpv((1.6, -150.0, 2.6), (2.4, -72.0, 2.2), e)
     tgt = lerpv((4.0, 120.0, 6.0), TREE + Vector((0, 0, 4.0)), ease(t * 1.2))
     cam.location = p; cam.rotation_euler = (tgt - p).to_track_quat('-Z', 'Y').to_euler(); cam.rotation_euler.rotate_axis('Z', math.radians(-1.5 + 1.5 * t))
-    cd.lens = 24 + 4 * t
+    cd.lens = 28 + 17 * ease(t)
 SHOTS = {'1A': shot_1A}
 
 def world_time(f):
@@ -313,15 +358,32 @@ sc.render.engine = 'CYCLES'; cy = sc.cycles; cy.device = 'CPU'; cy.samples = SPP
 cy.use_denoising = True; cy.denoiser = 'OPENIMAGEDENOISE'; cy.max_bounces = 6; cy.diffuse_bounces = 3; cy.glossy_bounces = 3; cy.transparent_max_bounces = 16; cy.transmission_bounces = 4
 sc.render.use_persistent_data = True; cy.caustics_reflective = False; cy.caustics_refractive = False
 sc.render.resolution_x, sc.render.resolution_y = RESW, int(RESW * 16 / 9); sc.render.resolution_percentage = 100; sc.render.fps = FPS
-sc.view_settings.view_transform = 'Khronos PBR Neutral'; sc.view_settings.look = 'None'; sc.view_settings.exposure = -1.15
-vl = sc.view_layers[0]; vl.use_pass_mist = True; w.mist_settings.start = 150; w.mist_settings.depth = 2500; w.mist_settings.falloff = 'QUADRATIC'
+sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Punchy'; sc.view_settings.exposure = 0.25
+vl = sc.view_layers[0]; vl.use_pass_mist = True; w.mist_settings.start = 300; w.mist_settings.depth = 3000; w.mist_settings.falloff = 'QUADRATIC'
 sc.use_nodes = True; ct = sc.node_tree; ct.nodes.clear(); rl = ct.nodes.new('CompositorNodeRLayers'); comp = ct.nodes.new('CompositorNodeComposite')
-mix = ct.nodes.new('CompositorNodeMixRGB'); mix.inputs[2].default_value = (0.62, 0.74, 0.92, 1); mf = ct.nodes.new('CompositorNodeMath'); mf.operation = 'MULTIPLY'; mf.inputs[1].default_value = 0.18
-ct.links.new(rl.outputs['Mist'], mf.inputs[0]); ct.links.new(mf.outputs[0], mix.inputs[0]); ct.links.new(rl.outputs['Image'], mix.inputs[1])
-gl = ct.nodes.new('CompositorNodeGlare'); gl.glare_type = 'FOG_GLOW'; gl.quality = 'MEDIUM'
-for k, v in (('Threshold', 4.0), ('Size', 0.5)):
-    if k in gl.inputs: gl.inputs[k].default_value = v
-ct.links.new(mix.outputs[0], gl.inputs['Image']); ct.links.new(gl.outputs[0], comp.inputs['Image'])
+def cn(t, **kw):
+    n = ct.nodes.new(t)
+    for k, v in kw.items(): setattr(n, k, v)
+    return n
+mix = cn('CompositorNodeMixRGB'); mix.inputs[2].default_value = (0.7, 0.78, 0.9, 1); mf = cn('CompositorNodeMath', operation='MULTIPLY'); mf.inputs[1].default_value = 0.12
+ct.links.new(rl.outputs['Mist'], mf.inputs[0]); ct.links.new(mf.outputs[0], mix.inputs[0]); ct.links.new(rl.outputs['Image'], mix.inputs[1]); last = mix.outputs[0]
+bl = cn('CompositorNodeGlare', glare_type='BLOOM' if 'BLOOM' in [i.identifier for i in bpy.types.CompositorNodeGlare.bl_rna.properties['glare_type'].enum_items] else 'FOG_GLOW', quality='MEDIUM')
+for k, v in (('Threshold', 0.9), ('Size', 0.6), ('Strength', 0.35), ('Mix', -0.7)):
+    if k in bl.inputs: bl.inputs[k].default_value = v
+ct.links.new(last, bl.inputs['Image']); last = bl.outputs[0]
+cb = cn('CompositorNodeColorBalance', correction_method='LIFT_GAMMA_GAIN')   # cool shadows, warm highlights (reference split)
+cb.lift = (0.985, 1.0, 1.03); cb.gamma = (1.0, 1.0, 0.99); cb.gain = (1.04, 1.01, 0.96)
+ct.links.new(last, cb.inputs['Image']); last = cb.outputs[0]
+cv = cn('CompositorNodeCurveRGB'); c0 = cv.mapping.curves[3]; c0.points[0].location = (0.0, 0.0); c0.points[1].location = (1.0, 1.0)
+c0.points.new(0.15, 0.08); c0.points.new(0.5, 0.52); c0.points.new(0.85, 0.93); cv.mapping.update()   # filmic S: deep shadows, lifted highs
+ct.links.new(last, cv.inputs['Image']); last = cv.outputs[0]
+hs = cn('CompositorNodeHueSat'); hs.inputs['Saturation'].default_value = 1.12; ct.links.new(last, hs.inputs['Image']); last = hs.outputs[0]
+ld = cn('CompositorNodeLensdist'); ld.inputs['Dispersion'].default_value = 0.012; ld.inputs['Distortion'].default_value = -0.005; ct.links.new(last, ld.inputs['Image']); last = ld.outputs[0]
+em_ = cn('CompositorNodeEllipseMask'); em_.width = 1.15; em_.height = 1.0; bmk = cn('CompositorNodeBlur', size_x=160, size_y=160, filter_type='GAUSS')
+ct.links.new(em_.outputs[0], bmk.inputs['Image']); vg = cn('CompositorNodeMixRGB', blend_type='MULTIPLY'); vg.inputs[0].default_value = 0.35
+mr = cn('CompositorNodeMapRange'); mr.inputs['To Min'].default_value = 0.55; ct.links.new(bmk.outputs[0], mr.inputs['Value'])
+ct.links.new(last, vg.inputs[1]); ct.links.new(mr.outputs[0], vg.inputs[2]); last = vg.outputs[0]
+ct.links.new(last, comp.inputs['Image'])
 sc.render.image_settings.file_format = 'PNG'
 for f in range(F0, F1):
     out = os.path.join(OUTDIR, 'f%04d.png' % f)
