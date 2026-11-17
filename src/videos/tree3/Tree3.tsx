@@ -23,7 +23,7 @@ function shot1A(f: number, cam: THREE.PerspectiveCamera) {
   const t = ease(Math.min(1, f / (TREE3_FRAMES - 1)));
   const z = lerp(CAM_Z0, CAM_Z1, t);
   cam.position.set(lerp(9.4, 9.2, t), groundY(9.3, z) + lerp(1.2, 1.35, t) + 0.015 * Math.sin(f * 0.37), z);
-  const tgt = new THREE.Vector3(lerp(5.5, TREE.x - 0.5, t), lerp(2.6, 5.0, t), lerp(0, TREE.z, t));
+  const tgt = new THREE.Vector3(lerp(5.5, TREE.x - 0.5, t), lerp(-31, 5.0, t), lerp(0, TREE.z, t));
   cam.lookAt(tgt);
   cam.fov = vfov(lerp(28, 42, t)); cam.near = 0.1; cam.far = 4000; cam.updateProjectionMatrix();
 }
@@ -41,7 +41,7 @@ void mainImage(const in vec4 inputColor, const in vec2 uv, out vec4 outputColor)
 }`;
 class GradeFx extends Effect {
   constructor() {
-    super("Grade", GRADE_FS, { uniforms: new Map<string, THREE.Uniform>([["lift", new THREE.Uniform(0.1)], ["gain", new THREE.Uniform(0.93)], ["sat", new THREE.Uniform(1.05)], ["warm", new THREE.Uniform(1.0)]]) });
+    super("Grade", GRADE_FS, { uniforms: new Map<string, THREE.Uniform>([["lift", new THREE.Uniform(0.07)], ["gain", new THREE.Uniform(1.0)], ["sat", new THREE.Uniform(1.05)], ["warm", new THREE.Uniform(1.0)]]) });
   }
 }
 
@@ -92,22 +92,22 @@ const Inner: React.FC = () => {
   const [parts, setParts] = useState<Part[] | null>(null);
   const [handle] = useState(() => delayRender("tree3 assets", { timeoutInMilliseconds: 240000 }));
   const sun = useMemo(() => {
-    const l = new THREE.DirectionalLight(0xfff1dc, 3.2);
+    const l = new THREE.DirectionalLight(0xfff1dc, 4.5);
     l.castShadow = true; l.shadow.mapSize.set(4096, 4096); l.shadow.bias = -0.0004; l.shadow.normalBias = 0.03;
     const c = l.shadow.camera as THREE.OrthographicCamera; c.left = -45; c.right = 45; c.top = 45; c.bottom = -45; c.near = 1; c.far = 400;
     return l;
   }, []);
   useEffect(() => {
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
-    scene.fog = new THREE.FogExp2(0xc4d2e3, 0.0011);
+    scene.fog = new THREE.FogExp2(0xd6dde6, 0.0009);
     const pmrem = new THREE.PMREMGenerator(gl);
     Promise.all([
       new RGBELoader().loadAsync(staticFile("tree3/sky.hdr")),
       buildGround(), buildGrass(), buildOak(), buildProps(),
     ]).then(([hdr, ...ps]) => {
       hdr.mapping = THREE.EquirectangularReflectionMapping;
-      scene.background = hdr; scene.backgroundIntensity = 1.0;
-      scene.environment = pmrem.fromEquirectangular(hdr).texture; scene.environmentIntensity = 0.9;
+      scene.background = hdr; scene.backgroundIntensity = 1.7;
+      scene.environment = pmrem.fromEquirectangular(hdr).texture; scene.environmentIntensity = 1.3;
       scene.add(sun, sun.target);
       for (const p of ps) scene.add(p.object);
       setParts(ps);
