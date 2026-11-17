@@ -13,3 +13,6 @@ The workflow is the skill in `.claude/skills/animated-shorts/SKILL.md`. Read it 
 - `remotion.config.ts` switches to software WebGL (`swangle`) and the pre-installed Chromium when it finds `/opt/pw-browsers`; on a normal computer it keeps `angle`. Software rendering is ~4 s per 1080x1920 frame, so split long renders into frame ranges.
 - Captions use the bundled `public/fonts/Montserrat-latin-var.woff2` (SIL OFL), so renders need no network.
 - The Kokoro voice downloads its model through the proxy: `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt node scripts/voice.mjs epN am_michael 1.15`.
+
+## Our character (locked)
+`characters/samulation-hero/` holds the channel's main character (ginger Flame Spikes hair + gold "S" chain). Never delete it, even when asked to delete other work: confirm with the creator first. Use it as the hero in every video (clothes may change).
