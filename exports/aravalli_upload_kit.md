@@ -1,8 +1,14 @@
-# Aravalli: SEO kit (draft, before the edit)
+# Aravalli: upload kit
 
-Written with /yt-seo before the video exists; the thumbnail and the upload file get added after the render. The video
-will loop ("तो अगली बार राष्ट्रपति भवन देखो, तो याद रखना…" runs into "राष्ट्रपति भवन एक पहाड़ पर खड़ा है…"); no end card,
-no CTA.
+Upload file: `aravalli_4k60_master.mp4` (4K 60 fps, 2160×3840, 4,176 frames, 1:10; in the repo through Git LFS). The VO
+runs at 1.15× (the creator's request).
+Raw link: https://github.com/sameerpotdar120-afk/remotion-video-studio/raw/ccr-38fc62dc-jjdmrk/exports/aravalli_4k60_master.mp4
+Thumbnail: `aravalli_thumbnail.jpg` (1080×1920) and `aravalli_thumbnail_4k.jpg` (2160×3840), one for YouTube and
+Instagram (ArCover: the 3D charcoal map with the Aravalli risen in green and the Thar in sand, your Rashtrapati Bhavan on
+its rock in front, "ये दीवार टूट रही है!" in the top third). Inside the 3:4 crop. It pairs with title 1 without repeating it.
+
+The video is a seamless loop: "तो अगली बार राष्ट्रपति भवन देखो, तो याद रखना…" runs into "राष्ट्रपति भवन एक पहाड़ पर खड़ा है…",
+and the last frame matches frame 0. No end card and no CTA.
 
 ## Search queries this should win
 
@@ -45,8 +51,8 @@ Aravalli range in Hindi: 31 ग़ायब पहाड़ियाँ, 12 द�
 ---
 Satellite: Sentinel-2 cloudless 2024 by EOX IT Services GmbH (s2maps.eu), contains modified Copernicus Sentinel data, CC BY 4.0.
 Relief and 3D terrain: AWS Terrain Tiles (Mapzen terrarium; SRTM/NASA), open data. Borders: Natural Earth (India point-of-view edition; public domain).
-Images are the creator's own (AI-generated); host "Null" is an AI-generated character; the voiceover is AI-generated.
-Music and sound effects: credited after the edit.
+3D props are the creator's own (AI-generated); host "Null" is an AI-generated character; the voiceover is AI-generated.
+Music: "Epical Drums 06" (Mixkit free licence). Sound effects: Sonniss GDC Game Audio Bundle.
 ```
 
 **Tags** (15)
@@ -75,6 +81,8 @@ aravalli, अरावली, aravalli range, aravalli parvat, save aravalli, ar
 
 #Aravalli #SaveAravalli #RashtrapatiBhavan #Rajasthan #Delhi #Geography #NullDynasty
 ```
+Satellite: EOX Sentinel-2 cloudless (CC BY 4.0). 3D terrain: AWS Terrain Tiles (SRTM/NASA). Borders: Natural Earth (India POV). Props, host and voice AI. Music: Mixkit "Epical Drums 06". SFX: Sonniss.
+
 Turn on Instagram's "AI info" label in Advanced settings.
 
 ## Fact notes
