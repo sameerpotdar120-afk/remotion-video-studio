@@ -17,6 +17,19 @@ map, Lumetri-style grade (no grain), highlight fills for every place the VO name
 motion on every frame (not only the camera), and the same sound design. The full spec is `docs/HOUSE_STYLE.md`;
 start from `src/ukweather/` and the `tools/*ukweather*` scripts.
 
+## Documentary map style (approved on Junagadh, Nov 17: use it for the next videos)
+
+The creator approved the Junagadh v2 edit and wants the next videos edited the same way. Start from `src/junagadh/edit/`
+(`Doc.tsx` holds the two pieces below) and the `tools/*junagadh*` scripts:
+- Black-and-white satellite map (`grayscale(1) contrast(1.38) brightness(0.8)` on the plates), dark neutral grade with a
+  strong vignette; only the highlights carry colour.
+- Highlights lie FLAT on the map (`FlatHL`): colour laid onto the terrain in a hard-light layer so the relief shows
+  through, a crisp white outline, a keyframed wipe-in from the centre. Never lift, extrude, float, bob or drop-shadow a
+  highlight (the creator: "highlighted things can't float"). Flags may fill countries, drawn in code.
+- People (anyone the VO names) rise out of their place on the map (`MapPerson`): head-and-shoulders cut-out, bottom
+  fading into the map, dark halo, a white name box (Hindi name, small English line), "AI illustration".
+- Render 4K 30 fps unless the creator asks otherwise.
+
 ## HyperFrames (from the next video, creator's request, Nov 1)
 
 The creator wants the next video made with HyperFrames (HeyGen, Apache-2.0: HTML/CSS/GSAP rendered to MP4) used at full
