@@ -13,7 +13,7 @@ for ((a=FROM; a<=TO; a+=60)); do
   [ -s "$f" ] && continue
   echo "CHUNK $a-$b start $(date +%T)"
   for try in 1 2 3; do
-    npx remotion render out/bundle Ep2 "$f" --frames=$a-$b --concurrency=4 --codec=h264 --crf=17 --muted --props='{"audio":false}' --timeout=300000 --log=error && break
+    npx remotion render out/bundle Ep2 "$f" --frames=$a-$b --concurrency=4 --codec=h264 --crf=17 --muted --props='{"audio":false}' --timeout=900000 --log=error && break
     echo "RETRY $a-$b"; rm -f "$f"
   done
   ffmpeg -loglevel error -y -sseof -0.1 -i "$f" -frames:v 1 -vf scale=540:-1 "out/ep2prev/f_$(printf %05d $b).jpg"
