@@ -26,7 +26,7 @@ const Fade: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return <AbsoluteFill style={{ opacity: interpolate(f, [0, XF], [0, 1], { extrapolateRight: "clamp" }) }}>{children}</AbsoluteFill>;
 };
 
-export const Episode2: React.FC<{ captions?: boolean; music?: boolean }> = ({ captions = true, music = true }) => {
+export const Episode2: React.FC<{ captions?: boolean; music?: boolean; audio?: boolean }> = ({ captions = true, music = true, audio = true }) => {
   const { fps } = useVideoConfig();
   const words = timing.shots.flatMap((s) => s.words);
   return (
@@ -40,7 +40,7 @@ export const Episode2: React.FC<{ captions?: boolean; music?: boolean }> = ({ ca
         );
       })}
       {captions ? <Captions words={words} y={0.7} /> : null}
-      <Audio src={staticFile(music ? "ep2/mix.wav" : "ep2/voice.wav")} />
+      {audio ? <Audio src={staticFile(music ? "ep2/mix.wav" : "ep2/voice.wav")} /> : null}
     </AbsoluteFill>
   );
 };
