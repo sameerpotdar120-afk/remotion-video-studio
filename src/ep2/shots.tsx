@@ -241,9 +241,9 @@ export const SHOTS: Record<number, Shot> = {
   17: { look: day, focus: 18, cam: { from: [-1.2, 2.4, 17], to: [-0.6, 2.8, 15.5], lookFrom: [8, 4.2, 0], fov: 54 },
     Body: B((t) => {
       // falling rigid rod about its base: th'' = (3g / 2L) sin(th), from a small start angle
-      let th = 0.02, w = 0; const dt = 1 / 240, L = 9; for (let s = 0.08; s < t; s += dt) { if (th >= Math.PI / 2) { th = Math.PI / 2; break; } w += (3 * 9.81 / (2 * L)) * Math.sin(th) * dt; th += w * dt; }
-      const fall = t < 0.08 ? 0 : th / (Math.PI / 2);
-      const landT = 0.08 + 1.05;
+      let th = 0.3, w = 0; const dt = 1 / 240, L = 2.45; for (let s = 0.08; s < t; s += dt) { if (th >= Math.PI / 2) { th = Math.PI / 2; break; } w += (3 * 9.81 / (2 * L)) * Math.sin(th) * dt; th += w * dt; }
+      const fall = t < 0.08 ? 0.3 / (Math.PI / 2) * smooth(t / 0.08) : th / (Math.PI / 2);
+      const landT = 1.02;
       return (
         <World tree="none" tow grass={[grassNear(9, 6, 4000, 10)]}>
           <Oak stump />
