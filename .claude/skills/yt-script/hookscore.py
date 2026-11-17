@@ -24,9 +24,10 @@ FILLER = {"basically","actually","literally","just","really","very","so","kind",
 VAGUE = {"amazing","incredible","insane","crazy","huge","massive","game","changer","secret",
          "powerful","ultimate","best","revolutionary","mind","blowing","unbelievable"}
 CONCRETE = re.compile(r"\b(\d[\d,.]*\s?(%|k|m|x|s|m|h)?|\$\d|\d+\s?(second|minute|hour|day|week|month|year)s?)\b", re.I)
-YOU = re.compile(r"\b(you|your|you're|youre|yourself)\b", re.I)
-STAKE = re.compile(r"\b(lose|lost|wasting|waste|quit|fail|broke|cost|risk|before|stop|never|die|dying|dead)\b", re.I)
-CURIOSITY = re.compile(r"\b(why|how|what|which|until|before|but|nobody|almost|except|reason|actually)\b", re.I)
+# English plus Roman Hinglish (the NullDynasty scripts are written in Roman Hindi before the Devanagari pass)
+YOU = re.compile(r"\b(you|your|you're|youre|yourself|tum|tumhe|tumhara|tumhari|tumhare|tumne|aap|aapka|aapki|aapne|aapko)\b", re.I)
+STAKE = re.compile(r"\b(lose|lost|wasting|waste|quit|fail|broke|cost|risk|before|stop|never|die|dying|dead|kho|khoya|kho\s?diya|chheen|chheena|kabhi\s?nahi|khatam|maut|mar|doob|toot|bacha)\b", re.I)
+CURIOSITY = re.compile(r"\b(why|how|what|which|until|before|but|nobody|almost|except|reason|actually|kyun|kyu|kaise|kya|kaun|kisne|par|lekin|sirf|asal|sach|aakhir|koi\s?nahi|phir\s?bhi)\b", re.I)
 
 def words(t): return re.findall(r"[a-z0-9'%$.]+", t.lower())
 

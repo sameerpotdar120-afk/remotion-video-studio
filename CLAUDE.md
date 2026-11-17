@@ -30,6 +30,11 @@ The creator approved the Junagadh v2 edit and wants the next videos edited the s
   fading into the map, dark halo, a white name box (Hindi name, small English line), "AI illustration".
 - Render 4K 30 fps unless the creator asks otherwise.
 
+Hooks (creator, Nov 17: "still messed up in the visual and narration hook"): every script and edit follows
+`docs/HOOK_PLAYBOOK.md`: the known thing first, the twist inside 2.5 s, one claim, no habitual "कैसे?", frame 0 = the
+payoff picture (not a title word), a change every 0.5–0.8 s to 0:03, say-show sync, and 3 hook packages with frame-0
+mocks for the creator to pick before the VO is recorded.
+
 ## HyperFrames (from the next video, creator's request, Nov 1)
 
 The creator wants the next video made with HyperFrames (HeyGen, Apache-2.0: HTML/CSS/GSAP rendered to MP4) used at full
