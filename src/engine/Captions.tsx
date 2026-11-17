@@ -4,7 +4,8 @@ import { AbsoluteFill, useCurrentFrame, useVideoConfig, interpolate, staticFile,
 
 // Montserrat (SIL Open Font License) bundled in public/fonts, so renders need no network.
 const fontFamily = "MontserratLocal";
-if (typeof document !== "undefined" && !document.fonts.check(`900 20px ${fontFamily}`)) {
+if (typeof document !== "undefined" && !(window as unknown as { __capFont?: boolean }).__capFont) {
+  (window as unknown as { __capFont?: boolean }).__capFont = true;
   const h = delayRender("caption font");
   const face = new FontFace(fontFamily, `url(${staticFile("fonts/Montserrat-latin-var.woff2")}) format("woff2")`, { weight: "100 900" });
   face.load().then((f) => { (document.fonts as unknown as { add: (x: FontFace) => void }).add(f); continueRender(h); }).catch((e) => { console.error(e); continueRender(h); });
