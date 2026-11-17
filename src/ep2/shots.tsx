@@ -167,7 +167,7 @@ export const SHOTS: Record<number, Shot> = {
       </World>
     )) },
   /* 12 "Finally, the sheriff drives out to see it." - the cruiser pulls away from the SHERIFF office */
-  12: { look: day, focus: 9, cam: { from: [-7.5, 1.5, 7.5], to: [5, 1.7, 8.5], lookFrom: [-1, 1.4, -1.5], lookTo: [14, 1.3, 0], fov: 50, ease: "inout" },
+  12: { look: day, focus: 9, cam: { from: [-7.5, 1.5, 4.6], to: [4.5, 1.7, 4.8], lookFrom: [-1, 1.4, -1.5], lookTo: [14, 1.3, 1.2], fov: 54, ease: "inout" },
     Body: B((t) => {
       const x = -2 + 13 * smooth(t / 2.6) + t * 2;
       return (
