@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { ThreeCanvas } from '@remotion/three';
 import { useThree } from '@react-three/fiber';
 import { continueRender, delayRender, staticFile } from 'remotion';
@@ -60,10 +60,15 @@ const Ground: React.FC<{ full: Float32Array; flat: Float32Array; bw: THREE.Textu
     g.rotateX(-Math.PI / 2);
     return g;
   }, []);
-  const p = geom.attributes.position as THREE.BufferAttribute;
-  for (let i = 0; i < p.count; i++) p.setY(i, flat[i] + (full[i] - flat[i]) * rise);
-  p.needsUpdate = true;
-  geom.computeVertexNormals();
+  // rebuild the heights only when the rise changes (a render tab draws many frames in a row)
+  const last = useRef(-1);
+  if (Math.abs(last.current - rise) > 1e-4) {
+    const p = geom.attributes.position as THREE.BufferAttribute;
+    for (let i = 0; i < p.count; i++) p.setY(i, flat[i] + (full[i] - flat[i]) * rise);
+    p.needsUpdate = true;
+    geom.computeVertexNormals();
+    last.current = rise;
+  }
   return (
     <>
       <mesh geometry={geom}><meshStandardMaterial map={bw} roughness={0.92} metalness={0} /></mesh>

@@ -2,7 +2,7 @@ import React from 'react';
 import { AbsoluteFill, Composition, registerRoot, useCurrentFrame, useVideoConfig } from 'remotion';
 import { Easing, interpolate } from 'remotion';
 import { Aravalli3D, P3, V3, project, useHeights } from './Terrain3D';
-import { LABEL, UI, useFonts } from '../../junagadh/edit/font';
+import { LABEL, UI, useFonts } from './font';
 
 /** A style test for the creator: how the Aravalli looks in 3D on the charcoal documentary map (Nov 17). */
 const io = Easing.bezier(0.65, 0, 0.35, 1);
