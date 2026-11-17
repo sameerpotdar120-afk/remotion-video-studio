@@ -1,0 +1,241 @@
+[
+ {
+  "id": 1,
+  "text": "Here's something strange about London.",
+  "base": 1
+ },
+ {
+  "id": 2,
+  "text": "All over the city, there are these little green huts.",
+  "base": 17
+ },
+ {
+  "id": 3,
+  "text": "They look like garden sheds.",
+  "base": 1,
+  "variant": "near"
+ },
+ {
+  "id": 4,
+  "text": "But if you walk in and try to sit down, someone will politely ask you to leave.",
+  "base": 2
+ },
+ {
+  "id": 5,
+  "text": "Unless you drive a black cab.",
+  "base": 3
+ },
+ {
+  "id": 6,
+  "text": "To understand why, we have to go back to a freezing night in 1875.",
+  "base": 4,
+  "say": "To understand why, we have to go back to a freezing night in eighteen_seventy-five."
+ },
+ {
+  "id": 7,
+  "text": "Back then, London's taxis were pulled by horses.",
+  "base": 6
+ },
+ {
+  "id": 8,
+  "text": "And the drivers sat outside, high up on the back, in the wind and the snow.",
+  "base": 10
+ },
+ {
+  "id": 9,
+  "text": "That night, a newspaper man called George Armstrong needed a ride home.",
+  "base": 5
+ },
+ {
+  "id": 10,
+  "text": "He walked outside, and the street was full of taxis.",
+  "base": 6,
+  "variant": "back"
+ },
+ {
+  "id": 11,
+  "text": "Horses, cabs, everything.",
+  "base": 4,
+  "variant": "low"
+ },
+ {
+  "id": 12,
+  "text": "But not one driver.",
+  "base": 7
+ },
+ {
+  "id": 13,
+  "text": "Every single one of them was in the pub.",
+  "base": 8
+ },
+ {
+  "id": 14,
+  "text": "You see, the rule was simple. If your taxi was parked on the stand, you had to stay with it.",
+  "base": 9
+ },
+ {
+  "id": 15,
+  "text": "You couldn't just walk away and leave your horse.",
+  "base": 12,
+  "variant": "still"
+ },
+ {
+  "id": 16,
+  "text": "So on a freezing night, a driver had two choices.",
+  "base": 10
+ },
+ {
+  "id": 17,
+  "text": "He could sit on top of his cab and freeze.",
+  "base": 11
+ },
+ {
+  "id": 18,
+  "text": "Or he could pay someone to watch his horse, and go somewhere warm.",
+  "base": 12
+ },
+ {
+  "id": 19,
+  "text": "And the warmest place on any street was the pub.",
+  "base": 13
+ },
+ {
+  "id": 20,
+  "text": "So most of them went to the pub.",
+  "base": 8,
+  "variant": "wide"
+ },
+ {
+  "id": 21,
+  "text": "Which isn't great when your job is driving.",
+  "base": 13,
+  "variant": "close"
+ },
+ {
+  "id": 22,
+  "text": "Armstrong had an idea.",
+  "base": 5,
+  "variant": "close"
+ },
+ {
+  "id": 23,
+  "text": "What if the drivers had their own warm room, right next to their taxis?",
+  "base": 14
+ },
+ {
+  "id": 24,
+  "text": "So he teamed up with some rich friends, and they started building huts.",
+  "base": 14,
+  "variant": "other"
+ },
+ {
+  "id": 25,
+  "text": "The very first one went up near his own house, in St John's Wood.",
+  "base": 1
+ },
+ {
+  "id": 26,
+  "text": "Inside, there was hot food and hot tea.",
+  "base": 15
+ },
+ {
+  "id": 27,
+  "text": "A man worked inside, selling food to the drivers.",
+  "base": 15,
+  "variant": "keeper"
+ },
+ {
+  "id": 28,
+  "text": "And there were three rules.",
+  "base": 16,
+  "variant": "wide"
+ },
+ {
+  "id": 29,
+  "text": "No drinking. No gambling. And no swearing.",
+  "base": 16
+ },
+ {
+  "id": 30,
+  "text": "But there was a problem.",
+  "base": 17
+ },
+ {
+  "id": 31,
+  "text": "The huts had to sit right on the road, next to the taxis.",
+  "base": 17,
+  "variant": "near"
+ },
+ {
+  "id": 32,
+  "text": "And on a London road, nothing could be bigger than a horse and cart.",
+  "base": 18
+ },
+ {
+  "id": 33,
+  "text": "So that's exactly how big they made them.",
+  "base": 19
+ },
+ {
+  "id": 34,
+  "text": "Not one inch bigger.",
+  "base": 19,
+  "variant": "top"
+ },
+ {
+  "id": 35,
+  "text": "Inside, about ten to thirteen drivers squeezed around one long, thin table.",
+  "base": 20
+ },
+ {
+  "id": 36,
+  "text": "And it worked.",
+  "base": 20,
+  "variant": "wide"
+ },
+ {
+  "id": 37,
+  "text": "Over the next forty years, they built 61 of them all over London.",
+  "base": 21,
+  "say": "Over the next forty years, they built sixty-one of them all over London."
+ },
+ {
+  "id": 38,
+  "text": "Most are gone now.",
+  "base": 22,
+  "variant": "early"
+ },
+ {
+  "id": 39,
+  "text": "But 13 are still standing, and every single one is a protected building.",
+  "base": 22,
+  "say": "But thirteen are still standing, and every single one is a protected building."
+ },
+ {
+  "id": 40,
+  "text": "They're still run by the same charity, and they still feed drivers today.",
+  "base": 24
+ },
+ {
+  "id": 41,
+  "text": "So if you're in London and you see a little green hut, you now know what it is.",
+  "base": 1,
+  "variant": "near"
+ },
+ {
+  "id": 42,
+  "text": "You can even buy a sandwich at the window.",
+  "base": 23
+ },
+ {
+  "id": 43,
+  "text": "Just don't try to sit down inside.",
+  "base": 24
+ },
+ {
+  "id": 44,
+  "text": "That seat is only for the drivers.",
+  "base": 24,
+  "variant": "close"
+ }
+]

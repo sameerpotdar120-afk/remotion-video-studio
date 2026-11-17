@@ -1,0 +1,159 @@
+{
+ "bpm": 108,
+ "key": "D",
+ "music": 0.16,
+ "amb": {
+  "1": "wind",
+  "2": "wind",
+  "3": "wind",
+  "4": "wind",
+  "5": "wind",
+  "6": "wind",
+  "7": "wind",
+  "8": "pub",
+  "9": "wind",
+  "10": "wind",
+  "11": "wind",
+  "12": "wind",
+  "13": "pub",
+  "14": "wind",
+  "15": "room",
+  "16": "room",
+  "17": "wind",
+  "18": "wind",
+  "19": "wind",
+  "20": "room",
+  "21": "desk",
+  "22": "desk",
+  "23": "wind",
+  "24": "wind"
+ },
+ "sfx": [
+  {
+   "shot": 8,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 9,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 13,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 14,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 15,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 17,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 20,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 21,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 23,
+   "at": 0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 11,
+   "at": 0.2,
+   "type": "chatter"
+  },
+  {
+   "shot": 12,
+   "at": 0.9,
+   "type": "coin"
+  },
+  {
+   "shot": 14,
+   "at": 0.15,
+   "type": "knock",
+   "repeat": 6,
+   "every": 0.3
+  },
+  {
+   "shot": 17,
+   "at": 0.0,
+   "type": "hoof",
+   "repeat": 8,
+   "every": 0.32
+  },
+  {
+   "shot": 17,
+   "at": 0.16,
+   "type": "hoof",
+   "repeat": 8,
+   "every": 0.32,
+   "gain": 0.7
+  },
+  {
+   "shot": 21,
+   "at": 0.05,
+   "type": "pop",
+   "repeat": 32,
+   "every": 0.05,
+   "jitter": 0.03
+  },
+  {
+   "shot": 22,
+   "at": 0.15,
+   "type": "shimmer"
+  },
+  {
+   "shot": 22,
+   "at": 1.82,
+   "type": "thump"
+  },
+  {
+   "shot": 23,
+   "at": 0.45,
+   "type": "knock"
+  },
+  {
+   "shot": 24,
+   "at": 0.35,
+   "type": "bite"
+  },
+  {
+   "shot": 24,
+   "at": 1.05,
+   "type": "bite"
+  },
+  {
+   "shot": 16,
+   "at": 0.0,
+   "type": "tick"
+  },
+  {
+   "shot": 16,
+   "at": 0.791,
+   "type": "tick"
+  },
+  {
+   "shot": 16,
+   "at": 1.581,
+   "type": "tick"
+  }
+ ],
+ "bedDb": 20
+}
