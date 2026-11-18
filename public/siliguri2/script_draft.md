@@ -86,4 +86,17 @@ Sources are listed at the end of `reference_analysis.md`.
      armour without markings, an old runway tile, and a fortress-wall prop.
    - Omni: one Null clip here, at the "Greater Bangladesh" beat.
 
+## Final polish (creator's draft, 18 Nov)
+
+The final text is in `script_roman.txt` (197 words, about 73–74 s at 1.15×), and the VO text for ElevenLabs is in
+`script_elevenlabs.txt`. That file writes numbers as Hindi words and Indian place names in Devanagari so they're said
+correctly. Changes from the creator's draft:
+- **The loop.** The draft repeated the hook at the end. The last line now stops at "to bas itna kehna…", and the video
+  loops into the hook, which is the answer ("Tum Darjeeling jao ya Guwahati…"). The hook is not said twice.
+- **The hook's punch word comes last.** "…aur iske theek upar baithi hai China ki Army."
+- **Doklam gets its payoff:** "aur sadak wahin ruk gayi". After the 2017 disengagement, China's road extension at the
+  face-off point toward the Jampheri ridge did not continue.
+- **Lalmonirhat leads with the place**, then the date: "Bharat ke Border ke bilkul paas, Bangladesh ka Lalmonirhat…".
+- **"Rafale Fighter Jets"**, so the ear knows what a Rafale is.
+
 Ship it, or change it?
