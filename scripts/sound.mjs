@@ -10,7 +10,7 @@ const ep = process.argv[2] || "ep1";
 const SR = 44100;
 const T = JSON.parse(fs.readFileSync(path.join("episodes", ep, "timing.json"), "utf8"));
 const S = JSON.parse(fs.readFileSync(path.join("episodes", ep, "sound.json"), "utf8"));
-const TAIL = 0.7, total = T.total + TAIL, N = Math.ceil(total * SR);
+const TAIL = S.tail ?? 0.7, total = T.total + TAIL, N = Math.ceil(total * SR);
 const L = new Float32Array(N), R = new Float32Array(N);
 let seed = 12345; const rnd = () => ((seed = (seed * 1664525 + 1013904223) >>> 0) / 4294967296);
 const shotStart = (id) => { const i = T.shots.findIndex((s) => s.id === id); return i <= 0 ? 0 : T.shots[i].start; };
@@ -54,6 +54,8 @@ for (let bar = 0, t = 0; t < total; bar++, t = bar * 4 * beat) {
   }
   if (bar % 2 === 1) addM(bell(semi(ch[2] + 24), 1.4), t + 3.5 * beat, 0.12, -0.2);
 }
+if (S.beat) { const beat = 60 / (S.bpm || 100); for (let t = 0; t < total - 0.5; t += beat) { addM(tone(110, 42, 0.3, 11), t, 0.5, 0); addM(bandpass(noise(0.05, (x, d) => 1 - x / d), 6000, 10000), t + beat / 2, 0.18, 0.3); } }
+if (S.musicStop) { const a0 = Math.round(S.musicStop * SR); for (let i = a0; i < N; i++) { const k = Math.max(0, 1 - (i - a0) / (0.08 * SR)); mus.L[i] *= k; mus.R[i] *= k; } }
 // small room reverb on the music
 for (const ch of [mus.L, mus.R]) for (const [dt, g] of [[0.031, 0.35], [0.053, 0.28], [0.079, 0.2], [0.113, 0.14]]) { const d = Math.round(dt * SR); for (let i = N - 1; i >= d; i--) ch[i] += ch[i - d] * g; }
 const fadeIn = 0.15 * SR, fadeOut = 1.2 * SR;
@@ -94,11 +96,22 @@ const FX = {
   thunder: () => lowpass(noise(2.2, (t) => Math.exp(-t * 1.6) * (0.5 + 0.5 * Math.sin(t * 7))), 300),
   ding: () => { const o = bell(1760, 0.8); return o; },
   pop2: () => tone(500, 900, 0.12, 20),
+  // ep3 (reference-style punchy effects, all synthesized)
+  boom: () => { const b = tone(70, 32, 1.4, 2.6); const n = lowpass(noise(0.5, (t, d) => Math.exp(-t * 6)), 260); return b.map((v, i) => v * 1.2 + (n[i] || 0) * 0.9); },
+  hit: () => { const b = tone(160, 55, 0.45, 9); const n = bandpass(noise(0.25, (t) => Math.exp(-t * 18)), 800, 6000); return b.map((v, i) => v + (n[i] || 0) * 0.7); },
+  riser: () => { const d = 1.1, n = Math.round(d * SR), o = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR, f = 200 + 1400 * (t / d) ** 2; ph += 2 * Math.PI * f / SR; o[i] = Math.sin(ph) * 0.25 * (t / d); } const w = bandpass(noise(d, (t) => (t / d) ** 2), 1500, 8000); return o.map((v, i) => v + w[i] * 0.6); },
+  swell: () => { const d = 1.0; const w = bandpass(noise(d, (t) => (t / d) ** 3), 2000, 9000); return w; },
+  buzz: () => { const d = 0.6, n = Math.round(d * SR), o = new Float32Array(n); for (let i = 0; i < n; i++) { const t = i / SR; o[i] = Math.sign(Math.sin(2 * Math.PI * 160 * t)) * 0.4 * ((Math.floor(t / 0.12) % 2) ? 0 : 1) * Math.min(1, (d - t) * 20); } return lowpass(o, 900); },
+  heart: () => { const a = tone(60, 40, 0.18, 22), b = tone(55, 38, 0.18, 22), o = new Float32Array(Math.round(0.5 * SR)); o.set(a, 0); for (let i = 0; i < b.length; i++) o[i + Math.round(0.22 * SR)] += b[i] * 0.8; return o; },
+  typing: () => { const o = new Float32Array(Math.round(1.2 * SR)); for (let k = 0; k < 16; k++) { const c = bandpass(noise(0.025, (t, d) => 1 - t / d), 1500, 7000); const off = Math.round((k * 0.07 + rnd() * 0.03) * SR); for (let i = 0; i < c.length && off + i < o.length; i++) o[off + i] += c[i]; } return o; },
+  crowd: () => { const d = 2.0; const m = bandpass(noise(d, (t) => (0.6 + 0.4 * Math.sin(t * 5)) * Math.min(1, t / 0.2, (d - t) / 0.4)), 300, 2500); return m; },
+  siren: () => { const d = 0.9, n = Math.round(d * SR), o = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR, f = 700 + 500 * Math.sin(2 * Math.PI * 1.6 * t); ph += 2 * Math.PI * f / SR; o[i] = Math.sin(ph) * 0.5 * Math.min(1, t * 30, (d - t) * 6); } return o; },
+  tape: () => { const d = 0.7, n = Math.round(d * SR), o = new Float32Array(n); let ph = 0; for (let i = 0; i < n; i++) { const t = i / SR, f = 420 * (1 - 0.8 * t / d); ph += 2 * Math.PI * f / SR; o[i] = (Math.sin(ph) + 0.4 * Math.sin(2 * ph)) * 0.4 * (1 - t / d); } return o; },
   shimmer: () => { const o = new Float32Array(Math.round(1.6 * SR)); [0, 4, 7, 12, 16].forEach((n, k) => { const b = bell(semi(n + 24), 1.2); for (let i = 0; i < b.length && i + k * 3000 < o.length; i++) o[i + k * 3000] += b[i] * 0.6; }); return o; },
 };
 // 2026-11-05 user: effects were too loud -> all about 5 dB lower
 const SFXK = 0.4;   // 2026-11-05 user (2nd time): effects still too loud → 0.56 → 0.4
-const GAIN = { whoosh: 0.35 * SFXK, coin: 0.25 * SFXK, pop: 0.12 * SFXK, thump: 0.6 * SFXK, knock: 0.35 * SFXK, tick: 0.18 * SFXK, hoof: 0.22 * SFXK, chatter: 0.12 * SFXK, bite: 0.25 * SFXK, shimmer: 0.12 * SFXK, crash: 0.7 * SFXK, bonk: 0.5 * SFXK, chainsaw: 0.35 * SFXK, crack: 0.6 * SFXK, thud: 0.7 * SFXK, thunder: 0.6 * SFXK, ding: 0.25 * SFXK, pop2: 0.2 * SFXK };
+const GAIN = { whoosh: 0.35 * SFXK, coin: 0.25 * SFXK, pop: 0.12 * SFXK, thump: 0.6 * SFXK, knock: 0.35 * SFXK, tick: 0.18 * SFXK, hoof: 0.22 * SFXK, chatter: 0.12 * SFXK, bite: 0.25 * SFXK, shimmer: 0.12 * SFXK, boom: 0.9 * SFXK, hit: 0.6 * SFXK, riser: 0.35 * SFXK, swell: 0.35 * SFXK, buzz: 0.3 * SFXK, heart: 0.8 * SFXK, typing: 0.35 * SFXK, crowd: 0.25 * SFXK, siren: 0.22 * SFXK, tape: 0.4 * SFXK, crash: 0.7 * SFXK, bonk: 0.5 * SFXK, chainsaw: 0.35 * SFXK, crack: 0.6 * SFXK, thud: 0.7 * SFXK, thunder: 0.6 * SFXK, ding: 0.25 * SFXK, pop2: 0.2 * SFXK };
 for (const c of S.sfx || []) {
   const t0 = shotStart(c.shot) + (c.at || 0);
   const n = c.repeat || 1;
