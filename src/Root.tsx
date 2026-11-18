@@ -4,6 +4,7 @@ import { Episode, ShotStill, totalFrames } from "./ep1/Episode";
 import { LongEpisode, longFrames } from "./ep1/Long";
 import { CastSheet } from "./ep2/CastSheet";
 import { Episode2, ShotStill2, totalFrames2 } from "./ep2/Episode";
+import { Episode3, ShotStill3, totalFrames3 } from "./ep3/Episode";
 
 export const Root: React.FC = () => (
   <>
@@ -13,6 +14,8 @@ export const Root: React.FC = () => (
     <Composition id="Shot" component={ShotStill} width={1080} height={1920} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
     <Composition id="Ep2" component={Episode2} width={1440} height={2560} fps={30} durationInFrames={totalFrames2(30)} defaultProps={{ captions: true, music: true }} />
     <Composition id="Ep2Shot" component={ShotStill2} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
-    <Composition id="CastSheet" component={CastSheet} width={3840} height={600} fps={30} durationInFrames={1} />
+    <Composition id="Ep3" component={Episode3} width={1440} height={2560} fps={30} durationInFrames={totalFrames3(30)} defaultProps={{ captions: true, music: true }} />
+    <Composition id="Ep3Shot" component={ShotStill3} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
+    <Composition id="CastSheet" component={CastSheet} width={5000} height={600} fps={30} durationInFrames={1} />
   </>
 );

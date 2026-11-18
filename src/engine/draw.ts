@@ -2,7 +2,7 @@
 // dot eyes + thick brows, bean-shaped coat, thin black stick limbs, round white hands, ink outline everywhere).
 // Drawn fresh every frame, so walking, blinking, talking and props are just numbers.
 
-export type Hat = "none" | "top" | "bowler" | "flatcap" | "stripecap" | "cabbie" | "boater" | "helmet" | "spikes" | "sheriff" | "hardhat" | "cap";
+export type Hat = "none" | "top" | "bowler" | "flatcap" | "stripecap" | "cabbie" | "boater" | "helmet" | "spikes" | "sheriff" | "hardhat" | "cap" | "bob" | "ponytail";
 export type Eyes = "dot" | "wide" | "closed" | "half" | "angry" | "happy" | "sad" | "smug" | "shock" | "glow";
 export type Mouth = "smile" | "flat" | "open" | "frown" | "o" | "grin" | "wavy" | "smirk";
 export type Arm = "down" | "hips" | "wave" | "point" | "hold" | "up" | "cross" | "shrug" | "drink" | "warm";
@@ -345,6 +345,13 @@ export function drawToon(g: CanvasRenderingContext2D, s: ToonSpec, p: ToonPose) 
   }
 
   else if (s.hat === "spikes") flameSpikes(g, hx, headY, headR);
+  else if (s.hat === "bob" || s.hat === "ponytail") {
+    const hc2 = s.hatColor ?? "#3a2418"; g.fillStyle = hc2; g.strokeStyle = INK; g.lineWidth = 8;
+    if (s.hat === "ponytail") { g.beginPath(); g.ellipse(hx + headR * 1.05, headY - headR * 0.2, headR * 0.32, headR * 0.7, 0.5, 0, Math.PI * 2); g.fill(); g.stroke(); }
+    g.beginPath(); g.moveTo(hx - headR * 1.08, headY + (s.hat === "bob" ? headR * 0.55 : 0)); g.bezierCurveTo(hx - headR * 1.25, headY - headR * 1.35, hx + headR * 1.25, headY - headR * 1.35, hx + headR * 1.08, headY + (s.hat === "bob" ? headR * 0.55 : 0));
+    g.lineTo(hx + headR * 0.82, headY + (s.hat === "bob" ? headR * 0.5 : -0.05 * headR)); g.quadraticCurveTo(hx + headR * 0.75, headY - headR * 0.55, hx + headR * 0.1, headY - headR * 0.62);
+    g.quadraticCurveTo(hx - headR * 0.6, headY - headR * 0.35, hx - headR * 0.82, headY + (s.hat === "bob" ? headR * 0.5 : -0.05 * headR)); g.closePath(); g.fill(); g.stroke();
+  }
   else if (s.hat === "sheriff") {
     g.fillStyle = hc; g.beginPath(); g.ellipse(hx, top + 6, headR * 1.35, headR * 0.2, 0, 0, Math.PI * 2); g.fill(); g.stroke();
     g.beginPath(); g.moveTo(hx - headR * 0.68, top + 4); g.bezierCurveTo(hx - headR * 0.75, top - headR * 0.9, hx - headR * 0.1, top - headR * 0.55, hx, top - headR * 0.7);

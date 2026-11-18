@@ -3,3 +3,4 @@ out/
 *.log
 __pycache__/
 public/ep2/*.wav
+public/ep3/*.wav
