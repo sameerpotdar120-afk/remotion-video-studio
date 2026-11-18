@@ -196,7 +196,7 @@ export const SHOTS: Record<number, Shot> = {
   /* 25 "And for the first time in 13 years, he's racing out the door for something bigger than GTA." - he sprints down the neon street, box under his arm */
   25: { look: outL, focus: 5, cam: { from: [-6, 1.5, 6.5], to: [5, 1.8, 7.0], lookFrom: [-4, 1.2, 2.0], lookTo: [9, 1.3, 2.0], fov: 52, ease: "linear" },
     Body: B((t) => {
-      const x = -7 + t * 4.2;
+      const x = -5.5 + t * 2.4;
       return (
         <StoreFront>
           <Toon spec={C.hero} pose={{ walk: 2.2, eyes: "happy", mouth: "grin", armR: "hold" }} pos={[x, 0.02, 2.0]} />
