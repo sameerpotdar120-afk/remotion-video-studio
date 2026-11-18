@@ -1,60 +1,54 @@
-# Episode 3: "When GTA 6 Comes Out, I'll Marry You" (script)
-Same topic and story beats as the reference; every line is ours. Our hero (Flame Spikes + gold S chain) is the guy. Written for a US audience.
+# Episode 3: "When GTA 6 Comes Out, I'll Marry You" (story version)
+Our own story on the reference's topic and real facts: the fridge sticky note, the empty apartment on release night, she books the chapel. Our hero is the guy. US audience.
 
 ## Hooks (yt-script hookscore.py)
 | | Hook | Score |
 |---|---|---|
-| **A (use)** | If you promise to marry her when GTA 6 comes out, you'll never see what she does on release night coming. | **60 WORKABLE**: specificity 62, address 96, stakes 62, curiosity 41, brevity 100 (The Impossible Claim) |
-| B | If you tell your girlfriend you'll marry her when GTA 6 comes out, you just signed a 13-year deal. Nobody knew how it ends, until tonight. | 59 WORKABLE: specificity 85, address 100, stakes 36, curiosity 75, brevity 79 (The Direct Address) |
+| **A (use)** | If you promise to marry her when GTA 6 comes out, you'll spend thirteen years dodging a wedding. But nobody warned you what she'd do on release night. | **57 WORKABLE**: specificity 68, address 100, stakes 36, curiosity 75, brevity 72 (The Direct Address) |
+| B | If you tie your wedding to GTA 6, you'll get the longest engagement in gaming history, and a release night you'll never forget. | 51 WEAK: specificity 62, address 100, stakes 62, curiosity 24, brevity 100 (The Impossible Claim) |
 
 ## Voice: paste between the lines
 ---
-If you promise to marry her when GTA 6 comes out, you'll never see what she does on release night coming.
+If you promise to marry her when GTA 6 comes out, you'll spend thirteen years dodging a wedding. But nobody warned you what she'd do on release night.
 
-Back in 2013, our guy made that exact promise. And he wasn't being romantic. He was doing math. The last GTA took five years, so he figured he'd just locked in five more years of freedom.
+It's 2013. Our guy is standing in line for GTA 5 at midnight, and his girlfriend asks, "So when are we getting married?" He grins. "When GTA 6 comes out." The last one took five years. Easy.
 
-Then Rockstar did him a favor. They re-released GTA 5. Then again. And again. Every time she brought up the wedding, he handed her a fresh copy and said, "Look, babe, new GTA." By the third copy, she stopped asking.
+She writes it on a sticky note and slaps it on the fridge.
 
-But in 2022, a teenager leaked over ninety clips of GTA 6. And in court, it came out he'd hacked Rockstar using a hotel TV and an Amazon Fire Stick. For the first time in nine years, our guy started sweating.
+Years pass. Rockstar keeps re-releasing GTA 5, and every time she points at the fridge, he hands her a shiny new copy. The note turns yellow.
 
-A year later, the first trailer pulled ninety million views in a single day. She sent it to him with one emoji: a ring.
+Then, in 2022, a teenager leaks GTA 6, using a hotel TV and an Amazon Fire Stick. Our guy stares at the fridge like it's a ticking bomb.
 
-Then Rockstar delayed it, saying they needed extra time to deliver the quality fans deserve. That night, he told her the exact same thing. Word for word.
+The trailer drops. Ninety million views in one day. She texts him one emoji. A ring.
 
-When they delayed it again, investors panicked, and he quietly bought her a fourth copy.
+So he prays for a delay. Rockstar delivers. Twice. Each time, he tells her they just need more time to get it right.
 
-His last excuse? No room on the console. So she deleted every game he owned.
+Finally, release night. Midnight. He's got a ring hidden in the game box, ready to kneel.
 
-So at midnight on November nineteenth, out of excuses, he gets down on one knee, with the ring inside a GTA 6 box. She looks at the ring. Looks at the box. Hands the ring back, and says, "When I finish GTA 6, I'll marry you."
+But the apartment's empty. Just a new sticky note on the fridge: "Chapel's booked. Nine a.m. Game's in my car."
+
+And for the first time in thirteen years, he's racing out the door for something bigger than GTA.
 ---
-265 words, about 72 s at the reference pace (3.66 words/s); the reference runs 72.7 s at 252 words.
+225 words. The creator's ElevenLabs voice reads about 2.67 words/s; sped up x1.15 that's about 3.07 words/s, giving **about 73 s**, against the reference's 72.7 s.
 
 ## Beats (on screen)
-| # | Line | On screen |
-|---|---|---|
-| 1 | Hook | Night street: our guy kneels holding a game box with "= WEDDING"; push-in until the box fills the frame |
-| 2 | "doing math" | Chalkboard in his room: 2008 → 2013 = 5 YEARS; a "FREEDOM LEFT: 5 YEARS" sign lights up |
-| 3 | "re-released… again… again" | Three boxes slam onto the coffee table (2013 / 2014 / 2022 consoles); he hands her one each time; she stops asking |
-| 4 | "a teenager leaked…" | A street of kids gasping at a phone, "LEAKED" headline; a courtroom card: EXHIBIT A: HOTEL TV + FIRE STICK |
-| 5 | "started sweating" | Close-up, sweat drop, the sign flips to "FREEDOM: OVERTIME" |
-| 6 | "ninety million views" | A giant view counter rolling up to 90,000,000 in a neon theater; her phone shows 💍 |
-| 7 | "delayed it… word for word" | Neon "DELAYED" banner; then at a candlelit dinner he reads the same statement off his phone |
-| 8 | "delayed again… investors panicked" | Stock board in red, a suit crying; he slides a 4th box onto the stack |
-| 9 | "No room on the console" | Console screen "STORAGE FULL"; she holds the controller: DELETING ALL GAMES 75%… 100% |
-| 10 | "midnight on November nineteenth" | Clock 11:59 → 12:00 AM NOV 19; launch screen glow |
-| 11 | "one knee… GTA 6 box" | He kneels, opens the box: a ring inside |
-| 12 | Twist | She takes the box, hands back the ring, sits with the controller: "When I finish GTA 6, I'll marry you." A game-over style card (our own design) |
+1. Hook: release night, our hero kneeling with a game box. Freeze, then rewind to 2013.
+2. 2013 midnight-launch line outside a game store; she asks; he grins "When GTA 6 comes out."
+3. The sticky note on the fridge: "GTA 6 = WEDDING".
+4. Years pass (time-lapse kitchen): new copies of GTA 5 pile up; the note yellows and curls.
+5. 2022: a teen in a hotel room with a TV and a streaming stick; the leak spreads; our hero stares at the fridge (ticking-bomb sound).
+6. Trailer: a giant view counter hits 90,000,000; her phone: 💍.
+7. He prays for a delay; "DELAYED" banners twice; he repeats "they just need more time to get it right."
+8. Release night, midnight clock; he tiptoes in with the ring in the game box.
+9. Empty apartment; a new sticky note: "Chapel's booked. 9 a.m. Game's in my car."
+10. He sprints out the door, box under his arm: "racing out the door for something bigger than GTA."
 
-## Facts (check before posting)
+## Facts
 | Claim | Status |
 |---|---|
-| GTA IV 2008 → GTA V Sept 2013 (5 years) | True |
-| GTA V re-released on new consoles/PC (2014, 2015, 2022) | True |
-| 2022 leak: 90+ clips by a teenager; in court it was heard he used a hotel TV and an Amazon Fire Stick | Reported (UK court, 2023) |
-| First GTA 6 trailer: ~90 million views in 24 hours (Dec 2023) | Reported record |
-| Delayed twice; release now November 19, 2026 | Per Rockstar's announcements |
-| "needed extra time to deliver the quality fans deserve" | Paraphrase of Rockstar's delay statement |
-| The couple | Illustrative story (a running internet joke), not a real couple |
-| Storage size of GTA 6 | Not stated: no confirmed figure, so the script doesn't give one |
-
-Note: we name GTA 6 / Rockstar in the narration, but all boxes, logos and screens are our own designs (no copied logos or WASTED screen).
+| GTA IV 2008 → GTA V Sept 2013 midnight launches | True |
+| GTA V re-released on new consoles/PC | True |
+| 2022 leak by a teenager; in court it was heard he hacked Rockstar with a hotel TV and an Amazon Fire Stick | Reported (UK court, 2023) |
+| First GTA 6 trailer about 90 million views in 24 h | Reported record |
+| GTA 6 delayed twice | Per Rockstar's announcements |
+| The couple, the sticky note and the chapel | Illustrative story |
