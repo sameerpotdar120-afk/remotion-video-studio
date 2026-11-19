@@ -40,7 +40,7 @@ const S: Shot[] = [
                room(0.6, 0.8, 2.35, P.josh, { pose: { mouth: "grin", armR: "hips" }, fadeIn: 1.55 }), room(0.78, 0.8, 2.1, P.lauren, { pose: { mouth: "smile", armR: "wave" }, fadeIn: 2.5 })]} /> },
   // 5 Josh drove us up: low on the road, CRANE UP and over to the cabin far away
   { a: 19.1, b: 25.65, el: (d) => <Scene3D dur={d} env="E3" K={2.0} fog={0.6} dust={[COLD]}
-      cam={{ from: [0.3, -2.6, 8.0], via: [0.1, -0.8, 7.6], to: [0.0, 0.5, 8.4], lookFrom: [0.3, -2.4, 0], lookVia: [0.1, -0.3, 0], lookTo: [0.0, 0.85, 0], fov: 34, whipIn: 0.2 }}
+      cam={{ from: [0.25, -1.45, 8.0], via: [0.1, -0.5, 7.6], to: [0.0, 0.5, 8.4], lookFrom: [0.25, -1.45, 0], lookVia: [0.1, -0.2, 0], lookTo: [0.0, 0.85, 0], fov: 34, whipIn: 0.2 }}
       glows={[{ uv: [0.43, 0.535], size: 0.6, color: "#fff2c8", amt: 0.7, flicker: 0.05 }, { uv: [0.62, 0.56], size: 0.3, color: "#ff2a1a", amt: 0.6 }, { uv: [0.5, 0.31], size: 0.4, color: "#ffb860", amt: 0.4, flicker: 0.1 }]} /> },
   // 6 dinner: slow ORBIT-in towards the table, everybody laughing
   { a: 25.65, b: 29.5, el: (d) => <Scene3D dur={d} env="E2" fog={0} dust={[WARM]}
@@ -97,7 +97,7 @@ const S: Shot[] = [
       actors={[cu(P.stranger, { poseAt: (t) => ({ eyes: "stare", talk: t > 0.05 && t < 0.75, mouth: "closed" }), tint: "#d8c4b2" }, 0.2, 0.1, 3.4, 7.6)]} /> },
   // 16 she ate like she hadn't eaten in days: low PUSH across the plate up to her
   { a: 57.9, b: 61.65, el: (d) => <Scene3D dur={d} env="E8" K={1.8} fog={0} dust={[WARM]}
-      cam={{ from: [0.0, -2.2, 8.6], via: [0.0, -1.3, 8.0], to: [0.05, -0.2, 7.8], lookFrom: [0.0, -2.4, 0], lookTo: [0.05, 0.1, 0], fov: 32 }}
+      cam={{ from: [0.0, -1.5, 8.2], via: [0.0, -1.0, 7.9], to: [0.05, -0.2, 7.8], lookFrom: [0.0, -1.5, 0], lookTo: [0.05, 0.1, 0], fov: 32 }}
       glows={[{ uv: [0.5, 0.2], size: 1.0, color: "#ffc070", flicker: 0.06, amt: 0.55 }]}
       actors={[{ spec: P.stranger, poseAt: (t) => ({ eyes: "narrow", mouth: "chew", armR: "eat", armL: "eat", headTilt: Math.sin(t * 9) * 0.04 }), uv: [0.55, 0.85], zuv: [0.55, 0.52], dz: 0.4, h: 4.15, res: 2, tint: "#dcc6b0" }]} /> },
   // 17 I asked how they ended up here: me, close-up, slow ARC
