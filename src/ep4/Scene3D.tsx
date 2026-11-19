@@ -117,8 +117,8 @@ const Inner: React.FC<InnerProps> = ({ env, K, cam, actors, glows, fog, fogColor
   shy += hh * 0.04 * (Math.sin(t * 1.7 + 3) * 0.6 + Math.sin(t * 4.9) * 0.3 + Math.sin(t * 13.1 + 1) * 0.1);
   // whip pans: the look target flies sideways at the very start / end of the shot
   const wd = cam.whipDir ?? 1; let whip = 0;
-  if (cam.whipIn && t < cam.whipIn) whip = -wd * (1 - t / cam.whipIn) ** 2 * 2.2;
-  if (cam.whipOut && t > dur - cam.whipOut) whip = wd * ((t - (dur - cam.whipOut)) / cam.whipOut) ** 2 * 2.2;
+  if (cam.whipIn && t < cam.whipIn) whip = -wd * (1 - t / cam.whipIn) ** 2 * 1.0;
+  if (cam.whipOut && t > dur - cam.whipOut) whip = wd * ((t - (dur - cam.whipOut)) / cam.whipOut) ** 2 * 1.0;
   pc.position.set(p[0] + Math.sin(t * 0.5) * 0.02 * sw + shx, p[1] + Math.sin(t * 0.7) * 0.015 * sw + shy, p[2]);
   pc.fov = fov; pc.aspect = width / height; pc.near = 0.05; pc.far = 100; pc.updateProjectionMatrix();
   pc.up.set(0, 1, 0); pc.lookAt(look[0] + shx * 0.5 + whip, look[1] + shy * 0.5, look[2]);
