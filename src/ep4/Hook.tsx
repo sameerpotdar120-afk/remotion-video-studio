@@ -6,7 +6,7 @@ import { P } from "./cast";
 
 export const HOOK_FRAMES = 243;
 export const Hook: React.FC = () => (
-  <Scene3D
+  <Scene3D dur={8.1}
     env="E1"
     K={1.6}
     fog={0.55}

@@ -14,7 +14,7 @@ export type PersonPose = {
   t: number; walk?: number; run?: number; turn?: number; // turn -1..1 (face looks left..right)
   eyes?: "normal" | "wide" | "narrow" | "closed" | "stare" | "worried" | "angry";
   mouth?: "closed" | "smile" | "open" | "frown" | "o" | "chew" | "grin";
-  talk?: boolean; armL?: Arm; armR?: Arm; sit?: boolean; lean?: number; blink?: boolean; headTilt?: number;
+  talk?: boolean; armL?: Arm; armR?: Arm; sit?: boolean; lean?: number; blink?: boolean; headTilt?: number; look?: number; // look -1..1 = eyes up..down
 };
 
 const INK = "#1a1418";
@@ -182,7 +182,7 @@ export function drawPerson(g: CanvasRenderingContext2D, s: PersonSpec, p: Person
     if (blink || p.eyes === "closed") { g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.arc(x, ey, er * 0.9, 0.15 * Math.PI, 0.85 * Math.PI); g.stroke(); continue; }
     g.fillStyle = s.eyeBags ? "#f0d8d8" : "#ffffff"; g.beginPath(); g.ellipse(x, ey, er, er * 1.1, 0, 0, Math.PI * 2); g.fill(); g.lineWidth = 3.5; g.strokeStyle = INK; g.stroke();
     const pr = p.eyes === "stare" ? er * 0.22 : er * 0.32;
-    g.fillStyle = INK; g.beginPath(); g.arc(x + turn * er * 0.5, ey + (p.eyes === "worried" ? er * 0.1 : 0), pr, 0, Math.PI * 2); g.fill();
+    g.fillStyle = INK; g.beginPath(); g.arc(x + turn * er * 0.5, ey + (p.eyes === "worried" ? er * 0.1 : 0) + (p.look ?? 0) * er * 0.5, pr, 0, Math.PI * 2); g.fill();
     if (p.eyes === "narrow" || p.eyes === "angry") { g.fillStyle = skin; g.fillRect(x - er * 1.2, ey - er * 1.3, er * 2.4, er * 0.8); g.beginPath(); g.moveTo(x - er, ey - er * 0.5); g.lineTo(x + er, ey - er * 0.5); g.lineWidth = 3.5; g.stroke(); }
     // brows
     g.strokeStyle = shade(hc, 0.7); g.lineWidth = 5; g.lineCap = "round"; g.beginPath();
