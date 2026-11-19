@@ -7,6 +7,7 @@ import { Episode2, ShotStill2, totalFrames2 } from "./ep2/Episode";
 import { Episode3, ShotStill3, totalFrames3 } from "./ep3/Episode";
 import { Photo3D } from "./photo3d/Photo3D";
 import { PersonSheet } from "./ep4/PersonSheet";
+import { Hook, HOOK_FRAMES } from "./ep4/Hook";
 
 export const Root: React.FC = () => (
   <>
@@ -20,6 +21,7 @@ export const Root: React.FC = () => (
     <Composition id="Ep3Shot" component={ShotStill3} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
     <Composition id="Photo3D" component={Photo3D} width={1080} height={1080} fps={30} durationInFrames={90} defaultProps={{ photo: "photo3d/test.png", depth: "photo3d/test_depth.png", move: "orbit", strength: 1.3 }} />
     <Composition id="PersonSheet" component={PersonSheet} width={3200} height={900} fps={30} durationInFrames={1} />
+    <Composition id="Ep4Hook" component={Hook} width={1080} height={1920} fps={30} durationInFrames={HOOK_FRAMES} />
     <Composition id="CastSheet" component={CastSheet} width={5000} height={600} fps={30} durationInFrames={1} />
   </>
 );
