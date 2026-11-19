@@ -5,7 +5,8 @@
 set -u
 FROM=$1; TO=$2; BR=$3; ID=$4
 cd "$(dirname "$0")/.."
-[ -d node_modules/remotion ] || npm ci --no-audit --no-fund
+export npm_config_onnxruntime_node_install_cuda=skip
+[ -d node_modules/remotion ] || npm ci --no-audit --no-fund --onnxruntime-node-install-cuda=skip
 export NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt
 if [ ! -s public/ep4/env/E9_depth.png ]; then
   T=$(mktemp -d); curl -sSL -o $T/env.zip "https://drive.usercontent.google.com/download?id=$ID&export=download&confirm=t"
