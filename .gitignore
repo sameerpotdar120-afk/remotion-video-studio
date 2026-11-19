@@ -1,0 +1,9 @@
+node_modules/
+out/
+*.log
+__pycache__/
+public/ep2/*.wav
+public/ep3/*.wav
+public/photo3d/*
+public/ep4/*.wav
+public/ep4/env/

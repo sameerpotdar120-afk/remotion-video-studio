@@ -1,19 +1,29 @@
-import React from 'react';
-import { Composition } from 'remotion';
-import { MainComposition } from './Video';
+import React from "react";
+import { Composition } from "remotion";
+import { Episode, ShotStill, totalFrames } from "./ep1/Episode";
+import { LongEpisode, longFrames } from "./ep1/Long";
+import { CastSheet } from "./ep2/CastSheet";
+import { Episode2, ShotStill2, totalFrames2 } from "./ep2/Episode";
+import { Episode3, ShotStill3, totalFrames3 } from "./ep3/Episode";
+import { Photo3D } from "./photo3d/Photo3D";
+import { PersonSheet } from "./ep4/PersonSheet";
+import { Hook, HOOK_FRAMES } from "./ep4/Hook";
+import { Part1, PART1_FRAMES } from "./ep4/Part1";
 
-export const RemotionRoot: React.FC = () => {
-  return (
-    <Composition
-      id="MainComposition"
-      component={MainComposition}
-      durationInFrames={240}
-      fps={24}
-      width={1080}
-      height={1920}
-      defaultProps={{
-        title: 'Documentary Video',
-      }}
-    />
-  );
-};
+export const Root: React.FC = () => (
+  <>
+    <Composition id="Short" component={Episode} width={1080} height={1920} fps={30} durationInFrames={totalFrames(30)} defaultProps={{ captions: true, music: true }} />
+    <Composition id="Long" component={LongEpisode} width={1920} height={1080} fps={30} durationInFrames={longFrames(30)} />
+    <Composition id="Short16x9" component={Episode} width={1920} height={1080} fps={30} durationInFrames={totalFrames(30)} defaultProps={{ captions: false, music: true }} />
+    <Composition id="Shot" component={ShotStill} width={1080} height={1920} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
+    <Composition id="Ep2" component={Episode2} width={1440} height={2560} fps={30} durationInFrames={totalFrames2(30)} defaultProps={{ captions: true, music: true }} />
+    <Composition id="Ep2Shot" component={ShotStill2} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
+    <Composition id="Ep3" component={Episode3} width={1440} height={2560} fps={30} durationInFrames={totalFrames3(30)} defaultProps={{ captions: true, music: true }} />
+    <Composition id="Ep3Shot" component={ShotStill3} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
+    <Composition id="Photo3D" component={Photo3D} width={1080} height={1080} fps={30} durationInFrames={90} defaultProps={{ photo: "photo3d/test.png", depth: "photo3d/test_depth.png", move: "orbit", strength: 1.3 }} />
+    <Composition id="PersonSheet" component={PersonSheet} width={3200} height={900} fps={30} durationInFrames={1} />
+    <Composition id="Ep4Part1" component={Part1} width={1080} height={1920} fps={30} durationInFrames={PART1_FRAMES} defaultProps={{ audio: false, captions: true }} />
+    <Composition id="Ep4Hook" component={Hook} width={1080} height={1920} fps={30} durationInFrames={HOOK_FRAMES} />
+    <Composition id="CastSheet" component={CastSheet} width={5000} height={600} fps={30} durationInFrames={1} />
+  </>
+);
