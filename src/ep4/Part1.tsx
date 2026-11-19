@@ -97,9 +97,9 @@ const S: Shot[] = [
       actors={[cu(P.stranger, { poseAt: (t) => ({ eyes: "stare", talk: t > 0.05 && t < 0.75, mouth: "closed" }), tint: "#d8c4b2" }, 0.2, 0.1, 3.4, 7.6)]} /> },
   // 16 she ate like she hadn't eaten in days: low PUSH across the plate up to her
   { a: 57.9, b: 61.65, el: (d) => <Scene3D dur={d} env="E8" K={1.8} fog={0} dust={[WARM]}
-      cam={{ from: [0.0, -1.5, 8.2], via: [0.0, -1.0, 7.9], to: [0.05, -0.2, 7.8], lookFrom: [0.0, -1.5, 0], lookTo: [0.05, 0.1, 0], fov: 32 }}
+      cam={{ from: [0.0, -1.5, 8.2], via: [0.0, -1.0, 7.9], to: [0.05, -0.75, 7.8], lookFrom: [0.0, -1.5, 0], lookTo: [0.05, -0.45, 0], fov: 32 }}
       glows={[{ uv: [0.5, 0.2], size: 1.0, color: "#ffc070", flicker: 0.06, amt: 0.55 }]}
-      actors={[{ spec: P.stranger, poseAt: (t) => ({ eyes: "narrow", mouth: "chew", armR: "eat", armL: "eat", headTilt: Math.sin(t * 9) * 0.04 }), uv: [0.55, 0.85], zuv: [0.55, 0.52], dz: 0.4, h: 4.15, res: 2, tint: "#dcc6b0" }]} /> },
+      actors={[{ spec: P.stranger, poseAt: (t) => ({ eyes: "narrow", mouth: "chew", armR: "eat", armL: "eat", headTilt: Math.sin(t * 9) * 0.04 }), uv: [0.55, 0.85], zuv: [0.55, 0.52], dz: 0.3, h: 4.15, res: 2, tint: "#dcc6b0" }]} /> },
   // 17 I asked how they ended up here: me, close-up, slow ARC
   { a: 61.65, b: 64.2, el: (d) => <Scene3D dur={d} env="E9" blur={1} fog={0} dust={[WARM]}
       cam={{ from: [-0.35, 0.2, 11.6], via: [0, 0.25, 11.2], to: [0.35, 0.2, 11.6], lookFrom: [0, 0.2, 0], lookTo: [0, 0.2, 0], fov: 30 }}
