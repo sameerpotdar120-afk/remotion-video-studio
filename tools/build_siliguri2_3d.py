@@ -252,12 +252,23 @@ def main() -> None:
     corridor = max(corridor.geoms, key=lambda g: g.area) if hasattr(corridor, "geoms") else corridor
     chumbi = china.intersection(box(88.55, 27.0, 89.45, 28.05))
     chumbi = max(chumbi.geoms, key=lambda g: g.area) if hasattr(chumbi, "geoms") else chumbi
+    zone = box(87.9, 26.2, 88.7, 26.9)
+    pn, pb = nearest_points(nepal.intersection(zone), bang.intersection(zone))
     DW = 4096
     DH = round(DW * (bd[3] - bd[1]) / (bd[2] - bd[0]))
     # the corridor: a soft glow, and its two real walls (the Nepal and Bangladesh borders) as lines
-    walls = unary_union([corridor.boundary.intersection(nepal.buffer(0.012)), corridor.boundary.intersection(bang.buffer(0.012))])
+    neck = box(87.95, 26.25, 88.75, 26.95)
+    walls = unary_union([india.boundary.intersection(nepal.buffer(0.012)).intersection(neck), india.boundary.intersection(bang.buffer(0.012)).intersection(neck)])
     wl = [g for g in (walls.geoms if hasattr(walls, "geoms") else [walls]) if g.geom_type == "LineString"]
-    soft = np.clip(raster([corridor], bd, DW, DH, 22) * 1.25, 0, 1)
+    # a soft glow centred on the narrowest point: India only (so it stops hard at the real borders), fading out north
+    # and south instead of ending on a drawn line
+    mid = ((pn.x + pb.x) / 2, (pn.y + pb.y) / 2)
+    ind_d = raster([india], bd, DW, DH, 1.0)
+    gxx = np.linspace(DET[0], DET[1], DW)[None, :]
+    gyy = np.array([ilat(v) for v in np.linspace(bd[3], bd[1], DH)])[:, None]
+    ex = ((gxx - mid[0]) * 111.32 * math.cos(math.radians(mid[1]))) / 24.0
+    ey = ((gyy - mid[1]) * 110.57) / 30.0
+    soft = np.clip(np.exp(-(ex ** 2 + ey ** 2)) * 1.35, 0, 1) * ind_d
     reg = np.stack([soft, raster(wl, bd, DW, DH, 1.5, line=9), raster([chumbi], bd, DW, DH, 3)], -1)
     Image.fromarray((reg * 255).astype(np.uint8)).save(OUT / "det_regions.png")
     WW = 4096
@@ -271,8 +282,6 @@ def main() -> None:
     Image.fromarray((reg2 * 255).astype(np.uint8)).save(OUT / "wide_regions.png")
 
     # the narrowest crossing: Nepal to Bangladesh across the corridor
-    zone = box(87.9, 26.2, 88.7, 26.9)
-    pn, pb = nearest_points(nepal.intersection(zone), bang.intersection(zone))
     gap_km = math.hypot((pn.x - pb.x) * 111.32 * math.cos(math.radians(pn.y)), (pn.y - pb.y) * 110.57)
     cen = corridor.centroid
     meta = {"wide": WIDE, "det": DET, "bw": bw, "bd": bd, "scale": scale, "vex": VEX,
