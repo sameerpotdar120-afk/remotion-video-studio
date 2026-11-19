@@ -7,7 +7,8 @@
 
 **Thumbnail:** `siliguri2_thumbnail.jpg` (1080×1920) and `siliguri2_thumbnail_4k.jpg` (2160×3840), one for YouTube and
 Instagram.
-- The picture: the 3D map, with China red above, the corridor glowing between Nepal and Bangladesh, and "सिर्फ़ 22 KM"
+- The picture: the 3D map, with China red above (its army ringed in the Chumbi Valley), the corridor glowing between Nepal
+  and Bangladesh with the 22 km bar, and "सिर्फ़ 22 KM!"
   in the top third.
 - It sits inside the 3:4 crop and pairs with title 1 without repeating its words.
 

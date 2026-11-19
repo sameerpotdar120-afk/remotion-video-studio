@@ -25,7 +25,7 @@ const SgCover: React.FC = () => {
       <AbsoluteFill style={{ background: 'radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 50%, rgba(0,0,0,0.55) 100%)' }} />
       <AbsoluteFill style={{ background: 'linear-gradient(180deg, rgba(0,0,0,0.55), rgba(0,0,0,0) 30%)' }} />
       {am[2] && <Prop k="a_china_armour" x={am[0]} y={am[1]} w={(90 * FOCAL) / am[3]} ring={COL.red} />}
-      {ch[2] && <TerritoryTag x={250} y={600} flag="china" hi="चीन" en="CHINA" s={1.05} />}
+      {ch[2] && <TerritoryTag x={830} y={175} flag="china" hi="चीन" en="CHINA" s={1.05} />}
       {bd[2] && <TerritoryTag x={bd[0]} y={bd[1]} flag="bangladesh" hi="बांग्लादेश" en="BANGLADESH" s={1.0} />}
       <svg width={1080} height={1920} style={{ position: 'absolute', left: 0, top: 0 }}>
         <line x1={g0[0]} y1={g0[1]} x2={g1[0]} y2={g1[1]} stroke="#000" strokeOpacity={0.5} strokeWidth={18} />
