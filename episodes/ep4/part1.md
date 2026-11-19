@@ -7,9 +7,9 @@ You won't believe what happened after we opened the door to a stranger at 10 PM 
 
 It was the summer of 1991. My best friend Ryan had just gotten engaged to Kate, and they invited us up to their cabin in the mountains to celebrate. Me, my wife Emma, and my brother Josh with his girlfriend Lauren.
 
-Josh drove us up. The cabin sat at the end of a long gravel driveway, nothing around it but pine trees for miles.
+Josh drove us up. The cabin sat at the end of a long gravel driveway, with nothing but pine trees for miles.
 
-We ate, drank wine, and laughed about old times. It was perfect.
+We ate, drank wine, and laughed about old times.
 
 Then, around ten, someone knocked on the door.
 
