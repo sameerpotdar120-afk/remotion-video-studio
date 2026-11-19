@@ -9,6 +9,7 @@ for h in 1 2; do
   for f in $(git ls-tree --name-only FETCH_HEAD out/ep4parts/ 2>/dev/null); do git show FETCH_HEAD:$f > $D/$(basename $f); done
 done
 cp -f out/ep4parts/*.mp4 $D/
+cp -f out/ep4fix/*.mp4 $D/ 2>/dev/null || true   # local re-renders of helper chunks win
 python3 - "$D" "$LAST" <<'PY'
 import os, sys, re
 d, last = sys.argv[1], int(sys.argv[2])
