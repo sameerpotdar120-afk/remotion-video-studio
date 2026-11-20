@@ -18,7 +18,7 @@ export const BK_DURATION_S = DURATION_S;
 const D = DURATION_S;
 const AUDIO = 'baikonur/audio/mix.wav';
 const DARK = '#071623';
-const COL = { teal: '#2EE6C4', red: '#E3262E', yellow: '#F7C600', gold: '#FFC21A', white: '#F4F4F4', sky: '#8FD0FF' };
+export const COL = { teal: '#2EE6C4', red: '#E3262E', yellow: '#F7C600', gold: '#FFC21A', white: '#F4F4F4', sky: '#8FD0FF' };
 const win = (t: number, a: number, b: number, fi = 0.25, fo = 0.25) => Math.max(0, Math.min(fi > 0 ? ramp(t, a, a + fi, linear) : t >= a ? 1 : 0, fo > 0 ? 1 - ramp(t, b - fo, b, linear) : t <= b ? 1 : 0));
 /** Loop-wrapped time for what is alive across the seam (Rakesh and the hook's rocket). */
 const wrapT = (t: number, lead: number) => (t > D - lead ? t - D : t);
@@ -27,7 +27,7 @@ const fmt = (n: number) => Math.round(n).toLocaleString('en-IN');
 const L = (k: string) => GEO.places[k];
 
 // ------------------------------------------------------------------ the kit
-const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string; glow?: string }> = ({ text, size, color = '#fff', font = TITLE, glow }) => (
+export const Big: React.FC<{ text: React.ReactNode; size: number; color?: string; font?: string; glow?: string }> = ({ text, size, color = '#fff', font = TITLE, glow }) => (
   <span style={{ fontFamily: font, fontWeight: 800, fontSize: size, lineHeight: 1.05, color, WebkitTextStroke: `${Math.round(size / 12)}px ${DARK}`, paintOrder: 'stroke fill', textShadow: `0 0 ${size / 3}px ${glow ?? color}66, 0 10px 24px rgba(0,0,0,0.55)`, whiteSpace: 'nowrap' }}>{text}</span>
 );
 const At: React.FC<{ x: number; y: number; p?: number; o?: number; rot?: number; children: React.ReactNode }> = ({ x, y, p = 1, o = 1, rot = 0, children }) =>
@@ -86,7 +86,7 @@ const Prop: React.FC<{ k: string; x: number; y: number; w: number; o?: number; p
   );
 };
 /** A person rising out of the map: head and shoulders, the bottom fading into the map, a white name box under it. */
-const MapPerson: React.FC<{ k: string; hi: string; en: string; bar: string; t: number; t0: number; x: number; bottom: number; h: number; o?: number }> = ({ k, hi, en, bar, t, t0, x, bottom, h, o = 1 }) => {
+export const MapPerson: React.FC<{ k: string; hi: string; en: string; bar: string; t: number; t0: number; x: number; bottom: number; h: number; o?: number }> = ({ k, hi, en, bar, t, t0, x, bottom, h, o = 1 }) => {
   if (o <= 0.001 || t < t0 - 0.05 || !has(k)) return null;
   const q = easeOut(ramp(t, t0, t0 + 0.7, linear));
   const lq = easeOut(ramp(t, t0 + 0.3, t0 + 0.8, linear));
@@ -133,7 +133,7 @@ const Fill: React.FC<{ d: string; color: string; g: number; cx: number; cy: numb
 const Outline: React.FC<{ d: string; o: number; w?: number; color?: string; dx?: number; dy?: number }> = ({ d, o, w = 3, color = '#fff', dx = 0, dy = 0 }) =>
   o <= 0.001 ? null : <g transform={`translate(${dx},${dy})`} opacity={o}><path d={d} fill="none" stroke="#000" strokeOpacity={0.35} strokeWidth={w + 3} strokeLinejoin="round" /><path d={d} fill="none" stroke={color} strokeWidth={w} strokeLinejoin="round" /></g>;
 
-const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
+export const MapVectors: React.FC<{ t: number; c: Cam }> = ({ t, c }) => {
   const [kx, ky] = toS(c, KZC), [ux, uy] = toS(c, USSRC), [rx, ry] = toS(c, RUC);
   const lease = lineD(c, GEO.lease) + 'Z';
   const kzD = ringsD(c, GEO.countries.kazakhstan) + lease; // the lease circle cut out of the turquoise
