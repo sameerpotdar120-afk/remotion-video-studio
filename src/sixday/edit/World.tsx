@@ -56,6 +56,7 @@ float felt(vec2 p, float fw) {
   float s = 0.0, wsum = 0.0, f = 0.02;
   for (int k = 0; k < 9; k++) {
     float fade = clamp(1.6 - fw * f * 3.0, 0.0, 1.0);
+    if (fade <= 0.0) break;
     vec2 q = p * f;
     q = vec2(q.x * 0.55 + q.y * 0.35, q.y * 1.6 - q.x * 0.2); // a little directional, like brushed felt
     s += (vnoise(q + float(k) * 7.13) - 0.5) * fade; wsum += fade;
@@ -70,7 +71,8 @@ vec3 seaN(vec2 p, float fw) {
   vec2 warp = vec2(vnoise(p * 0.02), vnoise(p * 0.02 + 9.1)) * 6.0;
   for (int k = 0; k < 9; k++) {
     float fade = clamp(1.25 - fw * f * 4.5, 0.0, 1.0);
-    if (fade > 0.0) {
+    if (fade <= 0.0) break;
+    {
       float a = 0.35 + 0.7 * float(k);
       vec2 d = normalize(vec2(cos(a) * 0.45 + 0.1, 1.0));
       vec2 q = p + warp * (1.0 + float(k) * 0.3);
@@ -100,12 +102,16 @@ void main() {
   vec3 Ld = normalize(L);
   vec3 V = normalize(camP - vPos);
 
+  float water = max(1.0 - land, riv);
+  float bw = max(uBorderW, fw * 1.2);
+  vec3 col = vec3(0.0);
   // ---- land
+  if (water < 0.999) {
   int id = int(texture2D(tIds, uv).r * 255.0 + 0.5);
   vec3 base = uOther; float hatch = 0.0, glow = 0.0;
-  for (int i = 1; i < 12; i++) { if (i == id) { base = uCol[i]; hatch = uHatch[i]; glow = uGlow[i]; } }
+  if (id >= 1 && id < 12) { base = uCol[id]; hatch = uHatch[id]; glow = uGlow[id]; }
   float fl = felt(p, fw);
-  vec3 col = base * (1.0 + fl * 0.30);
+  col = base * (1.0 + fl * 0.30);
   col *= 0.93 + 0.12 * vnoise(p * 0.012) ;
   vec3 n = normalize(vN);
   float lam = dot(n, Ld);
@@ -117,7 +123,6 @@ void main() {
     col = mix(col, mix(col * 0.82, vec3(0.92, 0.9, 0.84), 0.55), hatch * (1.0 - st));
   }
   // borders: a dark line with a soft shadow beside it, like a raised edge
-  float bw = max(uBorderW, fw * 1.2);
   float dB = mix(dPre, dPost, uPost);
   float line = smoothstep(bw + aa, bw - aa, dB);
   float shade = smoothstep(bw * 4.0, bw, dB) * 0.28;
@@ -132,7 +137,9 @@ void main() {
   // glowing edge of highlighted regions (inside the region, along its borders)
   col += vec3(1.0, 0.95, 0.8) * glow * smoothstep(bw * 5.0, bw, min(dFine, min(dB, coast))) * 0.35;
 
+  }
   // ---- water (sea, lakes, rivers, the canal)
+  if (water > 0.001) {
   vec3 wn = seaN(p, fw);
   float fres = pow(1.0 - max(dot(wn, V), 0.0), 3.0);
   float spec = pow(max(dot(reflect(-Ld, wn), V), 0.0), 60.0);
@@ -146,7 +153,7 @@ void main() {
   float foam = 0.0;
   for (int i = 0; i < 16; i++) {
     vec4 w = uWake[i];
-    if (w.w <= 0.0) continue;
+    if (w.w <= 0.0) break;
     vec2 d = vec2(cos(w.z), -sin(w.z));
     vec2 q = p - w.xy;
     float along = -dot(q, d), lat = abs(dot(q, vec2(-d.y, d.x)));
@@ -159,13 +166,13 @@ void main() {
     foam += (v * 0.8 * ripple + c * 0.9) * smoothstep(-w.w * 0.5, 0.0, along);
   }
   wc = mix(wc, vec3(0.86, 0.9, 0.92), clamp(foam, 0.0, 0.85));
-  float water = max(1.0 - land, riv);
   col = mix(col, wc, water);
+  }
   // fire light from the blasts, on land and water
   vec3 fireL = vec3(0.0);
   for (int i = 0; i < 8; i++) {
     vec4 f = uFire[i];
-    if (f.w <= 0.0) continue;
+    if (f.w <= 0.0) break;
     float dd2 = dot(p - f.xy, p - f.xy) / (f.z * f.z);
     fireL += vec3(1.0, 0.5, 0.18) * f.w * exp(-dd2 * 2.2);
   }
@@ -279,7 +286,7 @@ export const World: React.FC<{ h: Float32Array; cam: CamS; width: number; height
   useEffect(() => { if (tx) requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(() => continueRender(handle)))); }, [tx, handle]);
   if (!tx) return <div style={{ width, height, background: FOG }} />;
   return (
-    <ThreeCanvas width={width} height={height} camera={{ fov: cam.fov, near: 0.3, far: 20000, position: cam.pos }} gl={{ antialias: true, preserveDrawingBuffer: true }} style={{ background: FOG }}>
+    <ThreeCanvas width={width} height={height} camera={{ fov: cam.fov, near: 0.3, far: 20000, position: cam.pos }} gl={{ antialias: false, preserveDrawingBuffer: true }} style={{ background: FOG }}>
       <CamRig cam={cam} />
       <Env />
       <ambientLight intensity={0.7} />

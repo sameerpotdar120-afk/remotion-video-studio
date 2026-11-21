@@ -41,7 +41,7 @@ OUT = ROOT / "public" / "sixday" / "map"
 LON0, LON1, LAT0, LAT1 = 28.0, 40.0, 26.0, 35.6
 TW = 6144
 TH = round(TW * (LAT1 - LAT0) / ((LON1 - LON0) * math.cos(math.radians(30.8))))
-GW = 1024
+GW = 640
 GH = round(GW * TH / TW)
 IDS = {"water": 0, "egypt": 1, "sinai": 2, "gaza": 3, "israel": 4, "westbank": 5, "golan": 6, "jordan": 7, "syria": 8,
        "lebanon": 9, "saudi": 10, "other": 11}

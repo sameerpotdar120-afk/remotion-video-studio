@@ -284,7 +284,7 @@ const BLASTS: BlastT[] = [
 
 // ------------------------------------------------------------------ helpers for the overlays
 const sideFlags: [Side, string, number, number][] = [['il', 'israel', C.israel0, C.egypt0], ['eg', 'egypt', C.egypt0, C.jordan0], ['jo', 'jordan', C.jordan0, C.syria0], ['sy', 'syria', C.syria0, C.faisla0]];
-const FLAGAT: Record<string, [number, number]> = { israel: [34.85, 31.2], egypt: [32.3, 29.6], jordan: [36.4, 31.3], syria: [36.9, 33.3] };
+const FLAGAT: Record<string, [number, number]> = { israel: [34.95, 30.55], egypt: [32.3, 29.6], jordan: [36.4, 31.3], syria: [36.9, 33.3] };
 
 const WorldInset: React.FC<{ u: number; W: number; H: number; p: number; t0: number; t: number; portrait: boolean }> = ({ u, W, H, p, t0, t, portrait }) => {
   if (p <= 0.001) return null;
