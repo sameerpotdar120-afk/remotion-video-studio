@@ -65,23 +65,29 @@ float felt(vec2 p, float fw) {
   return wsum > 0.0 ? s / sqrt(wsum) : 0.0;
 }
 // the sea: fractal directional ripples, each octave moving at its own (deep-water) speed
+// The sea, like the reference: a dense, streaky wind-wave surface that is always alive. Waves are summed in octaves
+// (wavelengths 60 km down to metres), three directions per octave fanned round the wind; each octave is weighted by
+// its size on screen (peaking near 14 px), so the pattern stays fine and streaky at every zoom. Each wave moves at its
+// own deep-water speed (omega ~ 1/sqrt(wavelength)), so the surface visibly crawls and re-forms every frame.
 vec3 seaN(vec2 p, float fw) {
   vec2 g = vec2(0.0);
-  float f = 0.035;
-  vec2 warp = vec2(vnoise(p * 0.02), vnoise(p * 0.02 + 9.1)) * 6.0;
-  for (int k = 0; k < 9; k++) {
-    float fade = clamp(1.25 - fw * f * 4.5, 0.0, 1.0);
-    if (fade <= 0.0) break;
-    {
-      float a = 0.35 + 0.7 * float(k);
-      vec2 d = normalize(vec2(cos(a) * 0.45 + 0.1, 1.0));
-      vec2 q = p + warp * (1.0 + float(k) * 0.3);
-      float ph = dot(d, q) * f * 6.2832 - uT * sqrt(f) * 2.2 + float(k) * 1.7;
-      float r = vnoise(q * f * 0.45 + float(k) * 3.1);
-      r = r * r * 1.8;
-      g += d * cos(ph) * 0.11 * r * fade;
+  float lam = 60.0;
+  for (int k = 0; k < 26; k++) {
+    float px = lam / fw;                         // this octave's wavelength in screen pixels
+    if (px < 2.5) break;
+    float wgt = exp(-pow(log2(px / 14.0) / 1.25, 2.0));
+    if (wgt > 0.02) {
+      float kf = 6.2832 / lam;
+      float om = 6.2832 * 1.1 / sqrt(lam);
+      for (int j = 0; j < 3; j++) {
+        float a = 1.5708 + (float(j) - 1.0) * 0.32 + 0.25 * sin(float(k) * 2.3 + float(j));
+        vec2 d = vec2(cos(a), -sin(a));          // mostly running north-south: long east-west streaks
+        float ph = dot(d, p) * kf * (1.0 + 0.13 * float(j)) - uT * om * (1.0 + 0.09 * float(j)) + float(k * 3 + j) * 1.913;
+        float steep = 0.5 + 0.5 * sin(dot(vec2(-d.y, d.x), p) * kf * 0.23 + float(k + j));  // crests break up along their length
+        g += d * cos(ph) * wgt * steep * 0.30;
+      }
     }
-    f *= 1.85;
+    lam *= 0.72;
   }
   return normalize(vec3(-g.x, 1.0, -g.y));
 }
@@ -141,12 +147,16 @@ void main() {
   // ---- water (sea, lakes, rivers, the canal)
   if (water > 0.001) {
   vec3 wn = seaN(p, fw);
-  float fres = pow(1.0 - max(dot(wn, V), 0.0), 3.0);
-  float spec = pow(max(dot(reflect(-Ld, wn), V), 0.0), 60.0);
-  float wl = dot(wn, Ld);
-  vec3 deep = vec3(0.085, 0.20, 0.36), light = vec3(0.24, 0.40, 0.60);
-  vec3 wc = mix(deep, light, clamp(0.5 + (wl - 0.8) * 3.0, 0.0, 1.0));
-  wc = wc * (0.85 + 0.25 * vnoise(p * 0.004 + uT * 0.003)) + vec3(0.35, 0.42, 0.55) * fres * 0.35 + vec3(1.0, 0.97, 0.9) * spec * 0.45;
+  // the reference's water: blue-grey body, lavender sky sheen on the faces turned to the camera, bright glints
+  float ndv = max(dot(wn, V), 0.0);
+  float fres = 0.04 + 0.96 * pow(1.0 - ndv, 5.0);
+  vec3 Rv = reflect(-V, wn);
+  vec3 sky = mix(vec3(0.42, 0.46, 0.62), vec3(0.78, 0.78, 0.9), clamp(Rv.y * 1.4, 0.0, 1.0));
+  float spec = pow(max(dot(reflect(-Ld, wn), V), 0.0), 90.0);
+  float slope = clamp(1.0 - wn.y * wn.y, 0.0, 1.0) * 6.0;
+  vec3 body = mix(vec3(0.14, 0.25, 0.41), vec3(0.27, 0.38, 0.55), clamp(0.5 + dot(wn.xz, vec2(0.6, -0.8)) * 4.0, 0.0, 1.0));
+  vec3 wc = mix(body, sky, clamp(fres * 2.2 + slope * 0.15, 0.0, 0.85));
+  wc = wc * (0.92 + 0.12 * vnoise(p * 0.004 + uT * 0.01)) + vec3(1.0, 0.97, 0.92) * spec * 0.6;
   float sh = smoothstep(-bw * 10.0, 0.0, coast) * (1.0 - land);
   wc *= 1.0 - 0.38 * sh; // the land's shadow on the water along the coast
   // ship wakes: a white V and a churned centre line behind every moving ship
