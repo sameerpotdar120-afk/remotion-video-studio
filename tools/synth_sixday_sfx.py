@@ -122,6 +122,36 @@ def main() -> None:
     x = lp(rng.standard_normal(n), 70) * 2 + lp(rng.standard_normal(n), 300) * 0.3 * (0.5 + 0.5 * np.sin(2 * np.pi * 0.23 * t))
     f = int(SR * 0.8); x[:f] *= np.linspace(0, 1, f); x[-f:] *= np.linspace(1, 0, f)
     write("syn_rumble", x, 0.7)
+    # layered explosions: a sharp crack, a deep boom (3 variants each), falling debris
+    for v in range(3):
+        n = int(SR * 0.6); t = np.arange(n) / SR
+        crack = hp(rng.standard_normal(n), 900 + 300 * v) * np.exp(-t * (38 + 8 * v))
+        write(f"syn_crack{v}", crack, 0.3)
+        b = blast(3.0 + 0.4 * v)
+        write(f"syn_boom{v}", lp(b, 1600 - 300 * v), 0.35)
+        n = int(SR * 2.5); x = np.zeros(n)
+        for _ in range(60):
+            k = int(rng.uniform(0.15, 2.2) * SR); L = int(SR * rng.uniform(0.01, 0.05))
+            if k + L < n:
+                x[k:k + L] += bp(rng.standard_normal(L), 600, 5000) * np.hanning(L) * rng.uniform(0.1, 1) * np.exp(-k / SR * 1.2)
+        write(f"syn_debris{v}", x, 0.6)
+    # a jet flyby with Doppler: the roar and turbine whine rise as it comes, drop in pitch as it passes (peak at 2.0 s)
+    n = int(SR * 4.5); t = np.arange(n) / SR
+    tp, v_s, c_s, d0 = 2.0, 260.0, 343.0, 60.0
+    xpos = (t - tp) * v_s
+    r = np.sqrt(xpos ** 2 + d0 ** 2)
+    rad_v = xpos * v_s / r                      # +: receding
+    fshift = c_s / (c_s + rad_v)
+    phase = np.cumsum(fshift) / SR
+    whine = np.sin(2 * np.pi * 2400 * phase) * 0.12 + np.sin(2 * np.pi * 1180 * phase) * 0.08
+    roar_src = rng.standard_normal(n)
+    # pitch the roar by resampling a noise bed along the Doppler phase
+    idx = np.clip((phase * SR).astype(int), 0, n - 1)
+    roar = lp(roar_src[idx], 2500) + 0.6 * lp(roar_src[idx], 300)
+    amp = (d0 / r) ** 1.3
+    x = (roar * 0.8 + whine) * amp
+    x = lp(x, 9000)
+    write("syn_jet", x, 0.8)
     print("ok")
 
 

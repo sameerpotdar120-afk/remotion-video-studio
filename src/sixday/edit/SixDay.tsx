@@ -5,6 +5,7 @@ import { useFonts, ENF } from './font';
 import { useHeights } from './geo';
 import { IMGS, Scene, T, DURATION_S } from './story';
 import { useImgs } from './things';
+import { useModels } from './models';
 
 export { DURATION_S };
 export const SHORTS = T.shorts;
@@ -20,12 +21,12 @@ const Credit: React.FC<{ u: number }> = ({ u }) => (
 export const SixDayLong: React.FC<{ audio: string }> = ({ audio }) => {
   const f = useCurrentFrame();
   const { width: W, height: H, fps } = useVideoConfig();
-  const h = useHeights(); const fonts = useFonts(); const im = useImgs(IMGS);
-  if (!h || !fonts || !im) return null;
+  const h = useHeights(); const fonts = useFonts(); const im = useImgs(IMGS); const md = useModels();
+  if (!h || !fonts || !im || !md) return null;
   const t = f / fps;
   return (
     <AbsoluteFill style={{ background: '#000' }}>
-      <Scene t={t} W={W} H={H} portrait={false} h={h} im={im} long />
+      <Scene t={t} W={W} H={H} portrait={false} h={h} im={im} md={md} long />
       <Credit u={H / 1080} />
       {audio && <Audio src={staticFile(audio)} />}
     </AbsoluteFill>
@@ -36,17 +37,17 @@ export const SixDayLong: React.FC<{ audio: string }> = ({ audio }) => {
 export const SixDayShort: React.FC<{ n: number; audio: string }> = ({ n, audio }) => {
   const f = useCurrentFrame();
   const { width: W, height: H, fps } = useVideoConfig();
-  const h = useHeights(); const fonts = useFonts(); const im = useImgs(IMGS);
-  if (!h || !fonts || !im) return null;
+  const h = useHeights(); const fonts = useFonts(); const im = useImgs(IMGS); const md = useModels();
+  if (!h || !fonts || !im || !md) return null;
   const s = SHORTS[n];
   const t = s.t0 + f / fps;
   const xf = ramp(t, s.t1 - LOOP_XF, s.t1, linear);
   return (
     <AbsoluteFill style={{ background: '#000' }}>
-      <Scene t={t} W={W} H={H} portrait h={h} im={im} caps={[s.t0, s.t1 - 0.3]} gid={`g${n}a`} />
+      <Scene t={t} W={W} H={H} portrait h={h} im={im} md={md} caps={[s.t0, s.t1 - 0.3]} gid={`g${n}a`} />
       {xf > 0 && (
         <AbsoluteFill style={{ opacity: xf }}>
-          <Scene t={s.t0 - (s.t1 - t)} W={W} H={H} portrait h={h} im={im} caps={null} gid={`g${n}b`} />
+          <Scene t={s.t0 - (s.t1 - t)} W={W} H={H} portrait h={h} im={im} md={md} caps={null} gid={`g${n}b`} />
         </AbsoluteFill>
       )}
       <Credit u={W / 1080} />

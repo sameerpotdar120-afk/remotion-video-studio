@@ -220,57 +220,96 @@ const scorchTex = () => canvasTex('scorch', 256, 256, (c) => {
   c.fillStyle = g; c.fillRect(0, 0, 256, 256);
 });
 /**
- * A blast at `at`, `age` seconds after it went off: a white-hot flash, a fireball that cools into a rolling smoke
- * column of chunky puffs (the reference's look), a shockwave ring racing over the ground, sparks thrown out in arcs and
- * a scorch mark left behind. `size` is the fireball radius in km.
+ * A blast at `at`, `age` seconds after it went off (`size` = fireball radius, km):
+ * a white-hot flash, a fireball of glowing billows that cools from yellow to deep orange, a column of soft smoke puffs
+ * that rolls up and drifts (charcoal at the base, dusty brown above), a shockwave ring racing over the ground, sparks and
+ * debris thrown out in arcs, and a scorch mark left behind. Its light on the ground comes from `blastLight` (the shader).
  */
-export const Blast: React.FC<{ h: Float32Array; at: string | [number, number]; size: number; age: number; seed?: number; n?: number; scorch?: number }> = ({ h, at, size, age, seed = 1, n = 40, scorch = 1 }) => {
-  const smoke = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#000000' }), n), [n]);
-  const fire = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), n), [n]);
-  const sparks = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#ffd27a', toneMapped: false }), 18), []);
-  if (age < 0 || age > 4.2) return null;
+export const Blast: React.FC<{ h: Float32Array; at: string | [number, number]; size: number; age: number; seed?: number; scorch?: number }> = ({ h, at, size, age, seed = 1, scorch = 1 }) => {
+  const debris = useMemo(() => new THREE.InstancedMesh(new THREE.BoxGeometry(1, 0.6, 0.8), new THREE.MeshLambertMaterial({ color: '#2a2018' }), 14), []);
+  const sparks = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#ffd27a', toneMapped: false }), 22), []);
+  if (age < 0 || age > 4.6) return null;
   const [x, y, z] = at3(h, at);
-  let s = seed * 7919 + 13;
-  const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
-  const o = new THREE.Object3D(), col = new THREE.Color();
-  for (let i = 0; i < n; i++) {
-    const a = rnd() * Math.PI * 2, r = Math.sqrt(rnd()), up = rnd(), sz = 0.45 + rnd() * 0.55, delay = rnd() * 0.25;
-    const t = Math.max(0, age - delay);
-    const grow = 1 - Math.exp(-t * 5);
-    const rise = up * size * 1.6 * (1 - Math.exp(-t * 1.1)) + t * size * 0.15;
-    const spread = r * size * (0.5 + 0.8 * grow) * (1 + t * 0.05);
-    const px = x + Math.cos(a) * spread + t * size * 0.12, pz = z + Math.sin(a) * spread * 0.8;
-    const py = y + size * 0.35 * sz + rise;
-    const fade = Math.max(0, 1 - Math.max(0, t - 1.6) / 2.2);
-    const rr = size * sz * (0.3 + 0.65 * grow + t * 0.05) * fade;
-    o.position.set(px, py, pz); o.scale.setScalar(Math.max(0.0001, rr)); o.rotation.set(a, up * 3, r); o.updateMatrix();
-    smoke.setMatrixAt(i, o.matrix);
-    const heat = Math.max(0, 1 - t / 0.9);
-    const dk = 0.16 + 0.22 * up * up + 0.1 * sz; // charcoal at the core, dusty brown at the top
-    col.setRGB((dk * 1.2 + heat * 0.6) * 0.5, (dk * 1.0 + heat * 0.22) * 0.5, (dk * 0.82 + heat * 0.03) * 0.5); smoke.setColorAt(i, col);
-    const fr = Math.max(0.0001, rr * 0.82 * Math.max(0, 1 - t / 1.1));
-    o.scale.setScalar(fr); o.updateMatrix(); fire.setMatrixAt(i, o.matrix);
-    col.setRGB(1.0 * heat + 0.25, 0.42 * heat + 0.06, 0.08 * heat * heat); fire.setColorAt(i, col);
+  let sd = seed * 7919 + 13;
+  const rnd = () => { sd = (sd * 16807) % 2147483647; return sd / 2147483647; };
+  const o = new THREE.Object3D();
+  const out: React.ReactNode[] = [];
+  // smoke column
+  for (let i = 0; i < 22; i++) {
+    const a = rnd() * Math.PI * 2, r = Math.sqrt(rnd()), up = rnd(), delay = rnd() * 0.35, v = Math.floor(rnd() * 3);
+    const t = Math.max(0, age - 0.12 - delay);
+    if (t <= 0) continue;
+    const grow = 1 - Math.exp(-t * 3.2);
+    const px = x + Math.cos(a) * r * size * (0.5 + 0.7 * grow) + t * size * 0.18;
+    const pz = z + Math.sin(a) * r * size * 0.6;
+    const py = y + size * (0.3 + up * 2.2 * (1 - Math.exp(-t * 0.9)) + t * 0.25);
+    const sc = size * (0.9 + 1.5 * grow + t * 0.25) * (0.7 + 0.5 * rnd());
+    const fade = Math.min(1, t * 6) * Math.max(0, 1 - Math.max(0, t - 1.8) / 2.4);
+    const heat = Math.max(0, 1 - t / 0.7);
+    const dk = 0.16 + 0.24 * up;
+    const col = new THREE.Color(dk * 1.25 + heat * 0.9, dk * 1.05 + heat * 0.45, dk * 0.85 + heat * 0.12);
+    out.push(<sprite key={`s${i}`} position={[px, py, pz]} scale={[sc, sc, 1]} renderOrder={17}>
+      <spriteMaterial map={smokeTexB(v)} color={col} transparent opacity={0.92 * fade} depthWrite={false} rotation={a + t * 0.3} />
+    </sprite>);
   }
-  for (let i = 0; i < 18; i++) {
-    const a = rnd() * Math.PI * 2, v = size * (2.5 + rnd() * 3), vy = size * (2 + rnd() * 4), t = Math.min(age, 1.4);
-    const k = Math.max(0, 1 - age / 1.4);
-    o.position.set(x + Math.cos(a) * v * t, y + Math.max(0, vy * t - size * 4.5 * t * t), z + Math.sin(a) * v * t);
-    o.scale.setScalar(Math.max(0.0001, size * 0.07 * k)); o.updateMatrix(); sparks.setMatrixAt(i, o.matrix);
+  // fireball
+  for (let i = 0; i < 9; i++) {
+    const a = rnd() * Math.PI * 2, r = rnd() * size * 0.7;
+    const t = age;
+    if (t > 1.1) break;
+    const k = Math.max(0, 1 - t / 1.1);
+    const sc = size * (0.8 + 1.8 * (1 - Math.exp(-t * 6))) * (0.6 + 0.6 * rnd());
+    out.push(<sprite key={`f${i}`} position={[x + Math.cos(a) * r, y + size * (0.4 + t * 1.2 + rnd() * 0.6), z + Math.sin(a) * r]} scale={[sc, sc, 1]} renderOrder={22}>
+      <spriteMaterial map={flashTex()} color={new THREE.Color(1, 0.55 + 0.45 * k, 0.2 + 0.6 * k * k)} transparent opacity={k * 0.7} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} />
+    </sprite>);
   }
-  for (const m of [smoke, fire, sparks]) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
-  const flash = Math.max(0, 1 - age / 0.35), ringR = size * (0.5 + age * 7), ringO = Math.max(0, 1 - age / 0.9);
+  // debris and sparks thrown out in arcs
+  for (let i = 0; i < 14; i++) {
+    const a = rnd() * Math.PI * 2, v = size * (2 + rnd() * 3.5), vy = size * (3 + rnd() * 5), t = Math.min(age, 1.6);
+    const py = Math.max(0, vy * t - size * 6 * t * t);
+    o.position.set(x + Math.cos(a) * v * t, y + py, z + Math.sin(a) * v * t); o.rotation.set(t * 9 * rnd(), t * 7, a);
+    o.scale.setScalar(Math.max(0.0001, size * 0.09 * (0.5 + rnd()) * (age < 1.8 ? 1 : 0))); o.updateMatrix(); debris.setMatrixAt(i, o.matrix);
+  }
+  for (let i = 0; i < 22; i++) {
+    const a = rnd() * Math.PI * 2, v = size * (3 + rnd() * 4), vy = size * (2 + rnd() * 5), t = Math.min(age, 1.2);
+    const k = Math.max(0, 1 - age / 1.2);
+    o.position.set(x + Math.cos(a) * v * t, y + Math.max(0, vy * t - size * 5 * t * t), z + Math.sin(a) * v * t);
+    o.rotation.set(0, 0, 0); o.scale.setScalar(Math.max(0.0001, size * 0.05 * k)); o.updateMatrix(); sparks.setMatrixAt(i, o.matrix);
+  }
+  debris.instanceMatrix.needsUpdate = true; sparks.instanceMatrix.needsUpdate = true;
+  const flash = Math.max(0, 1 - age / 0.3), ringR = size * (0.5 + age * 8), ringO = Math.max(0, 1 - age / 0.8);
   return (
     <group>
-      {scorch > 0 && <mesh position={[x, y + 0.12, z]} rotation={[-Math.PI / 2, 0, seed]} renderOrder={9}><planeGeometry args={[size * 3.2, size * 3.2]} /><meshBasicMaterial map={scorchTex()} transparent opacity={Math.min(1, age * 3) * scorch} depthWrite={false} /></mesh>}
-      {ringO > 0 && <mesh position={[x, y + 0.2, z]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={19}><planeGeometry args={[ringR * 2, ringR * 2]} /><meshBasicMaterial map={ringTex()} transparent opacity={ringO * 0.8} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></mesh>}
-      <primitive object={smoke} />
-      {age < 1.2 && <primitive object={fire} />}
-      {age < 1.4 && <primitive object={sparks} />}
-      {flash > 0 && <sprite position={[x, y + size * 0.8, z]} scale={[size * 7 * (0.6 + age * 2), size * 7 * (0.6 + age * 2), 1]} renderOrder={21}><spriteMaterial map={flashTex()} transparent opacity={flash} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>}
+      {scorch > 0 && <mesh position={[x, y + 0.12, z]} rotation={[-Math.PI / 2, 0, seed]} renderOrder={9}><planeGeometry args={[size * 3.4, size * 3.4]} /><meshBasicMaterial map={scorchTex()} transparent opacity={Math.min(1, age * 3) * scorch} depthWrite={false} /></mesh>}
+      {ringO > 0 && <mesh position={[x, y + 0.2, z]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={19}><planeGeometry args={[ringR * 2, ringR * 2]} /><meshBasicMaterial map={ringTex()} transparent opacity={ringO * 0.85} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></mesh>}
+      {out}
+      {age < 1.8 && <primitive object={debris} />}
+      {age < 1.2 && <primitive object={sparks} />}
+      {flash > 0 && <sprite position={[x, y + size * 0.8, z]} scale={[size * 6 * (0.5 + age * 2), size * 6 * (0.5 + age * 2), 1]} renderOrder={23}><spriteMaterial map={flashTex()} transparent opacity={flash * 0.85} depthWrite={false} blending={THREE.AdditiveBlending} toneMapped={false} /></sprite>}
     </group>
   );
 };
+
+/** The light a blast throws on the ground: [x, z, radius km, intensity] (for the ground shader). */
+export const blastLight = (h: Float32Array, at: string | [number, number], size: number, age: number): [number, number, number, number] | null => {
+  if (age < 0 || age > 2.6) return null;
+  const [x, , z] = at3(h, at);
+  const k = age < 0.08 ? age / 0.08 : Math.exp(-(age - 0.08) * 1.6) * (0.85 + 0.15 * Math.sin(age * 31));
+  return [x, z, size * 7, 1.2 * k];
+};
+
+/** Soft smoke puffs (several blurred blobs with a darker core and lit rim), white so they can be tinted. */
+const smokeTexB = (v: number) => canvasTex(`smokeB${v}`, 256, 256, (c) => {
+  const s = 256;
+  const H = (n: number) => { const q = Math.sin(n * 127.1 + v * 311.7) * 43758.5453; return q - Math.floor(q); };
+  for (let i = 0; i < 30; i++) {
+    const a = H(i) * Math.PI * 2, r = Math.sqrt(H(i + 50)) * s * 0.24;
+    const px = s / 2 + Math.cos(a) * r, py = s / 2 + Math.sin(a) * r * 0.85, rr = s * (0.1 + 0.15 * H(i + 90));
+    const g = c.createRadialGradient(px - rr * 0.25, py - rr * 0.3, 0, px, py, rr);
+    g.addColorStop(0, 'rgba(255,255,255,0.55)'); g.addColorStop(0.55, 'rgba(225,225,225,0.3)'); g.addColorStop(1, 'rgba(200,200,200,0)');
+    c.fillStyle = g; c.fillRect(0, 0, s, s);
+  }
+});
 
 /** Camera shake (km offsets) from blasts that went off at the given times. */
 export const shake = (t: number, hits: number[], amp: number): V3 => {

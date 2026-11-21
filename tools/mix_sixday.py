@@ -138,7 +138,37 @@ def cues():
     # close
     A(c["close"] - 0.4, "whoosh_cinematic_fast", -18); A(c["teenghante"], "jet_pass", -21); A(c["nayanaqsha"], "boom_hit", -18)
     A(c["gaza9"], "swell_tonal", -19); A(c["chhahdin9"], "heavy_knock", -16); A(DUR - 1.4, "wh_big_tonal", -19)
-    return q
+    # ---- sound tied to the 3D models
+    # tank engines for as long as each tank drives, and a report for every shot
+    for t0, d in ((c["tank1"], 3.4), (c["dakshin"], 3.0), (c["june6"] + 0.5, 3.5), (c["chadhai"] + 2.6, 4.0), (c["june9"] + 0.5, 2.5)):
+        A(t0, "syn_tank", -18, dur=d)
+    for f in [c["toda"] - 1.4, c["toda"] - 1.6, c["toda"] - 1.8, c["toda"] - 0.6, c["toda"] - 0.45, c["toda"] - 0.3,
+              c["pehle_pahunch"] - 0.7, c["pehle_pahunch"] - 0.45, c["pehle_pahunch"] - 0.2, c["bunker"] - 0.2, c["bunker"] + 0.2, c["bunker"] + 0.5, c["bunker"] + 0.9]:
+        A(f, "tankgun", -18)
+    # jets: a Doppler flyby peaking as each one crosses the frame
+    for peak, lv in ((c["s2"] - 0.3 + 1.6, -13), (c["tabhi"] + 1.0, -13), (c["tabhi"] + 1.6, -16), (c["neeche"] + 0.6, -12), (c["lehar2"] + 1.7, -15), (c["teenghante"] + 0.4, -20)):
+        A(peak - 2.0, "syn_jet", lv)
+    # small arms with the tracers and the squads
+    for t0, d in ((c["chhid"] + 0.2, 3.5), (c["sadak"] + 0.2, 2.5), (c["para"] - 0.6, 2.5), (c["bunker"] - 0.6, 2.5), (c["june10"] - 1.0, 1.5)):
+        A(t0, "syn_gunfire", -21, dur=d)
+    # ships moving through the water
+    for t0, d in ((c["asia"], 3.5), (c["beechraaste"], 2.5), (c["do6"], 3.0)):
+        A(t0, "waves_soft", -26, dur=d)
+    # every blast is three layers: crack (close ones), boom, debris; three variants so no two sound the same
+    out = []
+    for i, (t, n, lv, o) in enumerate(q):
+        v = i % 3
+        if n in ("syn_blast_near", "syn_blast_far"):
+            near = n.endswith("near")
+            if near:
+                out.append((t, f"syn_crack{v}", lv + 1, {}))
+            out.append((t, f"syn_boom{v}", lv if near else lv - 2, {}))
+            out.append((t + 0.15, f"syn_debris{v}", lv - (5 if near else 9), {"align": "start"}))
+        elif n == "tankgun":
+            out.append((t, f"syn_crack{v}", lv + 2, {})); out.append((t, f"syn_boom{(v + 1) % 3}", lv - 3, {}))
+        else:
+            out.append((t, n, lv, o))
+    return out
 
 
 def place(buf: np.ndarray, a: np.ndarray, start: float) -> None:
@@ -204,7 +234,8 @@ def main() -> None:
             a = fade(a[: int(opt["dur"] * SR)].copy(), 0.08, 0.4)
         r = win_rms_db(a)
         a = a * db(v_ref + level - r.max())
-        place(sfx, a, t - r.argmax() / SR if name.startswith(("syn_blast", "boom", "heavy", "metal", "pop", "impact", "card", "gong", "stinger", "subdrop")) else t)
+        peak = name.startswith(("syn_blast", "syn_crack", "syn_boom", "boom", "heavy", "metal", "pop", "impact", "card", "gong", "stinger", "subdrop")) and opt.get("align") != "start"
+        place(sfx, a, t - r.argmax() / SR if peak else t)
     sfx *= db(-SFX_DUCK * activity)
 
     def master(mix: np.ndarray, out: Path) -> None:

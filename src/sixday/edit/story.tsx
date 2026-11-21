@@ -6,7 +6,8 @@ import { camOf, CamK } from './cam';
 import { Kind, Side } from './flags';
 import { PXZ, V3, groundXZ } from './geo';
 import { Breather, BigNum, Captions, Chapter, Clock, DateCard, Measure, NameCard, Portrait, Radio, Stamp, Stat, flagURL } from './overlay';
-import { Arrow, Blast, Bracket, City, Jet, Label, Prop, Unit, UnitT, shake } from './things';
+import { Arrow, Blast, Bracket, City, Label, Prop, Unit, UnitT, blastLight, shake } from './things';
+import { Jet3D, Models, Pt, Ship3D, Squad, Tank, Tracers } from './models';
 import timing from './timing.json';
 import world from '../../../public/sixday/map/world_inset.json';
 import { CamS, Ground, World, project } from './World';
@@ -247,8 +248,8 @@ const LABELS: Lab[] = [
   L([35.82, 33.05], 'गोलान हाइट्स', 0.032, C.s4, C.galil, 'GOLAN HEIGHTS'), L('galilee', 'गलील का सागर', 0.03, C.sagar, C.dhara, undefined, SEA),
   L('kuneitra', 'क़ुनैत्रा', 0.028, C.june9, C.aajbhi), L('dan', 'दान', 0.026, C.dhara, C.june9), L('hermon', 'हेरमोन', 0.026, C.dhara, C.june9),
   L([33.8, 29.6], 'सिनाई', 0.028, C.sinaigaza, C.bridge5), L('gaza', 'ग़ाज़ा', 0.024, C.sinaigaza, C.bridge5), L([35.3, 32.05], 'वेस्ट बैंक', 0.024, C.wbj, C.bridge5), L([35.78, 33.03], 'गोलान', 0.024, C.golan5, C.bridge5),
-  L('great_bitter_lake', 'ग्रेट बिटर लेक', 0.07, C.gbl, C.kinara_eg + 1, 'GREAT BITTER LAKE', SEA), L('lake_timsah', 'लेक तिमसाह', 0.05, C.timsah, C.kinara_eg + 1, undefined, SEA),
-  L('port_said', 'पोर्ट सईद', 0.03, C.band, C.n15b), L('suez', 'स्वेज़', 0.03, C.band, C.n15b), L('great_bitter_lake', 'येलो फ़्लीट', 0.06, C.yellow, C.bharat6, 'YELLOW FLEET'),
+  L([32.18, 30.33], 'ग्रेट बिटर लेक', 0.032, C.gbl, C.kinara_eg + 1, 'GREAT BITTER LAKE', SEA), L([32.18, 30.57], 'लेक तिमसाह', 0.026, C.timsah, C.kinara_eg + 1, undefined, SEA),
+  L('port_said', 'पोर्ट सईद', 0.03, C.band, C.n15b), L('suez', 'स्वेज़', 0.03, C.band, C.n15b), L([32.4, 30.43], 'येलो फ़्लीट', 0.036, C.yellow, C.bharat6, 'YELLOW FLEET'),
   L('gaza', 'ग़ाज़ा', 0.034, C.gaza9 - 0.3, END, 'GAZA'), L([35.75, 33.03], 'गोलान', 0.034, C.gaza9, END, 'GOLAN'), L([35.3, 32.05], 'वेस्ट बैंक', 0.034, C.gaza9 + 0.3, END, 'WEST BANK'),
 ];
 
@@ -334,9 +335,9 @@ const GolanProfile: React.FC<{ u: number; W: number; H: number; p: number; portr
 };
 
 // ------------------------------------------------------------------ the scene
-export type SceneP = { t: number; W: number; H: number; portrait: boolean; h: Float32Array; im: Record<string, THREE.Texture>; caps?: [number, number] | null; long?: boolean; gid?: string };
+export type SceneP = { t: number; W: number; H: number; portrait: boolean; h: Float32Array; im: Record<string, THREE.Texture>; caps?: [number, number] | null; long?: boolean; gid?: string; md: Models };
 
-export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, gid = 'sdgrade' }) => {
+export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, gid = 'sdgrade', md }) => {
   const ck = camKey(t, portrait);
   const blastTimes = BLASTS.filter(([b0]) => t >= b0 && t < b0 + 1).map(([b0]) => b0);
   let cam: CamS = camOf(h, ck);
@@ -364,9 +365,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     if (op > 0) props.push(<Prop key={key} tex={im[n]} h={h} at={at} w={D * wk} head={head} op={op} {...extra} />);
   };
   // ch 1: a tank crossing the waist
-  if (t > C.tank1 - 0.5 && t < C.egypt1 + 1) { const e = inOut(ramp(t, C.tank1, C.tank1 + 3)); P('tank', 't_tank_desert', [lerp(35.02, 34.88, e), lerp(32.31, 32.33, e)], 0.09, C.tank1, C.egypt1); }
   // ch 2: the parade, UNEF, Sharm el-Sheikh
-  P('parade', 't_tank_column', [31.3, 30.07], 0.28, C.parade - 0.3, C.unef1);
   [[34.31, 31.31], [34.42, 31.1], [34.55, 30.75], [34.7, 30.3], [34.85, 29.8]].forEach(([lo, la], i) => P(`hel${i}`, 'u_blue_helmet', [lo, la], 0.05, C.unef1 + i * 0.25, C.hatana1 + 0.6 + i * 0.45));
   if (t > C.hatana1 && t < C.redsea1 + 1) { const e = inOut(ramp(t, C.hatana1 + 0.3, C.redsea1)); P('jeep', 'u_un_jeep', [lerp(34.45, 33.4, e), lerp(30.95, 30.6, e)], 0.07, C.hatana1, C.redsea1); }
   P('post', 'p_coastal_post', 'sharm', 0.17, C.chowki - 0.3, C.s1 + 0.2);
@@ -377,50 +376,115 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     const e = ramp(t, t0, t1, linear);
     P(key, n, [lerp(from[0], to[0], e), lerp(from[1], to[1], e)], wk, a, b);
   };
-  ship('tk0', 's_tanker', C.s1 - 1.2, C.gali1 + 3, [34.43, 27.9], [34.49, 28.06], 0.2, C.s1 - 2, C.gali1 + 4);
-  ship('tk1', 's_tanker', C.asia - 0.4, C.n1957b, [34.44, 27.95], [34.75, 28.6], 0.11, C.asia - 1, C.n1957b + 2);
-  ship('cs1', 's_cargo_ship', C.asia, C.n1957b, [34.5, 28.1], [34.85, 29.0], 0.11, C.asia - 1, C.n1957b + 2);
-  ship('tk2', 's_tanker', C.nahi_guzrenge - 2.5, C.ulti, [34.42, 27.88], [34.45, 27.95], 0.16, C.nahi_guzrenge - 3, C.nahi_guzrenge + 0.2);
   // Short 2: airfields (tiles swap to craters as they are hit), parked jets, and the jets coming in low
   AIRFIELDS.slice(0, 7).forEach((a, i) => {
     const hit = C.runway + 0.5 + i * 0.42;
     const from = i === 2 ? C.s2 - 0.5 : C.airbase + i * 0.15;
     P(`af${i}`, t < hit + 0.15 ? 'a_airfield_tile' : 'a_runway_crater_tile', a, i === 2 && t < C.t745 ? 0.2 : 0.075, from, C.dopahar + 1, { flat: false });
   });
-  P('parked', 'j_swept_jet_parked', [32.12, 30.6], 0.05, C.gasht, C.runway + 0.6);
   const JETS: [number, [number, number][], number][] = [
     [C.s2 - 0.3, [[32.6, 30.9], [32.1, 30.56], [31.6, 30.2]], 3.2],
     ...[0, 1, 2, 3].map((i): [number, [number, number][], number] => [C.tabhi - 0.5 + i * 0.35, [[34.6, 31.8 - i * 0.05], [33.2, 31.65 - i * 0.04], [32.3, 31.35], [31.9 - i * 0.1, 30.8], [31.4 + i * 0.2, 30.3]], 9]),
     ...[0, 1, 2].map((i): [number, [number, number][], number] => [C.lehar2 - 0.3 + i * 0.3, [[34.5, 31.3], [33.3, 31.2], [32.5, 30.9], [32.2 - i * 0.2, 30.4]], 6]),
   ];
-  const jets = JETS.map(([j0, path, dur], i) => <Jet key={`j${i}`} h={h} tex={im.j_delta_jet_top} path={path} p={ramp(t, j0, j0 + dur, linear)} w={D * 0.07} alt={D * (t < C.radar + 1 ? 0.015 : 0.04)} />);
+  const jets = JETS.map(([j0, path, dur], i) => <Jet3D key={`j${i}`} h={h} m={md} path={path} p={ramp(t, j0, j0 + dur, linear)} len={D * (t > C.tabhi && t < C.radar + 1 ? 0.1 : 0.08)} alt={D * (t < C.radar + 1 ? 0.018 : 0.045)} />);
   const brackets = AIRFIELDS.slice(0, 7).map((a, i) => {
     const t0 = C.runway - 0.6 + i * 0.25;
     return <Bracket key={`br${i}`} h={h} at={a} size={D * 0.09} lock={easeOut(ramp(t, t0, t0 + 0.4))} t={t} op={1 - ramp(t, C.n200, C.n200 + 0.6)} />;
   });
   // Short 3: blue helmets in Gaza
   [[34.33, 31.37], [34.4, 31.43], [34.27, 31.3]].forEach(([lo, la], i) => P(`gh${i}`, 'u_blue_helmet', [lo, la], 0.085, C.s3 - 1 + i * 0.2, C.ch5 - 0.5, { tint: t > C.kisi ? `rgb(${Math.round(255 - 110 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 100 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 80 * ramp(t, C.kisi, C.topi + 2))})` : '#ffffff' }));
-  ship('wait', 's_cargo_ship', C.jahaaz3 - 0.4, C.chhid + 1, [34.2, 31.6], [34.25, 31.58], 0.16, C.jahaaz3, C.chhid);
   // ch 5: tanks into Sinai; ch 6: the walls; Short 4: bunkers on the ridge
-  if (t > C.teendiv && t < C.june8 + 1) { const e = inOut(ramp(t, C.teendiv, C.arish + 1)); P('t5', 't_tank_desert', [lerp(34.25, 33.85, e), lerp(31.25, 31.12, e)], 0.06, C.teendiv, C.june8); }
-  P('ht', 't_halftrack', [34.12, 30.86], 0.05, C.sharon, C.june6);
   P('wall', 'w_old_city_wall', [35.236, 31.775], 0.22, C.purana - 0.2, C.para + 1.5);
   [[35.74, 33.12], [35.77, 32.98], [35.73, 32.86]].forEach(([lo, la], i) => P(`bk${i}`, 'b_bunker_ridge', [lo, la], 0.14, C.s4 - 0.6 + i * 0.2, C.june10 + 0.5));
-  // Short 6: the Yellow Fleet (14 in the Great Bitter Lake, 1 in Lake Timsah); sand yellows them over the years
+  // ---- the 3D models (tools/blender/build_sixday_models.py)
+  const m3: React.ReactNode[] = [];
+  const wakes: [number, number, number, number][] = [];
+  const TK = (key: string, side: string, path: Pt[], a: number, b: number, t0: number, t1: number, o: { k?: number; aim?: Pt; fire?: number[]; lag?: number } = {}) => {
+    if (t < a - 0.5 || t > b + 0.6) return;
+    const lag = o.lag ?? 0;
+    m3.push(<Tank key={key} h={h} m={md} side={side} path={path} p={Math.max(0, inOut(ramp(t, t0, t1)) - lag)} len={D * 0.06 * (o.k ?? 1)} t={t} aim={o.aim} fire={o.fire} op={w(a, a + 0.4, b, b + 0.5)} />);
+  };
+  const SHIP = (key: string, kind: 'ship' | 'tanker', a: number, b: number, from: [number, number], to: [number, number], t0: number, t1: number, o: { k?: number; yellow?: number; sink?: number } = {}) => {
+    if (t < a - 0.5 || t > b + 0.6) return;
+    const e = ramp(t, t0, t1, linear);
+    const [fx, fz] = PXZ(from), [tx, tz] = PXZ(to);
+    const x = lerp(fx, tx, e), z = lerp(fz, tz, e);
+    const head = (Math.atan2(tx - fx, -(tz - fz)) * 180) / Math.PI;
+    const len = D * 0.07 * (o.k ?? 1);
+    const moving = e > 0 && e < 1 && Math.hypot(tx - fx, tz - fz) > 0.01;
+    if (moving) wakes.push([x, z, Math.PI / 2 - (head * Math.PI) / 180, len]);
+    m3.push(<Ship3D key={key} h={h} m={md} kind={kind} at={[x, 0, z]} head={head} len={len} t={t} op={w(a, a + 0.4, b, b + 0.5)} yellow={o.yellow ?? 0} sink={o.sink ?? 0} />);
+  };
+  const SQ = (key: string, side: string, path: Pt[], a: number, b: number, t0: number, t1: number, o: { n?: number; run?: boolean; firing?: boolean } = {}) => {
+    if (t < a - 0.5 || t > b + 0.6) return;
+    m3.push(<Squad key={key} h={h} m={md} side={side} path={path} p={ramp(t, t0, t1, linear)} n={o.n ?? 6} tall={D * 0.032} spread={D * 0.05} t={t} run={o.run ?? true} firing={o.firing} op={w(a, a + 0.4, b, b + 0.5)} seed={key.length * 7} />);
+  };
+  const TR = (key: string, a0: Pt, b0: Pt, from: number, to: number, color?: string) => {
+    if (t < from || t > to + 0.4) return;
+    m3.push(<Tracers key={key} h={h} a={a0} b={b0} t={t} up={D * 0.006} op={w(from, from + 0.3, to, to + 0.4)} color={color} seed={key.length} />);
+  };
+  // ch 1: a tank crosses Israel's 15 km waist; ch 2: the Cairo parade
+  TK('waist', 'il', [[35.02, 32.31], [34.95, 32.32], [34.88, 32.33]], C.tank1 - 0.3, C.egypt1, C.tank1, C.tank1 + 3.2, { k: 1.4 });
+  for (let i = 0; i < 4; i++) TK(`par${i}`, 'eg', [[31.12, 30.0], [31.25, 30.05], [31.42, 30.1], [31.6, 30.14]], C.parade - 0.5, C.unef1, C.parade - 1, C.unef1 + 1, { lag: i * 0.07, k: 1.1 });
+  // Short 1: ships through the Straits of Tiran
+  SHIP('tk0', 'tanker', C.s1 - 1.2, C.gali1 + 3, [34.43, 27.9], [34.49, 28.06], C.s1 - 2, C.gali1 + 4, { k: 1.6 });
+  SHIP('tk1', 'tanker', C.asia - 0.4, C.n1957b, [34.44, 27.95], [34.75, 28.6], C.asia - 1, C.n1957b + 2);
+  SHIP('cs1', 'ship', C.asia, C.n1957b, [34.5, 28.1], [34.85, 29.0], C.asia - 1, C.n1957b + 2);
+  SHIP('tk2', 'tanker', C.nahi_guzrenge - 2.5, C.ulti, [34.42, 27.88], [34.45, 27.95], C.nahi_guzrenge - 3, C.nahi_guzrenge + 0.2, { k: 1.4 });
+  // ch 3: reservists heading for the fronts
+  SQ('res1', 'il', [[34.8, 32.1], [34.88, 31.95], [34.95, 31.8]], C.aam - 0.3, C.ruk + 1, C.aam - 0.5, C.ruk + 2, { n: 7, run: false });
+  SQ('res2', 'il', [[34.7, 31.7], [34.62, 31.5], [34.55, 31.3]], C.aam, C.ruk + 1, C.aam - 0.3, C.ruk + 2, { n: 6, run: false });
+  // Short 2: MiGs parked on the airfields until the runways go
+  ['abu_suweir', 'inshas', 'fayid'].forEach((af, i) => {
+    const [x, z] = PXZ(af);
+    for (let j = 0; j < 3; j++) {
+      const hitT = C.runway + 0.5 + [2, 1, 3][i] * 0.42;
+      if (t > hitT + 0.3 || t < C.s2 - 1) continue;
+      m3.push(<Jet3D key={`mig${i}${j}`} h={h} m={md} kind="mig" path={[[0, 0], [0, 0]].map((_, q) => [34 + (x + D * 0.02 * (j - 1) + q * 0.01) / 95.62, 30.8 - (z + D * 0.012) / 111.32] as [number, number])} p={0.5} len={D * 0.055} alt={D * 0.002} trail={0} />);
+    }
+  });
+  // Short 3: UN soldiers in Gaza; crossfire on 5 June
+  SQ('un1', 'un', [[34.3, 31.33], [34.34, 31.36], [34.37, 31.39]], C.unef3, C.chhid + 0.5, C.unef3 - 1, C.chhid + 6, { n: 6, run: false });
+  SHIP('wait', 'ship', C.jahaaz3 - 0.4, C.chhid + 1, [34.2, 31.6], [34.24, 31.585], C.jahaaz3, C.chhid + 3, { k: 1.3 });
+  TR('xf1', [34.55, 31.36], [34.42, 31.43], C.chhid, C.n14b + 0.4, '#ffb347');
+  TR('xf2', [34.25, 31.52], [34.39, 31.44], C.chhid + 0.3, C.n14b + 0.4, '#ffe08a');
+  // ch 5: three columns into Sinai; Egypt's armour falls back to the passes; the race to Mitla and Giddi
+  for (let i = 0; i < 3; i++) {
+    TK(`n${i}`, 'il', [[34.3, 31.28], [33.8, 31.12], [33.2, 31.05], [32.45, 31.0]], C.teendiv, C.chardin, C.teendiv, C.june8 + 1, { lag: i * 0.05 });
+    TK(`c${i}`, 'il', [[34.45, 30.85], [34.12, 30.83], [33.13, 30.41], [32.55, 30.45]], C.teendiv + 0.3, C.chardin, C.teendiv + 0.3, C.june8 + 1, { lag: i * 0.05, aim: 'abu_ageila', fire: [C.toda - 1.4 - i * 0.2, C.toda - 0.6 + i * 0.15] });
+    TK(`s${i}`, 'il', [[34.6, 30.3], [33.75, 29.95], [33.02, 30.0], [32.65, 29.95]], C.teendiv + 0.6, C.chardin, C.dakshin, C.june8 + 1, { lag: i * 0.05, fire: [C.pehle_pahunch - 0.7 + i * 0.25] });
+    TK(`e${i}`, 'eg', [[33.95, 31.0], [33.5, 30.6], [33.15, 30.25], [33.0, 30.05]], C.uttar, C.june8, C.june6 + 0.5, C.phansi + 1.5, { lag: i * 0.06 });
+  }
+  SQ('egr', 'eg', [[33.9, 30.8], [33.5, 30.5], [33.15, 30.2]], C.june6, C.june8, C.june6, C.phansi + 2, { n: 7 });
+  // ch 6: paratroopers through the streets into the Old City
+  SQ('para1', 'il', [[35.21, 31.786], [35.222, 31.783], [35.232, 31.779]], C.sadak - 0.4, C.nadi, C.sadak, C.para + 1.5, { n: 8, firing: true });
+  SQ('para2', 'il', [[35.214, 31.795], [35.226, 31.79], [35.236, 31.783]], C.sadak, C.nadi, C.sadak + 0.3, C.para + 1.8, { n: 6, firing: true });
+  TR('jx1', [35.236, 31.776], [35.222, 31.784], C.sadak, C.para + 1);
+  SQ('jo6', 'jo', [[35.3, 31.85], [35.45, 31.87], [35.6, 31.9]], C.nadi - 0.3, C.hebron + 1, C.nadi, C.hebron + 2, { n: 6 });
+  // Short 4: tanks and infantry up the Golan escarpment, firing at the bunkers
+  for (let i = 0; i < 2; i++) {
+    TK(`g${i}`, 'il', [[35.62, 33.22], [35.7, 33.21], [35.8, 33.13]], C.june9, C.keemti + 2, C.chadhai + 2.6, C.june10 + 1, { lag: i * 0.08, aim: [35.76, 33.1], fire: [C.bunker - 0.2 + i * 0.4] });
+    TK(`h${i}`, 'il', [[35.64, 32.86], [35.72, 32.86], [35.8, 32.9]], C.june9 + 0.4, C.keemti + 2, C.chadhai + 2.8, C.june10 + 1.2, { lag: i * 0.08, aim: [35.75, 32.92], fire: [C.bunker + 0.5 + i * 0.4] });
+  }
+  SQ('gi1', 'il', [[35.63, 33.0], [35.69, 33.02], [35.75, 33.04]], C.june9 + 0.3, C.june10 + 1, C.chadhai + 2.6, C.june10 + 1.5, { n: 8, firing: true });
+  TR('gx1', [35.76, 33.1], [35.68, 33.12], C.bunker - 0.5, C.june10, '#ff9a4a');
+  // Short 6: the convoy, the scuttled ships, the 15 trapped, the 2 that sail home
+  for (let i = 0; i < 3; i++) SHIP(`cv${i}`, 'ship', C.beechraaste - 0.4, C.band + 0.6, [32.31, 31.15 - i * 0.12], [32.33, 30.75 - i * 0.12], C.beechraaste - 1, C.band, { k: 0.9 });
+  SHIP('sunkN', 'ship', C.band, C.n15b, [32.31, 31.2], [32.31, 31.2], 0, 1, { k: 0.9, sink: ramp(t, C.duba - 0.3, C.duba + 1.2) });
+  SHIP('sunkS', 'ship', C.band + 0.4, C.n15b, [32.56, 29.97], [32.56, 29.97], 0, 1, { k: 0.9, sink: ramp(t, C.duba, C.duba + 1.4) });
   const yellowK = Math.max(t < C.beechraaste ? 1 : 0, ramp(t, C.mahine, C.yellow));
   const fleetPos: [number, number][] = [[32.33, 30.38], [32.36, 30.4], [32.39, 30.37], [32.35, 30.35], [32.42, 30.34], [32.38, 30.32], [32.45, 30.31], [32.41, 30.29],
     [32.34, 30.31], [32.44, 30.36], [32.4, 30.4], [32.37, 30.29], [32.47, 30.33], [32.32, 30.34], [32.295, 30.565]];
   if (t > C.s6 - 1 && t < C.ch8 + 0.5) {
     fleetPos.forEach(([lo, la], i) => {
-      const leaves = i < 2 ? ramp(t, C.do6, C.ghar6 + 2) : 0;
-      const at: [number, number] = [lo + leaves * 0.1, la + leaves * 0.35];
-      const a = C.s6 - 1 + i * 0.05, b = C.ch8;
-      const op = w(a, a + 0.4, b, b + 0.5);
-      if (op <= 0) return;
-      props.push(<Prop key={`fy${i}`} tex={im.s_yellow_freighter} h={h} at={at} w={D * 0.09} head={head} op={op * yellowK} />);
-      props.push(<Prop key={`fc${i}`} tex={im.s_cargo_ship} h={h} at={at} w={D * 0.09} head={head} op={op * (1 - yellowK)} />);
+      const going = i < 2 ? ramp(t, C.do6, C.ghar6 + 3, linear) : 0;
+      SHIP(`fl${i}`, 'ship', C.s6 - 1 + i * 0.05, C.ch8, [lo, la], [lo + 0.12, la + 0.9], 1e9, 1e9 + 1, { k: 1.0, yellow: yellowK });
+      if (going > 0) { m3.pop(); SHIP(`fl${i}`, 'ship', C.s6 - 1, C.ch8, [lo, la], [lo + 0.12, la + 0.9], C.do6, C.ghar6 + 3, { k: 0.75, yellow: yellowK * (1 - going * 0.3) }); }
     });
   }
+  // ch 8: 1973, Egypt's armour across the canal
+  for (let i = 0; i < 3; i++) TK(`y73${i}`, 'eg', [[32.25, 30.4 + i * 0.06], [32.5, 30.4 + i * 0.06], [32.8, 30.42 + i * 0.06]], C.n1973, C.baatcheet + 0.5, C.n1973, C.n1973 + 3, { lag: i * 0.05 });
   const arrows: React.ReactNode[] = [];
   const A = (key: string, path: (string | [number, number])[], a: number, b: number, end: number, wk = 0.018, color?: string) => {
     if (t < a || t > end + 0.6) return;
@@ -518,11 +582,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
       background: `conic-gradient(from ${t * 220}deg, rgba(90,255,140,0.45), rgba(90,255,140,0) 25%)`, border: `${3 * u}px solid rgba(90,255,140,0.7)` }}>
       <div style={{ position: 'absolute', left: 0, right: 0, top: 360 * u, textAlign: 'center', fontFamily: UI, fontWeight: 800, fontSize: 30 * u, color: '#9dffb3', textShadow: '0 2px 8px #000' }}>रडार: कुछ नहीं दिखा</div></div>);
   }
-  if (t > C.tabhi && t < C.runway) {
-    const p = w(C.tabhi + 0.4, C.tabhi + 0.9, C.neeche + 1.2, C.neeche + 1.6);
-    const k = ramp(t, C.tabhi + 0.4, C.neeche + 1.6, linear);
-    O('jetside', <Img src={staticFile('sixday/img/j_delta_jet_side.webp')} style={{ position: 'absolute', left: lerp(W * 1.05, -W * 0.5, k), top: portrait ? H * 0.52 : H * 0.55, width: portrait ? W * 0.7 : W * 0.42, opacity: p, filter: `blur(${0.6 * u}px) drop-shadow(0 ${30 * u}px ${18 * u}px rgba(0,0,0,0.35))`, transform: 'scaleX(-1)' }} />);
-  }
+
   const n200 = Math.round(200 * easeOut(ramp(t, C.n200 - 0.4, C.n200 + 1.6)));
   O('n200', <BigNum x={cx} y={H * 0.42} u={u} p={w(C.n200 - 0.4, C.n200, C.lehar2 + 0.6, C.lehar2 + 1)} value={`~${n200}`} label="इजिप्शियन जहाज़, ज़मीन पर ही" color="#ffd23f" />);
   O('br_smoke', <Breather W={W} H={H} u={u} pic="h_airfield_smoke" p={w(C.dopahar - 0.3, C.dopahar + 0.3, C.jordsyr - 0.3, C.jordsyr + 0.2)} t={t - C.dopahar} dur={4} portrait={portrait} />);
@@ -619,6 +679,8 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     [C.gasht, 'अध्याय 5', '3 घंटे'], [C.neeli, 'अध्याय 6', 'ग़ाज़ा के भारतीय जवान'], [C.ch5, 'अध्याय 7', 'सिनाई'], [C.ch6, 'अध्याय 8', 'यरूशलम और वेस्ट बैंक'],
     [C.maalik + 0.5, 'अध्याय 9', 'गोलान'], [C.subah5 + 0.6, 'अध्याय 10', '6 दिन का नक़्शा'], [C.beechraaste + 0.6, 'अध्याय 11', 'येलो फ़्लीट'], [C.ch8, 'अध्याय 12', 'जंग के बाद']];
 
+  g.fire = BLASTS.map(([b0, at, k]) => blastLight(h, at, D * k, t - b0)).filter((x): x is [number, number, number, number] => !!x).sort((a, b) => b[3] - a[3]).slice(0, 8);
+  g.wakes = wakes.slice(0, 16);
   for (const sp of specs) {
     let k = 1;
     if (sp.slot) {
@@ -631,7 +693,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     <AbsoluteFill style={{ background: '#000' }}>
       <Grade width={W} id={gid}>
         <World h={h} cam={cam} width={W} height={H} g={g}>
-          {cities}{labels}{units.map((uu, i) => <Unit key={`u${i}`} h={h} u={uu} />)}{arrows}{props}{brackets}{jets}{blasts}
+          {cities}{labels}{units.map((uu, i) => <Unit key={`u${i}`} h={h} u={uu} />)}{arrows}{props}{m3}{brackets}{jets}{blasts}
         </World>
       </Grade>
       <AbsoluteFill>{over}</AbsoluteFill>

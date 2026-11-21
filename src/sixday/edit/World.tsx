@@ -4,6 +4,7 @@ import { useThree } from '@react-three/fiber';
 import { continueRender, delayRender, staticFile } from 'remotion';
 import * as THREE from 'three';
 import { GH, GW, KM_PER_PX, V3, VEX, X0, X1, Z0, Z1 } from './geo';
+import { Env } from './models';
 
 /**
  * The one map world of the Six-Day War video, in the reference's documentary way: a tilted 3D map with felt-like
@@ -23,6 +24,8 @@ export type Ground = {
   river: number; // 0..1
   dim: number; focus: [number, number]; focusR: number; // darken everything outside a circle (scene km)
   t: number; // seconds, drives the sea
+  fire?: [number, number, number, number][]; // up to 8: x, z, radius km, intensity (blasts light the ground)
+  wakes?: [number, number, number, number][]; // up to 16: x, z, heading (rad, 0 = +x), ship length km
 };
 
 const VERT = /* glsl */ `
@@ -40,6 +43,7 @@ uniform vec4 bnd;
 uniform float kmpx, uT, uPost, uFine, uRiver, uBorderW, uRiverW, uHatchP, uDim, uFocusR, fogN, fogF;
 uniform vec3 uCol[12]; uniform float uHatch[12]; uniform float uGlow[12];
 uniform vec3 uOther, L, camP, fogC; uniform vec2 uFocus;
+uniform vec4 uFire[8]; uniform vec4 uWake[16];
 varying vec3 vPos; varying vec3 vN; varying float vDist;
 
 float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
@@ -138,8 +142,34 @@ void main() {
   wc = wc * (0.85 + 0.25 * vnoise(p * 0.004 + uT * 0.003)) + vec3(0.35, 0.42, 0.55) * fres * 0.35 + vec3(1.0, 0.97, 0.9) * spec * 0.45;
   float sh = smoothstep(-bw * 10.0, 0.0, coast) * (1.0 - land);
   wc *= 1.0 - 0.38 * sh; // the land's shadow on the water along the coast
+  // ship wakes: a white V and a churned centre line behind every moving ship
+  float foam = 0.0;
+  for (int i = 0; i < 16; i++) {
+    vec4 w = uWake[i];
+    if (w.w <= 0.0) continue;
+    vec2 d = vec2(cos(w.z), -sin(w.z));
+    vec2 q = p - w.xy;
+    float along = -dot(q, d), lat = abs(dot(q, vec2(-d.y, d.x)));
+    if (along < -w.w * 0.5 || along > w.w * 9.0) continue;
+    float a = max(along, 0.0);
+    float e1 = (lat - a * 0.34) / (w.w * 0.12 + a * 0.05), e2 = lat / (w.w * 0.18 + a * 0.03);
+    float v = exp(-e1 * e1) * exp(-a / (w.w * 4.0));
+    float c = exp(-e2 * e2) * exp(-a / (w.w * 2.5)) * step(0.0, along);
+    float ripple = 0.65 + 0.35 * sin(a / (w.w * 0.12) - uT * 3.0);
+    foam += (v * 0.8 * ripple + c * 0.9) * smoothstep(-w.w * 0.5, 0.0, along);
+  }
+  wc = mix(wc, vec3(0.86, 0.9, 0.92), clamp(foam, 0.0, 0.85));
   float water = max(1.0 - land, riv);
   col = mix(col, wc, water);
+  // fire light from the blasts, on land and water
+  vec3 fireL = vec3(0.0);
+  for (int i = 0; i < 8; i++) {
+    vec4 f = uFire[i];
+    if (f.w <= 0.0) continue;
+    float dd2 = dot(p - f.xy, p - f.xy) / (f.z * f.z);
+    fireL += vec3(1.0, 0.5, 0.18) * f.w * exp(-dd2 * 2.2);
+  }
+  col += col * fireL * 1.6 + fireL * 0.12;
 
   // spotlight dim
   float dd = length(p - uFocus);
@@ -191,7 +221,8 @@ const GroundMesh: React.FC<{ h: Float32Array; tx: Record<string, THREE.Texture>;
       uRiverW: { value: 1 }, uHatchP: { value: 10 }, uDim: { value: 0 }, uFocusR: { value: 100 }, uFocus: { value: new THREE.Vector2() },
       fogN: { value: 1000 }, fogF: { value: 3000 }, fogC: { value: new THREE.Color(FOG) },
       uCol: { value: Array.from({ length: 12 }, () => new THREE.Vector3()) }, uHatch: { value: new Array(12).fill(0) }, uGlow: { value: new Array(12).fill(0) },
-      uOther: { value: new THREE.Vector3(0.55, 0.5, 0.42) }, L: { value: new THREE.Vector3(...LIGHT) }, camP: { value: new THREE.Vector3() },
+      uOther: { value: new THREE.Vector3(0.55, 0.5, 0.42) },
+      uFire: { value: Array.from({ length: 8 }, () => new THREE.Vector4()) }, uWake: { value: Array.from({ length: 16 }, () => new THREE.Vector4()) }, L: { value: new THREE.Vector3(...LIGHT) }, camP: { value: new THREE.Vector3() },
     },
   }), [tx]);
   skirtMat = mat;
@@ -202,6 +233,8 @@ const GroundMesh: React.FC<{ h: Float32Array; tx: Record<string, THREE.Texture>;
     (u.uHatch.value as number[])[i] = g.hatch[i] ?? 0;
     (u.uGlow.value as number[])[i] = g.glow[i] ?? 0;
   }
+  for (let i = 0; i < 8; i++) { const f = g.fire?.[i]; (u.uFire.value as THREE.Vector4[])[i].set(f?.[0] ?? 0, f?.[1] ?? 0, f?.[2] ?? 1, f?.[3] ?? 0); }
+  for (let i = 0; i < 16; i++) { const w = g.wakes?.[i]; (u.uWake.value as THREE.Vector4[])[i].set(w?.[0] ?? 0, w?.[1] ?? 0, w?.[2] ?? 0, w?.[3] ?? 0); }
   u.uT.value = g.t; u.uPost.value = g.post; u.uFine.value = g.fine; u.uRiver.value = g.river;
   u.uBorderW.value = Math.max(0.12, dist * 0.0014); u.uRiverW.value = Math.max(0.25, dist * 0.0022); u.uHatchP.value = Math.max(1.2, dist * 0.016);
   u.uDim.value = g.dim; (u.uFocus.value as THREE.Vector2).set(...g.focus); u.uFocusR.value = g.focusR;
@@ -248,7 +281,9 @@ export const World: React.FC<{ h: Float32Array; cam: CamS; width: number; height
   return (
     <ThreeCanvas width={width} height={height} camera={{ fov: cam.fov, near: 0.3, far: 20000, position: cam.pos }} gl={{ antialias: true, preserveDrawingBuffer: true }} style={{ background: FOG }}>
       <CamRig cam={cam} />
-      <ambientLight intensity={1.1} />
+      <Env />
+      <ambientLight intensity={0.7} />
+      <hemisphereLight args={['#dfe8f2', '#6b5a3e', 0.6]} />
       <directionalLight position={[LIGHT[0] * 1000, LIGHT[1] * 1000, LIGHT[2] * 1000]} intensity={2.2} />
       <GroundMesh h={h} tx={tx} g={g} cam={cam} dist={dist} />
       <Skirt />
