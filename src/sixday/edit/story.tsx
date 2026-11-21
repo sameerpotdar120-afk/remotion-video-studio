@@ -231,17 +231,16 @@ const LABELS: Lab[] = [
   L([34.85, 30.9], 'इज़राइल', 0.03, C.israel0, C.ch2), L([31.5, 29.2], 'इजिप्ट', 0.03, C.egypt0, C.ch2), L([36.6, 31.2], 'जॉर्डन', 0.03, C.jordan0, C.ch2),
   L([37.3, 33.4], 'सीरिया', 0.03, C.syria0, C.ch2), L([33.8, 29.6], 'सिनाई', 0.028, C.sinai1, C.ch2), L([31.5, 33.2], 'भूमध्य सागर', 0.03, C.ch1, C.ch2, undefined, SEA),
   L('jerusalem', 'यरूशलम', 0.02, C.jeru1, C.syria1 + 2), L([35.3, 32.05], 'वेस्ट बैंक', 0.02, C.wb1, C.syria1 + 2), L([35.78, 33.03], 'गोलान', 0.02, C.golan1, C.n1948 + 1.5),
-  L('tel_aviv', 'तेल अवीव', 0.02, C.patli1, C.egypt1), L('netanya', 'नेतन्या', 0.018, C.km15, C.egypt1), L('tulkarm', 'तुलकर्म', 0.018, C.km15, C.egypt1),
+  L('tel_aviv', 'तेल अवीव', 0.02, C.patli1, C.km15 - 0.5),
   L('cairo', 'काहिरा', 0.022, C.cairo, C.unef1), L('gaza', 'ग़ाज़ा', 0.02, C.unef1, C.redsea1), L('sharm', 'शर्म अल-शेख़', 0.024, C.sharm, C.ch3),
   L([34.62, 27.86], 'तिरान', 0.026, C.straits, C.eilat, 'STRAITS OF TIRAN'), L([34.0, 28.6], 'सिनाई', 0.03, C.sinai3, C.eilat), L([35.3, 28.3], 'सऊदी अरब', 0.03, C.saudi, C.eilat + 1),
-  L('eilat', 'ईलात', 0.03, C.eilat, C.n1957b + 2), L([34.6, 27.6], 'लाल सागर', 0.028, C.rasta, C.n1957b, undefined, SEA),
+  L('eilat', 'ईलात', 0.03, C.rasta + 0.6, C.n1957b + 2), L([34.6, 27.6], 'लाल सागर', 0.028, C.rasta, C.n1957b, undefined, SEA),
   L('cairo', 'काहिरा', 0.024, C.pact, C.june4), L('amman', 'अम्मान', 0.024, C.pact, C.june4), L('tel_aviv', 'तेल अवीव', 0.024, C.june4, C.jal),
   L('tel_aviv', 'तेल अवीव', 0.022, C.june1, C.raat), L([32.4, 32.1], 'भूमध्य सागर', 0.03, C.tabhi, C.runway, undefined, SEA),
-  L('cairo', 'काहिरा', 0.02, C.zameen1, C.focus), L('suez', 'स्वेज़', 0.02, C.zameen1, C.focus), L('amman', 'अम्मान', 0.022, C.jordsyr, C.focus), L('damascus', 'दमिश्क', 0.022, C.jordsyr, C.focus),
-  L('gaza', 'ग़ाज़ा', 0.03, C.s3, C.ch5, 'GAZA'), L('khan_yunis', 'ख़ान यूनिस', 0.022, C.unef3, C.chhid), L('rafah', 'रफ़ा', 0.022, C.unef3, C.chhid),
+  L('cairo', 'काहिरा', 0.02, C.zameen1, C.runway - 0.8), L('suez', 'स्वेज़', 0.02, C.zameen1, C.runway - 0.8), L('amman', 'अम्मान', 0.022, C.jordsyr, C.focus), L('damascus', 'दमिश्क', 0.022, C.jordsyr, C.focus),
+  L([34.27, 31.6], 'ग़ाज़ा', 0.03, C.s3, C.ch5, 'GAZA'),
   L('el_arish', 'अल-अरीश', 0.02, C.uttar, C.chardin), L('rafah', 'रफ़ा', 0.02, C.uttar, C.toda), L('abu_ageila', 'अबू अगेला', 0.022, C.beech, C.june8),
-  L('mitla', 'मितला', 0.024, C.mitla, C.june8 + 1), L('giddi', 'गिद्दी', 0.024, C.mitla, C.june8 + 1), L('suez', 'स्वेज़ नहर', 0.022, C.june8, C.chardin, 'SUEZ CANAL'),
-  L('ismailia', 'इस्माइलिया', 0.02, C.june8, C.chardin), L('cairo', 'काहिरा', 0.022, C.june6, C.phansi),
+  L('mitla', 'मितला', 0.024, C.mitla, C.june8 + 1), L('giddi', 'गिद्दी', 0.024, C.mitla, C.june8 + 1), L('suez', 'स्वेज़ नहर', 0.022, C.june8, C.teenguna - 0.3, 'SUEZ CANAL'), L('cairo', 'काहिरा', 0.022, C.june6, C.phansi),
   L('jerusalem', 'यरूशलम', 0.026, C.ch6, C.banta), L('tel_aviv', 'तेल अवीव', 0.022, C.topen, C.banta), L('latrun', 'लातरून', 0.02, C.koonch, C.banta), L('ramallah', 'रामल्ला', 0.02, C.koonch, C.banta),
   L([35.218, 31.787], 'नया शहर', 0.05, C.naya, C.sadak + 1), L([35.245, 31.772], 'पुराना शहर', 0.05, C.purana, C.sadak + 1, 'OLD CITY'),
   L('jenin', 'जेनिन', 0.022, C.jenin, C.bahas), L('hebron', 'हेब्रोन', 0.022, C.hebron, C.bahas), L('nablus', 'नाबलस', 0.02, C.jenin, C.bahas), L('jerusalem', 'यरूशलम', 0.026, C.bahas, C.bridge4 + 1),
@@ -266,20 +265,20 @@ type BlastT = [number, string | [number, number], number, number?];
 const AIRFIELDS = ['cairo_west', 'inshas', 'abu_suweir', 'fayid', 'kabrit', 'bir_gifgafa', 'bir_thamada', 'el_arish_af', 'beni_suef', 'mansoura', 'cairo_intl'];
 const BLASTS: BlastT[] = [
   // frame 0 of Short 2 = a burning airfield: these blasts started before the Short and are still rolling
-  [C.s2 - 2.2, 'abu_suweir', 0.03], [C.s2 - 1.4, [32.13, 30.55], 0.022], [C.s2 - 0.6, [32.08, 30.57], 0.02],
-  [C.golabari1 - 0.2, [35.62, 33.0], 0.012], [C.golabari1 + 0.4, [34.42, 31.32], 0.012], [C.golabari1 + 0.9, [35.0, 32.45], 0.01],
-  [C.jal - 2.6, [34.0, 30.8], 0.018], [C.jal - 2.0, [32.3, 30.4], 0.018], [C.jal - 1.5, [35.25, 31.8], 0.016], [C.jal - 1.1, [35.7, 33.05], 0.016], [C.jal - 0.6, [31.4, 30.3], 0.018], [C.jal - 0.2, [33.1, 30.4], 0.016],
-  ...AIRFIELDS.slice(0, 7).map((a, i): BlastT => [C.runway + 0.5 + i * 0.42, a, 0.028]),
-  ...AIRFIELDS.slice(3).map((a, i): BlastT => [C.khade2 + 0.3 + i * 0.35, a, 0.022]),
-  ...['amman_af', 'mafraq_af', 'damascus_af', 'dumayr', 'seikal', 'marj_ruhayyil'].map((a, i): BlastT => [C.jordsyr + 0.5 + i * 0.35, a, 0.02]),
-  [C.chhid + 0.1, [34.42, 31.44], 0.045], [C.chhid + 0.6, [34.36, 31.38], 0.04], [C.phans + 0.2, [34.46, 31.5], 0.04], [C.phans + 0.9, [34.4, 31.42], 0.035],
-  [C.toda - 1.2, 'abu_ageila', 0.04], [C.toda - 0.5, [34.13, 30.85], 0.035], [C.toda + 0.2, [34.08, 30.8], 0.035],
-  [C.pehle_pahunch - 0.5, 'mitla', 0.04], [C.pehle_pahunch + 0.2, [32.97, 30.02], 0.035], [C.pehle_pahunch + 0.8, 'giddi', 0.035],
-  [C.topen + 0.2, [35.2, 31.82], 0.02], [C.topen + 0.7, [34.85, 32.05], 0.02], [C.telaviv + 0.3, [34.95, 31.9], 0.02],
-  [C.para - 0.4, [35.233, 31.778], 0.06], [C.para + 0.3, [35.228, 31.781], 0.05],
-  [C.golabari4 - 0.2, [35.6, 32.95], 0.04], [C.golabari4 + 0.4, [35.58, 33.05], 0.035],
-  [C.chadhai + 3.0, [35.72, 33.13], 0.045], [C.bunker + 0.2, [35.76, 33.1], 0.05], [C.bunker + 0.9, [35.75, 32.92], 0.045],
-  [C.band + 0.3, 'port_said', 0.06], [C.band + 1.0, 'suez', 0.06],
+  [C.s2 - 2.2, 'abu_suweir', 0.0195], [C.s2 - 1.4, [32.13, 30.55], 0.0143], [C.s2 - 0.6, [32.08, 30.57], 0.013],
+  [C.golabari1 - 0.2, [35.62, 33.0], 0.0078], [C.golabari1 + 0.4, [34.42, 31.32], 0.0078], [C.golabari1 + 0.9, [35.0, 32.45], 0.0065],
+  [C.jal - 2.6, [34.0, 30.8], 0.0117], [C.jal - 2.0, [32.3, 30.4], 0.0117], [C.jal - 1.5, [35.25, 31.8], 0.0104], [C.jal - 1.1, [35.7, 33.05], 0.0104], [C.jal - 0.6, [31.4, 30.3], 0.0117], [C.jal - 0.2, [33.1, 30.4], 0.0104],
+  ...AIRFIELDS.slice(0, 7).map((a, i): BlastT => [C.runway + 0.5 + i * 0.42, a, 0.0182]),
+  ...AIRFIELDS.slice(3).map((a, i): BlastT => [C.khade2 + 0.3 + i * 0.35, a, 0.0143]),
+  ...['amman_af', 'mafraq_af', 'damascus_af', 'dumayr', 'seikal', 'marj_ruhayyil'].map((a, i): BlastT => [C.jordsyr + 0.5 + i * 0.35, a, 0.013]),
+  [C.chhid + 0.1, [34.42, 31.44], 0.0292], [C.chhid + 0.6, [34.36, 31.38], 0.026], [C.phans + 0.2, [34.46, 31.5], 0.026], [C.phans + 0.9, [34.4, 31.42], 0.0228],
+  [C.toda - 1.2, 'abu_ageila', 0.026], [C.toda - 0.5, [34.13, 30.85], 0.0228], [C.toda + 0.2, [34.08, 30.8], 0.0228],
+  [C.pehle_pahunch - 0.5, 'mitla', 0.026], [C.pehle_pahunch + 0.2, [32.97, 30.02], 0.0228], [C.pehle_pahunch + 0.8, 'giddi', 0.0228],
+  [C.topen + 0.2, [35.2, 31.82], 0.013], [C.topen + 0.7, [34.85, 32.05], 0.013], [C.telaviv + 0.3, [34.95, 31.9], 0.013],
+  [C.para - 0.4, [35.233, 31.778], 0.039], [C.para + 0.3, [35.228, 31.781], 0.0325],
+  [C.golabari4 - 0.2, [35.6, 32.95], 0.026], [C.golabari4 + 0.4, [35.58, 33.05], 0.0228],
+  [C.chadhai + 3.0, [35.72, 33.13], 0.0292], [C.bunker + 0.2, [35.76, 33.1], 0.0325], [C.bunker + 0.9, [35.75, 32.92], 0.0292],
+  [C.band + 0.3, 'port_said', 0.039], [C.band + 1.0, 'suez', 0.039],
 ];
 
 // ------------------------------------------------------------------ helpers for the overlays
@@ -358,7 +357,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     <Label key={`l${i}`} h={h} at={l.at} text={l.text} size={l.k * D * 0.85} head={head} op={w(l.from, l.from + 0.5, l.to, l.to + 0.5)} sub={l.sub} color={l.color ?? 'gold'} />
   ));
   const cities = CITIES.filter(([, a, b]) => t > a && t < b).map(([at, a], i) => <City key={`c${i}`} h={h} at={at} size={D * 0.02} seed={i + 1} grow={ramp(t, a, a + 0.8)} />);
-  const blasts = BLASTS.filter(([b0]) => t >= b0 && t < b0 + 9).map(([b0, at, k, sd], i) => <Blast key={`b${i}`} h={h} at={at} size={D * k} age={t - b0} seed={sd ?? i + 3} />);
+  const blasts = BLASTS.filter(([b0]) => t >= b0 && t < b0 + 4.2).map(([b0, at, k, sd], i) => <Blast key={`b${i}`} h={h} at={at} size={D * k} age={t - b0} seed={sd ?? i + 3} />);
   const props: React.ReactNode[] = [];
   const P = (key: string, n: string, at: string | [number, number] | V3, wk: number, a: number, b: number, extra: Partial<React.ComponentProps<typeof Prop>> = {}) => {
     const op = w(a, a + 0.5, b, b + 0.5);
@@ -372,7 +371,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   if (t > C.hatana1 && t < C.redsea1 + 1) { const e = inOut(ramp(t, C.hatana1 + 0.3, C.redsea1)); P('jeep', 'u_un_jeep', [lerp(34.45, 33.4, e), lerp(30.95, 30.6, e)], 0.07, C.hatana1, C.redsea1); }
   P('post', 'p_coastal_post', 'sharm', 0.17, C.chowki - 0.3, C.s1 + 0.2);
   // Short 1: Tiran
-  P('eilat', 'p_port_eilat', [34.97, 29.5], 0.34, C.eilat - 0.3, C.n1957b + 1);
+  P('eilat', 'p_port_eilat', [34.97, 29.5], 0.3, C.eilat - 0.3, C.rasta + 0.6);
   const ship = (key: string, n: string, a: number, b: number, from: [number, number], to: [number, number], wk: number, t0: number, t1: number) => {
     if (t < a - 0.6 || t > b + 0.6) return;
     const e = ramp(t, t0, t1, linear);
@@ -400,7 +399,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
     return <Bracket key={`br${i}`} h={h} at={a} size={D * 0.09} lock={easeOut(ramp(t, t0, t0 + 0.4))} t={t} op={1 - ramp(t, C.n200, C.n200 + 0.6)} />;
   });
   // Short 3: blue helmets in Gaza
-  [[34.36, 31.4], [34.43, 31.46], [34.31, 31.34]].forEach(([lo, la], i) => P(`gh${i}`, 'u_blue_helmet', [lo, la], 0.13, C.s3 - 1 + i * 0.2, C.ch5 - 0.5, { tint: t > C.kisi ? `rgb(${Math.round(255 - 110 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 100 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 80 * ramp(t, C.kisi, C.topi + 2))})` : '#ffffff' }));
+  [[34.33, 31.37], [34.4, 31.43], [34.27, 31.3]].forEach(([lo, la], i) => P(`gh${i}`, 'u_blue_helmet', [lo, la], 0.085, C.s3 - 1 + i * 0.2, C.ch5 - 0.5, { tint: t > C.kisi ? `rgb(${Math.round(255 - 110 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 100 * ramp(t, C.kisi, C.topi + 2))},${Math.round(255 - 80 * ramp(t, C.kisi, C.topi + 2))})` : '#ffffff' }));
   ship('wait', 's_cargo_ship', C.jahaaz3 - 0.4, C.chhid + 1, [34.2, 31.6], [34.25, 31.58], 0.16, C.jahaaz3, C.chhid);
   // ch 5: tanks into Sinai; ch 6: the walls; Short 4: bunkers on the ridge
   if (t > C.teendiv && t < C.june8 + 1) { const e = inOut(ramp(t, C.teendiv, C.arish + 1)); P('t5', 't_tank_desert', [lerp(34.25, 33.85, e), lerp(31.25, 31.12, e)], 0.06, C.teendiv, C.june8); }
@@ -466,7 +465,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   const over: React.ReactNode[] = [];
   const cx = W / 2, top = portrait ? H * 0.16 : H * 0.14;
   // hook
-  O('stamp6', <Stamp x={cx} y={portrait ? H * 0.2 : H * 0.17} u={u} p={t < C.june67 ? 1 : 1 - ramp(t, C.june67, C.june67 + 0.4)} text="सिर्फ़ 6 दिन" color="#ffd23f" rot={-6} />);
+  O('stamp6', <Stamp x={portrait ? cx : W * 0.27} y={portrait ? H * 0.62 : H * 0.8} u={u} p={t < C.june67 ? 1 : 1 - ramp(t, C.june67, C.june67 + 0.4)} text="सिर्फ़ 6 दिन" color="#ffd23f" rot={-6} />);
   O('june67', <DateCard x={cx - 130 * u} y={top - 40 * u} u={u} text="जून 1967" p={w(C.june67, C.june67 + 0.3, C.israel0 + 1.5, C.israel0 + 2)} flip={ramp(t, C.june67, C.june67 + 0.4)} />);
   sideFlags.forEach(([s, at, a, b]) => {
     const [x, y] = prj(FLAGAT[at]);
@@ -487,23 +486,23 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   O('galat', <Stamp x={portrait ? W * 0.33 : W * 0.17} y={portrait ? H * 0.64 : H * 0.62} u={u} p={w(C.galat, C.galat + 0.1, C.galat + 1.4, C.galat + 1.8)} text="ग़लत" />);
   O('may14', <DateCard x={cx - 110 * u} y={top} u={u} text="14 मई" p={w(C.may14, C.may14 + 0.3, C.cairo, C.cairo + 0.4)} flip={ramp(t, C.may14, C.may14 + 0.4)} />);
   O('may18', <DateCard x={cx - 110 * u} y={top} u={u} text="18 मई" p={w(C.may18, C.may18 + 0.3, C.redsea1, C.redsea1 + 0.4)} flip={ramp(t, C.may18, C.may18 + 0.4)} />);
-  if (t > C.bharat1 - 0.3 && t < C.hatana1 + 1) { const [x, y] = prj([34.42, 31.1], D * 0.03); O('inunef', <img src={flagURL('in')} style={{ position: 'absolute', left: x - 50 * u, top: y - 100 * u, width: 100 * u, height: 66 * u, border: `${3 * u}px solid #fff`, opacity: w(C.bharat1, C.bharat1 + 0.3, C.hatana1 + 0.5, C.hatana1 + 1) }} />); }
-  { const [x, y] = prj([34.7, 30.6]); O('uthant', <Portrait x={x} y={y} u={u} name="ऊ थांट" en="U THANT" role="UN महासचिव" pic="q_u_thant" p={w(C.may18 + 0.2, C.may18 + 0.7, C.redsea1, C.redsea1 + 0.4)} />); }
+  if (t > C.bharat1 - 0.3 && t < C.hatana1 + 1) { const [x, y] = prj([34.5, 31.0], D * 0.03); O('inunef', <img src={flagURL('in')} style={{ position: 'absolute', left: x - 50 * u, top: y - 100 * u, width: 100 * u, height: 66 * u, border: `${3 * u}px solid #fff`, opacity: w(C.bharat1, C.bharat1 + 0.3, C.hatana1 + 0.5, C.hatana1 + 1) }} />); }
+  { const [x, y] = prj([34.7, 30.6]); O('uthant', <Portrait bounds={[W, H]} x={x} y={y} u={u} name="ऊ थांट" en="U THANT" role="UN महासचिव" pic="q_u_thant" p={w(C.may18 + 0.2, C.may18 + 0.7, C.redsea1, C.redsea1 + 0.4)} />); }
   // Short 1
   O('d1957', <DateCard x={cx - 110 * u} y={top} u={u} text="1957" sub="इज़राइल की चेतावनी" p={w(C.n1957b, C.n1957b + 0.3, C.may22 - 0.3, C.may22)} flip={ramp(t, C.n1957b, C.n1957b + 0.4)} />);
-  O('elaan', <Stamp x={cx} y={H * 0.5} u={u} p={w(C.elaan1, C.elaan1 + 0.1, C.may22 - 0.4, C.may22)} text="जंग का ऐलान" />);
+  O('elaan', <Stamp x={cx} y={portrait ? H * 0.56 : H * 0.78} u={u} p={w(C.elaan1, C.elaan1 + 0.1, C.may22 - 0.4, C.may22)} text="जंग का ऐलान" />);
   const dates: [number, string][] = [[C.may22, '22 मई 1967'], [C.may30, '30 मई'], [C.june4, '4 जून'], [C.june5a, '5 जून']];
   dates.forEach(([d0, txt], i) => { const d1 = i < 3 ? dates[i + 1][0] : C.jal + 1; O(`dt${i}`, <DateCard x={cx - 140 * u} y={top - 30 * u} u={u} text={txt} p={w(d0, d0 + 0.2, d1 - 0.05, d1 + 0.1)} flip={ramp(t, d0, d0 + 0.35)} />); });
-  { const [x, y] = prj([34.0, 28.2]); O('nasser1', <Portrait x={x} y={y} u={u} name="नासिर" en="GAMAL ABDEL NASSER" role="राष्ट्रपति, इजिप्ट" pic="q_nasser" side="eg" p={w(C.nasser - 0.2, C.nasser + 0.3, C.ulti, C.ulti + 0.4)} />); }
+  { const [x, y] = prj([34.0, 28.2]); O('nasser1', <Portrait bounds={[W, H]} x={x} y={y} u={u} name="नासिर" en="GAMAL ABDEL NASSER" role="राष्ट्रपति, इजिप्ट" pic="q_nasser" side="eg" p={w(C.nasser - 0.2, C.nasser + 0.3, C.ulti, C.ulti + 0.4)} />); }
   O('band', <Stamp x={cx} y={H * 0.36} u={u} p={w(C.nahi_guzrenge, C.nahi_guzrenge + 0.1, C.ulti - 0.2, C.ulti + 0.2)} text="बंद" />);
   { const [x1, y1] = prj('cairo'), [x2, y2] = prj('amman');
-    O('pactR', <Radio a={[x2, y2]} b={[x1, y1]} u={u} p={w(C.may30 + 0.2, C.may30 + 0.6, C.june4, C.june4 + 0.3)} t={t} />);
-    O('nasser2', <Portrait x={x1} y={y1} u={u} scale={0.8} name="नासिर" en="NASSER" role="इजिप्ट" pic="q_nasser" side="eg" p={w(C.may30, C.may30 + 0.5, C.june4, C.june4 + 0.3)} />);
-    O('hussein', <Portrait x={x2} y={y2} u={u} scale={0.8} name="किंग हुसैन" en="KING HUSSEIN" role="जॉर्डन" pic="q_hussein" side="jo" p={w(C.may30 + 0.3, C.may30 + 0.8, C.june4, C.june4 + 0.3)} />); }
-  { const [x, y] = prj('jerusalem'); O('eshkol', <Portrait x={x} y={y} u={u} name="लेवी एशकोल" en="LEVI ESHKOL" role="प्रधानमंत्री, इज़राइल" pic="q_eshkol" side="il" p={w(C.june4 + 0.1, C.june4 + 0.6, C.june5a, C.june5a + 0.3)} />); }
+    O('pactR', <Radio a={[x2, y2]} b={[x1, y1]} u={u} p={w(C.may30 + 0.2, C.may30 + 0.6, C.june4 - 0.5, C.june4 - 0.1)} t={t} />);
+    O('nasser2', <Portrait bounds={[W, H]} x={x1} y={y1} u={u} scale={0.8} name="नासिर" en="NASSER" role="इजिप्ट" pic="q_nasser" side="eg" p={w(C.may30, C.may30 + 0.5, C.june4 - 0.5, C.june4 - 0.1)} />);
+    O('hussein', <Portrait bounds={[W, H]} x={x2} y={y2} u={u} scale={0.8} name="किंग हुसैन" en="KING HUSSEIN" role="जॉर्डन" pic="q_hussein" side="jo" p={w(C.may30 + 0.3, C.may30 + 0.8, C.june4 - 0.5, C.june4 - 0.1)} />); }
+  { const [x, y] = prj('jerusalem'); O('eshkol', <Portrait bounds={[W, H]} x={x} y={y} u={u} name="लेवी एशकोल" en="LEVI ESHKOL" role="प्रधानमंत्री, इज़राइल" pic="q_eshkol" side="il" p={w(C.june4 + 0.1, C.june4 + 0.6, C.june5a, C.june5a + 0.3)} />); }
   // ch 3
   O('br_res', <Breather W={W} H={H} u={u} pic="h_reservists" p={w(C.reservists - 0.3, C.reservists + 0.4, C.ruk + 0.3, C.ruk + 0.9)} t={t - C.reservists} dur={8} portrait={portrait} />);
-  { const [x, y] = prj('tel_aviv'); O('dayan', <Portrait x={x} y={y} u={u} name="मोशे दयान" en="MOSHE DAYAN" role="रक्षा मंत्री, इज़राइल" pic="q_dayan" side="il" p={w(C.dayan - 0.2, C.dayan + 0.3, C.vaar + 0.6, C.raat)} />); }
+  { const [x, y] = prj('tel_aviv'); O('dayan', <Portrait bounds={[W, H]} x={x} y={y} u={u} name="मोशे दयान" en="MOSHE DAYAN" role="रक्षा मंत्री, इज़राइल" pic="q_dayan" side="il" p={w(C.dayan - 0.2, C.dayan + 0.3, C.vaar + 0.6, C.raat)} />); }
   O('q1', <Stamp x={W * 0.32} y={H * 0.3} u={u} size={0.6} rot={-4} color="#e8e2d0" p={w(C.intezaar, C.intezaar + 0.1, C.raat, C.raat + 0.3)} text="इंतज़ार?" />);
   O('q2', <Stamp x={W * 0.68} y={H * 0.3} u={u} size={0.6} rot={4} color="#ff5a4a" p={w(C.vaar, C.vaar + 0.1, C.raat, C.raat + 0.3)} text="पहला वार?" />);
   O('night', <DateCard x={cx - 140 * u} y={top} u={u} text="4 जून" sub="रात" p={w(C.raat, C.raat + 0.3, C.bridge2 + 2, C.bridge2 + 2.5)} flip={ramp(t, C.raat, C.raat + 0.4)} />);
@@ -527,7 +526,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   const n200 = Math.round(200 * easeOut(ramp(t, C.n200 - 0.4, C.n200 + 1.6)));
   O('n200', <BigNum x={cx} y={H * 0.42} u={u} p={w(C.n200 - 0.4, C.n200, C.lehar2 + 0.6, C.lehar2 + 1)} value={`~${n200}`} label="इजिप्शियन जहाज़, ज़मीन पर ही" color="#ffd23f" />);
   O('br_smoke', <Breather W={W} H={H} u={u} pic="h_airfield_smoke" p={w(C.dopahar - 0.3, C.dopahar + 0.3, C.jordsyr - 0.3, C.jordsyr + 0.2)} t={t - C.dopahar} dur={4} portrait={portrait} />);
-  O('focus', <Stamp x={cx} y={H * 0.45} u={u} p={w(C.focus, C.focus + 0.1, C.aasman, C.aasman + 0.3)} text="OPERATION FOCUS" color="#ffd23f" />);
+  O('focus', <Stamp x={cx} y={portrait ? H * 0.56 : H * 0.78} u={u} p={w(C.focus, C.focus + 0.1, C.aasman, C.aasman + 0.3)} text="OPERATION FOCUS" color="#ffd23f" />);
   // Short 3
   O('n14', <BigNum x={cx} y={portrait ? H * 0.3 : H * 0.28} u={u} p={Math.max(hookP(C.s3, C.lada + 0.8, C.lada + 1.4), w(C.n14b, C.n14b + 0.3, C.brazil + 1.4, C.brazil + 1.8))} value="14" label="भारतीय जवान शहीद" />);
   if (t > C.s3 - 0.2 && t < C.lada + 1.5) { const [x, y] = prj([34.38, 31.42], D * 0.03); O('inflag3', <img src={flagURL('in')} style={{ position: 'absolute', left: x - 45 * u, top: y - 95 * u, width: 90 * u, height: 60 * u, border: `${3 * u}px solid #fff`, opacity: hookP(C.s3, C.lada + 0.8, C.lada + 1.4) }} />); }
@@ -542,13 +541,13 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   O('sachar', <NameCard x={cx} y={portrait ? H * 0.36 : H * 0.3} u={u} p={w(C.sachar - 0.2, C.sachar + 0.4, C.topi + 1.6, C.topi + 2.2)} lines={['कैप्टन विजय सचर', 'CAPT. VIJAY SACHAR', 'UNEF · ग़ाज़ा, जून 1967']} />);
   // ch 5
   O('br_tanks', <Breather W={W} H={H} u={u} pic="h_tanks_dust" p={w(C.teendiv - 0.3, C.teendiv + 0.2, C.uttar - 0.4, C.uttar)} t={t - C.teendiv} dur={2.5} portrait={portrait} />);
-  { const [x, y] = prj('abu_ageila'); O('sharon', <Portrait x={x + 120 * u} y={y} u={u} name="एरियल शेरॉन" en="ARIEL SHARON" role="डिवीज़न कमांडर" pic="q_sharon" side="il" p={w(C.sharon - 0.2, C.sharon + 0.3, C.dakshin, C.dakshin + 0.4)} />); }
+  { const [x, y] = prj('abu_ageila'); O('sharon', <Portrait bounds={[W, H]} x={x + 120 * u} y={y} u={u} name="एरियल शेरॉन" en="ARIEL SHARON" role="डिवीज़न कमांडर" pic="q_sharon" side="il" p={w(C.sharon - 0.2, C.sharon + 0.3, C.dakshin, C.dakshin + 0.4)} />); }
   O('d6j', <DateCard x={cx - 110 * u} y={top} u={u} text="6 जून" p={w(C.june6, C.june6 + 0.3, C.jaldi + 0.5, C.jaldi + 0.9)} flip={ramp(t, C.june6, C.june6 + 0.4)} />);
   { const [x1, y1] = prj('cairo'), [x2, y2] = prj([33.4, 30.4]); O('order', <Radio a={[x1, y1]} b={[x2, y2]} u={u} p={w(C.june6 + 0.2, C.june6 + 0.6, C.phansi, C.phansi + 0.4)} t={t} color="#ff8a7a" />); }
-  O('khali', <Stamp x={cx} y={H * 0.42} u={u} size={0.8} p={w(C.khali, C.khali + 0.1, C.jaldi + 1.2, C.jaldi + 1.6)} text="सिनाई ख़ाली करो" />);
+  O('khali', <Stamp x={portrait ? cx : W * 0.27} y={portrait ? H * 0.56 : H * 0.78} u={u} size={0.8} p={w(C.khali, C.khali + 0.1, C.jaldi + 1.2, C.jaldi + 1.6)} text="सिनाई ख़ाली करो" />);
   O('br_pass', <Breather W={W} H={H} u={u} pic="h_mountain_pass" p={w(C.phansi - 0.2, C.phansi + 0.3, C.mitla + 0.4, C.mitla + 0.9)} t={t - C.phansi} dur={3} portrait={portrait} />);
   O('d8j', <DateCard x={cx - 110 * u} y={top} u={u} text="8 जून" p={w(C.june8, C.june8 + 0.3, C.teenguna, C.teenguna + 0.4)} flip={ramp(t, C.june8, C.june8 + 0.4)} />);
-  O('x3', <BigNum x={portrait ? cx : W * 0.24} y={portrait ? H * 0.3 : H * 0.4} u={u} p={w(C.teenguna, C.teenguna + 0.3, C.ch6 - 0.6, C.ch6)} value="~3×" label="सिनाई ≈ इज़राइल × 3" color="#ffd23f" />);
+  O('x3', <BigNum x={portrait ? cx : W * 0.78} y={portrait ? H * 0.3 : H * 0.32} u={u} p={w(C.teenguna, C.teenguna + 0.3, C.ch6 - 0.6, C.ch6)} value="~3×" label="सिनाई ≈ इज़राइल × 3" color="#ffd23f" />);
   // ch 6
   O('br_streets', <Breather W={W} H={H} u={u} pic="h_stone_streets" p={w(C.sadak - 0.3, C.sadak + 0.3, C.june7 + 0.5, C.june7 + 0.9)} t={t - C.sadak} dur={3} portrait={portrait} />);
   O('d7j', <DateCard x={cx - 110 * u} y={top} u={u} text="7 जून" p={w(C.june7 + 0.3, C.june7 + 0.6, C.nadi, C.nadi + 0.4)} flip={ramp(t, C.june7 + 0.3, C.june7 + 0.7)} />);
@@ -556,7 +555,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   O('d9j', <DateCard x={cx - 110 * u} y={top} u={u} text="9 जून" p={w(C.june9, C.june9 + 0.3, C.chadhai, C.chadhai + 0.3)} flip={ramp(t, C.june9, C.june9 + 0.4)} />);
   O('br_golan', <Breather W={W} H={H} u={u} pic="h_golan_slope" p={w(C.chadhai - 0.1, C.chadhai + 0.4, C.chadhai + 2.6, C.chadhai + 3.0)} t={t - C.chadhai} dur={3} portrait={portrait} />);
   O('d10j', <DateCard x={cx - 110 * u} y={top} u={u} text="10 जून" p={w(C.june10, C.june10 + 0.3, C.aajbhi, C.aajbhi + 0.3)} flip={ramp(t, C.june10, C.june10 + 0.4)} />);
-  O('cease', <Stamp x={cx} y={H * 0.46} u={u} size={0.8} color="#ffffff" p={w(C.ceasefire, C.ceasefire + 0.1, C.aajbhi, C.aajbhi + 0.3)} text="युद्धविराम · CEASEFIRE" />);
+  O('cease', <Stamp x={cx} y={portrait ? H * 0.58 : H * 0.8} u={u} size={0.8} color="#ffffff" p={w(C.ceasefire, C.ceasefire + 0.1, C.aajbhi, C.aajbhi + 0.3)} text="युद्धविराम · CEASEFIRE" />);
   if (t > C.aajbhi - 0.2 && t < C.unchai) {
     const [x, y] = prj([35.78, 33.02], D * 0.02), p = w(C.aajbhi, C.aajbhi + 0.3, C.unchai - 0.4, C.unchai);
     O('golanflags', <div style={{ position: 'absolute', left: x - 140 * u, top: y - 140 * u, width: 280 * u, display: 'flex', justifyContent: 'space-between', opacity: p }}>
@@ -613,12 +612,12 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   }
   O('y82b', <DateCard x={cx - 110 * u} y={top + (portrait ? 0 : 160 * u)} u={u} text="1982" sub="पूरा सिनाई वापस" p={w(C.n1982b, C.n1982b + 0.3, C.close, C.close + 0.3)} flip={ramp(t, C.n1982b, C.n1982b + 0.4)} />);
   // close: back to frame 0's picture
-  O('stampEnd', <Stamp x={cx} y={portrait ? H * 0.2 : H * 0.17} u={u} p={ramp(t, C.chhahdin9, C.chhahdin9 + 0.3)} text="सिर्फ़ 6 दिन" color="#ffd23f" rot={-6} />);
+  O('stampEnd', <Stamp x={portrait ? cx : W * 0.27} y={portrait ? H * 0.62 : H * 0.8} u={u} p={ramp(t, C.chhahdin9, C.chhahdin9 + 0.3)} text="सिर्फ़ 6 दिन" color="#ffd23f" rot={-6} />);
 
   // chapter titles (long video only)
-  const CH: [number, string, string][] = [[C.ch1, 'अध्याय 1', 'नक़्शा'], [C.ch2, 'अध्याय 2', 'मई 1967'], [C.s1, 'अध्याय 3', 'तिरान की गली'], [C.ch3, 'अध्याय 4', 'इंतज़ार'],
-    [C.s2, 'अध्याय 5', '3 घंटे'], [C.s3, 'अध्याय 6', 'ग़ाज़ा के भारतीय जवान'], [C.ch5, 'अध्याय 7', 'सिनाई'], [C.ch6, 'अध्याय 8', 'यरूशलम और वेस्ट बैंक'],
-    [C.s4, 'अध्याय 9', 'गोलान'], [C.s5, 'अध्याय 10', '6 दिन का नक़्शा'], [C.s6, 'अध्याय 11', 'येलो फ़्लीट'], [C.ch8, 'अध्याय 12', 'जंग के बाद']];
+  const CH: [number, string, string][] = [[C.ch1, 'अध्याय 1', 'नक़्शा'], [C.ch2, 'अध्याय 2', 'मई 1967'], [C.gali1 + 1.5, 'अध्याय 3', 'तिरान की गली'], [C.ch3, 'अध्याय 4', 'इंतज़ार'],
+    [C.gasht, 'अध्याय 5', '3 घंटे'], [C.neeli, 'अध्याय 6', 'ग़ाज़ा के भारतीय जवान'], [C.ch5, 'अध्याय 7', 'सिनाई'], [C.ch6, 'अध्याय 8', 'यरूशलम और वेस्ट बैंक'],
+    [C.maalik + 0.5, 'अध्याय 9', 'गोलान'], [C.subah5 + 0.6, 'अध्याय 10', '6 दिन का नक़्शा'], [C.beechraaste + 0.6, 'अध्याय 11', 'येलो फ़्लीट'], [C.ch8, 'अध्याय 12', 'जंग के बाद']];
 
   for (const sp of specs) {
     let k = 1;

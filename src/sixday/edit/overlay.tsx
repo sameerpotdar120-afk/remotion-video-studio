@@ -21,10 +21,13 @@ export const flagURL = (s: Side) => {
 };
 
 /** A portrait card standing on the map at screen point (x, y): framed B&W photo, a name plate, "AI illustration". */
-export const Portrait: React.FC<{ x: number; y: number; u: number; name: string; en: string; role: string; pic: string; p: number; side?: Side; scale?: number }> = ({ x, y, u, name, en, role, pic, p, side, scale = 1 }) => {
+export const Portrait: React.FC<{ x: number; y: number; u: number; name: string; en: string; role: string; pic: string; p: number; side?: Side; scale?: number; bounds?: [number, number] }> = ({ x: x0, y: y0, u, name, en, role, pic, p, side, scale = 1, bounds }) => {
   if (p <= 0.001) return null;
   const s = u * scale * (0.6 + 0.4 * easeOut(clamp01(p)));
   const w = 210 * s;
+  // keep the whole card on screen (and clear of the top date slot)
+  const x = bounds ? Math.min(Math.max(x0, w / 2 + 30 * u), bounds[0] - w / 2 - 30 * u) : x0;
+  const y = bounds ? Math.min(Math.max(y0, 330 * u * scale + 150 * u), bounds[1] - 60 * u) : y0;
   return (
     <div style={{ position: 'absolute', left: x - w / 2, top: y - 330 * s, width: w, opacity: clamp01(p * 1.6), transform: `translateY(${(1 - easeOut(clamp01(p))) * 40 * s}px)` }}>
       <div style={{ background: 'linear-gradient(#3a4250, #1b2029)', border: `${3 * s}px solid #9aa4b4`, borderRadius: 10 * s, padding: 9 * s, boxShadow: `0 ${14 * s}px ${30 * s}px rgba(0,0,0,0.55)` }}>

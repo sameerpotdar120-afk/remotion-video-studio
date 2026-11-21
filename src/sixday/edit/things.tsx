@@ -228,7 +228,7 @@ export const Blast: React.FC<{ h: Float32Array; at: string | [number, number]; s
   const smoke = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: '#000000' }), n), [n]);
   const fire = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false }), n), [n]);
   const sparks = useMemo(() => new THREE.InstancedMesh(ballGeo, new THREE.MeshBasicMaterial({ color: '#ffd27a', toneMapped: false }), 18), []);
-  if (age < 0 || age > 9) return null;
+  if (age < 0 || age > 4.2) return null;
   const [x, y, z] = at3(h, at);
   let s = seed * 7919 + 13;
   const rnd = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
@@ -237,12 +237,12 @@ export const Blast: React.FC<{ h: Float32Array; at: string | [number, number]; s
     const a = rnd() * Math.PI * 2, r = Math.sqrt(rnd()), up = rnd(), sz = 0.45 + rnd() * 0.55, delay = rnd() * 0.25;
     const t = Math.max(0, age - delay);
     const grow = 1 - Math.exp(-t * 5);
-    const rise = up * size * 2.6 * (1 - Math.exp(-t * 0.9)) + t * size * 0.25;
-    const spread = r * size * (0.6 + 1.1 * grow) * (1 + t * 0.08);
+    const rise = up * size * 1.6 * (1 - Math.exp(-t * 1.1)) + t * size * 0.15;
+    const spread = r * size * (0.5 + 0.8 * grow) * (1 + t * 0.05);
     const px = x + Math.cos(a) * spread + t * size * 0.12, pz = z + Math.sin(a) * spread * 0.8;
     const py = y + size * 0.35 * sz + rise;
-    const fade = Math.max(0, 1 - Math.max(0, t - 4.5) / 4);
-    const rr = size * sz * (0.35 + 0.9 * grow + t * 0.08) * fade;
+    const fade = Math.max(0, 1 - Math.max(0, t - 1.6) / 2.2);
+    const rr = size * sz * (0.3 + 0.65 * grow + t * 0.05) * fade;
     o.position.set(px, py, pz); o.scale.setScalar(Math.max(0.0001, rr)); o.rotation.set(a, up * 3, r); o.updateMatrix();
     smoke.setMatrixAt(i, o.matrix);
     const heat = Math.max(0, 1 - t / 0.9);
