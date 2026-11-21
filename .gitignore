@@ -2,3 +2,5 @@ node_modules/
 out/
 .DS_Store
 __pycache__/
+public/sixday/audio/vo_115.wav
+public/sixday/audio/mix_*.wav
