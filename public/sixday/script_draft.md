@@ -42,17 +42,22 @@ the native 30 fps.
 | | Long video | Shorts (6) |
 |---|---|---|
 | Frame | 16:9, 3840×2160 | 9:16, 2160×3840 |
-| Length | ~13–14 min with map moves and pauses (1,915 words of VO) | 50–67 s each |
+| Length | ~13–14 min with map moves and pauses (about 1,750 words of VO) | 50–67 s each |
 | How | The full script below | The same scenes re-rendered vertically, from the `[SHORT n]` blocks, with Hindi captions |
 
-**How a Short sits inside the long video.** Every `[SHORT n]` block is a complete Short: its own hook (the known thing
-first, the twist inside 2.5 s, one claim), a story and a payoff. The last line comes in two versions, both recorded by
-you:
-- **(SHORT ONLY):** the loop line ("to bas itna kehna…"), which runs back into the Short's own hook.
-- **(LONG ONLY):** a closing line, so the long video flows on to the next chapter.
+**One script, no separate versions (creator, 21 Nov).** The long video and the Shorts use exactly the same VO. Each
+Short is a continuous stretch of the long script. It starts on its own hook line and ends on a line that closes the
+story in the long video and, in the Short, runs straight back into its hook (the loop). Lines between the Shorts are
+heard only in the long video.
 
-The short ones are tagged `(SHORT ONLY)` / `(LONG ONLY)` in `script_roman.txt`. Lines outside the blocks are long-video
-only.
+| Short | Starts on | Ends on |
+|---|---|---|
+| 1 Tiran | "Red Sea ke kone mein ek patli si samundri gali hai…" | "…poora Middle East jal utha." |
+| 2 3 ghante | "Ek jung jo 6 din chali, uska faisla pehle 3 ghante mein…" | "…un 3 ghanton ka nateeja thi." |
+| 3 Gaza ke jawan | "Gaza mein 1967 mein Bharat ke 14 jawan shaheed hue…" | "…Wo shanti ki topi pehne hue the." |
+| 4 Golan | "Golan Heights ke liye 1967 ki jung ka aakhri din lada gaya…" | "…poori seema se zyada keemti hoti hai." |
+| 5 6 din ka naqsha | "Israel ka naqsha sirf 6 din mein teen guna se bhi zyada…" | "…West Bank aur Golan ka sawaal aaj bhi khula hai." |
+| 6 Yellow Fleet | "Suez Canal mein 1967 mein 15 jahaaz phanse…" | "…sirf 2 jahaaz apne engine se ghar laut paaye." |
 
 ## Hooks for the long video (hookscore is only a rough check; Hinglish scores low across the board)
 
@@ -109,7 +114,7 @@ Full text: `script_roman.txt`. Times are for the long video at about 150 wpm.
 | 11:15 | Ch 8: Jung ke baad | UN Resolution 242 (land for peace); Khartoum's "three no's"; the 1973 war; the 1979 treaty; Sinai back by 1982 | Radio arcs at the UN; a document card "RESOLUTION 242"; Khartoum pin with three "NO" stamps; a quick 1973 arrows replay; the 1979 handshake as two flags meeting (no people). |
 | 12:20 | Close | 6 days, 3 hours, one new map; questions unanswered 60 years on; Gaza, Golan, West Bank begin here; one ask: which part surprised you | Slow pull-out to the whole region, the three names glowing again (matching frame 0); end. |
 
-**Runtime:** 1,915 words: about 12.8 min at 150 wpm (about 12.1 min at your 1.15× pace). With the map moves and
+**Runtime:** about 1,750 words: about 11.6 min at 150 wpm (about 11.1 min at your 1.15× pace). With the map moves and
 pauses the reference uses, the long video lands at about 13–14 min. The Shorts run 50–67 s each at 1.15×.
 
 **The winning hook is "The Hidden Fact" (closest to "The Insider" in the 21 formulas):** names everyone hears daily,
@@ -173,14 +178,13 @@ with a fact under them few know. It fits a long video because it promises a payo
 
 ## What I need from you after your polish
 
-1. **Your final wording.** Then I give the ElevenLabs text. Record each `(SHORT ONLY)` and `(LONG ONLY)` line as its
-   own line.
+1. **The VO.** Record `script_elevenlabs.txt` in one go.
 2. **The assets and Null.** I write the asset prompts:
    - portrait cards for Nasser, Eshkol, Dayan, Hussein and Sharon as AI illustrations
    - 3D props: jets, tanks, ships, the UNEF helmet, the Yellow Fleet ships
    - the desk-diorama opening
 
-   Plus the Omni prompts for Null in the long video (2–3 short moments) and whether you want him in the Shorts.
+   No Null and no Omni prompts this time (your call, 21 Nov).
 3. **Render plan (no LFS):**
    - We build the long video at 4K 16:9 and each Short at 4K 9:16 from the same map scenes.
    - The long video is about 14 min. On one machine that's a long render (4K30 about 7–9 h; 1080p60 about 3–4 h).
