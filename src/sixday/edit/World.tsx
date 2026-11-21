@@ -5,6 +5,7 @@ import { continueRender, delayRender, staticFile } from 'remotion';
 import * as THREE from 'three';
 import { GH, GW, KM_PER_PX, V3, VEX, X0, X1, Z0, Z1 } from './geo';
 import { Env } from './models';
+import { Ocean } from './ocean';
 
 /**
  * The one map world of the Six-Day War video, in the reference's documentary way: a tilted 3D map with felt-like
@@ -304,6 +305,7 @@ export const World: React.FC<{ h: Float32Array; cam: CamS; width: number; height
       <directionalLight position={[LIGHT[0] * 1000, LIGHT[1] * 1000, LIGHT[2] * 1000]} intensity={2.2} />
       <GroundMesh h={h} tx={tx} g={g} cam={cam} dist={dist} />
       <Skirt />
+      <Ocean look={cam.look} dist={dist} t={g.t} cam={cam.pos} tx={tx} fog={[dist * 1.6, dist * 4.5]} light={LIGHT} fogC={FOG} />
       {children}
     </ThreeCanvas>
   );

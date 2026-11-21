@@ -24,12 +24,23 @@ const imgCache: Record<string, Promise<THREE.Texture>> = {};
 const loadImg = (n: string) => (imgCache[n] ??= new Promise((res) => new THREE.TextureLoader().load(staticFile(`sixday/img/${n}.webp`), (t) => {
   t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; res(t);
 })));
-/** Preload image textures (holds the render until they are in). */
+/** Props that have a depth map (public/sixday/depth, from Depth Anything V2 via transformers.js): they render as 3D. */
+export const DEPTH = ['a_airfield_tile', 'a_runway_crater_tile', 'b_bunker_ridge', 'p_coastal_post', 'p_port_eilat', 'u_blue_helmet', 'u_un_jeep',
+  'w_old_city_wall', 't_tank_column', 't_halftrack', 'd_document_seal', 'r_radio_set'];
+const depthCache: Record<string, Promise<THREE.Texture>> = {};
+const loadDepth = (n: string) => (depthCache[n] ??= new Promise((res) => new THREE.TextureLoader().load(staticFile(`sixday/depth/${n}.png`), (t) => { t.colorSpace = THREE.NoColorSpace; res(t); })));
+/** Preload image textures, and the depth maps of the 3D props as `${name}:d` (holds the render until they are in). */
 export const useImgs = (names: string[]) => {
   const key = names.join(',');
   const [map, setMap] = useState<Record<string, THREE.Texture> | null>(null);
   const [h] = useState(() => delayRender(`sd imgs ${key.slice(0, 40)}`));
-  useEffect(() => { Promise.all(names.map(loadImg)).then((ts) => { setMap(Object.fromEntries(names.map((n, i) => [n, ts[i]]))); continueRender(h); }); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    const dn = names.filter((n) => DEPTH.includes(n));
+    Promise.all([Promise.all(names.map(loadImg)), Promise.all(dn.map(loadDepth))]).then(([ts, ds]) => {
+      setMap({ ...Object.fromEntries(names.map((n, i) => [n, ts[i]])), ...Object.fromEntries(dn.map((n, i) => [`${n}:d`, ds[i]])) });
+      continueRender(h);
+    });
+  }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
   return map;
 };
 
@@ -173,8 +184,23 @@ export const Bracket: React.FC<{ h: Float32Array; at: string | [number, number];
 
 // ---------------------------------------------------------------- image props
 /** An image prop standing on the map (billboarded to the camera's heading) or lying flat (`flat`). */
-export const Prop: React.FC<{ tex: THREE.Texture; h: Float32Array; at: string | [number, number] | V3; w: number; op?: number; head?: number; flat?: boolean; up?: number; tint?: string; yaw?: number; shadow?: number; order?: number }> = ({ tex, h, at, w, op = 1, head = 0, flat, up = 0, tint = '#ffffff', yaw = 0, shadow = 0, order = 12 }) => {
+const reliefGeo = new THREE.PlaneGeometry(1, 1, 160, 160);
+export const Prop: React.FC<{ tex: THREE.Texture; h: Float32Array; at: string | [number, number] | V3; w: number; op?: number; head?: number; flat?: boolean; up?: number; tint?: string; yaw?: number; shadow?: number; order?: number; depth?: THREE.Texture; sway?: number }> = ({ tex, h, at, w, op = 1, head = 0, flat, up = 0, tint = '#ffffff', yaw = 0, shadow = 0, order = 12, depth, sway = 0 }) => {
   if (op <= 0.001) return null;
+  if (depth && !flat) {
+    // the image raised into a 3D relief by its depth map, standing on the map, lit, turning slowly
+    const img = tex.image as { width: number; height: number };
+    const hh = (w * img.height) / img.width;
+    const p: V3 = Array.isArray(at) && at.length === 3 ? (at as V3) : at3(h, at as string | [number, number]);
+    return (
+      <group position={[p[0], p[1] + up, p[2]]} rotation={[0, -rad(head) + sway, 0]}>
+        <mesh geometry={reliefGeo} scale={[w, hh, w]} position={[0, hh * 0.5, 0]} rotation={[-0.42, 0, 0]} renderOrder={order}>
+          <meshStandardMaterial map={tex} displacementMap={depth} displacementScale={0.32} displacementBias={-0.08} color={tint} transparent opacity={op}
+            alphaTest={0.35} roughness={0.85} metalness={0.05} side={THREE.DoubleSide} />
+        </mesh>
+      </group>
+    );
+  }
   const img = tex.image as { width: number; height: number };
   const hh = (w * img.height) / img.width;
   const p: V3 = Array.isArray(at) && at.length === 3 ? (at as V3) : at3(h, at as string | [number, number]);

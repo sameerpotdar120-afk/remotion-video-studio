@@ -362,7 +362,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   const props: React.ReactNode[] = [];
   const P = (key: string, n: string, at: string | [number, number] | V3, wk: number, a: number, b: number, extra: Partial<React.ComponentProps<typeof Prop>> = {}) => {
     const op = w(a, a + 0.5, b, b + 0.5);
-    if (op > 0) props.push(<Prop key={key} tex={im[n]} h={h} at={at} w={D * wk} head={head} op={op} {...extra} />);
+    if (op > 0) props.push(<Prop key={key} tex={im[n]} h={h} at={at} w={D * wk} head={head} op={op} depth={im[`${n}:d`]} sway={0.22 * Math.sin(t * 0.45 + key.length)} {...extra} />);
   };
   // ch 1: a tank crossing the waist
   // ch 2: the parade, UNEF, Sharm el-Sheikh
