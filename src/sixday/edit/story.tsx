@@ -200,8 +200,8 @@ const TRACKS: Track[] = [
   tr('jo', 'arm', C.topen - 0.3, C.hebron + 1.5, [C.topen - 0.3, 35.15, 31.55], [C.nadi + 0.3, 35.2, 31.6], [C.nadi + 2.5, 35.7, 31.65]),
   // Short 4: Golan
   st('sy', 'art', C.upar, C.june10 + 0.6, 35.75, 33.0), st('sy', 'inf', C.upar + 0.3, C.june10 + 0.6, 35.72, 33.15), st('sy', 'art', C.golabari4 - 0.4, C.june10 + 0.6, 35.78, 32.85),
-  tr('il', 'arm', C.june9, C.keemti + 3, [C.june9, 35.62, 33.22], [C.bunker + 2, 35.8, 33.12]),
-  tr('il', 'inf', C.june9 + 0.4, C.keemti + 3, [C.june9 + 0.4, 35.64, 32.86], [C.bunker + 2.4, 35.78, 32.9]),
+  tr('il', 'arm', C.june9, C.s5 - 1.2, [C.june9, 35.62, 33.22], [C.bunker + 2, 35.8, 33.12]),
+  tr('il', 'inf', C.june9 + 0.4, C.s5 - 1.2, [C.june9 + 0.4, 35.64, 32.86], [C.bunker + 2.4, 35.78, 32.9]),
   // Short 6: the two banks of the canal
   st('il', 'inf', C.kinara_il, C.mahine + 1, 32.55, 30.4), st('il', 'arm', C.kinara_il + 0.3, C.mahine + 1, 32.62, 30.25),
   st('eg', 'inf', C.kinara_eg, C.mahine + 1, 32.22, 30.4), st('eg', 'arm', C.kinara_eg + 0.3, C.mahine + 1, 32.18, 30.25),
@@ -464,8 +464,8 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
   SQ('jo6', 'jo', [[35.3, 31.85], [35.45, 31.87], [35.6, 31.9]], C.nadi - 0.3, C.hebron + 1, C.nadi, C.hebron + 2, { n: 6 });
   // Short 4: tanks and infantry up the Golan escarpment, firing at the bunkers
   for (let i = 0; i < 2; i++) {
-    TK(`g${i}`, 'il', [[35.62, 33.22], [35.7, 33.21], [35.8, 33.13]], C.june9, C.keemti + 2, C.chadhai + 2.6, C.june10 + 1, { lag: i * 0.08, aim: [35.76, 33.1], fire: [C.bunker - 0.2 + i * 0.4] });
-    TK(`h${i}`, 'il', [[35.64, 32.86], [35.72, 32.86], [35.8, 32.9]], C.june9 + 0.4, C.keemti + 2, C.chadhai + 2.8, C.june10 + 1.2, { lag: i * 0.08, aim: [35.75, 32.92], fire: [C.bunker + 0.5 + i * 0.4] });
+    TK(`g${i}`, 'il', [[35.62, 33.22], [35.7, 33.21], [35.8, 33.13]], C.june9, C.s5 - 1.2, C.chadhai + 2.6, C.june10 + 1, { lag: i * 0.08, aim: [35.76, 33.1], fire: [C.bunker - 0.2 + i * 0.4] });
+    TK(`h${i}`, 'il', [[35.64, 32.86], [35.72, 32.86], [35.8, 32.9]], C.june9 + 0.4, C.s5 - 1.2, C.chadhai + 2.8, C.june10 + 1.2, { lag: i * 0.08, aim: [35.75, 32.92], fire: [C.bunker + 0.5 + i * 0.4] });
   }
   SQ('gi1', 'il', [[35.63, 33.0], [35.69, 33.02], [35.75, 33.04]], C.june9 + 0.3, C.june10 + 1, C.chadhai + 2.6, C.june10 + 1.5, { n: 8, firing: true });
   TR('gx1', [35.76, 33.1], [35.68, 33.12], C.bunker - 0.5, C.june10, '#ff9a4a');
@@ -622,7 +622,7 @@ export const Scene: React.FC<SceneP> = ({ t, W, H, portrait, h, im, caps, long, 
       <div style={{ textAlign: 'center' }}><img src={flagURL('il')} style={{ width: 110 * u, height: 74 * u, border: `${3 * u}px solid #fff` }} /><div style={{ fontFamily: UI, fontWeight: 800, fontSize: 22 * u, color: '#fff', textShadow: '0 2px 6px #000' }}>क़ब्ज़ा</div></div>
       <div style={{ textAlign: 'center', opacity: ramp(t, C.apna - 0.2, C.apna + 0.3) }}><img src={flagURL('sy')} style={{ width: 110 * u, height: 74 * u, border: `${3 * u}px solid #fff` }} /><div style={{ fontFamily: UI, fontWeight: 800, fontSize: 22 * u, color: '#fff', textShadow: '0 2px 6px #000' }}>दावा</div></div></div>);
   }
-  O('profile', <GolanProfile u={u} W={W} H={H} p={w(C.unchai - 0.2, C.unchai + 0.8, C.keemti + 2.5, C.keemti + 3)} portrait={portrait} />);
+  O('profile', <GolanProfile u={u} W={W} H={H} p={w(C.unchai - 0.2, C.unchai + 0.8, Math.min(C.keemti + 2.5, C.s5 - 1.4), Math.min(C.keemti + 3, C.s5 - 0.9))} portrait={portrait} />);
   // Short 5
   O('x3b', <BigNum x={cx} y={portrait ? H * 0.28 : H * 0.24} u={u} p={Math.max(hookP(C.s5, C.teenguna5 + 1.4, C.subah5), w(C.kabza, C.kabza + 0.3, C.keemat - 0.2, C.keemat + 0.2))} value="3× से ज़्यादा" label="6 दिन में इज़राइल के क़ब्ज़े का इलाक़ा" color="#ffd23f" size={0.8} />);
   const [ax2, ay2] = prj('netanya'), [bx2, by2] = prj([35.01, 32.31]);
