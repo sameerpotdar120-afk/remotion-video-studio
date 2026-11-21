@@ -15,12 +15,11 @@ for a in $(seq $A 300 $Z); do
   D=exports/sd_chunks/$TAG; mkdir -p $D
   [ -f $D/SDLong_$n.mp4.part00 ] && continue
   split -b 45M -d -a 2 $f $D/SDLong_$n.mp4.part
-  (cd $D && sha256sum SDLong_$n.mp4.part* >> SHA256SUMS && sha256sum ../../../$OUT/SDLong_$n.mp4 2>/dev/null | true)
+  (cd $D && sha256sum SDLong_$n.mp4.part* >> SHA256SUMS)
   sha256sum $f | sed "s#$OUT/##" >> $D/WHOLE_SHA256
   git add --sparse $D 2>/dev/null || git add $D
   git -c user.name="render helper" -c user.email="helper@noreply" commit -qm "Six-Day render $TAG: SDLong frames $a-$b"
   for i in 1 2 3 4; do git push -q -u origin $BR && break; sleep $((i * 10)); done
-  rm -f $D/SDLong_$n.mp4.part*
   echo "pushed piece $a-$b $(TZ=Asia/Kolkata date +%H:%M)"
 done
 echo HELPERDONE
