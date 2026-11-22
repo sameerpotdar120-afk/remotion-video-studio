@@ -95,9 +95,9 @@ make this mistake" beat, the 1.6 billion deal and "1,05,000 dollar". v2 keeps al
 
 - **Loop.** The old ending "...jo hai bas hamare Delhi Airport jitna..." repeated the hook's words, so on replay you'd
   hear "Delhi Airport jitna" twice in a row. Now it ends "...jo hai bas", and the hook completes it:
-  "...jo hai bas / tumhare Delhi Airport jitna ek desh...". Same frame, no repeated words.
-- **Hook: "tumhare", not "hamare".** It scores 70 against 44 (hookscore), because it speaks to the viewer in the
-  first six words. "Hamare" still passes the hook playbook rules, so it's the creator's choice.
+  "...jo hai bas / hamare Delhi Airport jitna ek desh...". Same frame, no repeated words.
+- **Hook: "hamare" (creator's call, 22 Nov).** Delhi is ours: the channel and its audience are Indian. hookscore rates
+  "tumhare" higher (70 against 44) only because it counts "tum" as direct address; the hook playbook allows "हम".
 - **Patna line (fact).** One jet per about 1,100 people, and a Delhi–Patna flight carries about 180–190 (A320/737),
   so 1,100 people fill about six flights. "Matlab Delhi se Patna ki kareeb chhah bhari flights jitne log, aur unke
   liye poora ek Jet."
@@ -116,7 +116,7 @@ Runtime: 318 Roman words. That's about 101 s after the 1.15× speed-up by the us
 (36 words, about 11 s), the Patna line (15 words, about 5 s), or "Socho, ek chhota sa dweep..." (11 words, about
 4 s).
 
-**1. Hook.** Tumhare Delhi Airport jitna ek desh, sirf aath hazaar logon ke liye saat Jet khareed raha tha. Par phir, sab kho diya.
+**1. Hook.** Hamare Delhi Airport jitna ek desh, sirf aath hazaar logon ke liye saat Jet khareed raha tha. Par phir, sab kho diya.
 [ON SCREEN: frame 0 = Delhi airport from above with Nauru's outline laid over it at the same scale; seven jets fan out on "saat Jet"; the island drains grey on "kho diya"]
 
 **2. Where.** Ye hai Nauru. Pacific Mahasagar ke beech, duniya ka teesra sabse chhota desh.
@@ -144,4 +144,4 @@ Runtime: 318 Roman words. That's about 101 s after the 1.15× speed-up by the us
 [ON SCREEN: route Australia → Nauru with "$"; counter "$1.6B / 30 साल"; a generic passport (labelled प्रतीकात्मक) tagged "$105,000+"]
 
 **10. Close + loop.** Ek shabd me batao, Nauru ki galti kya thi? Aur yaad rakhna, ye sab hua us desh me, jo hai bas...
-[ON SCREEN: the island alone in the Pacific; the camera dives back to Delhi; the last frame is frame 0, so "...jo hai bas" runs into "Tumhare Delhi Airport jitna ek desh"]
+[ON SCREEN: the island alone in the Pacific; the camera dives back to Delhi; the last frame is frame 0, so "...jo hai bas" runs into "Hamare Delhi Airport jitna ek desh"]
