@@ -87,3 +87,61 @@ Null (split screen, middle only, 5–8 s): beat 5 on "हर ग्यारह 
   temporary discounts. The video says "एक लाख डॉलर से ज़्यादा".
 - Dropped from the reference: the police chief's Lamborghini (single light source, no name or date) and "twice
   as rich as America".
+
+## v2: the creator's script, polished (22 Nov 2026)
+
+The creator's rewrite (Roman Hinglish) adds "kamai America se bhi zyada", the Delhi–Patna comparison, the "we all
+make this mistake" beat, the 1.6 billion deal and "1,05,000 dollar". v2 keeps all of it. Changes:
+
+- **Loop.** The old ending "...jo hai bas hamare Delhi Airport jitna..." repeated the hook's words, so on replay you'd
+  hear "Delhi Airport jitna" twice in a row. Now it ends "...jo hai bas", and the hook completes it:
+  "...jo hai bas / tumhare Delhi Airport jitna ek desh...". Same frame, no repeated words.
+- **Hook: "tumhare", not "hamare".** It scores 70 against 44 (hookscore), because it speaks to the viewer in the
+  first six words. "Hamare" still passes the hook playbook rules, so it's the creator's choice.
+- **Patna line (fact).** One jet per about 1,100 people, and a Delhi–Patna flight carries about 180–190 (A320/737),
+  so 1,100 people fill about six flights. "Matlab Delhi se Patna ki kareeb chhah bhari flights jitne log, aur unke
+  liye poora ek Jet."
+- **The 1.6 billion deal (fact).** It's real: US$1.62B (A$2.5B) over 30 years, signed in 2025 (Al Jazeera, RNZ).
+  But it is for people Australia deports after releasing them from immigration detention, not asylum seekers. So
+  the line now covers both: "un logon ko wahin rakhne ke liye jinhe wo apne yahan nahi rakhna chahta. Ek nayi deal
+  me to, tees saal me kareeb ek point chhah billion dollar."
+- **"America se bhi zyada":** supported (1975 estimates of $35,700–50,000 per person, against a US figure of about
+  $7,800). Made explicit: "har aadmi ki kamai".
+- **"1,05,000 dollar se zyada":** fine. That was the launch price, and today's $115,000 plus fees is "more than"
+  it.
+- **Years and decimals as words for the voice** ("unnees sau adsath", "ek point chhah billion"). Captions use digits.
+
+Runtime: 318 Roman words. That's about 101 s after the 1.15× speed-up by the usual estimate, but the GTA VO came out
+12% longer than its estimate, so expect about 1:50. Optional trims if you want it under 90 s: the "galti" beat
+(36 words, about 11 s), the Patna line (15 words, about 5 s), or "Socho, ek chhota sa dweep..." (11 words, about
+4 s).
+
+**1. Hook.** Tumhare Delhi Airport jitna ek desh, sirf aath hazaar logon ke liye saat Jet khareed raha tha. Par phir, sab kho diya.
+[ON SCREEN: frame 0 = Delhi airport from above with Nauru's outline laid over it at the same scale; seven jets fan out on "saat Jet"; the island drains grey on "kho diya"]
+
+**2. Where.** Ye hai Nauru. Pacific Mahasagar ke beech, duniya ka teesra sabse chhota desh.
+[ON SCREEN: pull back from Delhi across the globe (India's official boundary) to the Pacific; pin "NAURU · 21 km²"; strip Vatican, Monaco, Nauru]
+
+**3. Rich.** Unnees sau adsath me azaadi mili, aur saath me zameen ke neeche ka khazana. Sattar ke dashak me, prati vyakti kamai me, Nauru duniya ke sabse ameer deshon me tha. Ek andaze ke hisaab se, Saudi Arabia ke theek baad. Socho, ek chhota sa dweep, aur har aadmi ki kamai America se bhi zyada.
+[ON SCREEN: "1968" slam; gold glow under the island; "≈ $50,000 / व्यक्ति (1975, अनुमान)"; podium Saudi 1, Nauru 2; then a bar: Nauru vs USA per person]
+
+**4. Easy life.** Income Tax nahi. Hospital, School, Bijli, sab lagbhag muft.
+[ON SCREEN: icons pop on their words; "NO TAX" stamp; an original cartoon islander in a hammock]
+
+**5. Seven jets.** Phir sarkar ne apni Airline kholi. Unnees sau tirasi tak, kareeb aath hazaar logon ke is desh ke paas saat Jet the. Yaani har gyarah sau logon par ek Jet. Matlab Delhi se Patna ki kareeb chhah bhari flights jitne log, aur unke liye poora ek Jet.
+[ON SCREEN: seven jets wider than the island; "8,000 लोग · 7 JETS" → "1 JET = 1,100 लोग"; six small plane icons labelled "DEL → PAT" fill up and merge into one big jet; Null split on the disbelief]
+
+**6. The money.** Par ye paisa aa kahan se raha tha? Pakshiyon ki beet se. Maana jaata hai, laakhon saalon me ye beet ban gayi Phosphate, kheton ki sabse keemti khaad.
+[ON SCREEN: seabird flock; cut-away layers (droppings → rock); "PHOSPHATE = खाद"; ships on routes out]
+
+**7. The fall.** Nauru ne ise khod-khod kar becha. Ek jaanch ke hisaab se, dweep ka assi pratishat se zyada hissa ujad chuka tha. Phir Phosphate khatam hone laga, aur paisa bhi. Do hazaar tak, Nauru lagbhag diwaliya tha.
+[ON SCREEN: grey pinnacles eat the green interior, "80%+"; the gold glow drains; "2000" + "BROKE" stamp]
+
+**8. The lesson.** Ye wahi galti hai jo hum me se kai log karte hain. Paisa aaya, to use bachane ke bajaye udana shuru kar diya. Jaise kisi ki zameen bik jaye, aur wo pehle hi din nayi gaadi le le.
+[ON SCREEN: an original cartoon villager signs a land deed, a stack of notes appears, and the same day a shiny new car (generic, no brand) rolls up; the notes fly away; Null split on "udana"]
+
+**9. Today.** Aur aaj? Australia use paise deta hai, un logon ko wahin rakhne ke liye jinhe wo apne yahan nahi rakhna chahta. Ek nayi deal me to, tees saal me kareeb ek point chhah billion dollar. Aur Nauru, apni nagrikta bech raha hai. Ek lakh paanch hazaar dollar se zyada me.
+[ON SCREEN: route Australia → Nauru with "$"; counter "$1.6B / 30 साल"; a generic passport (labelled प्रतीकात्मक) tagged "$105,000+"]
+
+**10. Close + loop.** Ek shabd me batao, Nauru ki galti kya thi? Aur yaad rakhna, ye sab hua us desh me, jo hai bas...
+[ON SCREEN: the island alone in the Pacific; the camera dives back to Delhi; the last frame is frame 0, so "...jo hai bas" runs into "Tumhare Delhi Airport jitna ek desh"]
