@@ -23,7 +23,7 @@ push_ready() {
     split -b 45M -d -a 2 "$f" "$D/$n.mp4.part"
     (cd $D && sha256sum $n.mp4.part* >> SHA256SUMS)
     sha256sum "$f" | sed "s#$PD/##" >> $D/WHOLE_SHA256
-    git add -f $D
+    git add --sparse -f $D 2>/dev/null || git add -f $D
     git -c user.name="render helper" -c user.email="helper@noreply" commit -qm "GTA6 render $TAG: $n"
     for i in 1 2 3 4; do GIT_LFS_SKIP_PUSH=1 git push -q -u origin "$BR" && break; sleep $((i * 10)); done
     echo "pushed $n $(TZ=Asia/Kolkata date +%H:%M)"
