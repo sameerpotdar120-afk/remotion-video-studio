@@ -97,3 +97,89 @@ VO: अब बताओ: अगला GTA भारत में बने, त�
 No GTA logos, box art, characters, trailer stills or game footage: the reference uses all of them and we can't.
 Everything is drawn in code on EOX Sentinel-2 / Natural Earth (India's official boundary): blank game cases with the
 year, the counters, the fictional names as plain text labels in our fonts (not the GTA logo font).
+
+## v2: the creator's script, polished (22 Nov 2026)
+
+The creator rewrote v1 in Roman Hinglish and added the nostalgia lines (cyber cafe, CJ, RP servers, the generation
+that waited, "gamers like you"). v2 keeps all of them; changes are grammar, tense, two facts, and the loop.
+
+Runtime: 319 words. That is about 116 s at 2.75 words a second, or about 101 s after the 1.15× speed-up, over the
+60–90 s target. Optional trims (all from v1's lines, not the creator's) bring it to about 92 s: drop the UP
+comparison (9 words), say only "Los Santos yaani Los Angeles" in San Andreas (8), and make the turn "Aur GTA ka har
+sheher, America ka ek asli sheher hai." (7).
+
+**1. Hook (0:00–0:04)**
+VO: GTA 6 me tum jo Vice Beach dekh rahe ho, Rockstar ne use banane ka kaam Bengaluru kyun bheja?
+[ON SCREEN: frame 0 already pushing in over Florida; "Vice Beach" wipes in orange, flat; on "Bengaluru" an arc lands on
+Bengaluru (India's official boundary). Caption "Vice Beach → Bengaluru?"]
+
+**2. First payoff**
+VO: Kyunki Bengaluru me Rockstar ka apna studio hai: Rockstar India. Reports ke hisaab se, Vice Beach ka bada hissa
+yahin bana.
+[ON SCREEN: Bengaluru pin, name box "Rockstar India · Bengaluru"; Vice Beach outline as a blueprint; small "रिपोर्ट्स"]
+
+**3. Turn**
+VO: Par ye samajhne ke liye GTA ka map dekho. Iska har sheher, America ka ek asli sheher hai.
+[ON SCREEN: pull back to the US; dots blink on New York, Miami, Los Angeles, Las Vegas]
+
+**4. Vice City**
+VO: Do hazaar do, Vice City: asal me Miami, assi ke dashak wala. Wahi game, jo hum me se kitnon ne pehli baar cyber
+cafe me khela tha, bees rupaye ghanta dekar. Kareeb paune do crore copies bikin.
+[ON SCREEN: "2002"; south Florida wipes pink, "Vice City = Miami"; a cyber cafe drawn in code (rows of CRT monitors, a
+chalk board "₹20 / घंटा"); blank game cases stack, counter → 17.5M]
+
+**5. San Andreas**
+VO: Do hazaar chaar, San Andreas: poora ek rajya, California aur Nevada se bana. Los Santos yaani Los Angeles, San
+Fierro yaani San Francisco, Las Venturas yaani Las Vegas. CJ ki cycle chalate-chalate, hum sab bade ho gaye. Kareeb
+paune teen crore copies.
+[ON SCREEN: California + Nevada wipe in, labels on their words; a small cycle icon (drawn in code, no character art)
+rides a dotted route between the three cities; counter → 27.5M]
+
+**6. GTA IV**
+VO: Do hazaar aath, GTA 4: Liberty City, yaani New York. Dhai crore se zyada copies.
+[ON SCREEN: whip-pan to New York; "Liberty City = New York"; counter → 25M+]
+
+**7. GTA V**
+VO: Do hazaar terah, GTA 5: phir Los Santos, yaani Los Angeles. Aur ye bika, teis crore se zyada. Kareeb-kareeb utna,
+jitni poore Uttar Pradesh ki aabadi. Wahi GTA 5, jisne India me RP servers aur YouTube gaming ki ek alag hi duniya
+bana di.
+[ON SCREEN: LA wipes in; counter races to 230M as cases fill the US; UP outline "230M ≈ UP"; then an arc to India with
+"LIVE" badges and chat bubbles popping over Indian cities (drawn in code, no platform logos)]
+
+**8. The wait, then GTA VI**
+VO: Phir terah saal ka intezaar. School se job tak pahunch gayi ek poori generation. Aur unnees November ko, aakhir
+GTA 6 aaya. Phir Vice City, par is baar poora rajya: Leonida, yaani Florida.
+[ON SCREEN: a year counter rolls 2013 → 2026 while a school-bag icon turns into an office ID card; "19 Nov 2026" slams;
+the whole of Florida wipes in, "Leonida = Florida"]
+
+**9. India payoff**
+VO: Aur uska Vice Beach bana Bengaluru me. Ye studio pehle Dhruva Interactive tha, Bharat ka sabse purana game studio
+maana jaata hai. Nabbe ke dashak me, ek computer se shuru hua tha. Do hazaar unnees me Rockstar ne ise khareed liya,
+aur reports ke hisaab se aaj yahan kareeb solah sau log kaam karte hain. Matlab tumhare jaise hi gamers, jinhone
+duniya ke sabse bade game me haath bataya.
+[ON SCREEN: arc Vice Beach → Bengaluru; one CRT monitor alone, then the chips "Dhruva Interactive → 2019 → Rockstar
+India"; the one monitor multiplies into a field of dots "≈1,600 (रिपोर्ट्स)"]
+
+**10. Close + loop**
+VO: Ab batao: agla GTA Bharat me bane, to sheher kaunsa ho? Mumbai ya Bengaluru? Aur agli baar koi tumse pooche ki...
+[ON SCREEN: Mumbai and Bengaluru pins pulse; on "pooche ki" the camera is already moving back toward Florida and the
+last frame is frame 0, so the hook plays as the question that person asks, and beat 2 ("Kyunki…") is the answer]
+
+### What changed from the creator's text, and why
+
+- **Loop.** The old ending "Kyunki GTA 6 me tum jo Vice Beach dekh rahe ho..." repeats the hook's words, so on
+  replay the viewer hears the same phrase twice in a row. And "kyunki" followed by a question doesn't parse. Now the
+  ending is "Aur agli baar koi tumse pooche ki...", so the hook becomes the question that someone asks, and line 2
+  ("Kyunki…") answers it. Same frame, no repeated words.
+- **1995 → "nabbe ke dashak me".** Sources disagree on Dhruva's founding year (1995 or 15 Mar 1997, Wikipedia's
+  infobox). The one-PC start is from ThePrint.
+- **"sabse purana game studio maana jaata hai".** It is widely called India's oldest, but not officially.
+- **"duniya ka sabse bada game bana rahe hain" → "…game me haath bataya".** The game is out, and the Bengaluru team
+  built part of it, not all of it.
+- **Tense of the wait.** "GTA 6 aaya… par wait khatam nahi hua tha" said the wait wasn't over after the game came. The
+  wait now comes first, then the launch.
+- **Grammar.** "jisse… ne… bana diya" → "jisne… ki ek alag hi duniya bana di"; "CJ ko cycle chalate-chalate hum sabne
+  bada hona seekha" → "CJ ki cycle chalate-chalate, hum sab bade ho gaye"; "liya" → "khareed liya".
+- **Years as words** ("do hazaar do"), so a TTS voice doesn't read "2002" in English. Captions keep digits.
+- **Kept as the creator's own memory:** cyber cafe at ₹20 an hour (prices varied, and it's framed as "hum me se
+  kitnon ne"), CJ, RP servers, the waiting generation.
