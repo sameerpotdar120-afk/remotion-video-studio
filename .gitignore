@@ -4,3 +4,6 @@ out/
 __pycache__/
 public/sixday/audio/vo_115.wav
 public/sixday/audio/mix_*.wav
+public/gta6/film/audio/*.wav
+public/gta6/film/assets/null_a/
+public/gta6/film/assets/null_b/
