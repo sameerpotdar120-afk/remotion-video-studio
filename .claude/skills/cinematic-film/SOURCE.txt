@@ -1,0 +1,1 @@
+Source: https://github.com/Moh4696/cinematic-skill (commit bf43556, MIT). Installed 22 Nov 2026.
