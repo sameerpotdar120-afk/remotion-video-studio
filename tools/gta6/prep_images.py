@@ -42,19 +42,20 @@ for f in sorted(src.rglob("*.png")):
         print("poster", f.stem)
 
 rng = np.random.default_rng(5)
-def fbm(n, octs):
-    acc = np.zeros((n, n), np.float32)
-    for o in range(octs):
-        k = 2 ** (o + 2)
-        g = rng.random((k, k)).astype(np.float32)
-        acc += np.asarray(Image.fromarray((g * 255).astype(np.uint8)).resize((n, n), Image.BICUBIC), np.float32) / 255 / (o + 1)
-    return acc / acc.max()
+def fbm(n, beta):
+    """Periodic 1/f noise (FFT-filtered white noise): tiles seamlessly in both directions."""
+    f = np.fft.fftfreq(n)
+    r = np.sqrt(f[:, None] ** 2 + f[None, :] ** 2); r[0, 0] = 1
+    spec = np.fft.fft2(rng.standard_normal((n, n))) / r ** beta
+    spec[0, 0] = 0
+    x = np.real(np.fft.ifft2(spec))
+    return ((x - x.min()) / (x.max() - x.min())).astype(np.float32)
 n = 1024
 yy, xx = np.mgrid[0:n, 0:n] / n
-w = fbm(n, 5)
-rip = 0.5 + 0.5 * np.sin((xx * 9 + yy * 3 + w * 2.2) * 2 * np.pi)
+w = fbm(n, 1.4)
+rip = 0.5 + 0.5 * np.sin((xx * 9 + yy * 3 + w * 2.2) * 2 * np.pi)     # whole cycles across the tile: periodic too
 sea = (np.clip((rip ** 6) * 0.55 + w * 0.25, 0, 1) * 255).astype(np.uint8)
 Image.fromarray(np.dstack([sea * 0.35, sea * 0.75, sea]).astype(np.uint8)).save(prep / "sea_tex.png")
-rel = (fbm(n, 6) * 255).astype(np.uint8)
+rel = (fbm(n, 1.1) * 255).astype(np.uint8)
 Image.fromarray(rel).convert("RGB").save(prep / "relief.png")
-print("textures ok")
+print("textures ok (seamless)")
