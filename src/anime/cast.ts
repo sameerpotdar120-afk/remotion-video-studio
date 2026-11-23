@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import type { VRM } from "@pixiv/three-vrm";
 import {
-  attach, bbox, bonePos, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard, cutBones, paintByRegion,
+  attach, bbox, bonePos, hide, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard, cutBones, paintByRegion,
 } from "./kit";
 
 export type Built = { vrm: VRM; expression?: Record<string, number>; face?: Record<string, number> };
@@ -108,11 +108,11 @@ const thomas = (vrm: VRM): Built => {
   recolor(vrm, "Shoes", "#5a3c26", {}, 0.6);
   // rolled linen sleeves from the short sleeve down to mid-forearm, with a thicker rolled cuff
   const linen = toon("#fffdf8", { map: clothTex("#fffdf8", "#e2d8c4", "weave"), shade: 0.86 });
+  cutAway(vrm, "Tops", [...ARMS]);
   for (const side of ["left", "right"] as const) {
     const el = bonePos(vrm, `${side}LowerArm`), wr = bonePos(vrm, `${side}Hand`); const L = el.distanceTo(wr);
-    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`], 0.012, linen, undefined, 0);
-    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.012, linen, (p) => p.distanceTo(el) < L * 0.5, 0);
-    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.02, linen, (p) => { const d = p.distanceTo(el); return d > L * 0.4 && d < L * 0.52; }, 0);
+    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`, `${side}Shoulder`, `${side}LowerArm`], 0.015, linen, (p) => p.distanceTo(wr) > L * 0.52, 0.0015);
+    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.023, linen, (p) => { const d = p.distanceTo(el); return d > L * 0.38 && d < L * 0.5; }, 0.0015);
   }
   // work boots
   shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.011, toon("#5a3c26", { shade: 0.55, rim: 0.2 }), (p) => p.y < knee.y - 0.2);
@@ -161,8 +161,61 @@ const eli = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_BRW_Sorrow: 0.25, Fcl_EYE_Surprised: 0.2 } };
 };
 
+// ---------------- 4. BRAM TOLLIVER: the brute ----------------
+// huge, shaved head under a black bowler, thick black full beard, heavy brows + small mean eyes,
+// mustard work shirt with rolled sleeves, dark leather waistcoat, gun belt, boots
+const bram = (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const head = bonePos(vrm, "head"); const hair = bbox(vrm, "HAIR"); const bottoms = bbox(vrm, "Bottoms"); const hips = bonePos(vrm, "hips"); const knee = bonePos(vrm, "leftLowerLeg");
+  hide(vrm, "HAIR"); // shaved
+  recolor(vrm, "EyeIris", "#4a3a30", { strength: 0.9 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { const im = s2.map!.image as CanvasImageSource; for (const dy of [-4, -2, 2, 4]) g.drawImage(im, 0, dy, w, h); g.globalCompositeOperation = "source-atop"; g.fillStyle = "#1c1614"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    // shaved scalp: fine stubble dots instead of a flat shadow
+    { let sd = 3; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647); g.fillStyle = "rgba(40,30,28,0.35)"; for (let i = 0; i < 9000; i++) { const u = rnd(), v = rnd() * 0.47; if (Math.hypot((u - 0.5) / 0.5, (v - 0.27) / 0.3) > 1.05) continue; g.fillRect(u * w, v * h, w * 0.0016, h * 0.0016); } }
+    // heavy brows painted just above the brow line, slanting down to the nose
+    g.fillStyle = "#1c1614"; for (const sx of [-1, 1]) { const c = 0.5 + sx * 0.155; g.beginPath(); g.moveTo((c - sx * 0.075) * w, 0.462 * h); g.lineTo((c + sx * 0.07) * w, 0.43 * h); g.lineTo((c + sx * 0.075) * w, 0.452 * h); g.lineTo((c - sx * 0.07) * w, 0.488 * h); g.closePath(); g.fill(); }
+    // plaster across a broken nose
+    g.save(); g.translate(0.5 * w, 0.615 * h); g.rotate(-0.25); g.fillStyle = "#efe3cf"; g.fillRect(-0.045 * w, -0.008 * h, 0.09 * w, 0.016 * h); g.strokeStyle = "rgba(120,90,60,0.6)"; g.lineWidth = w * 0.002; g.strokeRect(-0.045 * w, -0.008 * h, 0.09 * w, 0.016 * h); g.restore();
+    g.fillStyle = "rgba(170,90,70,0.10)"; g.fillRect(0, 0, w, h);
+    faceLines(g, w, h, { eyeBags: 0.5, smile: 0.45, cheek: 0.3 });
+    paintBeard(g, w, h, { color: "#1d1715", dark: "rgba(0,0,0,0.9)", full: 1.4 });
+  }), 0.74); }
+  // clothes
+  for (const m of meshesBy(vrm, "Tops")) { const s2 = surf(m); if (!s2.map) continue;
+    const t1 = recolorTex(s2.map, "#dcbf62", { keep: (_x, y) => y > 0.36 });
+    const t2 = recolorTex(t1, "#3b2a20", { keep: (_x, y) => y <= 0.36 }); setTex(s2, t2, 0.7); }
+  for (const m of meshesBy(vrm, "AccessoryNeck")) m.visible = false;
+  recolor(vrm, "Bottoms", "#5b4a3c"); recolor(vrm, "Shoes", "#2c2019", {}, 0.6);
+  const mustard = toon("#dcbf62", { map: clothTex("#dcbf62", "#c0a24a", "weave"), shade: 0.78 });
+  cutAway(vrm, "Tops", [...ARMS]);
+  for (const side of ["left", "right"] as const) {
+    const el = bonePos(vrm, `${side}LowerArm`), wr = bonePos(vrm, `${side}Hand`); const L = el.distanceTo(wr);
+    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`, `${side}Shoulder`, `${side}LowerArm`], 0.016, mustard, (p) => p.distanceTo(wr) > L * 0.55, 0.002);
+    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.024, mustard, (p) => { const d = p.distanceTo(el); return d > L * 0.36 && d < L * 0.47; }, 0.002);
+  }
+  shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.012, toon("#2c2019", { shade: 0.5, rim: 0.2 }), (p) => p.y < knee.y - 0.16);
+  // gun belt with holster
+  const w = (bottoms.max.x - bottoms.min.x) / 2, d = (bottoms.max.z - bottoms.min.z) / 2, cz = (bottoms.max.z + bottoms.min.z) / 2, beltY = hips.y - 0.01;
+  const ring: THREE.Vector3[] = []; for (let i = 0; i <= 24; i++) { const a = (i / 24) * Math.PI * 2; ring.push(new THREE.Vector3(hips.x + Math.sin(a) * w * 1.05, beltY - 0.025 * Math.max(0, Math.sin(a)), cz + Math.cos(a) * d * 1.12)); }
+  const belt = new THREE.Mesh(taperTube(ring, 0.03, 0.03, 48, 8, 0.25), toon("#4a3020", { shade: 0.6 })); withInk(belt, 0.002); attach(vrm, "hips", belt);
+  const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.045, 0.012), toon("#b99a55", { rim: 0.4 })); buckle.position.set(hips.x, beltY, cz + d * 1.12 + 0.004); withInk(buckle, 0.0015); attach(vrm, "hips", buckle);
+  const hol = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.17, 0.04), toon("#3a2416")); hol.position.set(hips.x + w * 1.0, beltY - 0.1, cz); hol.rotation.z = 0.12; withInk(hol, 0.002); attach(vrm, "hips", hol);
+  // bowler hat sitting on the shaved head (head top from the face/skull, the hair is gone)
+  const skull = bbox(vrm, "Face_00_SKIN"); const r = (skull.max.x - skull.min.x) / 2 * 0.98;
+  const bw = hat("bowler", "#17151a", "#2a2630", r); bw.position.set(head.x, skull.max.y - r * 0.72, (skull.max.z + skull.min.z) / 2 - 0.005); bw.rotation.x = -0.1; attach(vrm, "head", bw);
+  void hair;
+  // a wall of a man
+  vrm.scene.scale.setScalar(1.04);
+  shapeBone(vrm, "upperChest", [1.32, 1.05, 1.3]); shapeBone(vrm, "chest", [1.22, 1, 1.25]); shapeBone(vrm, "spine", [1.18, 1, 1.2]);
+  shapeBone(vrm, "neck", [1.25, 0.8, 1.25]);
+  for (const sd of ["left", "right"] as const) { shapeBone(vrm, `${sd}UpperArm`, [1.25, 1.25, 1.25], false); shapeBone(vrm, `${sd}UpperLeg`, [1.15, 1, 1.15]); }
+  return { vrm, face: { Fcl_BRW_Angry: 1, Fcl_EYE_Angry: 0.6, Fcl_MTH_Angry: 0.35 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
   { id: "eli", name: "Eli Hale (the boy, 8)", base: "anime/HairSample_Male.vrm", build: eli },
+  { id: "bram", name: "Bram Tolliver (the brute)", base: "anime/Sakurada_Fumiriya.vrm", build: bram },
 ];

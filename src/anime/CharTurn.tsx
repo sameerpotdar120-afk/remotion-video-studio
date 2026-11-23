@@ -21,7 +21,10 @@ const Scene: React.FC<{ id: string; yaw: number; face: boolean; onDbg: (s: strin
       const c = camera as THREE.PerspectiveCamera; const hd = bonePos(vrm, "head"); const hp = bonePos(vrm, "hips");
       const ty = face ? hd.y + 0.05 : hp.y * 0.98, dist = face ? 0.95 : 3.9;
       c.position.set(Math.sin(yaw) * dist, ty + (face ? 0.02 : 0.05), Math.cos(yaw) * dist); c.lookAt(hd.x, ty, 0); c.fov = 25; c.updateProjectionMatrix();
-      onDbg(((window as unknown as { __dbg?: string[] }).__dbg ?? []).join("\n"));
+      const rb = (n: string) => { const b = vrm.humanoid.getRawBoneNode(n as never); return b ? b.scale.toArray().map((x) => x.toFixed(2)).join(",") : "-"; };
+      const sh = (n: string) => { const b = vrm.humanoid.getRawBoneNode(n as never)!; return b.getWorldPosition(new THREE.Vector3()).toArray().map((x) => x.toFixed(3)).join(","); };
+      const mt = (() => { let o = ""; vrm.scene.traverse((x) => { const m = x as THREE.Mesh & { material: { name: string; shadingShiftFactor?: number; shadingToonyFactor?: number } }; if (m.isMesh && !o && m.material && m.material.name?.includes("Tops")) o = `${m.material.shadingShiftFactor} ${m.material.shadingToonyFactor}`; }); return o; })();
+      onDbg(["upperChest " + rb("upperChest"), "head " + rb("head"), "LUpperArm " + rb("leftUpperArm"), "Lshoulder pos " + sh("leftUpperArm"), "Rshoulder pos " + sh("rightUpperArm"), "tops shift/toony " + mt].join("\n"));
       setTimeout(() => { advance(performance.now()); requestAnimationFrame(() => { advance(performance.now()); continueRender(h); }); }, 500);
     }).catch((e) => { console.error(e); continueRender(h); });
   }, []);

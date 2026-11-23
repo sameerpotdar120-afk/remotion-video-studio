@@ -102,7 +102,7 @@ export const cutAway = (vrm: VRM, matName: string, bones: HB[] | null, test?: (p
 export const toon = (color: string, o: { shade?: number; map?: THREE.Texture; rim?: number; side?: THREE.Side; alphaTest?: number } = {}) => {
   const m = new MToonMaterial();
   m.color.set(color); m.shadeColorFactor.copy(new THREE.Color(color).multiplyScalar(o.shade ?? 0.6));
-  m.shadingToonyFactor = 0.92; m.shadingShiftFactor = -0.05;
+  m.shadingToonyFactor = 0.9; m.shadingShiftFactor = -0.25;
   if (o.map) { m.map = o.map; m.shadeMultiplyTexture = o.map; }
   m.parametricRimColorFactor.setScalar(o.rim ?? 0.08); m.parametricRimFresnelPowerFactor = 3; m.parametricRimLiftFactor = 0.05;
   m.side = o.side ?? THREE.FrontSide; if (o.alphaTest) { m.alphaTest = o.alphaTest; m.transparent = false; }
@@ -205,10 +205,22 @@ export const clothTex = (base: string, line: string, kind: "plain" | "plaid" | "
   const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
 };
 
-// body proportions: scale a bone, undoing the scale on its children so only that part changes shape
+// body proportions. Each bone keeps the shape we want for ITS OWN part (keepChildren) or for its whole limb (keepChildren=false);
+// the whole skeleton is recomputed every time so several shaped bones stack correctly (local = wanted / what the parent passes down).
 export const shapeBone = (vrm: VRM, b: HB, s: [number, number, number], keepChildren = true) => {
-  const n = vrm.humanoid.getRawBoneNode(b); if (!n) return; n.scale.set(s[0], s[1], s[2]);
-  if (keepChildren) for (const c of n.children) if ((c as THREE.Bone).isBone) c.scale.set(1 / s[0], 1 / s[1], 1 / s[2]);
+  const n = vrm.humanoid.getRawBoneNode(b); if (!n) return;
+  const ud = vrm.scene.userData as { shapes?: Map<THREE.Object3D, { s: THREE.Vector3; keep: boolean }> };
+  ud.shapes = ud.shapes ?? new Map(); ud.shapes.set(n, { s: new THREE.Vector3(...s), keep: keepChildren });
+  const root = vrm.humanoid.getRawBoneNode("hips")!;
+  const walk = (o: THREE.Object3D, passed: THREE.Vector3) => { // passed = scale the parent hands down to this bone
+    const sh = ud.shapes!.get(o); const want = sh ? passed.clone().multiply(sh.s) : passed.clone();
+    if ((o as THREE.Bone).isBone) { const prevPass = (o.parent as THREE.Object3D & { __pass?: THREE.Vector3 }).__pass ?? new THREE.Vector3(1, 1, 1); void prevPass; }
+    (o as THREE.Object3D & { __want?: THREE.Vector3 }).__want = want;
+    const down = sh && sh.keep ? passed.clone() : want; // keep: children get the parent's scale back, not ours
+    for (const c of o.children) walk(c, down);
+  };
+  walk(root, new THREE.Vector3(1, 1, 1));
+  root.traverse((o) => { const w = (o as THREE.Object3D & { __want?: THREE.Vector3 }).__want; if (!w || !(o as THREE.Bone).isBone) return; const pw = (o.parent as THREE.Object3D & { __want?: THREE.Vector3 }).__want ?? new THREE.Vector3(1, 1, 1); o.scale.set(w.x / pw.x, w.y / pw.y, w.z / pw.z); });
 };
 
 // the bases carry a strong matcap/rim highlight that draws thin gold lines along cloth edges; our style is flatter
