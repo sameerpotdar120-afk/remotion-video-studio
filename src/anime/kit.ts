@@ -319,3 +319,61 @@ export const paintByRegion = (vrm: VRM, matName: string, colorAt: (p: THREE.Vect
     const t = new THREE.CanvasTexture(c); t.flipY = s.map.flipY; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; setTex(s, t, shade);
   }
 };
+
+// average normals across vertices that share a position (flat-shaded low-poly -> smooth shading + unbroken ink outline)
+export const smoothNormals = (g0: THREE.BufferGeometry) => {
+  const g = g0.clone(); const pos = g.getAttribute("position"), nor = g.getAttribute("normal") as THREE.BufferAttribute; if (!nor) { g.computeVertexNormals(); return g; }
+  const key = (i: number) => `${Math.round(pos.getX(i) * 100)}_${Math.round(pos.getY(i) * 100)}_${Math.round(pos.getZ(i) * 100)}`;
+  const acc = new Map<string, THREE.Vector3>(); const tmp = new THREE.Vector3();
+  for (let i = 0; i < pos.count; i++) { const k = key(i); const v = acc.get(k) ?? new THREE.Vector3(); v.add(tmp.fromBufferAttribute(nor, i)); acc.set(k, v); }
+  const out = new Float32Array(pos.count * 3); for (let i = 0; i < pos.count; i++) { const v = acc.get(key(i))!.clone().normalize(); out.set([v.x, v.y, v.z], i * 3); }
+  g.setAttribute("normal", new THREE.BufferAttribute(out, 3)); return g;
+};
+
+// revolver prop (metres): barrel along +X, grip down -Y. Gunmetal + ivory grip, ink outline.
+export const revolver = (grip = "#e9e0cc") => {
+  const g = new THREE.Group(); const metal = toon("#4d535e", { shade: 0.55, rim: 0.5 }); const dark = toon("#2b2f36", { shade: 0.5, rim: 0.4 });
+  const add = (geo: THREE.BufferGeometry, mat: THREE.Material, x: number, y: number, z: number, rx = 0, ry = 0, rz = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.rotation.set(rx, ry, rz); withInk(m, 0.0012); g.add(m); return m; };
+  add(new THREE.CylinderGeometry(0.0075, 0.0075, 0.15, 14), metal, 0.1, 0.012, 0, 0, 0, Math.PI / 2);            // barrel
+  add(new THREE.CylinderGeometry(0.0045, 0.0045, 0.12, 10), dark, 0.09, -0.002, 0, 0, 0, Math.PI / 2);           // ejector rod
+  add(new THREE.CylinderGeometry(0.019, 0.019, 0.036, 6), metal, 0.012, 0.004, 0, 0, 0, Math.PI / 2);            // cylinder (6 flats)
+  add(new THREE.BoxGeometry(0.05, 0.03, 0.02), dark, 0.004, 0.006, 0);                                          // frame
+  add(new THREE.BoxGeometry(0.012, 0.018, 0.008), dark, -0.022, 0.024, 0, 0, 0, -0.5);                        // hammer
+  add(new THREE.BoxGeometry(0.006, 0.006, 0.004), metal, 0.172, 0.022, 0);                                      // front sight
+  add(new THREE.TorusGeometry(0.012, 0.0025, 6, 14, Math.PI * 1.2), dark, 0.004, -0.012, 0, 0, 0, Math.PI * 0.95); // trigger guard
+  add(new THREE.BoxGeometry(0.003, 0.012, 0.004), metal, 0.002, -0.012, 0, 0, 0, 0.3);                           // trigger
+  const gr = add(new THREE.BoxGeometry(0.024, 0.075, 0.024), toon(grip, { shade: 0.75, rim: 0.3 }), -0.026, -0.03, 0, 0, 0, 0.42); // grip
+  gr.scale.set(1, 1, 0.95);
+  return g;
+};
+// put a prop in a hand (call in the rest pose): +X along the fingers, +Y towards the thumb, grip (-Y) out of the bottom of the fist
+export const inHand = (vrm: VRM, side: "left" | "right", prop: THREE.Object3D, along = 0.055, lift = -0.008) => {
+  vrm.scene.updateMatrixWorld(true);
+  const hand = bonePos(vrm, `${side}Hand` as HB), mid = bonePos(vrm, `${side}MiddleProximal` as HB), th = bonePos(vrm, `${side}ThumbProximal` as HB);
+  const x = mid.clone().sub(hand).normalize(); const y = th.clone().sub(hand); y.addScaledVector(x, -y.dot(x)).normalize(); const z = new THREE.Vector3().crossVectors(x, y);
+  prop.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+  prop.position.copy(hand).addScaledVector(x, along).addScaledVector(y, lift);
+  attach(vrm, `${side}Hand` as HB, prop); return prop;
+};
+// curl a hand into a fist (0..1). Picks the curl direction that moves the fingertips towards the palm.
+export const fist = (vrm: VRM, side: "left" | "right", amt = 1) => {
+  const H = vrm.humanoid; const hand = H.getRawBoneNode(`${side}Hand` as HB)!;
+  const tipOf = (f: string) => H.getRawBoneNode(`${side}${f}Distal` as HB)!;
+  vrm.scene.updateMatrixWorld(true);
+  const hp = hand.getWorldPosition(new THREE.Vector3()), th = bonePos(vrm, `${side}ThumbProximal` as HB), mid = bonePos(vrm, `${side}MiddleProximal` as HB);
+  const x = mid.clone().sub(hp).normalize(); const y = th.clone().sub(hp); y.addScaledVector(x, -y.dot(x)).normalize();
+  const palm = new THREE.Vector3().crossVectors(x, y); // one of the two palm normals; test which way curls in
+  for (const f of ["Index", "Middle", "Ring", "Little"]) {
+    const bones = ["Proximal", "Intermediate", "Distal"].map((k) => H.getNormalizedBoneNode(`${side}${f}${k}` as HB)!);
+    let best = 1, bestScore = -Infinity; const ang = [1.2, 1.4, 0.9].map((a) => a * amt);
+    for (const sgn of [1, -1]) {
+      for (const axis of ["x", "y", "z"] as const) {
+        bones.forEach((b, i) => { b.rotation.set(0, 0, 0); b.rotation[axis] = sgn * ang[i]; }); vrm.update(0); vrm.scene.updateMatrixWorld(true);
+        const tp = tipOf(f).getWorldPosition(new THREE.Vector3()).sub(hp); const sc = Math.abs(tp.dot(palm)) - Math.max(0, tp.dot(x)) * 0.5 + (tp.dot(x) < 0.03 ? 0.02 : 0);
+        if (sc > bestScore) { bestScore = sc; best = sgn * (axis === "x" ? 1 : axis === "y" ? 2 : 3); }
+      }
+    }
+    const ax = (["x", "y", "z"] as const)[Math.abs(best) - 1]; bones.forEach((b, i) => { b.rotation.set(0, 0, 0); b.rotation[ax] = Math.sign(best) * ang[i]; });
+  }
+  vrm.update(0);
+};

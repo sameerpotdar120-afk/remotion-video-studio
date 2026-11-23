@@ -11,3 +11,5 @@ curl -sSL -o public/anime/Sendagaya_Shibu.vrm $R/madjin/vrm-samples/master/vroid
 curl -sSL -o public/anime/Darkness_Shibu.vrm $R/madjin/vrm-samples/master/vroid/beta/Darkness_Shibu.vrm
 curl -sSL -o public/anime/base_pixiv.vrm $R/pixiv/three-vrm/dev/packages/three-vrm/examples/models/VRM1_Constraint_Twist_Sample.vrm
 ls -la public/anime
+# Horse: Quaternius "Lowpoly Animated Farm Animal Pack" (CC0 1.0, License.txt inside the zip)
+T=$(mktemp -d); curl -sSL -o $T/farm.zip "https://opengameart.org/sites/default/files/Farm%20Animals%20by%20%40Quaternius.zip" && (cd $T && unzip -oq farm.zip) && cp "$T/Farm Animals by @Quaternius/FBX/Horse.fbx" public/anime/Horse.fbx

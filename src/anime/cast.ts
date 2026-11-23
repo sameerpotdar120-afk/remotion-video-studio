@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import type { VRM } from "@pixiv/three-vrm";
 import {
-  attach, bbox, bonePos, hide, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard, cutBones, paintByRegion,
+  attach, bbox, bonePos, hide, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard, cutBones, paintByRegion, revolver, inHand, fist,
 } from "./kit";
 
 export type Built = { vrm: VRM; expression?: Record<string, number>; face?: Record<string, number> };
@@ -394,8 +394,12 @@ const lucien = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_EYE_Joy: 0.3, Fcl_MTH_Fun: 0.6, Fcl_BRW_Angry: 0.35 } };
 };
 
+// Silas with his revolver in his right hand (for the shooting shots)
+const silasArmed = (vrm: VRM): Built => { const b = silas(vrm); inHand(vrm, "right", revolver()); fist(vrm, "right", 0.85); return b; };
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
+  { id: "silas_armed", name: "Silas Crane with revolver", base: "anime/Sakurada_Fumiriya.vrm", build: silasArmed },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
   { id: "eli", name: "Eli Hale (the boy, 8)", base: "anime/HairSample_Male.vrm", build: eli },
   { id: "bram", name: "Bram Tolliver (the brute)", base: "anime/Sakurada_Fumiriya.vrm", build: bram },
