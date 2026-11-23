@@ -55,7 +55,8 @@ export const paintTex = (src: THREE.Texture, paint: Paint, clear = false) => {
   const t = new THREE.CanvasTexture(c); t.flipY = src.flipY; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t;
 };
 export const setTex = (mat: MToonMaterial, t: THREE.Texture, shadeDarken = 0.72) => {
-  mat.map = t; mat.shadeMultiplyTexture = t; mat.color.set(1, 1, 1); mat.shadeColorFactor.setScalar(shadeDarken); mat.needsUpdate = true;
+  mat.map = t; mat.shadeMultiplyTexture = t; mat.color.set(1, 1, 1); mat.shadeColorFactor.setScalar(shadeDarken);
+  mat.emissiveMap = null; mat.emissive?.setScalar(0); mat.needsUpdate = true; // base highlight glows would keep the old colour
 };
 export const recolor = (vrm: VRM, matName: string, color: string, opts: Parameters<typeof recolorTex>[2] = {}, shade = 0.72) => {
   for (const m of meshesBy(vrm, matName)) { const s = surf(m); if (s.map) setTex(s, recolorTex(s.map, color, opts), shade); }
@@ -74,15 +75,15 @@ const boneIdSet = (vrm: VRM, mesh: THREE.SkinnedMesh, bones: HB[]) => {
 const domBone = (sk: THREE.BufferAttribute, sw: THREE.BufferAttribute, v: number) => { let best = 0, bw = -1; for (let k = 0; k < 4; k++) { const w = sw.getComponent(v, k); if (w > bw) { bw = w; best = sk.getComponent(v, k); } } return best; };
 
 // keep only triangles whose vertices are all weighted (mostly) to the given bones; optional extra test in bind-pose world space
-export const filterTris = (vrm: VRM, mesh: THREE.SkinnedMesh, bones: HB[] | null, test?: (p: THREE.Vector3, n: THREE.Vector3) => boolean, invert = false) => {
+export const filterTris = (vrm: VRM, mesh: THREE.SkinnedMesh, bones: HB[] | null, test?: (p: THREE.Vector3, n: THREE.Vector3, u: number, v: number) => boolean, invert = false) => {
   const g = mesh.geometry; const ids = bones ? boneIdSet(vrm, mesh, bones) : null;
   const sk = g.getAttribute("skinIndex") as THREE.BufferAttribute, sw = g.getAttribute("skinWeight") as THREE.BufferAttribute;
-  const pos = g.getAttribute("position") as THREE.BufferAttribute, nor = g.getAttribute("normal") as THREE.BufferAttribute;
+  const pos = g.getAttribute("position") as THREE.BufferAttribute, nor = g.getAttribute("normal") as THREE.BufferAttribute, uva = g.getAttribute("uv") as THREE.BufferAttribute;
   const ok = new Uint8Array(pos.count); const P = new THREE.Vector3(), N = new THREE.Vector3();
   const mw = mesh.matrixWorld, nm = new THREE.Matrix3().getNormalMatrix(mw);
   for (let v = 0; v < pos.count; v++) {
     let s = ids ? ids.has(domBone(sk, sw, v)) : true;
-    if (s && test) { P.fromBufferAttribute(pos, v).applyMatrix4(mw); N.fromBufferAttribute(nor, v).applyMatrix3(nm).normalize(); s = test(P, N); }
+    if (s && test) { P.fromBufferAttribute(pos, v).applyMatrix4(mw); N.fromBufferAttribute(nor, v).applyMatrix3(nm).normalize(); s = test(P, N, uva ? uva.getX(v) : 0, uva ? uva.getY(v) : 0); }
     ok[v] = (invert ? !s : s) ? 1 : 0;
   }
   const idx = g.index!; const out: number[] = [];
@@ -116,19 +117,23 @@ export const withInk = (mesh: THREE.Mesh, width = 0.004) => { const o = new THRE
 
 // ---------- shells: new clothing grown over existing skinned surfaces ----------
 // takes triangles of `matName` meshes weighted to `bones` (+ optional test), pushes them out by `off` metres
-export const shell = (vrm: VRM, matName: string, bones: HB[] | null, off: number, mat: THREE.Material, test?: (p: THREE.Vector3, n: THREE.Vector3) => boolean, ink = 0.0035) => {
+export const shell = (vrm: VRM, matName: string, bones: HB[] | null, off: number, mat: THREE.Material, test?: (p: THREE.Vector3, n: THREE.Vector3, u: number, v: number) => boolean, ink = 0.0035, offOf?: (u: number, v: number) => number) => {
   const out: THREE.SkinnedMesh[] = [];
   for (const src of meshesBy(vrm, matName)) {
     const tri = filterTris(vrm, src, bones, test); if (!tri.length) continue;
     const g0 = src.geometry; const g = new THREE.BufferGeometry();
     for (const k of ["position", "normal", "uv", "skinIndex", "skinWeight"]) { const a = g0.getAttribute(k); if (a) g.setAttribute(k, (a as THREE.BufferAttribute).clone()); }
     const pos = g.getAttribute("position") as THREE.BufferAttribute, nor = g.getAttribute("normal") as THREE.BufferAttribute;
-    for (let v = 0; v < pos.count; v++) pos.setXYZ(v, pos.getX(v) + nor.getX(v) * off, pos.getY(v) + nor.getY(v) * off, pos.getZ(v) + nor.getZ(v) * off);
+    const uva = g.getAttribute("uv") as THREE.BufferAttribute;
+    for (let v = 0; v < pos.count; v++) { const o = offOf && uva ? offOf(uva.getX(v), uva.getY(v)) : off; pos.setXYZ(v, pos.getX(v) + nor.getX(v) * o, pos.getY(v) + nor.getY(v) * o, pos.getZ(v) + nor.getZ(v) * o); }
+    // keep face shapes (talking, expressions) on things grown from the face: share the morph targets and their live weights
+    if (g0.morphAttributes.position) { g.morphAttributes.position = g0.morphAttributes.position; g.morphTargetsRelative = g0.morphTargetsRelative; }
     g.setIndex(tri); g.computeBoundingSphere();
     const m = new THREE.SkinnedMesh(g, mat); m.bind(src.skeleton, src.bindMatrix); m.frustumCulled = false;
+    if (g.morphAttributes.position) { m.morphTargetDictionary = src.morphTargetDictionary; m.morphTargetInfluences = src.morphTargetInfluences; }
     m.position.copy(src.position); m.quaternion.copy(src.quaternion); m.scale.copy(src.scale);
     src.parent!.add(m);
-    if (ink > 0) { const o = new THREE.SkinnedMesh(g, inkMat(ink)); o.bind(src.skeleton, src.bindMatrix); o.frustumCulled = false; o.position.copy(m.position); o.quaternion.copy(m.quaternion); o.scale.copy(m.scale); src.parent!.add(o); }
+    if (ink > 0) { const o = new THREE.SkinnedMesh(g, inkMat(ink)); o.bind(src.skeleton, src.bindMatrix); o.frustumCulled = false; if (g.morphAttributes.position) { o.morphTargetDictionary = src.morphTargetDictionary; o.morphTargetInfluences = src.morphTargetInfluences; } o.position.copy(m.position); o.quaternion.copy(m.quaternion); o.scale.copy(m.scale); src.parent!.add(o); }
     out.push(m);
   }
   return out;
@@ -219,3 +224,39 @@ export const faceLines = (g: CanvasRenderingContext2D, w: number, h: number, o: 
 // fine face control: drive the individual VRoid face morphs (brows / eyes / mouth separately), e.g. { Fcl_BRW_Angry: 0.8 }
 export const setMorphs = (vrm: VRM, w: Record<string, number>) => vrm.scene.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !m.morphTargetDictionary || !m.morphTargetInfluences) return;
   for (const [k, v] of Object.entries(w)) for (const [name, i] of Object.entries(m.morphTargetDictionary)) if (name.endsWith(k)) m.morphTargetInfluences[i] = v; });
+
+// beard grown from the jaw of the face mesh (follows the mouth). Region in face-texture UV: below the nose, inside the face oval.
+export const beardTex = (base: string, dark: string) => { const c = document.createElement("canvas"); c.width = c.height = 512; const g = c.getContext("2d")!; g.fillStyle = base; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 1400; i++) { const x = Math.random() * 512, y = Math.random() * 512; g.strokeStyle = Math.random() < 0.7 ? dark : "rgba(255,255,255,0.25)"; g.globalAlpha = 0.35; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (Math.random() - 0.5) * 3, y + 6 + Math.random() * 6); g.stroke(); }
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 6); return t; };
+export const beard = (vrm: VRM, color: string, dark: string, o: { top?: number; width?: number; thick?: number; mustache?: boolean; sideburns?: boolean } = {}) => {
+  const top = o.top ?? 0.705, wid = o.width ?? 0.2, th = o.thick ?? 0.006;
+  const inBeard = (u: number, v: number) => {
+    const du = Math.abs(u - 0.5);
+    const mouth = v > 0.742 && v < 0.772 && du < 0.095; // keep the lips clear
+    const must = o.mustache !== false && v > 0.715 && v <= 0.745 && du < 0.1 && !(du < 0.012 && v < 0.725);
+    const chin = v > top && du < wid * (1 - Math.max(0, v - 0.85) * 3) && v < 0.9;
+    const side = o.sideburns !== false && du > wid * 0.78 && du < wid * 1.12 && v > 0.58 && v < 0.8;
+    return !mouth && (must || (chin && v > 0.745) || side || (chin && du > 0.1));
+  };
+  return shell(vrm, "Face_00_SKIN", null, th, toon(color, { map: beardTex(color, dark), shade: 0.65 }), (_p, _n, u, v) => inBeard(u, v), 0.0022,
+    (u, v) => th * (0.55 + 0.9 * Math.min(1, Math.max(0, (v - 0.74) / 0.1))) * (Math.abs(u - 0.5) > wid * 0.8 ? 0.7 : 1));
+};
+
+// painted anime beard on the face texture: mustache + jaw beard + sideburns, strand strokes, lips kept clear
+export const paintBeard = (g: CanvasRenderingContext2D, w: number, h: number, o: { color: string; dark: string; full?: number; must?: boolean } ) => {
+  const X = (u: number) => u * w, Y = (v: number) => v * h; const f = o.full ?? 1;
+  const region = new Path2D();
+  // jaw beard: outer edge follows the face outline from sideburn to chin, inner edge runs cheek -> under the lip
+  region.moveTo(X(0.215), Y(0.625)); region.bezierCurveTo(X(0.215), Y(0.73), X(0.34), Y(0.865 + 0.01 * f), X(0.5), Y(0.88 + 0.01 * f));
+  region.bezierCurveTo(X(0.66), Y(0.865 + 0.01 * f), X(0.785), Y(0.73), X(0.785), Y(0.625));
+  region.lineTo(X(0.76), Y(0.625)); region.bezierCurveTo(X(0.72), Y(0.68), X(0.64), Y(0.7), X(0.595), Y(0.77));
+  region.quadraticCurveTo(X(0.5), Y(0.792), X(0.405), Y(0.77)); region.bezierCurveTo(X(0.36), Y(0.7), X(0.28), Y(0.68), X(0.24), Y(0.625)); region.closePath();
+  if (o.must !== false) { region.moveTo(X(0.405), Y(0.748)); region.quadraticCurveTo(X(0.45), Y(0.718), X(0.5), Y(0.726)); region.quadraticCurveTo(X(0.55), Y(0.718), X(0.595), Y(0.748)); region.quadraticCurveTo(X(0.5), Y(0.742), X(0.405), Y(0.748)); }
+  g.save(); g.clip(region);
+  g.fillStyle = o.color; g.globalAlpha = 0.92; g.fillRect(0, 0, w, h);
+  g.globalAlpha = 0.5; g.lineWidth = w * 0.0018; g.lineCap = "round";
+  for (let i = 0; i < 2600; i++) { const u = 0.26 + Math.random() * 0.48, v = 0.57 + Math.random() * 0.32; g.strokeStyle = Math.random() < 0.75 ? o.dark : "rgba(255,240,220,0.5)"; g.beginPath(); g.moveTo(X(u), Y(v)); g.lineTo(X(u + (u - 0.5) * 0.02), Y(v + 0.012)); g.stroke(); }
+  g.restore();
+  g.save(); g.strokeStyle = o.dark; g.globalAlpha = 0.55; g.lineWidth = w * 0.002; g.stroke(region); g.restore();
+};

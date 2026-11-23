@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import type { VRM } from "@pixiv/three-vrm";
 import {
-  attach, bbox, bonePos, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines,
+  attach, bbox, bonePos, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard,
 } from "./kit";
 
 export type Built = { vrm: VRM; expression?: Record<string, number>; face?: Record<string, number> };
@@ -85,6 +85,44 @@ const silas = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_BRW_Angry: 0.85, Fcl_EYE_Angry: 0.45, Fcl_MTH_Down: 0.35 } };
 };
 
+// ---------------- 2. THOMAS HALE: the father ----------------
+// about 40, warm and honest; brown hair, short beard, cream linen shirt with sleeves rolled to mid-forearm,
+// brown wool waistcoat, collar open (no tie), blue-grey work trousers, brown boots; broad farmer's shoulders
+const thomas = (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const knee = bonePos(vrm, "leftLowerLeg");
+  recolor(vrm, "HAIR", "#4a3324", {}, 0.75);
+  recolor(vrm, "EyeIris", "#7a6040", { strength: 0.85 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { const im = s2.map!.image as CanvasImageSource; for (const dy of [-1, 2]) g.drawImage(im, 0, dy, w, h); g.globalCompositeOperation = "source-atop"; g.fillStyle = "#4a3222"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    faceLines(g, w, h, { eyeBags: 0.25, smile: 0.25 });
+    paintBeard(g, w, h, { color: "#5a3d28", dark: "rgba(35,22,14,0.9)", full: 0.6 });
+    g.fillStyle = "rgba(190,110,80,0.10)"; for (const c of [0.33, 0.67]) { g.beginPath(); g.ellipse(c * w, 0.63 * h, 0.05 * w, 0.025 * h, 0, 0, Math.PI * 2); g.fill(); } // sun-warmed cheeks
+  }), 0.78); }
+  // outfit
+  for (const m of meshesBy(vrm, "Tops")) { const s2 = surf(m); if (!s2.map) continue;
+    const t1 = recolorTex(s2.map, "#ece2cc", { keep: (_x, y) => y > 0.36 });
+    const t2 = recolorTex(t1, "#7d5a3c", { keep: (_x, y) => y <= 0.36 }); setTex(s2, t2, 0.72); }
+  for (const m of meshesBy(vrm, "AccessoryNeck")) m.visible = false; // no tie: open collar
+  recolor(vrm, "Bottoms", "#566273");
+  recolor(vrm, "Shoes", "#5a3c26", {}, 0.6);
+  // rolled linen sleeves from the short sleeve down to mid-forearm, with a thicker rolled cuff
+  const linen = toon("#fffdf8", { map: clothTex("#fffdf8", "#e2d8c4", "weave"), shade: 0.86 });
+  for (const side of ["left", "right"] as const) {
+    const el = bonePos(vrm, `${side}LowerArm`), wr = bonePos(vrm, `${side}Hand`); const L = el.distanceTo(wr);
+    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`], 0.012, linen, undefined, 0);
+    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.012, linen, (p) => p.distanceTo(el) < L * 0.5, 0);
+    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.02, linen, (p) => { const d = p.distanceTo(el); return d > L * 0.4 && d < L * 0.52; }, 0);
+  }
+  // work boots
+  shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.011, toon("#5a3c26", { shade: 0.55, rim: 0.2 }), (p) => p.y < knee.y - 0.2);
+  // broad shoulders, a little shorter than Silas
+  vrm.scene.scale.setScalar(0.99);
+  shapeBone(vrm, "upperChest", [1.08, 1, 1.06]);
+  return { vrm, face: { Fcl_MTH_Fun: 0.25, Fcl_BRW_Joy: 0.15 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
+  { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
 ];
