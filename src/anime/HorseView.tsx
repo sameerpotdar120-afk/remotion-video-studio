@@ -6,7 +6,7 @@ import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import { buildHorse, BuiltHorse, HORSES } from "./horse";
 
-const Scene: React.FC<{ yaw: number; clip: string; ids: string[]; onInfo: (s: string) => void }> = ({ yaw, clip, ids, onInfo }) => {
+const Scene: React.FC<{ yaw: number; clip: string; ids: string[]; onInfo: (s: string) => void; look?: [number, number, number]; dist?: number }> = ({ yaw, clip, ids, onInfo, look, dist }) => {
   const { scene, camera, advance } = useThree(); const f = useCurrentFrame(); const { fps } = useVideoConfig();
   const [h] = React.useState(() => delayRender("horses", { timeoutInMilliseconds: 120000 }));
   const hs = React.useRef<BuiltHorse[]>([]);
@@ -20,13 +20,13 @@ const Scene: React.FC<{ yaw: number; clip: string; ids: string[]; onInfo: (s: st
     }).catch((e) => { onInfo("ERR " + String(e)); continueRender(h); });
   }, []);
   hs.current.forEach((hz, i) => hz.mixer.setTime(f / fps + i * 0.13));
-  const c = camera as THREE.PerspectiveCamera; const d = 4 + ids.length * 1.4; c.position.set(Math.sin(yaw) * d, 1.6, Math.cos(yaw) * d); c.lookAt(0, 0.9, 0); c.fov = 30; c.updateProjectionMatrix();
+  const c = camera as THREE.PerspectiveCamera; const d = dist ?? 4 + ids.length * 1.4; const L = look ?? [0, 0.9, 0]; c.position.set(L[0] + Math.sin(yaw) * d, L[1] + (look ? 0.1 : 0.7), L[2] + Math.cos(yaw) * d); c.lookAt(L[0], L[1], L[2]); c.fov = 30; c.updateProjectionMatrix();
   return (<><ambientLight intensity={0.8} /><directionalLight position={[2, 4, 3]} intensity={2.2} /></>);
 };
-export const HorseView: React.FC<{ yaw?: number; clip?: string; ids?: string[]; info?: boolean }> = ({ yaw = 1.2, clip = "run", ids = ["silas"], info = false }) => {
+export const HorseView: React.FC<{ yaw?: number; clip?: string; ids?: string[]; info?: boolean; look?: [number, number, number]; dist?: number }> = ({ yaw = 1.2, clip = "run", ids = ["silas"], info = false, look, dist }) => {
   const [txt, setTxt] = React.useState("");
   return (<AbsoluteFill style={{ background: "linear-gradient(#e9e4da, #b9b2a6)" }}>
-    <ThreeCanvas width={1280} height={720} camera={{ fov: 30, position: [0, 1, 5] }} gl={{ antialias: true }}><Scene yaw={yaw} clip={clip} ids={ids} onInfo={setTxt} /></ThreeCanvas>
+    <ThreeCanvas width={1280} height={720} camera={{ fov: 30, position: [0, 1, 5] }} gl={{ antialias: true }}><Scene yaw={yaw} clip={clip} ids={ids} onInfo={setTxt} look={look} dist={dist} /></ThreeCanvas>
     {info ? <pre style={{ position: "absolute", top: 8, left: 8, fontSize: 15, color: "#000", whiteSpace: "pre-wrap", width: 1260 }}>{txt}</pre> : null}
   </AbsoluteFill>);
 };

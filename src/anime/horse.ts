@@ -70,21 +70,25 @@ const dressHorse = (o: THREE.Object3D, look: HorseLook) => {
   }
   // head: eyes, bridle, reins, blaze
   const dir = HE.clone().sub(H).normalize();
-  const eyeC = H.clone().addScaledVector(dir, H.distanceTo(HE) * 0.18);
-  const hp = pts.filter((p) => p.distanceTo(eyeC) < 0.3); const hw = Math.max(...hp.map((p) => Math.abs(p.x - eyeC.x)));
+  // eye: take a slice across the head ~30% of the way from the poll to the muzzle; eye sits high on the side of that slice
+  const L = H.distanceTo(HE);
+  const slice = (t: number, w = 0.05) => { const c = H.clone().addScaledVector(dir, L * t); return pts.filter((p) => { const v = p.clone().sub(H); const along = v.dot(dir); if (Math.abs(along - L * t) > w) return false; return p.distanceTo(c) < 0.2; }); };
+  const sl = slice(0.3); const sTop = Math.max(...sl.map((p) => p.y)), sBot = Math.min(...sl.map((p) => p.y));
+  const eyeC = H.clone().addScaledVector(dir, L * 0.3); eyeC.y = sTop - (sTop - sBot) * 0.22;
+  const atH = sl.filter((p) => Math.abs(p.y - eyeC.y) < 0.05); const hw = Math.max(0.04, ...atH.map((p) => Math.abs(p.x - eyeC.x)));
   for (const sx of [-1, 1]) {
     const eye = new THREE.Group();
     const white = new THREE.Mesh(new THREE.CircleGeometry(0.034, 20), new THREE.MeshBasicMaterial({ color: "#f4efe6" })); white.scale.set(1, 0.85, 1); eye.add(white);
     const iris = new THREE.Mesh(new THREE.CircleGeometry(0.024, 20), new THREE.MeshBasicMaterial({ color: "#2a1a12" })); iris.position.set(0.004, -0.002, 0.001); eye.add(iris);
     const hl = new THREE.Mesh(new THREE.CircleGeometry(0.008, 12), new THREE.MeshBasicMaterial({ color: "#ffffff" })); hl.position.set(0.012, 0.01, 0.002); eye.add(hl);
     const lid = new THREE.Mesh(new THREE.RingGeometry(0.033, 0.04, 20, 1, 0, Math.PI), new THREE.MeshBasicMaterial({ color: "#1b1416" })); lid.position.z = 0.002; eye.add(lid);
-    eye.position.set(eyeC.x + sx * (hw + 0.004), eyeC.y + 0.03, eyeC.z); eye.lookAt(eyeC.x + sx * 5, eyeC.y + 0.03, eyeC.z + 1.2); attachTo(head, eye);
+    eye.position.set(eyeC.x + sx * (hw + 0.006), eyeC.y, eyeC.z); eye.lookAt(eyeC.x + sx * 5, eyeC.y + 0.4, eyeC.z + 1.6); attachTo(head, eye);
   }
   const bridleM = toon("#3a2418", { shade: 0.6 });
   const nose = H.clone().addScaledVector(dir, H.distanceTo(HE) * 0.75);
   const np = pts.filter((p) => p.distanceTo(nose) < 0.25); const nw = Math.max(0.05, ...np.map((p) => Math.abs(p.x - nose.x)));
   const band = new THREE.Mesh(new THREE.TorusGeometry(nw * 1.05, 0.012, 6, 24), bridleM); band.position.copy(nose); band.lookAt(nose.clone().add(dir)); attachTo(head, band);
-  const brow = new THREE.Mesh(new THREE.TorusGeometry(hw * 1.08, 0.012, 6, 24), bridleM); brow.position.copy(eyeC).addScaledVector(dir, -0.06); brow.lookAt(brow.position.clone().add(dir)); attachTo(head, brow);
+  const pollSl = slice(0.04, 0.06); const pw = Math.max(0.05, ...pollSl.map((p) => Math.abs(p.x - H.x))); const brow = new THREE.Mesh(new THREE.TorusGeometry(pw * 1.05, 0.012, 6, 24), bridleM); brow.position.copy(H).addScaledVector(dir, L * 0.04); brow.lookAt(brow.position.clone().add(dir)); attachTo(head, brow);
   for (const sx of [-1, 1]) {
     const a = nose.clone().add(new THREE.Vector3(sx * nw, 0, 0)), b2 = new THREE.Vector3(T.x + sx * 0.06, topY + 0.1, T.z + 0.3);
     const mid = a.clone().lerp(b2, 0.5).add(new THREE.Vector3(0, -0.12, 0));
@@ -92,6 +96,6 @@ const dressHorse = (o: THREE.Object3D, look: HorseLook) => {
     const rein = new THREE.Mesh(new THREE.TubeGeometry(curve, 20, 0.008, 5), bridleM); attachTo(neck, rein);
   }
   if (look.blaze) { const bl = new THREE.Mesh(new THREE.PlaneGeometry(0.06, H.distanceTo(HE) * 0.8), new THREE.MeshBasicMaterial({ color: "#f1ece4", side: THREE.DoubleSide }));
-    const fp = pts.filter((p) => p.distanceTo(eyeC.clone().addScaledVector(dir, 0.1)) < 0.2); const top = fp.reduce((m, p) => (p.y > m.y ? p : m), fp[0] ?? eyeC);
+    const fp = slice(0.45, 0.08); const top = fp.reduce((m, p) => (p.y > m.y ? p : m), fp[0] ?? eyeC);
     bl.position.copy(H.clone().lerp(HE, 0.45)); bl.position.y = top.y + 0.004; bl.lookAt(bl.position.clone().add(new THREE.Vector3(0, 1, 0))); bl.rotateZ(0); attachTo(head, bl); }
 };
