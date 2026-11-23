@@ -12,7 +12,15 @@ export type HB = Parameters<VRM["humanoid"]["getRawBoneNode"]>[0];
 // a fresh copy every time: several characters can share one base model
 export const loadFresh = (url: string) => new Promise<VRM>((res, rej) => {
   const l = new GLTFLoader(); l.register((p) => new VRMLoaderPlugin(p));
-  l.load(url, (g) => { const v = g.userData.vrm as VRM; VRMUtils.rotateVRM0(v); v.scene.updateMatrixWorld(true); res(v); }, undefined, rej);
+  l.load(url, (g) => {
+    const v = g.userData.vrm as VRM;
+    // VRoid keeps morph target names on the primitive (extras.targetNames), which GLTFLoader ignores: restore real names
+    const json = g.parser.json as { meshes: { extras?: { targetNames?: string[] }; primitives: { extras?: { targetNames?: string[] } }[] }[] };
+    g.scene.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh || !m.morphTargetInfluences) return; const as = g.parser.associations.get(m) as { meshes?: number; primitives?: number } | undefined;
+      if (!as || as.meshes === undefined) return; const jm = json.meshes[as.meshes]; const names = jm.primitives[as.primitives ?? 0]?.extras?.targetNames ?? jm.extras?.targetNames ?? jm.primitives[0]?.extras?.targetNames;
+      if (names && names.length === m.morphTargetInfluences.length) { m.morphTargetDictionary = {}; names.forEach((n, i) => (m.morphTargetDictionary![n] = i)); } });
+    VRMUtils.rotateVRM0(v); v.scene.updateMatrixWorld(true); res(v);
+  }, undefined, rej);
 });
 
 // ---------- finding parts ----------

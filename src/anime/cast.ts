@@ -213,9 +213,82 @@ const bram = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_BRW_Angry: 1, Fcl_EYE_Angry: 0.6, Fcl_MTH_Angry: 0.35 } };
 };
 
+// ---------------- 5. JORY "THE WILD DOG" ----------------
+// lean and wiry, long wild black hair past the shoulders, a mean grin, thin moustache, dusty teal shirt,
+// fringed buckskin waistcoat, purple neckerchief, gold earring, knife on the belt, boots
+const jory = (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const head = bonePos(vrm, "head"); const neck = bonePos(vrm, "neck"); const hips = bonePos(vrm, "hips"); const knee = bonePos(vrm, "leftLowerLeg");
+  const hair = bbox(vrm, "HAIR"); const bottoms = bbox(vrm, "Bottoms");
+  recolor(vrm, "HAIR", "#1d1b22", {}, 0.8);
+  // long wild strands falling from under the hair at the back and sides
+  const hairMat = toon("#24212a", { map: hairStrandTex("#2a2630", "rgba(90,90,120,0.5)"), shade: 0.7 });
+  const hc = new THREE.Vector3((hair.max.x + hair.min.x) / 2, head.y + 0.06, (hair.max.z + hair.min.z) / 2); const hr = (hair.max.x - hair.min.x) / 2;
+  let sd = 11; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < 13; i++) {
+    const a = Math.PI * (0.32 + (i / 12) * 1.36) + (rnd() - 0.5) * 0.12; // around the back, side to side
+    const sx = Math.sin(a), sz = Math.cos(a);
+    const p0 = new THREE.Vector3(hc.x + sx * hr * 0.8, hc.y + 0.02, hc.z + sz * hr * 0.8);
+    const len = 0.26 + rnd() * 0.12, out = 0.05 + rnd() * 0.05;
+    const pts = [p0, p0.clone().add(new THREE.Vector3(sx * 0.03, -0.08, sz * 0.03)), p0.clone().add(new THREE.Vector3(sx * out, -len * 0.6, sz * out)), p0.clone().add(new THREE.Vector3(sx * (out + 0.02) + (rnd() - 0.5) * 0.06, -len, sz * (out + 0.02)))];
+    const st = new THREE.Mesh(taperTube(pts, hr * 0.17, hr * 0.015, 24, 8, 0.55), hairMat); withInk(st, 0.0025); attach(vrm, "head", st);
+  }
+  recolor(vrm, "EyeIris", "#8a7a3a", { strength: 0.85 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { g.globalCompositeOperation = "source-atop"; g.fillStyle = "#1d1b22"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    g.fillStyle = "rgba(150,110,80,0.12)"; g.fillRect(0, 0, w, h); // sun-darkened
+    faceLines(g, w, h, { eyeBags: 0.55, smile: 0.35, cheek: 0.4 });
+    // thin drooping moustache
+    g.strokeStyle = "#1d1b22"; g.lineWidth = w * 0.006; g.lineCap = "round";
+    g.beginPath(); g.moveTo(0.44 * w, 0.738 * h); g.quadraticCurveTo(0.5 * w, 0.728 * h, 0.56 * w, 0.738 * h); g.stroke();
+    // a thin old scar through the right eyebrow
+    g.strokeStyle = "rgba(230,190,180,0.9)"; g.lineWidth = w * 0.004; g.beginPath(); g.moveTo(0.33 * w, 0.43 * h); g.lineTo(0.355 * w, 0.5 * h); g.stroke();
+  }), 0.78); }
+  // hoodie -> teal work shirt; buckskin waistcoat painted over the torso by region (front open)
+  cutBones(vrm, "Tops", /Hood/, 0.02);
+  recolor(vrm, "Tops", "#3d6866", {}, 0.75);
+  // slim shirt sleeves instead of the puffy hoodie ones
+  cutAway(vrm, "Tops", [...ARMS]);
+  const teal = toon("#69a8a3", { map: clothTex("#69a8a3", "#558e89", "weave"), shade: 0.9 });
+  shell(vrm, "Body_00_SKIN", ["upperChest", "chest"], 0.012, teal, (p) => Math.abs(p.x - head.x) > 0.085 && p.y > neck.y - 0.2, 0);
+  for (const side of ["left", "right"] as const) { const wr = bonePos(vrm, `${side}Hand`);
+    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`, `${side}Shoulder`, `${side}LowerArm`], 0.014, teal, (p) => p.distanceTo(wr) > 0.035, 0.002);
+    shell(vrm, "Body_00_SKIN", [`${side}LowerArm`], 0.02, teal, (p) => { const d = p.distanceTo(wr); return d > 0.035 && d < 0.075; }, 0.002); }
+  const tops = bbox(vrm, "Tops");
+  paintByRegion(vrm, "Tops", (p, n) => {
+    if (p.y > neck.y - 0.03 || p.y < hips.y - 0.02) return null;
+    const armDist = Math.abs(p.x - head.x); if (armDist > 0.2) return null; // torso only
+    if (n.z > 0.3 && Math.abs(p.x - head.x) < 0.028 + (neck.y - p.y) * 0.03) return null; // open V at the front
+    return "#b08a5c";
+  }, 0.78);
+  recolor(vrm, "Bottoms", "#4a4038"); recolor(vrm, "Shoes", "#2f241c", {}, 0.6);
+  shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.011, toon("#3a2a1e", { shade: 0.5, rim: 0.2 }), (p) => p.y < knee.y - 0.12);
+  // fringe along the bottom of the waistcoat
+  const fr = toon("#a07c50", { shade: 0.65 });
+  for (let i = 0; i < 26; i++) { const a = Math.PI * 0.15 + (i / 25) * Math.PI * 1.7; const x = head.x + Math.sin(a) * (tops.max.x - tops.min.x) * 0.19, z = (tops.max.z + tops.min.z) / 2 + Math.cos(a) * (tops.max.z - tops.min.z) * 0.42;
+    const f = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.06, 0.004), fr); f.position.set(x, hips.y - 0.04, z); f.rotation.y = a; attach(vrm, "hips", f); }
+  // purple neckerchief: knotted triangle under the chin
+  const nk = new THREE.Mesh(new THREE.TorusGeometry(0.062, 0.016, 8, 24), toon("#6b3a8a")); nk.position.set(neck.x, neck.y - 0.005, neck.z); nk.rotation.x = Math.PI / 2 - 0.15; nk.scale.set(1, 0.9, 1); withInk(nk, 0.002); attach(vrm, "neck", nk);
+  const tri = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.08, 3), toon("#6b3a8a")); tri.position.set(neck.x, neck.y - 0.05, neck.z + 0.065); tri.rotation.set(Math.PI, 0, 0); tri.scale.z = 0.25; withInk(tri, 0.002); attach(vrm, "upperChest", tri);
+  // gold earring (left ear)
+  const face = bbox(vrm, "Face_00_SKIN");
+  const ear = new THREE.Mesh(new THREE.TorusGeometry(0.009, 0.0025, 8, 16), toon("#e0b84a", { rim: 0.5 })); ear.position.set(face.max.x - 0.005, head.y + 0.01, head.z + 0.005); ear.rotation.y = Math.PI / 2; attach(vrm, "head", ear);
+  // belt + knife
+  const w = (bottoms.max.x - bottoms.min.x) / 2, d = (bottoms.max.z - bottoms.min.z) / 2, cz = (bottoms.max.z + bottoms.min.z) / 2, beltY = hips.y - 0.01;
+  const ring: THREE.Vector3[] = []; for (let i = 0; i <= 24; i++) { const a = (i / 24) * Math.PI * 2; ring.push(new THREE.Vector3(hips.x + Math.sin(a) * w * 1.05, beltY, cz + Math.cos(a) * d * 1.12)); }
+  const belt = new THREE.Mesh(taperTube(ring, 0.024, 0.024, 48, 8, 0.25), toon("#3a2618", { shade: 0.6 })); withInk(belt, 0.002); attach(vrm, "hips", belt);
+  const sheath = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.15, 0.02), toon("#2a1c12")); sheath.position.set(hips.x - w * 1.0, beltY - 0.08, cz + 0.02); sheath.rotation.z = -0.25; withInk(sheath, 0.0018); attach(vrm, "hips", sheath);
+  const hilt = new THREE.Mesh(new THREE.CylinderGeometry(0.009, 0.009, 0.06, 10), toon("#c8b89a")); hilt.position.set(hips.x - w * 1.0 + 0.016, beltY + 0.02, cz + 0.02); hilt.rotation.z = -0.25; withInk(hilt, 0.0015); attach(vrm, "hips", hilt);
+  // lean, a touch taller than the base
+  vrm.scene.scale.setScalar(1.03);
+  shapeBone(vrm, "upperChest", [0.95, 1, 0.92]);
+  return { vrm, face: { Fcl_MTH_Fun: 0.85, Fcl_MTH_Joy: 0.15, Fcl_EYE_Angry: 0.45, Fcl_BRW_Angry: 0.75 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
   { id: "eli", name: "Eli Hale (the boy, 8)", base: "anime/HairSample_Male.vrm", build: eli },
   { id: "bram", name: "Bram Tolliver (the brute)", base: "anime/Sakurada_Fumiriya.vrm", build: bram },
+  { id: "jory", name: "Jory \"the Wild Dog\"", base: "anime/HairSample_Male.vrm", build: jory },
 ];
