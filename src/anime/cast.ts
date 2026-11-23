@@ -285,10 +285,70 @@ const jory = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_MTH_Fun: 0.85, Fcl_MTH_Joy: 0.15, Fcl_EYE_Angry: 0.45, Fcl_BRW_Angry: 0.75 } };
 };
 
+// ---------------- 6+7. THE RUSK TWINS (Abel + Cain) ----------------
+// stocky, copper-red hair + big red beards, freckles, sunburnt cheeks, straw hats with a red band,
+// long-sleeved plaid shirts under brown work overalls (brass buttons), boots.  Abel = rust plaid, Cain = olive plaid + eyepatch
+const twin = (variant: "abel" | "cain") => (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const head = bonePos(vrm, "head"); const neck = bonePos(vrm, "neck"); const hips = bonePos(vrm, "hips"); const knee = bonePos(vrm, "leftLowerLeg");
+  const hair = bbox(vrm, "HAIR");
+  const plaid = variant === "abel" ? ["#a8432c", "#e8d3b0"] : ["#5f6b34", "#e2d6a8"];
+  recolor(vrm, "HAIR", "#b0522a", {}, 0.78);
+  recolor(vrm, "EyeIris", "#6b8a5a", { strength: 0.85 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { const im = s2.map!.image as CanvasImageSource; for (const dy of [-2, 2]) g.drawImage(im, 0, dy, w, h); g.globalCompositeOperation = "source-atop"; g.fillStyle = "#9a4422"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    g.fillStyle = "rgba(220,110,80,0.16)"; for (const c of [0.31, 0.69]) { g.beginPath(); g.ellipse(c * w, 0.62 * h, 0.07 * w, 0.035 * h, 0, 0, Math.PI * 2); g.fill(); }
+    g.fillStyle = "rgba(170,90,50,0.5)"; let sd = variant === "abel" ? 5 : 9; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 70; i++) { const u = (i % 2 ? 0.37 : 0.63) + (rnd() - 0.5) * 0.18, v = 0.6 + (rnd() - 0.5) * 0.06; if (Math.abs(u - 0.5) < 0.05) continue; g.beginPath(); g.arc(u * w, v * h, w * (0.002 + rnd() * 0.002), 0, Math.PI * 2); g.fill(); }
+    faceLines(g, w, h, { eyeBags: 0.35, smile: 0.2 });
+    paintBeard(g, w, h, { color: "#b4532b", dark: "rgba(95,30,12,0.9)", full: 1.6 });
+  }), 0.76); }
+  // plaid shirt (whole top) + overalls bib, straps and brass buttons painted on by region
+  for (const m of meshesBy(vrm, "Tops")) { const s2 = surf(m); if (!s2.map) continue;
+    setTex(s2, recolorTex(s2.map, plaid[0], { paint: (g, w, h) => { g.globalAlpha = 0.55; g.fillStyle = plaid[1]; const st = w / 22; for (let x = 0; x < w; x += st) { g.fillRect(x, 0, st * 0.28, h); g.fillRect(0, x, w, st * 0.28); } g.globalAlpha = 0.5; g.fillStyle = "#2a1a14"; for (let x = st * 0.6; x < w; x += st) { g.fillRect(x, 0, st * 0.06, h); g.fillRect(0, x, w, st * 0.06); } } }), 0.74); }
+  for (const m of meshesBy(vrm, "AccessoryNeck")) m.visible = false;
+  const denim = "#6e5a42";
+  paintByRegion(vrm, "Tops", (p, n) => {
+    const dx = Math.abs(p.x - head.x); const front = n.z > 0.1;
+    if (front && dx < 0.095 && p.y < neck.y - 0.16 && p.y > hips.y - 0.1) { // bib
+      if (p.y > neck.y - 0.19 && Math.abs(dx - 0.07) < 0.012) return "#d0a548"; // brass buttons
+      return denim; }
+    if (Math.abs(dx - 0.075) < 0.017 && p.y >= neck.y - 0.18) return denim; // straps over the shoulders
+    if (!front && Math.abs(dx - 0.075 * Math.max(0, (p.y - hips.y) / (neck.y - hips.y))) < 0.017 && p.y > hips.y) return denim; // straps down the back, meeting low
+    return null;
+  }, 0.78);
+  recolor(vrm, "Bottoms", denim); recolor(vrm, "Shoes", "#4a3322", {}, 0.6);
+  shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.011, toon("#4a3322", { shade: 0.55, rim: 0.2 }), (p) => p.y < knee.y - 0.17);
+  // long plaid sleeves
+  cutAway(vrm, "Tops", [...ARMS]);
+  const sleeve = toon(plaid[0], { map: clothTex(plaid[0], plaid[1], "plaid", 0.6), shade: 0.85 });
+  for (const side of ["left", "right"] as const) { const wr = bonePos(vrm, `${side}Hand`);
+    shell(vrm, "Body_00_SKIN", [`${side}UpperArm`, `${side}Shoulder`, `${side}LowerArm`], 0.015, sleeve, (p) => p.distanceTo(wr) > 0.03, 0.002); }
+  shell(vrm, "Body_00_SKIN", ["upperChest", "chest"], 0.012, sleeve, (p) => Math.abs(p.x - head.x) > 0.09 && p.y > neck.y - 0.2, 0);
+  // straw hat
+  const r = (hair.max.x - hair.min.x) / 2 * 0.96, brimY = hair.max.y - r * 0.72;
+  cutAway(vrm, "HAIR", null, (p) => p.y > brimY - 0.005);
+  const ht = hat("straw", "#d9b76c", "#8a2f22", r); ht.position.set(head.x, brimY, (hair.max.z + hair.min.z) / 2); ht.rotation.x = variant === "abel" ? -0.08 : -0.02; ht.rotation.z = variant === "abel" ? 0.05 : -0.06; attach(vrm, "head", ht);
+  // Cain's eyepatch over his left eye: a flat patch just in front of the actual eye surface; the strap is painted on the face to the temple
+  if (variant === "cain") {
+    const P = new THREE.Vector3(); const eb = new THREE.Box3();
+    for (const m of meshesBy(vrm, "EyeWhite")) { const pos = m.geometry.getAttribute("position"), idx = m.geometry.index!; for (let i = 0; i < idx.count; i++) { P.fromBufferAttribute(pos, idx.getX(i)).applyMatrix4(m.matrixWorld); if (P.x > head.x + 0.005) eb.expandByPoint(P); } }
+    const c = eb.getCenter(new THREE.Vector3()); const ew = eb.max.x - eb.min.x, eh = eb.max.y - eb.min.y;
+    const patch = new THREE.Mesh(new THREE.CircleGeometry(0.5, 32), toon("#151315", { rim: 0.35, side: THREE.DoubleSide })); patch.scale.set(ew * 1.35, eh * 1.45, 1);
+    patch.position.set(c.x, c.y + eh * 0.05, eb.max.z + 0.006); withInk(patch, 0.0015); attach(vrm, "head", patch);
+    for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => { g.strokeStyle = "#151315"; g.lineWidth = w * 0.009; g.lineCap = "round"; g.beginPath(); g.moveTo(0.66 * w, 0.505 * h); g.lineTo(0.8 * w, 0.43 * h); g.moveTo(0.66 * w, 0.57 * h); g.lineTo(0.8 * w, 0.62 * h); g.stroke(); }), 0.76); }
+  }
+  vrm.scene.scale.setScalar(0.97);
+  shapeBone(vrm, "upperChest", [1.15, 1, 1.15]); shapeBone(vrm, "chest", [1.12, 1, 1.18]); shapeBone(vrm, "spine", [1.1, 1, 1.15]);
+  return { vrm, face: { Fcl_BRW_Angry: 0.5, Fcl_MTH_Down: 0.3, Fcl_EYE_Angry: 0.2 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
   { id: "eli", name: "Eli Hale (the boy, 8)", base: "anime/HairSample_Male.vrm", build: eli },
   { id: "bram", name: "Bram Tolliver (the brute)", base: "anime/Sakurada_Fumiriya.vrm", build: bram },
+  { id: "abel", name: "Abel Rusk (twin, rust plaid)", base: "anime/Sakurada_Fumiriya.vrm", build: twin("abel") },
+  { id: "cain", name: "Cain Rusk (twin, olive plaid + eyepatch)", base: "anime/Sakurada_Fumiriya.vrm", build: twin("cain") },
   { id: "jory", name: "Jory \"the Wild Dog\"", base: "anime/HairSample_Male.vrm", build: jory },
 ];
