@@ -163,7 +163,7 @@ export const FWD = 1;
 
 // ---------- our procedural pieces ----------
 const lathe = (pts: [number, number][], seg = 48) => new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), seg);
-export const hat = (style: "flat" | "bowler" | "straw" | "cowboy", color: string, band: string, r: number) => {
+export const hat = (style: "flat" | "bowler" | "straw" | "cowboy", color: string, band: string, r: number, studs = true) => {
   const grp = new THREE.Group();
   let crown: [number, number][]; let brimR: number; let brimCurl = 0;
   if (style === "flat") { crown = [[0, r * 0.95], [r * 0.95, r * 0.95], [r * 1.0, r * 0.6], [r * 1.02, 0]]; brimR = r * 2.0; }
@@ -175,7 +175,7 @@ export const hat = (style: "flat" | "bowler" | "straw" | "cowboy", color: string
   const bp: [number, number][] = []; for (let i = 0; i <= 8; i++) { const t = i / 8; const rr = r * 0.98 + (brimR - r * 0.98) * t; bp.push([rr, brimCurl * r * t * t * 1.4]); }
   const brim = new THREE.Mesh(lathe(bp.concat(bp.slice().reverse().map(([rr, y]) => [rr, y - r * 0.05] as [number, number]))), cm); brim.scale.set(1, 1, 0.9); grp.add(brim); withInk(brim, 0.004);
   const bandM = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.035, r * 1.04, r * 0.22, 48, 1, true), toon(band, { side: THREE.DoubleSide })); bandM.position.y = r * 0.12; grp.add(bandM);
-  if (style === "flat") { // silver conchos on the band
+  if (style === "flat" && studs) { // silver conchos on the band
     for (let i = 0; i < 9; i++) { const a = (i / 9) * Math.PI * 2; const s = new THREE.Mesh(new THREE.SphereGeometry(r * 0.06, 12, 8), toon("#d9dde3", { rim: 0.4 })); s.scale.z = 0.4; s.position.set(Math.sin(a) * r * 1.05, r * 0.12, Math.cos(a) * r * 1.05); s.lookAt(0, r * 0.12, 0); grp.add(s); }
   }
   if (style === "straw") { cm.map = strawTex(color); cm.shadeMultiplyTexture = cm.map; cm.needsUpdate = true; }

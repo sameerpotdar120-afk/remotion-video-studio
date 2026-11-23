@@ -343,6 +343,57 @@ const twin = (variant: "abel" | "cain") => (vrm: VRM): Built => {
   return { vrm, face: { Fcl_BRW_Angry: 0.5, Fcl_MTH_Down: 0.3, Fcl_EYE_Angry: 0.2 } };
 };
 
+// ---------------- 8. LUCIEN VANCE: the gambler ----------------
+// jet-black slicked hair, pencil moustache + small goatee, sly violet eyes, smug half-lidded smirk,
+// black frock coat with tails, burgundy brocade waistcoat, white shirt + red cravat, gold watch chain,
+// pinstripe trousers, black flat-crowned hat with a violet band and a playing card tucked in it
+const lucien = (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const head = bonePos(vrm, "head"); const neck = bonePos(vrm, "neck"); const hips = bonePos(vrm, "hips"); const knee = bonePos(vrm, "leftLowerLeg");
+  const hair = bbox(vrm, "HAIR"); const bottoms = bbox(vrm, "Bottoms");
+  recolor(vrm, "HAIR", "#141218", {}, 0.85);
+  recolor(vrm, "EyeIris", "#86609e", { strength: 0.85 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { g.globalCompositeOperation = "source-atop"; g.fillStyle = "#141218"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    faceLines(g, w, h, { eyeBags: 0.3, smile: 0.25 });
+    g.fillStyle = "#141218"; // pencil moustache: two thin wings
+    for (const sx of [-1, 1]) { g.beginPath(); g.moveTo((0.5 + sx * 0.006) * w, 0.73 * h); g.quadraticCurveTo((0.5 + sx * 0.04) * w, 0.722 * h, (0.5 + sx * 0.075) * w, 0.735 * h); g.quadraticCurveTo((0.5 + sx * 0.04) * w, 0.732 * h, (0.5 + sx * 0.006) * w, 0.738 * h); g.fill(); }
+    g.beginPath(); g.moveTo(0.488 * w, 0.79 * h); g.lineTo(0.512 * w, 0.79 * h); g.lineTo(0.5 * w, 0.83 * h); g.closePath(); g.fill(); // small goatee
+  }), 0.78); }
+  // hoodie -> black frock coat; waistcoat, shirt front and pinstripes painted by region
+  cutBones(vrm, "Tops", /Hood/, 0.02);
+  recolor(vrm, "Tops", "#1b1a20", {}, 0.7);
+  paintByRegion(vrm, "Tops", (p, n) => {
+    if (n.z < 0.25 || p.y > neck.y + 0.02 || p.y < hips.y - 0.04) return null;
+    const dx = Math.abs(p.x - head.x), open = 0.05 + (neck.y - p.y) * 0.12; // the coat opens wider towards the waist
+    if (dx > open) return null;
+    if (p.y > neck.y - 0.13 && dx < 0.02 + (neck.y - p.y) * 0.22) return "#f1ece2"; // white shirt V
+    const k = Math.floor((p.x - head.x) * 90 + 100) + Math.floor(p.y * 90); // brocade diamonds
+    return (k % 2) ? "#6a1f2c" : "#7d2a36";
+  }, 0.78);
+  recolor(vrm, "Bottoms", "#2b2a31", { paint: (g, w) => { g.globalAlpha = 0.35; g.fillStyle = "#8a8894"; for (let x = 0; x < w; x += w / 70) g.fillRect(x, 0, Math.max(1, w / 900), w); } });
+  recolor(vrm, "Shoes", "#111015", {}, 0.5);
+  // coat tails to mid-thigh
+  const w = (bottoms.max.x - bottoms.min.x) / 2, d = (bottoms.max.z - bottoms.min.z) / 2, cz = (bottoms.max.z + bottoms.min.z) / 2;
+  const top = hips.y + 0.035, len = (top - knee.y) * 0.8;
+  const skirt = coatSkirt(w * 1.22, d * 1.4, 0, len, 0.3, 0.6, "#1b1a20", clothTex("#1b1a20", "#26252c", "weave")); skirt.position.set(hips.x, top, cz); attach(vrm, "hips", skirt);
+  const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.074, 0.1, 0.1, 32, 1, true, Math.PI * 0.2, Math.PI * 1.6), toon("#1b1a20", { side: THREE.DoubleSide })); collar.position.set(neck.x, neck.y - 0.03, neck.z - 0.008); withInk(collar, 0.003); attach(vrm, "upperChest", collar);
+  // red cravat + gold watch chain
+  const cr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.07, 3), toon("#b3242c")); cr.position.set(neck.x, neck.y - 0.055, neck.z + 0.07); cr.rotation.x = Math.PI; cr.scale.z = 0.35; withInk(cr, 0.0015); attach(vrm, "upperChest", cr);
+  const tops = bbox(vrm, "Tops");
+  const chain = new THREE.Mesh(taperTube([new THREE.Vector3(head.x - 0.035, hips.y + 0.12, tops.max.z - 0.03), new THREE.Vector3(head.x + 0.0, hips.y + 0.075, tops.max.z - 0.022), new THREE.Vector3(head.x + 0.05, hips.y + 0.1, tops.max.z - 0.03)], 0.003, 0.003, 20, 6), toon("#e0b84a", { rim: 0.5 })); attach(vrm, "spine", chain);
+  // hat with a playing card in the band
+  const r = (hair.max.x - hair.min.x) / 2 * 0.92, brimY = hair.max.y - r * 0.8;
+  cutAway(vrm, "HAIR", null, (p) => p.y > brimY - 0.006);
+  const ht = hat("flat", "#18161c", "#5b3a7a", r, false); ht.scale.set(0.95, 1.05, 0.95); ht.position.set(head.x, brimY, (hair.max.z + hair.min.z) / 2); ht.rotation.set(-0.05, 0, -0.08);
+  const card = new THREE.Mesh(new THREE.PlaneGeometry(r * 0.38, r * 0.55), new THREE.MeshBasicMaterial({ map: (() => { const c = document.createElement("canvas"); c.width = 64; c.height = 90; const g = c.getContext("2d")!; g.fillStyle = "#f6f2ea"; g.fillRect(0, 0, 64, 90); g.strokeStyle = "#222"; g.lineWidth = 3; g.strokeRect(1, 1, 62, 88); g.fillStyle = "#c0222c"; g.font = "bold 40px serif"; g.fillText("A", 18, 50); g.font = "24px serif"; g.fillText("\u2665", 22, 80); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; })(), side: THREE.DoubleSide }));
+  card.position.set(r * 0.75, r * 0.32, r * 0.72); card.rotation.set(0, 0.75, 0.15); ht.add(card);
+  attach(vrm, "head", ht);
+  vrm.scene.scale.setScalar(1.01);
+  shapeBone(vrm, "upperChest", [0.96, 1, 0.94]);
+  return { vrm, face: { Fcl_EYE_Joy: 0.3, Fcl_MTH_Fun: 0.6, Fcl_BRW_Angry: 0.35 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
@@ -350,5 +401,6 @@ export const CAST: CharDef[] = [
   { id: "bram", name: "Bram Tolliver (the brute)", base: "anime/Sakurada_Fumiriya.vrm", build: bram },
   { id: "abel", name: "Abel Rusk (twin, rust plaid)", base: "anime/Sakurada_Fumiriya.vrm", build: twin("abel") },
   { id: "cain", name: "Cain Rusk (twin, olive plaid + eyepatch)", base: "anime/Sakurada_Fumiriya.vrm", build: twin("cain") },
+  { id: "lucien", name: "Lucien Vance (the gambler)", base: "anime/HairSample_Male.vrm", build: lucien },
   { id: "jory", name: "Jory \"the Wild Dog\"", base: "anime/HairSample_Male.vrm", build: jory },
 ];
