@@ -6,6 +6,8 @@ import { CastSheet } from "./ep2/CastSheet";
 import { Episode2, ShotStill2, totalFrames2 } from "./ep2/Episode";
 import { Episode3, ShotStill3, totalFrames3 } from "./ep3/Episode";
 import { Photo3D } from "./photo3d/Photo3D";
+import { VrmView } from "./anime/VrmView";
+import { CharTurn } from "./anime/CharTurn";
 
 export const Root: React.FC = () => (
   <>
@@ -17,6 +19,8 @@ export const Root: React.FC = () => (
     <Composition id="Ep2Shot" component={ShotStill2} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
     <Composition id="Ep3" component={Episode3} width={1440} height={2560} fps={30} durationInFrames={totalFrames3(30)} defaultProps={{ captions: true, music: true }} />
     <Composition id="Ep3Shot" component={ShotStill3} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
+    <Composition id="CharTurn" component={CharTurn} width={720} height={1280} fps={30} durationInFrames={1} />
+    <Composition id="VrmView" component={VrmView} width={720} height={1280} fps={30} durationInFrames={1} />
     <Composition id="Photo3D" component={Photo3D} width={1080} height={1080} fps={30} durationInFrames={90} defaultProps={{ photo: "photo3d/test.png", depth: "photo3d/test_depth.png", move: "orbit", strength: 1.3 }} />
     <Composition id="CastSheet" component={CastSheet} width={5000} height={600} fps={30} durationInFrames={1} />
   </>
