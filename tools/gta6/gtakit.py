@@ -26,6 +26,7 @@ FONT_FILES = {
     "baloo": REPO / "public/sixday/fonts/Baloo2.ttf",
     "mont": REPO / "public/brand/Montserrat.ttf",
     "baloob": REPO / "public/sixday/fonts/Baloo2.ttf",
+    "montb": REPO / "public/brand/Montserrat.ttf",
 }
 
 SEA = (8, 22, 38)
@@ -77,6 +78,8 @@ def pil_font(name, size):
         f.set_variation_by_name("ExtraBold")
     elif name == "baloo":
         f.set_variation_by_name("Bold")
+    elif name == "montb":
+        f.set_variation_by_name("ExtraBold")
     return f
 
 
