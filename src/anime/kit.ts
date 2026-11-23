@@ -260,3 +260,42 @@ export const paintBeard = (g: CanvasRenderingContext2D, w: number, h: number, o:
   g.restore();
   g.save(); g.strokeStyle = o.dark; g.globalAlpha = 0.55; g.lineWidth = w * 0.002; g.stroke(region); g.restore();
 };
+
+// remove triangles skinned to helper bones whose names match (e.g. a hoodie's hood + drawstrings)
+export const cutBones = (vrm: VRM, matName: string, re: RegExp, minW = 0.25) => {
+  for (const m of meshesBy(vrm, matName)) {
+    const g0 = m.geometry, sk = g0.getAttribute("skinIndex") as THREE.BufferAttribute, sw = g0.getAttribute("skinWeight") as THREE.BufferAttribute;
+    const bad = new Set(m.skeleton.bones.map((b, i) => (re.test(b.name) ? i : -1)).filter((i) => i >= 0));
+    const hit = (v: number) => { for (let k = 0; k < 4; k++) if (bad.has(sk.getComponent(v, k)) && sw.getComponent(v, k) > minW) return true; return false; };
+    const idx = g0.index!, keep: number[] = []; for (let i = 0; i < idx.count; i += 3) { const a = idx.getX(i), b = idx.getX(i + 1), c = idx.getX(i + 2); if (!hit(a) && !hit(b) && !hit(c)) keep.push(a, b, c); }
+    const g = g0.clone(); g.setIndex(keep); g.clearGroups(); const nm = Array.isArray(m.material) ? m.material.length : 1; for (let k = 0; k < nm; k++) g.addGroup(0, keep.length, k); m.geometry = g;
+  }
+};
+// paint onto a part's texture wherever its 3D rest-pose surface satisfies `colorAt` (straps, belts, stripes...). Per-pixel, so edges are smooth.
+export const paintByRegion = (vrm: VRM, matName: string, colorAt: (p: THREE.Vector3, n: THREE.Vector3) => string | null, shade = 0.75) => {
+  for (const m of meshesBy(vrm, matName)) { const s = surf(m); if (!s.map) continue;
+    const im = s.map.image as CanvasImageSource & { width: number; height: number }; const W = im.width, H = im.height;
+    const c = document.createElement("canvas"); c.width = W; c.height = H; const g = c.getContext("2d", { willReadFrequently: true })!; g.drawImage(im, 0, 0, W, H);
+    const img = g.getImageData(0, 0, W, H), d = img.data, d0 = new Uint8ClampedArray(d);
+    const geo = m.geometry, pos = geo.getAttribute("position") as THREE.BufferAttribute, nor = geo.getAttribute("normal") as THREE.BufferAttribute, uv = geo.getAttribute("uv") as THREE.BufferAttribute, idx = geo.index!;
+    const mw = m.matrixWorld, nmx = new THREE.Matrix3().getNormalMatrix(mw);
+    const P = [0, 1, 2].map(() => new THREE.Vector3()), N = [0, 1, 2].map(() => new THREE.Vector3()), U = [0, 1, 2].map(() => new THREE.Vector2());
+    const q = new THREE.Vector3(), qn = new THREE.Vector3(), col = new THREE.Color();
+    for (let i = 0; i < idx.count; i += 3) {
+      for (let k = 0; k < 3; k++) { const v = idx.getX(i + k); P[k].fromBufferAttribute(pos, v).applyMatrix4(mw); N[k].fromBufferAttribute(nor, v).applyMatrix3(nmx).normalize(); U[k].set(uv.getX(v) * W, uv.getY(v) * H); }
+      const minX = Math.max(0, Math.floor(Math.min(U[0].x, U[1].x, U[2].x))), maxX = Math.min(W - 1, Math.ceil(Math.max(U[0].x, U[1].x, U[2].x)));
+      const minY = Math.max(0, Math.floor(Math.min(U[0].y, U[1].y, U[2].y))), maxY = Math.min(H - 1, Math.ceil(Math.max(U[0].y, U[1].y, U[2].y)));
+      const den = (U[1].y - U[2].y) * (U[0].x - U[2].x) + (U[2].x - U[1].x) * (U[0].y - U[2].y); if (Math.abs(den) < 1e-9) continue;
+      for (let y = minY; y <= maxY; y++) for (let x = minX; x <= maxX; x++) {
+        const a = ((U[1].y - U[2].y) * (x + 0.5 - U[2].x) + (U[2].x - U[1].x) * (y + 0.5 - U[2].y)) / den, b = ((U[2].y - U[0].y) * (x + 0.5 - U[2].x) + (U[0].x - U[2].x) * (y + 0.5 - U[2].y)) / den, cc = 1 - a - b;
+        if (a < -0.08 || b < -0.08 || cc < -0.08) continue;
+        q.set(0, 0, 0).addScaledVector(P[0], a).addScaledVector(P[1], b).addScaledVector(P[2], cc); qn.set(0, 0, 0).addScaledVector(N[0], a).addScaledVector(N[1], b).addScaledVector(N[2], cc).normalize();
+        const hex = colorAt(q, qn); if (!hex) continue; col.set(hex).convertLinearToSRGB();
+        const o = (y * W + x) * 4, l = (d0[o] * 0.3 + d0[o + 1] * 0.59 + d0[o + 2] * 0.11) / 220; const f = Math.min(1.05, 0.88 + 0.12 * l);
+        d[o] = Math.min(255, col.r * 255 * f); d[o + 1] = Math.min(255, col.g * 255 * f); d[o + 2] = Math.min(255, col.b * 255 * f); d[o + 3] = 255;
+      }
+    }
+    g.putImageData(img, 0, 0);
+    const t = new THREE.CanvasTexture(c); t.flipY = s.map.flipY; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; setTex(s, t, shade);
+  }
+};

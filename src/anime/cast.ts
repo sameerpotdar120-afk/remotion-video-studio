@@ -2,7 +2,7 @@
 import * as THREE from "three";
 import type { VRM } from "@pixiv/three-vrm";
 import {
-  attach, bbox, bonePos, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard,
+  attach, bbox, bonePos, clothTex, coatSkirt, cutAway, hairStrandTex, hat, paintTex, recolor, recolorTex, setTex, shell, surf, meshesBy, taperTube, toon, withInk, shapeBone, calmRim, faceLines, beard, paintBeard, cutBones, paintByRegion,
 } from "./kit";
 
 export type Built = { vrm: VRM; expression?: Record<string, number>; face?: Record<string, number> };
@@ -122,7 +122,47 @@ const thomas = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_MTH_Fun: 0.25, Fcl_BRW_Joy: 0.15 } };
 };
 
+// ---------------- 3. ELI HALE: the boy, 8 (our hero) ----------------
+// sandy messy hair, big hazel-green eyes, freckles + rosy cheeks, oversized cream shirt, brown trousers, worn shoes; child proportions
+const eli = (vrm: VRM): Built => {
+  vrm.scene.updateMatrixWorld(true); calmRim(vrm);
+  const neck = bonePos(vrm, "neck"); const head = bonePos(vrm, "head");
+  recolor(vrm, "HAIR", "#b58a52", {}, 0.78);
+  recolor(vrm, "EyeIris", "#6f9a5a", { strength: 0.85 });
+  for (const m of meshesBy(vrm, "FaceBrow")) { const s2 = surf(m); if (s2.map) setTex(s2, paintTex(s2.map, (g, w, h) => { g.globalCompositeOperation = "source-atop"; g.fillStyle = "#7a5634"; g.fillRect(0, 0, w, h); }), 0.9); }
+  for (const m of meshesBy(vrm, "Face_00_SKIN")) { const s2 = surf(m); if (s2.map && (s2.map.image as { width: number }).width >= 512) setTex(s2, paintTex(s2.map, (g, w, h) => {
+    g.fillStyle = "rgba(235,120,110,0.22)"; for (const c of [0.31, 0.69]) { g.beginPath(); g.ellipse(c * w, 0.635 * h, 0.06 * w, 0.03 * h, 0, 0, Math.PI * 2); g.fill(); } // rosy cheeks
+    g.fillStyle = "rgba(170,95,60,0.55)"; let sd = 7; const rnd = () => ((sd = (sd * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 60; i++) { const side = i % 2 ? 0.37 : 0.63; const u = side + (rnd() - 0.5) * 0.16, v = 0.605 + (rnd() - 0.5) * 0.06; if (Math.abs(u - 0.5) < 0.05) continue; g.beginPath(); g.arc(u * w, v * h, w * (0.002 + rnd() * 0.002), 0, Math.PI * 2); g.fill(); } // freckles over nose + cheeks
+  }), 0.8); }
+  // hoodie -> oversized shirt: drop the hood, recolour cream
+  cutBones(vrm, "Tops", /Hood/, 0.02);
+  recolor(vrm, "Tops", "#efe6d2", {}, 0.8);
+  // suspenders painted onto the shirt along two straps: straight up the front, over the shoulders, crossing into an X on the back
+  const hipsP = bonePos(vrm, "hips"); const cx = head.x;
+  paintByRegion(vrm, "Tops", (p, n) => {
+    if (p.y < hipsP.y + 0.02) return null;
+    const front = n.z > 0.05 && p.z > neck.z - 0.02;
+    for (const sx of [-1, 1]) {
+      let x0: number;
+      if (front) x0 = cx + sx * 0.068;
+      else { const t = Math.min(1, Math.max(0, (neck.y - 0.04 - p.y) / (neck.y - 0.04 - hipsP.y - 0.02))); x0 = cx + sx * 0.068 * (1 - 2 * t); }
+      if (Math.abs(p.x - x0) < 0.014 && p.y < neck.y + 0.02) return "#6b4429";
+    }
+    return null;
+  }, 0.8);
+  recolor(vrm, "Bottoms", "#7b5434");
+  recolor(vrm, "Shoes", "#6a4a32", {}, 0.6);
+  // child proportions: smaller overall, bigger head, narrower shoulders, shorter legs
+  vrm.scene.scale.setScalar(0.72);
+  shapeBone(vrm, "head", [1.22, 1.22, 1.22], false);
+  shapeBone(vrm, "upperChest", [0.92, 0.95, 0.95]);
+  shapeBone(vrm, "leftUpperLeg", [1, 0.92, 1], false); shapeBone(vrm, "rightUpperLeg", [1, 0.92, 1], false);
+  return { vrm, face: { Fcl_BRW_Sorrow: 0.25, Fcl_EYE_Surprised: 0.2 } };
+};
+
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },
   { id: "thomas", name: "Thomas Hale (the father)", base: "anime/Sakurada_Fumiriya.vrm", build: thomas },
+  { id: "eli", name: "Eli Hale (the boy, 8)", base: "anime/HairSample_Male.vrm", build: eli },
 ];
