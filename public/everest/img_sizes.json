@@ -1,0 +1,46 @@
+{
+ "ev01_climber_body": {
+  "w": 792,
+  "h": 2400
+ },
+ "ev01b_climber_arm_axe": {
+  "w": 1674,
+  "h": 2400
+ },
+ "ev02_brachiopod_fossil": {
+  "w": 2400,
+  "h": 2281
+ },
+ "ev03_crinoid_fossil": {
+  "w": 2400,
+  "h": 2221
+ },
+ "ev04_living_crinoid": {
+  "w": 1332,
+  "h": 2400
+ },
+ "ev05_living_brachiopod": {
+  "w": 2400,
+  "h": 2158
+ },
+ "ev06_limestone_block": {
+  "w": 2400,
+  "h": 1571
+ },
+ "ev07_ammonite_fossil": {
+  "w": 2400,
+  "h": 1492
+ },
+ "ev08_living_ammonite": {
+  "w": 2400,
+  "h": 1768
+ },
+ "ev09_spiti_house": {
+  "w": 2400,
+  "h": 1729
+ },
+ "ev10_traveller": {
+  "w": 865,
+  "h": 2400
+ }
+}
