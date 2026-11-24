@@ -136,6 +136,8 @@ void main() {
   if (hasPar > 0.5) {
     float e = min(min(us.x, 1.0 - us.x), min(us.y, 1.0 - us.y));
     float k = smoothstep(0.0, edgeK, e);
+    // seen from far away, a detail layer wears its parent's texture (no colour seam at the box); up close, its own
+    k *= 1.0 - smoothstep(45.0, 160.0, vDist);
     if (k < 1.0) col = mix(texture2D(tPar, uvOf(bPar, p)).rgb, col, k);
   }
   vec3 n = normalize(vN);
