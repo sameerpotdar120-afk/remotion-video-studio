@@ -50,3 +50,16 @@ export const chair = (scene: THREE.Scene, pos: THREE.Vector3, yaw: number) => { 
   for (const [x, z] of [[-0.19, -0.19], [0.19, -0.19], [-0.19, 0.19], [0.19, 0.19]]) { const l = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.46, 0.04), w); l.position.set(x, 0.23, z); g.add(l); }
   const back = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.5, 0.04), w); back.position.set(0, 0.73, -0.21); withInk(back, 0.003); g.add(back);
   g.position.copy(pos); g.rotation.y = yaw; scene.add(g); return g; };
+
+// townsfolk seen from behind (flashback crowd): simple painted figures with hats that sway; cheap and readable
+export const crowd = (scene: THREE.Scene, spots: [number, number, number][], yaw: number) => {
+  const figs: THREE.Group[] = []; const cols = ["#5a4a3e", "#3e4a5a", "#6a5a48", "#4a3e48", "#5e5a4a", "#3a3a40"];
+  spots.forEach((p, i) => { const g = new THREE.Group(); const c = cols[i % cols.length]; const s = 0.92 + hash(i * 5.1) * 0.16;
+    const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.22, 0.75, 4, 12), toon(c, { shade: 0.6 })); body.position.y = 0.72; body.scale.set(1, 1, 0.75); withInk(body, 0.006); g.add(body);
+    const legs = new THREE.Mesh(new THREE.CapsuleGeometry(0.16, 0.5, 4, 10), toon("#2e2a2a")); legs.position.y = 0.3; g.add(legs);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), toon(hash(i) > 0.5 ? "#e9c8a8" : "#c89a78")); head.position.y = 1.42; withInk(head, 0.004); g.add(head);
+    const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.12, 16), toon(hash(i * 3) > 0.5 ? "#3a2e24" : "#d8c49a")); hat.position.y = 1.56; g.add(hat);
+    const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.015, 20), hat.material as THREE.Material); brim.position.y = 1.5; withInk(brim, 0.003); g.add(brim);
+    g.scale.setScalar(s); g.position.set(...p); g.rotation.y = yaw + (hash(i * 9) - 0.5) * 0.5; scene.add(g); figs.push(g); });
+  return (t: number) => figs.forEach((g, i) => { g.rotation.z = Math.sin(t * 2.2 + i) * 0.03; g.position.y = Math.abs(Math.sin(t * 3 + i * 1.7)) * 0.02; });
+};

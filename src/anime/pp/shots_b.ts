@@ -30,7 +30,7 @@ const D2: ShotSpec = { id: "D2", dur: 2.6, set: "fort",
     ...SOLD.map(([char, pos, yaw], i): ActorSpec => ({ key: "s" + i, char, at: (t) => { const big = i === 1, yell = t > 1.44 && t < 2.2;
       return { pos, yaw, pose: big && yell ? pointR(laugh(STAND, t * 0.4), [-0.05, 0.05, 1]) : laugh(STAND, t + i * 0.37), face: { Fcl_MTH_Joy: 0.9, Fcl_EYE_Joy: 0.6, ...(big && yell ? talk(t, 1.44, 2.14, 1) : {}) } }; } })),
     { key: "pete", char: "pete15", at: () => ({ pos: [0.3, 0, 26.6], yaw: Math.PI, pose: STAND, face: DET }) }],
-  cam: (t) => ({ pos: vt([[0, [0.95, 1.85, 28.9]], [2.6, [0.85, 1.8, 28.4], ease.io]], t), look: [0.05, 1.45, 22.6], fov: 34 }) };
+  cam: (t) => ({ pos: vt([[0, [0.75, 1.75, 30.6]], [2.6, [0.7, 1.72, 30.0], ease.io]], t), look: [0.05, 1.3, 22.6], fov: 42 }) };
 
 // D3a: he outshoots every one of them: six fast shots, six bottles burst down the rail
 const TZ = -27, SHOOT: V3 = [0, 0, -16], D3_SHOTS = [0.25, 0.47, 0.69, 0.91, 1.13, 1.35];
@@ -114,7 +114,7 @@ const E6: ShotSpec = { id: "E6", dur: 1.62, set: "cabin", grade: "night",
   post: (t, c) => { if (!rifleE) return; if (t < E6_HIT) holdRifle(c, "bram"); else { const a = t - E6_HIT; rifleE.position.set(0.95 + a * 1.2, Math.max(BASE + 0.05, 1.5 + a * 2.5 - 4.9 * a * a), 3.4 + a * 0.4); rifleE.rotation.set(a * 6, 0.4, a * 9); } },
   fx: (t, _c, f) => { const a = t - (E6_HIT - 0.06); if (a > 0 && a < 0.08) f.streak(v3(2.5, 1.7, 9), v3(0.75, 1.55, 3.4), a / 0.06); },
   white: (t) => (t > E6_HIT - 0.06 && t < E6_HIT - 0.02 ? 0.15 : 0),
-  cam: (t) => ({ pos: vt([[0, [0.6, 0.75, 6.2]], [1.62, [0.6, 0.85, 5.6], ease.out]], t), look: vt([[0, [0.75, 1.85, 3.25]], [1.0, [0.7, 0.9, 2.6], ease.io]], t), fov: 38, shake: t > E6_HIT && t < E6_HIT + 0.2 ? 0.02 : 0 }) };
+  cam: (t) => ({ pos: vt([[0, [1.0, 1.05, 7.6]], [1.62, [0.95, 1.25, 7.0], ease.out]], t), look: vt([[0, [0.75, 1.5, 3.25]], [1.0, [0.7, 0.8, 2.6], ease.io]], t), fov: 40, shake: t > E6_HIT && t < E6_HIT + 0.2 ? 0.02 : 0 }) };
 // E7: the second one reaches for his gun in the doorway; the kid's gun in the foreground drops him too
 const E7_DRAW = 0.75, E7_SHOT = 2.2;
 const E7: ShotSpec = { id: "E7", dur: 3.86, set: "cabin", grade: "night",

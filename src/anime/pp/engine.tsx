@@ -15,7 +15,7 @@ import { applyPose, makeRig, type Pose, type Rig, POSE } from "../rig";
 
 export type V3 = [number, number, number];
 export type ActorState = {
-  pos: V3; yaw: number; pose: Pose; face?: Record<string, number>;
+  pos: V3; yaw: number; pose: Pose; face?: { [k: string]: number | undefined };
   fall?: number; roll?: number; lift?: number; hidden?: boolean; scale?: number;
   gun?: boolean; aim?: V3; kick?: number; gunScale?: number;     // revolver in the right hand (char ids ending _armed)
   horse?: { speed: number; dist: number };                       // mounted: pos/yaw are the horse's
@@ -136,7 +136,7 @@ const poseActor = (a: Actor, t: number, dt: number) => {
     if (!g.userData.q0) g.userData.q0 = g.quaternion.clone(); g.quaternion.copy(g.parent!.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(qW)); }
   else if (a.gun?.userData.q0) a.gun.quaternion.copy(a.gun.userData.q0 as THREE.Quaternion);
   if (a.gun) a.gun.scale.setScalar(s.gunScale ?? 1);
-  const face = { ...a.base, ...(s.face ?? {}) }; for (const k of Object.keys(face)) a.morphKeys.add(k); const full: Record<string, number> = {}; for (const k of a.morphKeys) full[k] = face[k] ?? 0; setMorphs(a.vrm, full);
+  const face: Record<string, number | undefined> = { ...a.base, ...(s.face ?? {}) }; for (const k of Object.keys(face)) a.morphKeys.add(k); const full: Record<string, number> = {}; for (const k of a.morphKeys) full[k] = face[k] ?? 0; setMorphs(a.vrm, full);
   return s;
 };
 

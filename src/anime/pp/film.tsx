@@ -5,9 +5,10 @@ import { ShotView, type ShotSpec } from "./engine";
 import { Scene1 } from "../Scene1";
 import { ACT_A } from "./shots_a";
 import { ACT_B } from "./shots_b";
+import { ACT_C } from "./shots_c";
 
 export const FILM_FPS = 30, FILM_END = 105.9;
-const ALL: { at: number; spec: ShotSpec }[] = [...ACT_A, ...ACT_B].sort((a, b) => a.at - b.at);
+const ALL: { at: number; spec: ShotSpec }[] = [...ACT_A, ...ACT_B, ...ACT_C].sort((a, b) => a.at - b.at);
 export const FILM = ALL.map((s, i) => ({ ...s, end: i + 1 < ALL.length ? ALL[i + 1].at : Math.min(FILM_END, s.at + s.spec.dur) }));
 export const findShot = (id: string) => FILM.find((s) => s.spec.id === id)!;
 

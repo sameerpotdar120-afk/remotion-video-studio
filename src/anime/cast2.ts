@@ -85,7 +85,6 @@ const peteBase = (vrm: VRM, o: { hair: string; shirt: string; pants: string; hat
   face(vrm, (g, w, h) => { freckles(g, w, h, o.grey ? 20 : 50, o.grey ? 0.25 : 0.45); if (o.stubble) paintBeard(g, w, h, { color: o.grey ? "#e6e2da" : "#8a6440", dark: o.grey ? "rgba(140,130,120,0.6)" : "rgba(60,40,25,0.7)", full: o.stubble }); if (o.grey) faceLines(g, w, h, { eyeBags: 0.7, smile: 0.6, cheek: 0.5 }); });
   cutBones(vrm, "Tops", /Hood/, 0.02);
   recolor(vrm, "Tops", o.shirt, {}, 0.78); recolor(vrm, "Bottoms", o.pants); boots(vrm, "#5a3c26");
-  sleeves(vrm, toon(o.shirt, { map: clothTex(o.shirt, "rgba(0,0,0,0.12)", "weave"), shade: 0.78 }));
   gunBelt(vrm); headHat(vrm, "cowboy", o.hat, o.band, 1.02, -0.08);
   vrm.scene.scale.setScalar(o.scale); shapeBone(vrm, "head", [o.head, o.head, o.head], false);
 };
