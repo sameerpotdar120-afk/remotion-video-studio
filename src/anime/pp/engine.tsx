@@ -33,6 +33,7 @@ export type ShotSpec = {
   actors: ActorSpec[]; cam: (t: number, c: Ctx) => CamState; fx?: (t: number, c: Ctx, fx: Fx) => void;
   build?: (scene: THREE.Scene) => (t: number) => void;         // shot-specific props (bottles, coffin, ...)
   grade?: "flashback" | "night" | "none"; white?: (t: number) => number; hideHorseHead?: (t: number) => string | null;
+  post?: (t: number, c: Ctx) => void;                          // after posing, before the camera (props held in hands, etc.)
 };
 
 // ---------- helpers for writing shots ----------
@@ -163,6 +164,7 @@ const ShotScene: React.FC<{ spec: ShotSpec; t: number }> = ({ spec, t }) => {
     const byKey = (k: string) => w.actors.find((a) => a.spec.key === k)!;
     const ctx: Ctx = { t, bone: (k, b) => byKey(k).vrm.humanoid.getRawBoneNode(b)!.getWorldPosition(new THREE.Vector3()),
       gunTip: (k) => { const g = byKey(k).gun; return g ? g.localToWorld(new THREE.Vector3(0.2, 0.012, 0)) : byKey(k).vrm.humanoid.getRawBoneNode("rightHand")!.getWorldPosition(new THREE.Vector3()); } };
+    spec.post?.(t, ctx);
     const c = camera as THREE.PerspectiveCamera; const cs = spec.cam(t, ctx);
     c.position.set(...cs.pos); if (cs.shake) c.position.add(v3(Math.sin(t * 61) * cs.shake, Math.sin(t * 47 + 1) * cs.shake, 0)); c.lookAt(...cs.look); if (cs.roll) c.rotateZ(cs.roll); c.fov = cs.fov; c.near = 0.04; c.far = 1000; c.updateProjectionMatrix(); c.updateMatrixWorld(true);
     w.fx.reset(); spec.fx?.(t, ctx, w.fx.api(c));
