@@ -3,7 +3,9 @@
 // the shot, then a cut to Thomas: hit, hands to chest, stagger (Eli revealed on the porch), plank fall, bounce.
 import React from "react";
 import * as THREE from "three";
-import { AbsoluteFill, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
+import { Captions } from "../engine/Captions";
+import words from "../../episodes/anime1/words.json";
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import type { VRM } from "@pixiv/three-vrm";
@@ -53,7 +55,7 @@ const riderVar = (i: number, t: number): Pose => { const b = Math.sin(t * 7.5 + 
 // Thomas: hands half raised ("easy now"), the hit, hands to chest, stagger, stiff fall backwards, bounce
 const T_UP = withAim(POSE.stand, { leftUpperArm: dirL(0.7, -0.68, 0.2), leftLowerArm: dirL(0.4, 0.75, 0.5), leftHand: dirL(0.2, 0.95, 0.2), rightUpperArm: dirR(0.7, -0.68, 0.2), rightLowerArm: dirR(0.4, 0.75, 0.5), rightHand: dirR(0.2, 0.95, 0.2) });
 const T_JOLT = withAim(POSE.stand, { leftUpperArm: dirL(0.95, -0.1, -0.25), leftLowerArm: dirL(0.85, 0.45, -0.25), leftHand: dirL(0.7, 0.7, -0.2), rightUpperArm: dirR(0.95, -0.1, -0.25), rightLowerArm: dirR(0.85, 0.45, -0.25), rightHand: dirR(0.7, 0.7, -0.2) }, { spine: [-0.22, 0, 0], chest: [-0.12, 0, 0], head: [-0.3, 0, 0] });
-const T_CHEST = withAim(POSE.stand, { leftUpperArm: dirL(0.38, -0.84, 0.38), leftLowerArm: dirL(-0.78, 0.42, 0.46), leftHand: dirL(-0.8, 0.5, 0.3), rightUpperArm: dirR(0.38, -0.84, 0.38), rightLowerArm: dirR(-0.78, 0.36, 0.5), rightHand: dirR(-0.8, 0.45, 0.35) }, { spine: [0.18, 0, 0], chest: [0.08, 0, 0], head: [0.25, 0, 0] });
+const T_CHEST = withAim(POSE.stand, { leftUpperArm: dirL(0.42, -0.82, 0.38), leftLowerArm: dirL(-0.45, 0.62, 0.64), leftHand: dirL(-0.35, 0.8, 0.5), rightUpperArm: dirR(0.42, -0.82, 0.38), rightLowerArm: dirR(-0.45, 0.55, 0.7), rightHand: dirR(-0.35, 0.75, 0.55) }, { spine: [0.18, 0, 0], chest: [0.08, 0, 0], head: [0.25, 0, 0] });
 const T_SWAY = withAim(T_CHEST, {}, { spine: [0.1, 0.1, -0.12], chest: [0.05, 0, -0.06], head: [0.1, 0, 0.12] });
 const T_FALL = withAim(POSE.stand, { leftUpperArm: dirL(0.7, -0.5, 0.5), leftLowerArm: dirL(0.3, 0.2, 0.93), leftHand: dirL(0.2, 0.3, 0.93), rightUpperArm: dirR(0.7, -0.5, 0.5), rightLowerArm: dirR(0.3, 0.2, 0.93), rightHand: dirR(0.2, 0.3, 0.93) }, { head: [0.35, 0, 0] });
 const T_LAND = withAim(POSE.stand, { leftUpperArm: dirL(0.95, 0.3, 0.02), leftLowerArm: dirL(0.8, 0.45, 0.4), leftHand: dirL(0.7, 0.5, 0.5), rightUpperArm: dirR(0.95, 0.3, 0.02), rightLowerArm: dirR(0.8, 0.45, 0.4), rightHand: dirR(0.7, 0.5, 0.5),
@@ -83,8 +85,9 @@ const camAt = (t: number, head: THREE.Vector3, hand: THREE.Vector3): Cam => {
     const r = ntrack([[2.0, 6.8], [2.28, 1.35, E.inOut], [2.55, 0.74, E.inOut], [T_CUT, 0.7]], t);
     const h = ntrack([[2.0, -0.2], [2.3, 0.05], [2.55, 0.14], [T_CUT, 0.15]], t);
     const pos = c.clone().add(new THREE.Vector3(Math.sin(phi) * r, h, -Math.cos(phi) * r));
-    const lk = ntrack([[2.0, 0], [2.3, 0.0], [2.5, 1, E.inOut]], t);
-    const look = head.clone().lerp(new THREE.Vector3(THOMAS.x, 1.6, THOMAS.z), lk);
+    const lk = ntrack([[2.0, 0], [2.28, 0.0], [2.5, 1, E.inOut]], t);
+    const dH0 = hand.clone().sub(pos).normalize(), dT0 = new THREE.Vector3(THOMAS.x, 1.3, THOMAS.z).sub(pos).normalize();
+    const look = head.clone().lerp(hand.clone().add(new THREE.Vector3(0, 0, -0.25)), ntrack([[2.24, 0], [2.42, 1, E.inOut]], t)); void dH0; void dT0; void lk;
     // settle tight behind the gun hand: revolver big in the lower left, Thomas + the house beyond
     const k2 = ntrack([[2.36, 0], [2.56, 1, E.inOut]], t);
     const ots = hand.clone().add(new THREE.Vector3(0.16, 0.13, 0.46 + (t - 2.56) * 0.1));
@@ -109,7 +112,7 @@ const dustTex = () => canvasT(128, 128, (g) => { for (let i = 0; i < 7; i++) { c
 const streakTex = () => canvasT(512, 64, (g) => { const gr = g.createLinearGradient(0, 0, 512, 0); gr.addColorStop(0, "rgba(255,120,40,0)"); gr.addColorStop(0.7, "rgba(255,200,110,0.8)"); gr.addColorStop(1, "rgba(255,250,220,1)"); g.fillStyle = gr; g.beginPath(); g.moveTo(0, 30); g.lineTo(500, 18); g.quadraticCurveTo(512, 32, 500, 46); g.closePath(); g.fill(); });
 const rnd = (i: number) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
 
-type World = { farm: Farm; riders: { def: RiderDef; vrm: VRM; rig: Rig; horse: BuiltHorse; baseRot: number; hipsRel: THREE.Vector3; seat: THREE.Object3D; gun?: THREE.Object3D; grip?: THREE.Object3D }[];
+type World = { farm: Farm; riders: { def: RiderDef; vrm: VRM; rig: Rig; horse: BuiltHorse; baseRot: number; hipsRel: THREE.Vector3; seat: THREE.Object3D; gun?: THREE.Object3D; grip?: THREE.Object3D; tails: THREE.Object3D[] }[];
   thomas: { vrm: VRM; rig: Rig; wrap: THREE.Group; baseRot: number }; eli: { vrm: VRM; rig: Rig }; flash: THREE.Sprite; streak: THREE.Mesh; dust: THREE.Sprite[] };
 
 const loadChar = async (id: string) => { const def = CAST.find((c) => c.id === id)!; const vrm = await loadFresh(staticFile(def.base)); const b = def.build(vrm); vrm.update(0); setMorphs(vrm, b.face ?? {}); return { vrm, face: b.face ?? {} }; };
@@ -130,9 +133,9 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
       applyPose(rig, RIDE); vrm.update(0); vrm.scene.updateMatrixWorld(true);
       const hipsRel = vrm.humanoid.getRawBoneNode("hips")!.getWorldPosition(new THREE.Vector3()).sub(vrm.scene.position);
       let seat: THREE.Object3D | undefined; horse.root.traverse((o) => { if (o.name === "seat") seat = o; });
-      let gun: THREE.Object3D | undefined, grip: THREE.Object3D | undefined; vrm.scene.traverse((o) => { if (o.name === "gun") gun = o; if (o.name === "holsterGrip") grip = o; });
+      let gun: THREE.Object3D | undefined, grip: THREE.Object3D | undefined; const tails: THREE.Object3D[] = []; vrm.scene.traverse((o) => { if (o.name === "gun") gun = o; if (o.name === "holsterGrip") grip = o; if (o.name === "coatTail") tails.push(o); });
       const run = horse.clips.run, walk = horse.clips.walk; horse.mixer.clipAction(run).play(); if (walk) horse.mixer.clipAction(walk).play();
-      riders.push({ def, vrm, rig, horse, baseRot, hipsRel, seat: seat!, gun, grip });
+      riders.push({ def, vrm, rig, horse, baseRot, hipsRel, seat: seat!, gun, grip, tails });
     }
     const th = await loadChar("thomas"); const wrap = new THREE.Group(); wrap.position.copy(THOMAS); scene.add(wrap); const tBase = th.vrm.scene.rotation.y; wrap.add(th.vrm.scene); th.vrm.scene.position.set(0, 0, 0.06); castAll(th.vrm.scene);
     const tRig = makeRig(th.vrm);
@@ -152,36 +155,53 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
   if (w) {
     w.farm.update(t);
     let head = new THREE.Vector3(), hand = new THREE.Vector3();
-    w.riders.forEach((r, i) => {
-      const p = riderPos(r.def, t); r.horse.root.position.copy(p);
-      const v = speed(t); const runW = THREE.MathUtils.clamp((v - 2.5) / 3, 0, 1);
-      const ar = r.horse.mixer.clipAction(r.horse.clips.run); ar.time = ((distAt(t) / 5.2 + r.def.ph) % 1) * r.horse.clips.run.duration; ar.setEffectiveWeight(runW);
-      if (r.horse.clips.walk) { const aw = r.horse.mixer.clipAction(r.horse.clips.walk); aw.time = ((distAt(t) / 1.9 + r.def.ph) % 1) * r.horse.clips.walk.duration; aw.setEffectiveWeight(1 - runW); }
-      r.horse.mixer.update(0);
-      if (i === 0) { const hd = r.horse.root.getObjectByName("Head"); if (hd) { hd.scale.setScalar(t >= 2.42 && t < T_CUT ? 0.001 : 1); } } // camera cheat: keep the ears out of the over-the-gun shot
-      r.horse.root.updateMatrixWorld(true);
-      const pose = i === 0 ? silasTrack(t) : riderVar(i, t);
-      applyPose(r.rig, pose); r.vrm.update(0);
-      const seatW = r.seat.getWorldPosition(new THREE.Vector3());
-      r.vrm.scene.position.copy(seatW).add(new THREE.Vector3(0, 0.1, 0.02)).sub(r.hipsRel);
-      r.vrm.scene.rotation.y = r.baseRot + Math.PI; r.vrm.scene.updateMatrixWorld(true);
-      if (r.gun) r.gun.visible = t >= 0.45; if (r.grip) r.grip.visible = t < 0.45;
-      // once he aims, the revolver points straight at Thomas (top up), with the recoil kick on the shot
-      if (r.gun && t > 1.98) {
-        const g = r.gun; const gp = g.getWorldPosition(new THREE.Vector3()); const tgt = new THREE.Vector3(THOMAS.x, 1.35, THOMAS.z);
-        const kick = ntrack([[T_SHOT, 0], [T_SHOT + 0.034, 0.42, E.out], [T_SHOT + 0.3, 0, E.inOut]], t);
-        const x = tgt.sub(gp).normalize(); const side = new THREE.Vector3().crossVectors(x, new THREE.Vector3(0, 1, 0)).normalize(); x.applyAxisAngle(side, kick);
-        const y = new THREE.Vector3(0, 1, 0).addScaledVector(x, -x.y).normalize(); const z = new THREE.Vector3().crossVectors(x, y);
-        const qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
-        const pq = g.parent!.getWorldQuaternion(new THREE.Quaternion()).invert(); const want = pq.multiply(qW);
-        if (!g.userData.q0) g.userData.q0 = g.quaternion.clone();
-        g.quaternion.copy((g.userData.q0 as THREE.Quaternion).clone().slerp(want, ntrack([[1.98, 0], [2.18, 1, E.inOut]], t))); g.scale.setScalar(ntrack([[2.0, 1], [2.4, 1.7]], t)); g.updateMatrixWorld(true);
-      } else if (r.gun?.userData.q0) { r.gun.quaternion.copy(r.gun.userData.q0 as THREE.Quaternion); r.gun.scale.setScalar(1); }
-      if (i === 0) { head = r.vrm.humanoid.getRawBoneNode("head")!.getWorldPosition(new THREE.Vector3()); hand = r.vrm.humanoid.getRawBoneNode("rightHand")!.getWorldPosition(new THREE.Vector3()); }
-    });
-    // Thomas
-    const tr = thomasRig(t); applyPose(w.thomas.rig, thomasTrack(t)); w.thomas.vrm.update(0);
-    w.thomas.wrap.position.set(THOMAS.x + tr.x, 0.13 * Math.pow(Math.max(0, Math.sin(-tr.fall)), 6), THOMAS.z + tr.z); w.thomas.wrap.rotation.set(tr.fall, 0, 0);
+    // everything that moves, posed for time tt; dt > 0 also steps the hair / clothing springs
+    const poseWorld = (tt: number, dt: number) => {
+      w.riders.forEach((r, i) => {
+        const p = riderPos(r.def, tt); r.horse.root.position.copy(p);
+        const v = speed(tt); const runW = THREE.MathUtils.clamp((v - 2.5) / 3, 0, 1);
+        const stride = distAt(tt) / 5.2 + r.def.ph;
+        const ar = r.horse.mixer.clipAction(r.horse.clips.run); ar.time = (stride % 1) * r.horse.clips.run.duration; ar.setEffectiveWeight(runW);
+        if (r.horse.clips.walk) { const aw = r.horse.mixer.clipAction(r.horse.clips.walk); aw.time = ((distAt(tt) / 1.9 + r.def.ph) % 1) * r.horse.clips.walk.duration; aw.setEffectiveWeight(1 - runW); }
+        r.horse.mixer.update(0);
+        if (i === 0) { const hd = r.horse.root.getObjectByName("Head"); if (hd) { hd.scale.setScalar(tt >= 2.42 && tt < T_CUT ? 0.001 : 1); } } // camera cheat: keep the ears out of the over-the-gun shot
+        r.horse.root.updateMatrixWorld(true);
+        // the rider rises and settles twice a stride (out of step with the others), tails fly back
+        const bob = Math.sin(stride * Math.PI * 4) * runW, lift = Math.max(0, bob) * 0.045;
+        const seatW = r.seat.getWorldPosition(new THREE.Vector3());
+        r.vrm.scene.position.copy(seatW).add(new THREE.Vector3(0, 0.1 + lift, 0.02)).sub(r.hipsRel);
+        r.vrm.scene.rotation.y = r.baseRot + Math.PI; r.vrm.scene.updateMatrixWorld(true);
+        const pose = i === 0 ? silasTrack(tt) : riderVar(i, tt);
+        const tn = pose.turn ?? (pose.turn = {}); const sp = tn.spine ?? [0, 0, 0], hd = tn.head ?? [0, 0, 0];
+        tn.spine = [sp[0] + bob * 0.06, sp[1], sp[2]]; tn.head = [hd[0] - bob * 0.05, hd[1], hd[2]];
+        applyPose(r.rig, pose);
+        for (const ct of r.tails) ct.rotation.x = -(0.25 + 0.12 * Math.sin(stride * Math.PI * 4 + 1.2)) * runW - 0.05;
+        r.vrm.update(dt);
+        if (r.gun) r.gun.visible = tt >= 0.45; if (r.grip) r.grip.visible = tt < 0.45;
+        // once he aims, the revolver points straight at Thomas (top up), with the recoil kick on the shot
+        if (r.gun && tt > 1.98) {
+          const g = r.gun; const gp = g.getWorldPosition(new THREE.Vector3()); const tgt = new THREE.Vector3(THOMAS.x, 1.35, THOMAS.z);
+          const kick = ntrack([[T_SHOT, 0], [T_SHOT + 0.034, 0.42, E.out], [T_SHOT + 0.3, 0, E.inOut]], tt);
+          const x = tgt.sub(gp).normalize(); const side = new THREE.Vector3().crossVectors(x, new THREE.Vector3(0, 1, 0)).normalize(); x.applyAxisAngle(side, kick);
+          const y = new THREE.Vector3(0, 1, 0).addScaledVector(x, -x.y).normalize(); const z = new THREE.Vector3().crossVectors(x, y);
+          const qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+          const pq = g.parent!.getWorldQuaternion(new THREE.Quaternion()).invert(); const want = pq.multiply(qW);
+          if (!g.userData.q0) g.userData.q0 = g.quaternion.clone();
+          g.quaternion.copy((g.userData.q0 as THREE.Quaternion).clone().slerp(want, ntrack([[1.98, 0], [2.18, 1, E.inOut]], tt))); g.scale.setScalar(ntrack([[2.0, 1], [2.3, 1.6], [2.5, 2.3]], tt)); g.updateMatrixWorld(true);
+        } else if (r.gun?.userData.q0) { r.gun.quaternion.copy(r.gun.userData.q0 as THREE.Quaternion); r.gun.scale.setScalar(1); }
+        if (i === 0) { head = r.vrm.humanoid.getRawBoneNode("head")!.getWorldPosition(new THREE.Vector3()); hand = r.vrm.humanoid.getRawBoneNode("rightHand")!.getWorldPosition(new THREE.Vector3()); }
+      });
+      // Thomas
+      const tr = thomasRig(tt);
+      w.thomas.wrap.position.set(THOMAS.x + tr.x, 0.13 * Math.pow(Math.max(0, Math.sin(-tr.fall)), 6), THOMAS.z + tr.z); w.thomas.wrap.rotation.set(tr.fall, 0, 0); w.thomas.wrap.updateMatrixWorld(true);
+      applyPose(w.thomas.rig, thomasTrack(tt)); w.thomas.vrm.update(dt);
+      w.eli.vrm.update(dt);
+    };
+    // springs (hair, ribbons) are simulated over the last 0.4 s every frame, so any frame renders the same on its own
+    const SUB = 1 / 30, K = 12; const all = [...w.riders.map((r) => r.vrm), w.thomas.vrm, w.eli.vrm];
+    for (const v of all) v.springBoneManager?.reset();
+    for (let k = K; k >= 1; k--) poseWorld(t - k * SUB, k === K ? 0 : SUB);
+    poseWorld(t, SUB);
     setMorphs(w.thomas.vrm, t < T_CUT ? { Fcl_BRW_Sorrow: 0.5, Fcl_MTH_O: 0.15, Fcl_EYE_Surprised: 0 } : { Fcl_BRW_Sorrow: 0.9, Fcl_EYE_Surprised: t < T_FALL1 ? 0.9 : 0.3, Fcl_MTH_O: 0.8 });
     // muzzle flash on the gun barrel
     const gun = w.riders[0].gun; const fl = t >= T_SHOT && t < T_SHOT + 0.067 && t < T_CUT;
@@ -201,7 +221,7 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
   return (<><hemisphereLight args={[yard ? "#aab2ea" : "#c4bde6", yard ? "#4e4a70" : "#6e5a70", yard ? 0.75 : 0.85]} /><directionalLight position={[sun.x, sun.y, sun.z]} intensity={2.6} color="#ffc28a" castShadow shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-camera-left={-62} shadow-camera-right={62} shadow-camera-top={62} shadow-camera-bottom={-62} shadow-camera-near={1} shadow-camera-far={170} shadow-bias={-0.0004} /><directionalLight position={[10, 6, 40]} intensity={yard ? 0.2 : 0.55} color={yard ? "#a8b8ff" : "#ffd0b0"} /></>);
 };
 
-export const Scene1: React.FC<{ dbg?: string }> = ({ dbg }) => {
+export const Scene1: React.FC<{ dbg?: string; captions?: boolean; audio?: boolean }> = ({ dbg, captions = true, audio = true }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.18 : 0;
   return (
@@ -210,6 +230,8 @@ export const Scene1: React.FC<{ dbg?: string }> = ({ dbg }) => {
       <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 42%, rgba(255,210,170,0) 55%, rgba(60,30,70,0.35) 100%)" }} />
       <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />
       {white ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(255,240,210,${white})` }} /> : null}
+      {captions ? <Captions words={words} y={0.72} /> : null}
+      {audio ? <Audio src={staticFile("anime1/mix.wav")} /> : null}
     </AbsoluteFill>
   );
 };

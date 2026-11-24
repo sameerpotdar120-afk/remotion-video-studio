@@ -63,7 +63,7 @@ const silas = (vrm: VRM): Built => {
   // coat tails from the waist to below the knee
   const w = (bottoms.max.x - bottoms.min.x) / 2, d = (bottoms.max.z - bottoms.min.z) / 2;
   const top = hips.y + 0.07, len = top - knee.y + 0.16;
-  const skirt = coatSkirt(w * 1.12, d * 1.25, 0, len, 0.55, 0.42, "#6a707c", coatTex); skirt.position.set(hips.x, top, (bottoms.max.z + bottoms.min.z) / 2); attach(vrm, "hips", skirt);
+  const skirt = coatSkirt(w * 1.12, d * 1.25, 0, len, 0.55, 0.42, "#6a707c", coatTex); skirt.position.set(hips.x, top, (bottoms.max.z + bottoms.min.z) / 2); skirt.name = "coatTail"; attach(vrm, "hips", skirt);
 
   // boots over the trouser legs
   shell(vrm, "Bottoms", ["leftLowerLeg", "rightLowerLeg"], 0.011, toon("#1c1a1d", { shade: 0.5, rim: 0.25 }), (p) => p.y < knee.y - 0.12);
@@ -376,7 +376,7 @@ const lucien = (vrm: VRM): Built => {
   // coat tails to mid-thigh
   const w = (bottoms.max.x - bottoms.min.x) / 2, d = (bottoms.max.z - bottoms.min.z) / 2, cz = (bottoms.max.z + bottoms.min.z) / 2;
   const top = hips.y + 0.035, len = (top - knee.y) * 0.8;
-  const skirt = coatSkirt(w * 1.22, d * 1.4, 0, len, 0.3, 0.6, "#1b1a20", clothTex("#1b1a20", "#26252c", "weave")); skirt.position.set(hips.x, top, cz); attach(vrm, "hips", skirt);
+  const skirt = coatSkirt(w * 1.22, d * 1.4, 0, len, 0.3, 0.6, "#1b1a20", clothTex("#1b1a20", "#26252c", "weave")); skirt.position.set(hips.x, top, cz); skirt.name = "coatTail"; attach(vrm, "hips", skirt);
   const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.074, 0.1, 0.1, 32, 1, true, Math.PI * 0.2, Math.PI * 1.6), toon("#1b1a20", { side: THREE.DoubleSide })); collar.position.set(neck.x, neck.y - 0.03, neck.z - 0.008); withInk(collar, 0.003); attach(vrm, "upperChest", collar);
   // red cravat + gold watch chain
   const cr = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.07, 3), toon("#b3242c")); cr.position.set(neck.x, neck.y - 0.055, neck.z + 0.07); cr.rotation.x = Math.PI; cr.scale.z = 0.35; withInk(cr, 0.0015); attach(vrm, "upperChest", cr);
