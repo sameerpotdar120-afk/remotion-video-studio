@@ -72,7 +72,7 @@ const silas = (vrm: VRM): Built => {
   for (let i = 0; i <= 24; i++) { const a = (i / 24) * Math.PI * 2; ring.push(new THREE.Vector3(hips.x + Math.sin(a) * bw, beltY - 0.03 * Math.max(0, Math.sin(a)), (bottoms.max.z + bottoms.min.z) / 2 + Math.cos(a) * bd)); }
   const belt = new THREE.Mesh(taperTube(ring, 0.03, 0.03, 48, 8, 0.25), toon("#5a3a24", { shade: 0.6 })); withInk(belt, 0.002); attach(vrm, "hips", belt);
   const hol = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.17, 0.035), toon("#4a2e1c")); hol.position.set(hips.x - bw * 0.98, beltY - 0.11, (bottoms.max.z + bottoms.min.z) / 2 + 0.01); hol.rotation.z = -0.12; withInk(hol, 0.002); attach(vrm, "hips", hol);
-  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.07, 0.03), toon("#e9e0cc", { rim: 0.3 })); grip.position.set(hips.x - bw * 0.98 + 0.012, beltY - 0.005, (bottoms.max.z + bottoms.min.z) / 2 + 0.012); grip.rotation.z = 0.5; withInk(grip, 0.002); attach(vrm, "hips", grip);
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.07, 0.03), toon("#e9e0cc", { rim: 0.3 })); grip.position.set(hips.x - bw * 0.98 + 0.012, beltY - 0.005, (bottoms.max.z + bottoms.min.z) / 2 + 0.012); grip.rotation.z = 0.5; grip.name = "holsterGrip"; withInk(grip, 0.002); attach(vrm, "hips", grip);
 
   // hat
   const r = hr * 0.95; const brimY = hair.max.y - r * 0.85;
@@ -395,7 +395,7 @@ const lucien = (vrm: VRM): Built => {
 };
 
 // Silas with his revolver in his right hand (for the shooting shots)
-const silasArmed = (vrm: VRM): Built => { const b = silas(vrm); inHand(vrm, "right", revolver()); fist(vrm, "right", 0.85); return b; };
+const silasArmed = (vrm: VRM): Built => { const b = silas(vrm); inHand(vrm, "right", revolver()).name = "gun"; fist(vrm, "right", 0.85); return b; };
 
 export const CAST: CharDef[] = [
   { id: "silas", name: "Silas Crane (gang leader)", base: "anime/Sakurada_Fumiriya.vrm", build: silas },

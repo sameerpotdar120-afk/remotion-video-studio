@@ -59,7 +59,7 @@ const dressHorse = (o: THREE.Object3D, look: HorseLook) => {
   const blanket = new THREE.Mesh(new THREE.CylinderGeometry(halfW * 1.06, halfW * 1.06, 0.62, 32, 1, true, Math.PI * 0.6, Math.PI * 0.8), toon(look.blanket ?? "#8a2f22", { map: stripeTex(look.blanket ?? "#8a2f22", "#e8dcc0"), side: THREE.DoubleSide, shade: 0.7 }));
   blanket.rotation.x = Math.PI / 2; blanket.position.set(T.x, topY - halfW * 1.05 + 0.012, T.z - 0.02); inked(blanket, 0.005); attachTo(torso, blanket);
   // seat, raised cantle at the back, horn at the front
-  const seat = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), leather); seat.scale.set(halfW * 0.9, 0.07, 0.24); seat.position.set(T.x, topY + 0.005, T.z); inked(seat, 0.005); attachTo(torso, seat);
+  const seat = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), leather); seat.scale.set(halfW * 0.9, 0.07, 0.24); seat.position.set(T.x, topY + 0.005, T.z); seat.name = "seat"; inked(seat, 0.005); attachTo(torso, seat);
   const cantle = new THREE.Mesh(new THREE.TorusGeometry(halfW * 0.55, 0.028, 8, 20, Math.PI), leather); cantle.position.set(T.x, topY + 0.02, T.z - 0.2); cantle.scale.set(1, 0.9, 1); inked(cantle, 0.004); attachTo(torso, cantle);
   const horn = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.022, 0.11, 12), leather); horn.position.set(T.x, topY + 0.07, T.z + 0.2); horn.rotation.x = 0.25; inked(horn, 0.004); attachTo(torso, horn);
   const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.045, 0.02, 14), leather); cap.position.set(T.x, topY + 0.13, T.z + 0.215); attachTo(torso, cap);
