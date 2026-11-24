@@ -1,7 +1,19 @@
 // Shared helpers for the cabin / graveyard / campus / stadium sets (same painterly anime look as farm.ts).
 import * as THREE from "three";
 import { toon } from "../kit";
-import { canvasTex, dab, ink } from "../farm";
+import { canvasTex, dab } from "../farm";
+import { smoothNormals } from "../kit";
+
+// Ink outline that works on static meshes: kit.ts inkMat offsets along objectNormal, which MeshBasicMaterial only declares
+// for skinned / env-mapped meshes (so farm.ts ink shells fail to compile on props). This one uses the normal attribute
+// and keys the program cache by width (otherwise every width shares the first compiled program).
+const inkCache = new Map<string, THREE.MeshBasicMaterial>();
+export const inkMatS = (w = 0.02, color = "#1b1416") => { const key = w.toFixed(5) + color; let m = inkCache.get(key); if (m) return m;
+  m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
+  m.onBeforeCompile = (s) => { s.vertexShader = s.vertexShader.replace("#include <begin_vertex>", `float inkL = length(normal); vec3 transformed = position + (inkL > 1e-4 ? normal / inkL : vec3(0.0)) * ${w.toFixed(5)};`); };
+  m.customProgramCacheKey = () => "inkS" + w.toFixed(5); inkCache.set(key, m); return m; };
+export const ink = (m: THREE.Mesh, w = 0.025) => { const o = new THREE.Mesh(smoothNormals(m.geometry), inkMatS(w)); m.add(o); return m; };
+export const box = (w: number, h: number, d: number, mat: THREE.Material, x = 0, y = 0, z = 0, iw = 0.02) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); if (iw) ink(m, iw); return m; };
 
 export const mkRnd = (s: number) => { let seed = s; return () => ((seed = (seed * 16807) % 2147483647) / 2147483647); };
 // toon variants: night (shadow goes deep indigo), overcast (grey-violet), day (soft violet like the farm)

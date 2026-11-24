@@ -4,8 +4,8 @@
 import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import type { BuiltSet } from "./types";
-import { canvasTex, dab, ink, box } from "../farm";
-import { mkRnd, toonO, noShadow, cyl, paintedSky, grassTex, grassField, groundMat, keyLight } from "./h2kit";
+import { canvasTex, dab } from "../farm";
+import { mkRnd, toonO, noShadow, cyl, paintedSky, grassTex, grassField, groundMat, keyLight, ink, box } from "./h2kit";
 
 const sp = (u: number) => Math.log1p(Math.exp(u));
 // terrain: a flat shoulder for the plot, the hill rising behind (-Z, -X) and falling away in front (+Z)

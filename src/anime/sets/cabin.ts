@@ -2,8 +2,8 @@
 // comes up from +Z. Rifle leaning by the door, two silhouettes behind the lit window (object "windowSilhouettes", hide if not wanted).
 import * as THREE from "three";
 import type { BuiltSet } from "./types";
-import { canvasTex, dab, ink, box, stones } from "../farm";
-import { mkRnd, toonN, noShadow, glow, glowSprite, lightPool, cyl, paintedSky, pine3D, pineTex, grassTex, grassField, groundMat, keyLight } from "./h2kit";
+import { canvasTex, dab, stones } from "../farm";
+import { mkRnd, toonN, noShadow, glow, glowSprite, lightPool, cyl, paintedSky, pine3D, pineTex, grassTex, grassField, groundMat, keyLight, ink, box } from "./h2kit";
 
 const MOON_SKY = new THREE.Vector3(-0.12, 0.27, -1).normalize(); // where the moon sits in the sky (behind the cabin for the approach)
 const MOON_KEY = new THREE.Vector3(-0.6, 0.68, 0.42);               // where the moonlight comes from (cheated round to the front-left, anime style)
@@ -162,7 +162,8 @@ export const buildCabin = (): BuiltSet => {
 
   // ---------- the pine wood: 3D pines round the clearing, painted billboards behind ----------
   const pineM = [toonN("#2f5a4e", { shade: 0.45, rim: 0.25 }), toonN("#28503f", { shade: 0.45, rim: 0.25 }), toonN("#35604c", { shade: 0.45, rim: 0.25 })]; const barkM = toonN("#4a3a34", { shade: 0.5 });
-  const clear = (x: number, z: number, r: number) => Math.hypot(x * 0.85, z - 1) < r || (z > 3 && Math.abs(x - trackX(z)) < 3.8 + z * 0.02);
+  const camXZ = [[8.5, 15.5], [trackX(30) + 0.6, 30], [2.2, 9.8]]; // keep trunks + boughs away from the shot cameras
+  const clear = (x: number, z: number, r: number) => Math.hypot(x * 0.85, z - 1) < r || (z > 3 && Math.abs(x - trackX(z)) < 3.8 + z * 0.02) || camXZ.some(([cx, cz]) => Math.hypot(x - cx, z - cz) < 6);
   let placed = 0; for (let i = 0; i < 900 && placed < 70; i++) { const a = rnd() * Math.PI * 2, d = 13 + rnd() * 32; const x = Math.sin(a) * d * 1.1, z = Math.cos(a) * d + 1; if (clear(x, z, 13)) continue; const h = 9 + rnd() * 9; const p = pine3D(h, pineM[(rnd() * 3) | 0], barkM, rnd, 0.035); p.position.set(x, 0, z); p.rotation.y = rnd() * 6; g.add(p); placed++; }
   for (const [x, z, h] of [[-8.5, -5, 11], [7.8, -6, 13], [-11, 4, 9.5], [10.5, 3, 10], [-6.5, 12, 7], [12, 20, 8.5], [-8, 21, 9]] as [number, number, number][]) { const p = pine3D(h, pineM[(rnd() * 3) | 0], barkM, rnd, 0.03); p.position.set(x, 0, z); g.add(p); }
   const ptex = [pineTex("#1f3a40", "#142630", "rgba(150,190,230,0.55)", rnd), pineTex("#22413f", "#162a2e", "rgba(140,180,225,0.5)", rnd)];
