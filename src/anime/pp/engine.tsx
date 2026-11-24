@@ -32,7 +32,7 @@ export type ShotSpec = {
   id: string; dur: number; set: string; light?: "sunset" | "day" | "night" | "none";
   actors: ActorSpec[]; cam: (t: number, c: Ctx) => CamState; fx?: (t: number, c: Ctx, fx: Fx) => void;
   build?: (scene: THREE.Scene) => (t: number) => void;         // shot-specific props (bottles, coffin, ...)
-  grade?: "flashback" | "night" | "none"; white?: (t: number) => number; hideHorseHead?: (t: number) => string | null;
+  grade?: "flashback" | "night" | "none"; white?: (t: number) => number; black?: (t: number) => number; hideHorseHead?: (t: number) => string | null;
   post?: (t: number, c: Ctx) => void;                          // after posing, before the camera (props held in hands, etc.)
 };
 
@@ -177,7 +177,7 @@ const GRADE: Record<string, React.CSSProperties> = {
   night: { background: "linear-gradient(rgba(60,70,140,0.10), rgba(20,20,60,0.18))", mixBlendMode: "multiply" },
 };
 export const ShotView: React.FC<{ spec: ShotSpec }> = ({ spec }) => {
-  const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps; const white = spec.white?.(t) ?? 0;
+  const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps; const white = spec.white?.(t) ?? 0; const black = spec.black?.(t) ?? 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000", filter: spec.grade === "flashback" ? "sepia(0.35) saturate(0.85) contrast(1.05)" : undefined }}>
       <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><ShotScene spec={spec} t={t} /></ThreeCanvas>
@@ -185,6 +185,7 @@ export const ShotView: React.FC<{ spec: ShotSpec }> = ({ spec }) => {
       <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />
       {spec.grade && GRADE[spec.grade] ? <AbsoluteFill style={{ pointerEvents: "none", ...GRADE[spec.grade] }} /> : null}
       {white ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(255,240,210,${white})` }} /> : null}
+      {black ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(0,0,0,${black})` }} /> : null}
     </AbsoluteFill>
   );
 };
