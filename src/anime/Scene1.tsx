@@ -43,10 +43,10 @@ const silasTrack = (t: number): Pose => track([
   [0.43, withAim(RIDE, { rightUpperArm: dirR(0.3, -0.95, -0.05), rightLowerArm: dirR(0.05, -1, 0.15), rightHand: dirR(0.05, -1, 0.15) }), E.in],         // hand to the holster
   [0.51, withAim(RIDE, { rightUpperArm: dirR(0.78, -0.5, 0.3), rightLowerArm: dirR(-0.22, 0.97, 0.12, -1.3), rightHand: dirR(-0.1, 1, 0.08, 0) }), E.back], // up beside the face, barrel to the sky
   [1.98, withAim(RIDE, { rightUpperArm: dirR(0.74, -0.55, 0.32), rightLowerArm: dirR(-0.2, 0.97, 0.16, -1.3), rightHand: dirR(-0.1, 1, 0.1, 0) })],
-  [2.18, withAim(RIDE, { rightUpperArm: [0.1, -0.04, 1, 0], rightLowerArm: [0.12, -0.04, 1, -1.5], rightHand: [0.12, -0.05, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] }), E.inOut], // swing down to aim
-  [T_SHOT, withAim(RIDE, { rightUpperArm: [0.1, -0.04, 1, 0], rightLowerArm: [0.12, -0.05, 1, -1.5], rightHand: [0.12, -0.06, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] })],
-  [T_SHOT + 0.034, withAim(RIDE, { rightUpperArm: [0.1, 0.12, 1, 0], rightLowerArm: [0.12, 0.42, 0.9, -1.5], rightHand: [0.12, 0.5, 0.86, 0] }, { spine: [-0.02, 0.2, 0], head: [-0.04, 0.15, 0] }), E.out], // recoil kick
-  [T_SHOT + 0.25, withAim(RIDE, { rightUpperArm: [0.1, -0.02, 1, 0], rightLowerArm: [0.12, 0.02, 1, -1.5], rightHand: [0.12, 0.0, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] })],
+  [2.18, withAim(RIDE, { rightUpperArm: [0.1, -0.04, 1, 0], rightLowerArm: [0.12, -0.04, 1, 1.64], rightHand: [0.12, -0.05, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] }), E.inOut], // swing down to aim
+  [T_SHOT, withAim(RIDE, { rightUpperArm: [0.1, -0.04, 1, 0], rightLowerArm: [0.12, -0.05, 1, 1.64], rightHand: [0.12, -0.06, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] })],
+  [T_SHOT + 0.034, withAim(RIDE, { rightUpperArm: [0.1, 0.12, 1, 0], rightLowerArm: [0.12, 0.42, 0.9, 1.64], rightHand: [0.12, 0.5, 0.86, 0] }, { spine: [-0.02, 0.2, 0], head: [-0.04, 0.15, 0] }), E.out], // recoil kick
+  [T_SHOT + 0.25, withAim(RIDE, { rightUpperArm: [0.1, -0.02, 1, 0], rightLowerArm: [0.12, 0.02, 1, 1.64], rightHand: [0.12, 0.0, 1, 0] }, { spine: [0.05, 0.2, 0], head: [0.02, 0.15, 0] })],
 ], t);
 const riderVar = (i: number, t: number): Pose => { const b = Math.sin(t * 7.5 + i * 2.1) * 0.05; return withAim(RIDE, {}, { spine: [0.12 + b, 0, 0], head: [-0.1 - b, (i % 2 ? 0.08 : -0.08), 0] }); };
 
@@ -85,12 +85,18 @@ const camAt = (t: number, head: THREE.Vector3, hand: THREE.Vector3): Cam => {
     const pos = c.clone().add(new THREE.Vector3(Math.sin(phi) * r, h, -Math.cos(phi) * r));
     const lk = ntrack([[2.0, 0], [2.3, 0.0], [2.5, 1, E.inOut]], t);
     const look = head.clone().lerp(new THREE.Vector3(THOMAS.x, 1.6, THOMAS.z), lk);
-    return { pos, look, fov: ntrack([[2.0, 34], [2.5, 30]], t) };
+    // settle tight behind the gun hand: revolver big in the lower left, Thomas + the house beyond
+    const k2 = ntrack([[2.36, 0], [2.56, 1, E.inOut]], t);
+    const ots = hand.clone().add(new THREE.Vector3(0.16, 0.13, 0.46 + (t - 2.56) * 0.1));
+    // aim the view between the gun hand (lower left) and Thomas (centre right)
+    const dH = hand.clone().add(new THREE.Vector3(0, -0.02, -0.12)).sub(ots).normalize(), dT = new THREE.Vector3(THOMAS.x, 1.3, THOMAS.z).sub(ots).normalize();
+    const otsLook = ots.clone().add(dH.multiplyScalar(0.42).add(dT.multiplyScalar(0.58)).normalize().multiplyScalar(10));
+    return { pos: pos.lerp(ots, k2), look: look.lerp(otsLook, k2), fov: ntrack([[2.0, 34], [2.36, 34], [2.56, 46, E.inOut]], t) };
   }
-  const pz = ntrack([[T_CUT, 16.0], [S1_DUR, 14.6, E.lin]], t);
-  const py = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.1, 1.75, E.inOut]], t);
-  const ly = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.1, 0.55, E.inOut]], t);
-  const lz = ntrack([[T_CUT, 8.0], [T_FALL1 + 0.1, 7.6, E.inOut]], t);
+  const pz = ntrack([[T_CUT, 16.0], [T_FALL0, 15.3, E.lin], [T_FALL1 + 0.15, 13.4, E.inOut], [S1_DUR, 13.1, E.lin]], t);
+  const py = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.15, 2.0, E.inOut]], t);
+  const ly = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.15, 0.6, E.inOut]], t);
+  const lz = ntrack([[T_CUT, 8.0], [T_FALL1 + 0.15, 7.2, E.inOut]], t);
   return { pos: new THREE.Vector3(0.25, py, pz), look: new THREE.Vector3(0.1, ly, lz), fov: 30 };
 };
 
@@ -109,7 +115,7 @@ type World = { farm: Farm; riders: { def: RiderDef; vrm: VRM; rig: Rig; horse: B
 const loadChar = async (id: string) => { const def = CAST.find((c) => c.id === id)!; const vrm = await loadFresh(staticFile(def.base)); const b = def.build(vrm); vrm.update(0); setMorphs(vrm, b.face ?? {}); return { vrm, face: b.face ?? {} }; };
 const castAll = (o: THREE.Object3D) => o.traverse((m) => { if ((m as THREE.Mesh).isMesh) { m.castShadow = true; m.receiveShadow = true; } });
 
-const Scene: React.FC<{ only?: string }> = () => {
+const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
   const { scene, camera, advance } = useThree(); const frame = useCurrentFrame(); const { fps } = useVideoConfig();
   const [h] = React.useState(() => delayRender("scene1", { timeoutInMilliseconds: 900000 }));
   const [w, setW] = React.useState<World | null>(null);
@@ -151,18 +157,31 @@ const Scene: React.FC<{ only?: string }> = () => {
       const v = speed(t); const runW = THREE.MathUtils.clamp((v - 2.5) / 3, 0, 1);
       const ar = r.horse.mixer.clipAction(r.horse.clips.run); ar.time = ((distAt(t) / 5.2 + r.def.ph) % 1) * r.horse.clips.run.duration; ar.setEffectiveWeight(runW);
       if (r.horse.clips.walk) { const aw = r.horse.mixer.clipAction(r.horse.clips.walk); aw.time = ((distAt(t) / 1.9 + r.def.ph) % 1) * r.horse.clips.walk.duration; aw.setEffectiveWeight(1 - runW); }
-      r.horse.mixer.update(0); r.horse.root.updateMatrixWorld(true);
+      r.horse.mixer.update(0);
+      if (i === 0) { const hd = r.horse.root.getObjectByName("Head"); if (hd) { hd.scale.setScalar(t >= 2.42 && t < T_CUT ? 0.001 : 1); } } // camera cheat: keep the ears out of the over-the-gun shot
+      r.horse.root.updateMatrixWorld(true);
       const pose = i === 0 ? silasTrack(t) : riderVar(i, t);
       applyPose(r.rig, pose); r.vrm.update(0);
       const seatW = r.seat.getWorldPosition(new THREE.Vector3());
       r.vrm.scene.position.copy(seatW).add(new THREE.Vector3(0, 0.1, 0.02)).sub(r.hipsRel);
       r.vrm.scene.rotation.y = r.baseRot + Math.PI; r.vrm.scene.updateMatrixWorld(true);
       if (r.gun) r.gun.visible = t >= 0.45; if (r.grip) r.grip.visible = t < 0.45;
+      // once he aims, the revolver points straight at Thomas (top up), with the recoil kick on the shot
+      if (r.gun && t > 1.98) {
+        const g = r.gun; const gp = g.getWorldPosition(new THREE.Vector3()); const tgt = new THREE.Vector3(THOMAS.x, 1.35, THOMAS.z);
+        const kick = ntrack([[T_SHOT, 0], [T_SHOT + 0.034, 0.42, E.out], [T_SHOT + 0.3, 0, E.inOut]], t);
+        const x = tgt.sub(gp).normalize(); const side = new THREE.Vector3().crossVectors(x, new THREE.Vector3(0, 1, 0)).normalize(); x.applyAxisAngle(side, kick);
+        const y = new THREE.Vector3(0, 1, 0).addScaledVector(x, -x.y).normalize(); const z = new THREE.Vector3().crossVectors(x, y);
+        const qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+        const pq = g.parent!.getWorldQuaternion(new THREE.Quaternion()).invert(); const want = pq.multiply(qW);
+        if (!g.userData.q0) g.userData.q0 = g.quaternion.clone();
+        g.quaternion.copy((g.userData.q0 as THREE.Quaternion).clone().slerp(want, ntrack([[1.98, 0], [2.18, 1, E.inOut]], t))); g.scale.setScalar(ntrack([[2.0, 1], [2.4, 1.7]], t)); g.updateMatrixWorld(true);
+      } else if (r.gun?.userData.q0) { r.gun.quaternion.copy(r.gun.userData.q0 as THREE.Quaternion); r.gun.scale.setScalar(1); }
       if (i === 0) { head = r.vrm.humanoid.getRawBoneNode("head")!.getWorldPosition(new THREE.Vector3()); hand = r.vrm.humanoid.getRawBoneNode("rightHand")!.getWorldPosition(new THREE.Vector3()); }
     });
     // Thomas
     const tr = thomasRig(t); applyPose(w.thomas.rig, thomasTrack(t)); w.thomas.vrm.update(0);
-    w.thomas.wrap.position.set(THOMAS.x + tr.x, 0.13 * Math.sin(-tr.fall), THOMAS.z + tr.z); w.thomas.wrap.rotation.set(tr.fall, 0, 0);
+    w.thomas.wrap.position.set(THOMAS.x + tr.x, 0.13 * Math.pow(Math.max(0, Math.sin(-tr.fall)), 6), THOMAS.z + tr.z); w.thomas.wrap.rotation.set(tr.fall, 0, 0);
     setMorphs(w.thomas.vrm, t < T_CUT ? { Fcl_BRW_Sorrow: 0.5, Fcl_MTH_O: 0.15, Fcl_EYE_Surprised: 0 } : { Fcl_BRW_Sorrow: 0.9, Fcl_EYE_Surprised: t < T_FALL1 ? 0.9 : 0.3, Fcl_MTH_O: 0.8 });
     // muzzle flash on the gun barrel
     const gun = w.riders[0].gun; const fl = t >= T_SHOT && t < T_SHOT + 0.067 && t < T_CUT;
@@ -174,18 +193,20 @@ const Scene: React.FC<{ only?: string }> = () => {
     let k = 0; w.riders.forEach((r, i) => { for (let j = 0; j < 70; j++, k++) { const s = w.dust[k]; const tb = -1.4 + j * 0.08 + rnd(i * 97 + j) * 0.04; const age = t - tb; if (age < 0 || age > 1.6 || speed(tb) < 3) { s.visible = false; continue; }
       const p = riderPos(r.def, tb); s.visible = true; const sx = (rnd(j * 3.1 + i) - 0.5) * 1.4; s.position.set(p.x + sx * (1 + age), 0.25 + age * 0.55, p.z + 1.0 + age * 0.7); s.scale.setScalar(0.7 + age * 2.2); (s.material as THREE.SpriteMaterial).opacity = 0.5 * Math.min(1, age * 6) * (1 - age / 1.6); } });
     // camera
-    const c = camera as THREE.PerspectiveCamera; const cam = camAt(t, head, hand); c.position.copy(cam.pos); c.lookAt(cam.look); c.fov = cam.fov; c.near = 0.05; c.far = 1000; c.updateProjectionMatrix();
+    const c = camera as THREE.PerspectiveCamera; const cam = camAt(t, head, hand);
+    if (dbg === "side") { cam.pos.copy(head).add(new THREE.Vector3(2.2, -0.3, -0.6)); cam.look.copy(head).add(new THREE.Vector3(0, -0.3, -0.5)); cam.fov = 40; }
+    if (dbg === "top") { cam.pos.copy(head).add(new THREE.Vector3(0.6, 1.2, 1.2)); cam.look.copy(hand); cam.fov = 40; } c.position.copy(cam.pos); c.lookAt(cam.look); c.fov = cam.fov; c.near = 0.05; c.far = 1000; c.updateProjectionMatrix();
   }
   const sun = SUN_DIR.clone().multiplyScalar(70); const yard = t >= T_CUT;
   return (<><hemisphereLight args={[yard ? "#aab2ea" : "#c4bde6", yard ? "#4e4a70" : "#6e5a70", yard ? 0.75 : 0.85]} /><directionalLight position={[sun.x, sun.y, sun.z]} intensity={2.6} color="#ffc28a" castShadow shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-camera-left={-62} shadow-camera-right={62} shadow-camera-top={62} shadow-camera-bottom={-62} shadow-camera-near={1} shadow-camera-far={170} shadow-bias={-0.0004} /><directionalLight position={[10, 6, 40]} intensity={yard ? 0.2 : 0.55} color={yard ? "#a8b8ff" : "#ffd0b0"} /></>);
 };
 
-export const Scene1: React.FC = () => {
+export const Scene1: React.FC<{ dbg?: string }> = ({ dbg }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.18 : 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene /></ThreeCanvas>
+      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene dbg={dbg} /></ThreeCanvas>
       <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 42%, rgba(255,210,170,0) 55%, rgba(60,30,70,0.35) 100%)" }} />
       <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />
       {white ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(255,240,210,${white})` }} /> : null}
