@@ -5,7 +5,7 @@
 // (+X) at z = 0, facing west. Sun high-ish in the west-south-west, so the saloon facade is sunlit.
 import * as THREE from "three";
 import type { BuiltSet } from "./types";
-import { toonE, ink, box, reseed, rnd, canvasTex, dab, planks, shingles, stones, grassCard, treeTex, daySky, dayCloud, mesa, groundMat, tufts, dustMotes, keyLight, signTex, rod, noShadow, clearGlowCache } from "./westkit";
+import { archGeo, toonE, ink, box, reseed, rnd, canvasTex, dab, planks, shingles, stones, grassCard, treeTex, daySky, dayCloud, mesa, groundMat, tufts, dustMotes, keyLight, signTex, rod, noShadow, clearGlowCache } from "./westkit";
 
 export const TOWN_SUN = new THREE.Vector3(-0.62, 0.68, 0.38).normalize();
 const FX = 8.6, BW = 2.4, BH = 0.4; // facade line (|x|), boardwalk depth + height
@@ -168,7 +168,7 @@ export const buildTown = (): BuiltSet => {
   sal.add(box(1.2, 0.45, 0.04, new THREE.MeshBasicMaterial({ color: "#7a4a24", toneMapped: false }), 0, BH + 2.1, fz + 0.04, 0)); // warm glow inside
   const batM = toonE("#c08a58", { map: canvasTex(128, 256, (c) => { c.fillStyle = "#b8845a"; c.fillRect(0, 0, 128, 256); for (let y = 20; y < 236; y += 14) { c.fillStyle = "#5a3620"; c.fillRect(14, y, 100, 5); c.fillStyle = "#b88a5e"; c.fillRect(14, y + 5, 100, 2); } c.strokeStyle = "#4a2c1a"; c.lineWidth = 12; c.strokeRect(6, 6, 116, 244); }), shade: 0.6 });
   for (const sx of [-1, 1]) { const h = new THREE.Group(); h.name = sx < 0 ? "saloonDoorL" : "saloonDoorR"; h.position.set(sx * 0.6, BH + 1.35, fz + 0.1); h.rotation.y = sx * 0.12; sal.add(h);
-    const leaf = box(0.58, 1.1, 0.05, batM, -sx * 0.29, 0, 0, 0.01); h.add(leaf); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.29, 0.29, 0.05, 16, 1, false, 0, Math.PI), batM); top.rotation.set(Math.PI / 2, 0, sx > 0 ? Math.PI / 2 : -Math.PI / 2); top.scale.set(1, 1, 0.5); top.position.set(-sx * 0.29, 0.55, 0); h.add(top); ink(top, 0.008); }
+    const leaf = box(0.58, 1.1, 0.05, batM, -sx * 0.29, 0, 0, 0.01); h.add(leaf); const top = new THREE.Mesh(archGeo(0.58, 0.14, 0.05), batM); top.position.set(-sx * 0.29, 0.55, 0); h.add(top); ink(top, 0.008); }
   for (const s of [-1, 1]) { const lamp = new THREE.Group(); lamp.position.set(s * 1.4, BH + 2.5, fz + 0.25); sal.add(lamp); lamp.add(box(0.22, 0.06, 0.22, toonE("#2e2a28", { rim: 0.4 }), 0, 0.12, 0.03, 0.006)); lamp.add(box(0.2, 0.05, 0.2, toonE("#2e2a28"), 0, -0.14, 0.03, 0.006)); lamp.add(box(0.16, 0.2, 0.16, new THREE.MeshBasicMaterial({ color: "#f0e2b0", toneMapped: false }), 0, -0.02, 0.03, 0)); lamp.add(box(0.05, 0.05, 0.25, toonE("#2e2a28"), 0, 0.1, -0.12, 0)); }
   { const b = new THREE.Group(); b.position.set(-4.3, BH, 0.6); sal.add(b); b.add(box(2.0, 0.08, 0.4, toonE("#5a3e2c"), 0, 0.46, 0, 0.01)); for (const s of [-0.8, 0.8]) b.add(box(0.08, 0.44, 0.36, toonE("#5a3e2c"), s, 0.22, 0, 0.006)); }
   // ---- north end: church, water tower, windmill, corral ----

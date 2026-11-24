@@ -6,7 +6,7 @@
 // stairs along the west wall, balcony across the back (-Z). The moon is outside to the west-front (-X, +Z).
 import * as THREE from "three";
 import type { BuiltSet } from "./types";
-import { toonE as toonBase, ink, box, reseed, rnd, canvasTex, dab, planks, glowSprite, dustMotes, keyLight, noShadow, noReceive, rod, clearGlowCache } from "./westkit";
+import { archGeo, toonE as toonBase, ink, box, reseed, rnd, canvasTex, dab, planks, glowSprite, dustMotes, keyLight, noShadow, noReceive, rod, clearGlowCache } from "./westkit";
 
 // interior: shadows go warm plum instead of the exterior dusk violet
 const toonE = (c: string, o: Parameters<typeof toonBase>[1] = {}) => toonBase(c, { shadeTint: "#3a1a22", tintAmt: 0.35, ...o });
@@ -105,7 +105,7 @@ export const buildSaloon = (): BuiltSet => {
   // batwing doors (in the doorway), named so a scene can swing them
   const batM = toonE("#b07a4c", { map: canvasTex(128, 256, (c) => { c.fillStyle = "#a8744a"; c.fillRect(0, 0, 128, 256); for (let y = 20; y < 236; y += 14) { c.fillStyle = "#5a3620"; c.fillRect(14, y, 100, 5); c.fillStyle = "#d0a070"; c.fillRect(14, y + 5, 100, 2); } c.strokeStyle = "#4a2c1a"; c.lineWidth = 12; c.strokeRect(6, 6, 116, 244); }), shade: 0.6 });
   for (const sx of [-1, 1]) { const h = new THREE.Group(); h.name = sx < 0 ? "saloonDoorL" : "saloonDoorR"; h.position.set(sx * 0.78, 1.35, Z1 - 0.05); h.rotation.y = sx * -0.1; g.add(h);
-    h.add(box(0.76, 1.1, 0.05, batM, -sx * 0.38, 0, 0, 0.01)); const top = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.05, 16, 1, false, 0, Math.PI), batM); top.rotation.set(Math.PI / 2, 0, sx > 0 ? Math.PI / 2 : -Math.PI / 2); top.scale.set(1, 1, 0.45); top.position.set(-sx * 0.38, 0.55, 0); ink(top, 0.008); h.add(top); }
+    h.add(box(0.76, 1.1, 0.05, batM, -sx * 0.38, 0, 0, 0.01)); const top = new THREE.Mesh(archGeo(0.76, 0.17, 0.05), batM); top.position.set(-sx * 0.38, 0.55, 0); ink(top, 0.008); h.add(top); }
   // ---- bar ----
   const darkWood = toonE("#5a3420", { map: planks("#5a3420", "#24140c", 6), shade: 0.55, rim: 0.15 }); const barTop = toonE("#4a2416", { shade: 0.5, rim: 0.12 });
   const BX = 4.3, BZ0 = -6.2, BZ1 = 4.2; const BL = BZ1 - BZ0, BZc = (BZ0 + BZ1) / 2;
