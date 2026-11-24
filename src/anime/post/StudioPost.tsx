@@ -19,17 +19,19 @@ export type PostOpts = {
   bloom?: number; bloomThreshold?: number;
   exposure?: number; saturation?: number; shadowTint?: [number, number, number]; highlightTint?: [number, number, number]; contrast?: number;
   grain?: number; vignette?: number; seed?: number;
+  drawn?: number;                    // 0..1: 2D illustration look (flat colour bands, pen hatching in shadows, bold outer lines, line boil, paper)
+  hatch?: number; outerWidth?: number;
 };
 const DEF: Required<Omit<PostOpts, "dof">> & { dof: PostOpts["dof"] } = {
   ss: 1.5, line: 0.9, lineWidth: 1.6, dof: null, bloom: 0.55, bloomThreshold: 0.92, exposure: 1.0, saturation: 1.12,
-  shadowTint: [0.46, 0.38, 0.66], highlightTint: [1.0, 0.94, 0.84], contrast: 1.06, grain: 0.035, vignette: 0.32, seed: 0,
+  shadowTint: [0.46, 0.38, 0.66], highlightTint: [1.0, 0.94, 0.84], contrast: 1.06, grain: 0.035, vignette: 0.32, seed: 0, drawn: 0, hatch: 0.6, outerWidth: 2.6,
 };
 
 const quadVS = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 const COMPOSITE = `
 precision highp float; varying vec2 vUv;
 uniform sampler2D tColor, tDepth, tNormal; uniform vec2 texel; uniform float near, far, lineW, lineK;
-uniform float dofOn, focus, range, maxPx; uniform vec2 outTexel;
+uniform float dofOn, focus, range, maxPx; uniform vec2 outTexel; uniform float drawn, hatchK, outerW, seed;
 uniform float exposure, saturation, contrast; uniform vec3 shadowTint, highlightTint;
 float linDepth(vec2 uv){ float d = texture2D(tDepth, uv).x; return near * far / (far - d * (far - near)); }
 vec3 nrm(vec2 uv){ return texture2D(tNormal, uv).xyz * 2.0 - 1.0; }
@@ -47,16 +49,37 @@ void main(){
       col = acc / wsum; }
   }
   // ---- ink lines from depth + normal edges (sampled at the line width), weaker for far things and blurred areas ----
-  vec2 o = texel * lineW; float de = 0.0, ne = 0.0; vec3 nc = nrm(vUv);
+  // line boil: the line-sampling grid wobbles a little every other frame, like redrawn ink
+  vec2 boil = drawn * (vec2(fract(sin(dot(floor(vUv * 90.0), vec2(12.9898, 78.233)) + seed) * 43758.5) , fract(sin(dot(floor(vUv * 90.0), vec2(39.3468, 11.135)) + seed * 1.7) * 23421.6)) - 0.5) * texel * 1.2;
+  vec2 o = texel * lineW; float de = 0.0, ne = 0.0; vec3 nc = nrm(vUv + boil);
   vec2 offs[4] = vec2[4](vec2(o.x, 0.0), vec2(-o.x, 0.0), vec2(0.0, o.y), vec2(0.0, -o.y));
   float zmin = zc;
-  for (int i = 0; i < 4; i++) { float zi = linDepth(vUv + offs[i]); zmin = min(zmin, zi); de = max(de, (zc - zi) / zi); ne = max(ne, 1.0 - dot(nc, nrm(vUv + offs[i]))); }
+  for (int i = 0; i < 4; i++) { float zi = linDepth(vUv + boil + offs[i]); zmin = min(zmin, zi); ne = max(ne, 1.0 - dot(nc, nrm(vUv + boil + offs[i]))); }
+  // outer (silhouette) lines are drawn thicker than the inner ones
+  vec2 oo = texel * lineW * mix(1.0, outerW, drawn);
+  for (int i = 0; i < 8; i++) { float a = float(i) * 0.785398; float zi = linDepth(vUv + boil + vec2(cos(a), sin(a)) * oo); zmin = min(zmin, zi); de = max(de, (zc - zi) / zi); }
   float depthLine = smoothstep(0.035, 0.09, de);
   float normLine = smoothstep(0.32, 0.6, ne) * step(zmin, 60.0);
   float fade = 1.0 - smoothstep(25.0, 140.0, zmin);
   float blurFade = dofOn > 0.5 ? 1.0 - clamp(abs(zmin - focus) / range - 0.15, 0.0, 1.0) * 0.85 : 1.0;
   float ink = clamp(max(depthLine, normLine * 0.85), 0.0, 1.0) * lineK * fade * blurFade;
-  vec3 lineCol = col * vec3(0.22, 0.17, 0.26) + vec3(0.03, 0.02, 0.05);
+  vec3 lineCol = mix(col * vec3(0.22, 0.17, 0.26) + vec3(0.03, 0.02, 0.05), vec3(0.05, 0.03, 0.06), drawn * 0.7);
+  // 2D illustration: flatten the shading into bands, keep hue; pen hatching where it's dark
+  if (drawn > 0.0 && zc < 150.0) {
+    float lum = dot(col, vec3(0.2126, 0.7152, 0.0722));
+    float band = lum < 0.06 ? 0.035 : lum < 0.2 ? 0.12 : lum < 0.5 ? 0.33 : 0.72 + floor((lum - 0.5) * 3.0) * 0.22;
+    vec3 flatC = col * (band / max(lum, 1e-3));
+    col = mix(col, flatC, drawn * 0.65 * (1.0 - clamp(abs(zc - focus) / max(range, 1e-3) * 0.2 * dofOn, 0.0, 0.6)));
+    vec2 px = vUv / outTexel; float wob = sin(px.y * 0.05 + seed) * 2.0;
+    float h1 = smoothstep(0.55, 0.8, abs(fract((px.x + px.y + wob) / 7.0) - 0.5) * 2.0);
+    float h2 = smoothstep(0.6, 0.85, abs(fract((px.x - px.y - wob) / 8.0) - 0.5) * 2.0);
+    float dark = 1.0 - smoothstep(0.08, 0.3, lum);
+    float hatch = (h1 * smoothstep(0.0, 0.5, dark) + h2 * smoothstep(0.5, 1.0, dark)) * hatchK * drawn * fade * (zc < 30.0 ? 1.0 : 0.0);
+    col = mix(col, col * vec3(0.45, 0.3, 0.35), hatch * 0.55);
+    // paper: soft large-scale mottling
+    float paper = fract(sin(dot(floor(px / 3.0), vec2(12.9898, 78.233))) * 43758.5);
+    col *= 1.0 + (paper - 0.5) * 0.035 * drawn;
+  }
   col = mix(col, lineCol, ink);
   // ---- grade ----
   col *= exposure;
@@ -94,7 +117,7 @@ export const StudioPost: React.FC<{ opts?: () => PostOpts }> = ({ opts }) => {
     const b1 = new THREE.WebGLRenderTarget(size.width / 4, size.height / 4, hdr), b2 = new THREE.WebGLRenderTarget(size.width / 4, size.height / 4, hdr);
     const c1 = new THREE.WebGLRenderTarget(size.width / 16, size.height / 16, hdr), c2 = new THREE.WebGLRenderTarget(size.width / 16, size.height / 16, hdr);
     const U = (v: unknown) => ({ value: v });
-    const comp = mat(COMPOSITE, { tColor: U(rtMain.texture), tDepth: U(rtMain.depthTexture), tNormal: U(rtNorm.texture), texel: U(new THREE.Vector2(1 / W, 1 / H)), outTexel: U(new THREE.Vector2(1 / size.width, 1 / size.height)),
+    const comp = mat(COMPOSITE, { tColor: U(rtMain.texture), tDepth: U(rtMain.depthTexture), tNormal: U(rtNorm.texture), drawn: U(0), hatchK: U(0.6), outerW: U(2.6), seed: U(0), texel: U(new THREE.Vector2(1 / W, 1 / H)), outTexel: U(new THREE.Vector2(1 / size.width, 1 / size.height)),
       near: U(0.1), far: U(1000), lineW: U(1), lineK: U(1), dofOn: U(0), focus: U(5), range: U(3), maxPx: U(8), exposure: U(1), saturation: U(1), contrast: U(1), shadowTint: U(new THREE.Vector3()), highlightTint: U(new THREE.Vector3()) });
     const bright = mat(BRIGHT, { tIn: U(rtComp.texture), thr: U(1) }), blur = mat(BLUR, { tIn: U(b1.texture), dir: U(new THREE.Vector2()) });
     const fin = mat(FINAL, { tIn: U(rtComp.texture), tBloom: U(b1.texture), tBloom2: U(c1.texture), bloom: U(0.5), grain: U(0.03), vig: U(0.3), seed: U(0), res: U(new THREE.Vector2(size.width, size.height)) });
@@ -117,6 +140,7 @@ export const StudioPost: React.FC<{ opts?: () => PostOpts }> = ({ opts }) => {
     // 3. composite
     const u = p.comp.uniforms; u.near.value = cam.near; u.far.value = cam.far; u.lineW.value = o.lineWidth * o.ss; u.lineK.value = o.line;
     u.dofOn.value = o.dof ? 1 : 0; if (o.dof) { u.focus.value = o.dof.focus; u.range.value = o.dof.range; u.maxPx.value = o.dof.maxPx; }
+    u.drawn.value = o.drawn; u.hatchK.value = o.hatch; u.outerW.value = o.outerWidth; u.seed.value = Math.floor(o.seed / 2) * 1.37;
     u.exposure.value = o.exposure; u.saturation.value = o.saturation; u.contrast.value = o.contrast; (u.shadowTint.value as THREE.Vector3).set(...o.shadowTint); (u.highlightTint.value as THREE.Vector3).set(...o.highlightTint);
     const pass = (m: THREE.ShaderMaterial, rt: THREE.WebGLRenderTarget | null) => { p.quad.material = m; gl.setRenderTarget(rt); gl.render(p.qScene, p.qCam); };
     pass(p.comp, p.rtComp);

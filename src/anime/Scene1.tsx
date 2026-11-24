@@ -117,6 +117,8 @@ type World = { farm: Farm; riders: { def: RiderDef; vrm: VRM; rig: Rig; horse: B
   thomas: { vrm: VRM; rig: Rig; wrap: THREE.Group; baseRot: number }; eli: { vrm: VRM; rig: Rig }; flash: THREE.Sprite; streak: THREE.Mesh; dust: THREE.Sprite[] };
 
 const loadChar = async (id: string) => { const def = CAST.find((c) => c.id === id)!; const vrm = await loadFresh(staticFile(def.base)); const b = def.build(vrm); vrm.update(0); setMorphs(vrm, b.face ?? {}); return { vrm, face: b.face ?? {} }; };
+let CEL = false;
+const hardCel = (o: THREE.Object3D) => o.traverse((m) => { const mm = m as THREE.Mesh; if (!mm.isMesh) return; for (const mt of (Array.isArray(mm.material) ? mm.material : [mm.material]) as (THREE.Material & { isMToonMaterial?: boolean; shadingToonyFactor?: number; shadingShiftFactor?: number })[]) if (mt.isMToonMaterial) { mt.shadingToonyFactor = 0.985; mt.shadingShiftFactor = -0.05; } });
 const castAll = (o: THREE.Object3D) => o.traverse((m) => { if ((m as THREE.Mesh).isMesh) { m.castShadow = true; m.receiveShadow = true; } });
 
 const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
@@ -127,7 +129,7 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
     const farm = buildFarm(); scene.add(farm.group); scene.fog = farm.group.userData.fog as THREE.Fog;
     const riders: World["riders"] = [];
     for (const def of RIDERS) {
-      const { vrm } = await loadChar(def.id); const horse = await buildHorse(staticFile("anime/Horse.fbx"), HORSES[def.horse]);
+      const { vrm } = await loadChar(def.id); if (CEL) hardCel(vrm.scene); const horse = await buildHorse(staticFile("anime/Horse.fbx"), HORSES[def.horse]); if (CEL) hardCel(horse.root);
       fist(vrm, "left", 0.8); if (def.id !== "silas_armed") fist(vrm, "right", 0.8);
       const rig = makeRig(vrm); const baseRot = vrm.scene.rotation.y; scene.add(vrm.scene); scene.add(horse.root); castAll(vrm.scene); castAll(horse.root);
       horse.root.rotation.y = Math.PI; vrm.scene.rotation.y = baseRot + Math.PI;
@@ -223,13 +225,14 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
 };
 
 // studio post settings per moment: focus on Silas in the gallop, on the gun over the shoulder, on Thomas after the cut
-const postFor = (t: number): PostOpts => ({ seed: Math.floor(t * 30), saturation: 1.18, contrast: 1.1, lineWidth: 1.8, dof: t < 2.0 ? { focus: 2.9, range: 2.2, maxPx: 10 } : t < T_CUT ? { focus: 1.0, range: 0.5, maxPx: 7 } : { focus: 8, range: 3, maxPx: 6 } });
-export const Scene1: React.FC<{ dbg?: string; captions?: boolean; audio?: boolean; post?: boolean }> = ({ dbg, captions = true, audio = true, post = false }) => {
+const postFor = (t: number, drawn = 0): PostOpts => ({ seed: Math.floor(t * 30), drawn, saturation: 1.18, contrast: 1.1, lineWidth: 1.8, dof: t < 2.0 ? { focus: 2.9, range: 2.2, maxPx: 10 } : t < T_CUT ? { focus: 1.0, range: 0.5, maxPx: 7 } : { focus: 8, range: 3, maxPx: 6 } });
+export const Scene1: React.FC<{ dbg?: string; captions?: boolean; audio?: boolean; post?: boolean; drawn?: number }> = ({ dbg, captions = true, audio = true, post = false, drawn = 0 }) => {
+  CEL = drawn > 0;
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.18 : 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene dbg={dbg} />{post ? <StudioPost opts={() => postFor(t)} /> : null}</ThreeCanvas>
+      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene dbg={dbg} />{post ? <StudioPost opts={() => postFor(t, drawn)} /> : null}</ThreeCanvas>
       {post ? null : <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 42%, rgba(255,210,170,0) 55%, rgba(60,30,70,0.35) 100%)" }} />}
       {post ? null : <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />}
       {white ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(255,240,210,${white})` }} /> : null}
