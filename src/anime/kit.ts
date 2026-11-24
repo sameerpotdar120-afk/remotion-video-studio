@@ -118,7 +118,10 @@ export const toon = (color: string, o: { shade?: number; map?: THREE.Texture; ri
 };
 export const inkMat = (width = 0.004, color = "#1b1416") => {
   const m = new THREE.MeshBasicMaterial({ color, side: THREE.BackSide });
-  m.onBeforeCompile = (s) => { s.vertexShader = s.vertexShader.replace("#include <begin_vertex>", `vec3 transformed = vec3(position) + normalize(objectNormal) * ${width.toFixed(5)};`); };
+  // offset along the normal *attribute* (declared for every mesh; skinning then moves the offset vertex with the bones);
+  // objectNormal only exists in some shader variants, so static props used to lose their outline. One program per width.
+  m.onBeforeCompile = (s) => { s.vertexShader = s.vertexShader.replace("#include <begin_vertex>", `float inkL = length(normal); vec3 transformed = vec3(position) + (inkL > 1e-4 ? normal / inkL : vec3(0.0)) * ${width.toFixed(5)};`); };
+  m.customProgramCacheKey = () => "ink" + width.toFixed(5);
   return m;
 };
 export const withInk = (mesh: THREE.Mesh, width = 0.004) => { const o = new THREE.Mesh(mesh.geometry, inkMat(width)); mesh.add(o); return o; };
