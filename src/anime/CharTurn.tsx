@@ -6,13 +6,13 @@ import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import { loadFresh, bonePos, setMorphs } from "./kit";
 import { relaxArms } from "./VrmView";
-import { CAST } from "./cast";
+import { findChar } from "./cast2";
 
 const Scene: React.FC<{ id: string; yaw: number; face: boolean; onDbg: (s: string) => void; morphs?: Record<string, number> }> = ({ id, yaw, face, onDbg, morphs }) => {
   const { scene, camera, advance } = useThree();
   const [h] = React.useState(() => delayRender("char " + id, { timeoutInMilliseconds: 180000 }));
   React.useEffect(() => {
-    const def = CAST.find((c) => c.id === id)!;
+    const def = findChar(id);
     loadFresh(staticFile(def.base)).then((vrm) => {
       const b = def.build(vrm);
       relaxArms(vrm);

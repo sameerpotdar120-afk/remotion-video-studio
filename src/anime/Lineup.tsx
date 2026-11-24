@@ -6,7 +6,7 @@ import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
 import { loadFresh, setMorphs } from "./kit";
 import { relaxArms } from "./VrmView";
-import { CAST } from "./cast";
+import { findChar } from "./cast2";
 import { buildHorse, HORSES } from "./horse";
 
 const Scene: React.FC<{ ids: string[]; horses: boolean; gap: number }> = ({ ids, horses, gap }) => {
@@ -16,7 +16,7 @@ const Scene: React.FC<{ ids: string[]; horses: boolean; gap: number }> = ({ ids,
     (async () => {
       const n = ids.length;
       for (let i = 0; i < n; i++) {
-        const def = CAST.find((c) => c.id === ids[i])!; const vrm = await loadFresh(staticFile(def.base)); const b = def.build(vrm); relaxArms(vrm);
+        const def = findChar(ids[i]); const vrm = await loadFresh(staticFile(def.base)); const b = def.build(vrm); relaxArms(vrm);
         vrm.update(0); setMorphs(vrm, b.face ?? {}); const x = (i - (n - 1) / 2) * gap; vrm.scene.position.x += x; scene.add(vrm.scene);
         const hid = ids[i].replace("_armed", "");
         if (horses && HORSES[hid]) { const hz = await buildHorse(staticFile("anime/Horse.fbx"), HORSES[hid]); hz.root.position.set(x - 0.15, 0, -1.6); hz.root.rotation.y = -0.5; scene.add(hz.root); const a = hz.clips.idle; if (a) { hz.mixer.clipAction(a).play(); hz.mixer.setTime(i * 0.7); } }
