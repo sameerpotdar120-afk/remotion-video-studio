@@ -84,7 +84,9 @@ const skyDome = (time: FarmTime = "sunset", sun = SUN_DIR) => { const P = SKY[ti
         c = mix(c, cSun, pow(s, 4.0) * 0.55);                 // warm wash around the sun
         c += vec3(1.0,0.7,0.4) * pow(s, 24.0) * 0.5 + vec3(1.0,0.95,0.8) * pow(s, 400.0) * 0.8;
         if (vD.y < 0.0) c = mix(c, cHor * 0.8, smoothstep(0.0, -0.06, vD.y));
-        gl_FragColor = vec4(c, 1.0); }` });
+        gl_FragColor = vec4(pow(max(c, 0.0), vec3(2.2)), 1.0);
+        #include <colorspace_fragment>
+      }` });
   return new THREE.Mesh(new THREE.SphereGeometry(400, 64, 32), m);
 };
 const glowTex = (inner: string, outer: string) => canvasTex(256, 256, (c) => { const gr = c.createRadialGradient(128, 128, 0, 128, 128, 128); gr.addColorStop(0, inner); gr.addColorStop(0.25, inner.replace(/[\d.]+\)$/, "0.45)")); gr.addColorStop(1, outer); c.fillStyle = gr; c.fillRect(0, 0, 256, 256); });
@@ -203,7 +205,9 @@ const mesa = (w: number, h: number, lit: string, shade: string, haze: number) =>
       vec3 c = vC * (1.0 - band * 0.09 * (1.0 - uHz));                       // horizontal strata
       c = mix(c, uRim, smoothstep(0.9, 1.0, y) * 0.45 * (1.0 - uHz * 0.6));    // sunlit rim along the top
       c = mix(c, c * vec3(0.86, 0.82, 1.0), smoothstep(0.35, 0.0, y) * 0.5);   // cool foot
-      gl_FragColor = vec4(c * uDim, 1.0); }` });
+      gl_FragColor = vec4(pow(max(c * uDim, 0.0), vec3(2.2)), 1.0);
+      #include <colorspace_fragment>
+      }` });
   return new THREE.Mesh(geo, mat); };
 
 export type Farm = { group: THREE.Group; update: (t: number) => void };

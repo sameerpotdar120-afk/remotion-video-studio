@@ -5,6 +5,7 @@ import React from "react";
 import * as THREE from "three";
 import { AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame, useVideoConfig } from "remotion";
 import { Captions } from "../engine/Captions";
+import { StudioPost, type PostOpts } from "./post/StudioPost";
 import words from "../../episodes/anime1/words.json";
 import { ThreeCanvas } from "@remotion/three";
 import { useThree } from "@react-three/fiber";
@@ -73,10 +74,10 @@ type Cam = { pos: THREE.Vector3; look: THREE.Vector3; fov: number };
 const camAt = (t: number, head: THREE.Vector3, hand: THREE.Vector3): Cam => {
   const z = zAt(t);
   if (t < 2.0) {
-    const d = ntrack([[0, 2.9], [0.35, 3.4, E.lin], [1.25, 15, E.inOut], [1.98, 6.8, E.inOut]], t);
-    const h = ntrack([[0, 1.85], [1.25, 2.35], [1.98, 2.3]], t);
-    const lz = ntrack([[0, 0], [1.25, 3.0], [1.98, 1.2]], t), ly = ntrack([[0, 2.05], [1.25, 1.9], [1.98, 2.15]], t);
-    return { pos: new THREE.Vector3(0.15, h, z - d), look: new THREE.Vector3(0, ly, z + lz), fov: 34 };
+    const d = ntrack([[0, 2.75], [0.35, 3.2, E.lin], [1.25, 15, E.inOut], [1.98, 6.8, E.inOut]], t);
+    const h = ntrack([[0, 1.5], [0.35, 1.55], [1.25, 2.35], [1.98, 2.3]], t); const cx = ntrack([[0, -0.62], [0.35, -0.5], [1.25, 0.15]], t);
+    const lz = ntrack([[0, 0], [1.25, 3.0], [1.98, 1.2]], t), ly = ntrack([[0, 1.95], [0.35, 1.95], [1.25, 1.9], [1.98, 2.15]], t);
+    return { pos: new THREE.Vector3(cx, h, z - d), look: new THREE.Vector3(0.02, ly, z + lz), fov: ntrack([[0, 46], [0.35, 42], [1.25, 34]], t) };
   }
   if (t < T_CUT) {
     const k = ntrack([[2.0, 0], [2.42, 1, E.inOut]], t);
@@ -187,7 +188,7 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
           const qW = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
           const pq = g.parent!.getWorldQuaternion(new THREE.Quaternion()).invert(); const want = pq.multiply(qW);
           if (!g.userData.q0) g.userData.q0 = g.quaternion.clone();
-          g.quaternion.copy((g.userData.q0 as THREE.Quaternion).clone().slerp(want, ntrack([[1.98, 0], [2.18, 1, E.inOut]], tt))); g.scale.setScalar(ntrack([[2.0, 1], [2.3, 1.6], [2.5, 2.3]], tt)); g.updateMatrixWorld(true);
+          g.quaternion.copy((g.userData.q0 as THREE.Quaternion).clone().slerp(want, ntrack([[1.98, 0], [2.18, 1, E.inOut]], tt))); g.scale.setScalar(ntrack([[2.0, 1], [2.3, 1.25], [2.5, 1.45]], tt)); g.updateMatrixWorld(true);
         } else if (r.gun?.userData.q0) { r.gun.quaternion.copy(r.gun.userData.q0 as THREE.Quaternion); r.gun.scale.setScalar(1); }
         if (i === 0) { head = r.vrm.humanoid.getRawBoneNode("head")!.getWorldPosition(new THREE.Vector3()); hand = r.vrm.humanoid.getRawBoneNode("rightHand")!.getWorldPosition(new THREE.Vector3()); }
       });
@@ -221,14 +222,16 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
   return (<><hemisphereLight args={[yard ? "#aab2ea" : "#c4bde6", yard ? "#4e4a70" : "#6e5a70", yard ? 0.75 : 0.85]} /><directionalLight position={[sun.x, sun.y, sun.z]} intensity={2.6} color="#ffc28a" castShadow shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-camera-left={-62} shadow-camera-right={62} shadow-camera-top={62} shadow-camera-bottom={-62} shadow-camera-near={1} shadow-camera-far={170} shadow-bias={-0.0004} /><directionalLight position={[10, 6, 40]} intensity={yard ? 0.2 : 0.55} color={yard ? "#a8b8ff" : "#ffd0b0"} /></>);
 };
 
-export const Scene1: React.FC<{ dbg?: string; captions?: boolean; audio?: boolean }> = ({ dbg, captions = true, audio = true }) => {
+// studio post settings per moment: focus on Silas in the gallop, on the gun over the shoulder, on Thomas after the cut
+const postFor = (t: number): PostOpts => ({ seed: Math.floor(t * 30), saturation: 1.18, contrast: 1.1, lineWidth: 1.8, dof: t < 2.0 ? { focus: 2.9, range: 2.2, maxPx: 10 } : t < T_CUT ? { focus: 1.0, range: 0.5, maxPx: 7 } : { focus: 8, range: 3, maxPx: 6 } });
+export const Scene1: React.FC<{ dbg?: string; captions?: boolean; audio?: boolean; post?: boolean }> = ({ dbg, captions = true, audio = true, post = false }) => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
   const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.18 : 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
-      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene dbg={dbg} /></ThreeCanvas>
-      <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 42%, rgba(255,210,170,0) 55%, rgba(60,30,70,0.35) 100%)" }} />
-      <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />
+      <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene dbg={dbg} />{post ? <StudioPost opts={() => postFor(t)} /> : null}</ThreeCanvas>
+      {post ? null : <AbsoluteFill style={{ pointerEvents: "none", background: "radial-gradient(ellipse at 50% 42%, rgba(255,210,170,0) 55%, rgba(60,30,70,0.35) 100%)" }} />}
+      {post ? null : <AbsoluteFill style={{ pointerEvents: "none", background: "linear-gradient(rgba(255,170,120,0.10), rgba(120,90,190,0.10))", mixBlendMode: "soft-light" }} />}
       {white ? <AbsoluteFill style={{ pointerEvents: "none", background: `rgba(255,240,210,${white})` }} /> : null}
       {captions ? <Captions words={words} y={0.72} /> : null}
       {audio ? <Audio src={staticFile("anime1/mix.wav")} /> : null}

@@ -380,3 +380,81 @@ export const fist = (vrm: VRM, side: "left" | "right", amt = 1) => {
   }
   vrm.update(0);
 };
+
+// ---------- detailed single-action revolver (studio close-ups): +X down the barrel, +Y up the top strap, grip goes -Y/-X ----------
+const steelTex = (() => { let t: THREE.Texture | null = null; return () => t ?? (t = (() => { const c = document.createElement("canvas"); c.width = 64; c.height = 256; const g = c.getContext("2d")!;
+  const gr = g.createLinearGradient(0, 0, 0, 256); gr.addColorStop(0, "#9aa4b4"); gr.addColorStop(0.18, "#e8eef6"); gr.addColorStop(0.3, "#6a7484"); gr.addColorStop(0.65, "#3a4250"); gr.addColorStop(1, "#5a6474"); g.fillStyle = gr; g.fillRect(0, 0, 64, 256);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx; })()); })();
+const ivoryTex = (base: string) => { const c = document.createElement("canvas"); c.width = c.height = 128; const g = c.getContext("2d")!; g.fillStyle = base; g.fillRect(0, 0, 128, 128);
+  g.strokeStyle = "rgba(120,90,60,0.18)"; for (let i = 0; i < 14; i++) { g.lineWidth = 1 + (i % 3); g.beginPath(); g.moveTo(0, i * 9 + 3); g.bezierCurveTo(40, i * 9 - 4, 80, i * 9 + 8, 128, i * 9 + 1); g.stroke(); }
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; return tx; };
+export const revolverHD = (grip = "#e9e0cc", s = 1) => {
+  const g = new THREE.Group(); const steel = toon("#8a94a4", { map: steelTex(), shade: 0.45, rim: 0.65 }); const dark = toon("#1c2028", { shade: 0.6, rim: 0.3 });
+  const brass = toon("#d8b860", { rim: 0.5 }); const gripM = toon(grip, { map: ivoryTex(grip), shade: 0.72, rim: 0.35 });
+  const add = (geo: THREE.BufferGeometry, m: THREE.Material, x: number, y: number, z: number, rx = 0, ry = 0, rz = 0, ink = 0.0011) => { const o = new THREE.Mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx, ry, rz); if (ink) withInk(o, ink); g.add(o); return o; };
+  const ext = (pts: [number, number][], depth: number, bevel = 0.0015) => { const sh = new THREE.Shape(); sh.moveTo(pts[0][0], pts[0][1]); for (const p of pts.slice(1)) sh.lineTo(p[0], p[1]); sh.closePath();
+    const geo = new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 2, curveSegments: 8 }); geo.translate(0, 0, -depth / 2); return geo; };
+  // barrel + muzzle crown + front sight, ejector rod housing below
+  add(new THREE.CylinderGeometry(0.0088, 0.0088, 0.14, 20), steel, 0.105, 0.012, 0, 0, 0, Math.PI / 2);
+  add(new THREE.TorusGeometry(0.0082, 0.0014, 8, 20), steel, 0.175, 0.012, 0, 0, Math.PI / 2, 0, 0);
+  add(new THREE.CircleGeometry(0.0045, 16), dark, 0.1765, 0.012, 0, 0, Math.PI / 2, 0, 0);
+  add(new THREE.BoxGeometry(0.008, 0.007, 0.0025), steel, 0.168, 0.0235, 0);
+  add(new THREE.CylinderGeometry(0.0055, 0.0055, 0.098, 14), steel, 0.087, -0.0035, 0.002, 0, 0, Math.PI / 2);
+  add(new THREE.SphereGeometry(0.0045, 10, 8), steel, 0.136, -0.0035, 0.002, 0, 0, 0, 0.0008);
+  // cylinder: six flutes + chamber mouths + brass cartridge rims at the back
+  const cyl = add(new THREE.CylinderGeometry(0.0195, 0.0195, 0.04, 6 * 6), steel, 0.012, 0.004, 0, 0, 0, Math.PI / 2);
+  for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2 + Math.PI / 6; add(new THREE.BoxGeometry(0.03, 0.004, 0.006), dark, 0.012, 0.004 + Math.sin(a) * 0.0192, Math.cos(a) * 0.0192, a, 0, 0, 0);
+    add(new THREE.CircleGeometry(0.004, 12), dark, 0.0325, 0.004 + Math.sin(a + Math.PI / 6) * 0.0118, Math.cos(a + Math.PI / 6) * 0.0118, 0, Math.PI / 2, 0, 0);
+    add(new THREE.CircleGeometry(0.0047, 12), brass, -0.0085, 0.004 + Math.sin(a + Math.PI / 6) * 0.0118, Math.cos(a + Math.PI / 6) * 0.0118, 0, -Math.PI / 2, 0, 0); }
+  void cyl;
+  // frame: top strap over the cylinder, recoil shield, trigger housing (side profile, extruded)
+  add(ext([[-0.022, 0.026], [0.036, 0.026], [0.036, 0.018], [-0.006, 0.018], [-0.01, -0.016], [0.034, -0.016], [0.036, -0.022], [-0.028, -0.024], [-0.032, 0.006]], 0.022), steel, 0, 0, 0);
+  // hammer with spur
+  add(ext([[-0.03, 0.006], [-0.022, 0.024], [-0.032, 0.04], [-0.046, 0.044], [-0.044, 0.036], [-0.034, 0.03], [-0.038, 0.008]], 0.006, 0.001), steel, 0, 0, 0);
+  // trigger guard + trigger
+  add(new THREE.TorusGeometry(0.014, 0.0022, 8, 24, Math.PI * 1.15), steel, 0.004, -0.026, 0, 0, 0, Math.PI * 0.93);
+  add(ext([[0.0, -0.022], [0.004, -0.03], [0.0, -0.04], [-0.004, -0.041], [-0.002, -0.03], [-0.004, -0.022]], 0.004, 0.0008), steel, 0.002, 0, 0);
+  // grip: plow handle in two panels with a screw, backstrap
+  const gp = ext([[-0.03, -0.02], [-0.006, -0.022], [-0.012, -0.06], [-0.026, -0.098], [-0.05, -0.1], [-0.056, -0.088], [-0.046, -0.05], [-0.036, -0.018]], 0.03, 0.003);
+  add(gp, gripM, 0, 0, 0, 0, 0, 0, 0.0012);
+  for (const z of [-0.0165, 0.0165]) add(new THREE.CylinderGeometry(0.0028, 0.0028, 0.002, 12), toon("#c8ccd4", { rim: 0.6 }), -0.031, -0.055, z, Math.PI / 2, 0, 0, 0);
+  add(new THREE.BoxGeometry(0.004, 0.08, 0.024), steel, -0.044, -0.06, 0, 0, 0, -0.35, 0.0008);
+  g.scale.setScalar(s); return g;
+};
+// a shooting grip: middle/ring/little wrap the grip, index rests on the trigger (half curled), thumb lies along the frame
+export const gunGrip = (vrm: VRM, side: "left" | "right") => {
+  const H = vrm.humanoid; const hand = H.getRawBoneNode(`${side}Hand` as HB)!;
+  vrm.scene.updateMatrixWorld(true);
+  const hp = hand.getWorldPosition(new THREE.Vector3()), th = bonePos(vrm, `${side}ThumbProximal` as HB), mid = bonePos(vrm, `${side}MiddleProximal` as HB);
+  const x = mid.clone().sub(hp).normalize(); const y = th.clone().sub(hp); y.addScaledVector(x, -y.dot(x)).normalize(); const palm = new THREE.Vector3().crossVectors(x, y);
+  const curl = (f: string, ang: number[], force?: [THREE.Vector3, number]): [THREE.Vector3, number] => { const bones = ["Proximal", "Intermediate", "Distal"].map((k) => H.getNormalizedBoneNode(`${side}${f}${k}` as HB)!); const tip = H.getRawBoneNode(`${side}${f}Distal` as HB)!;
+    let best: [THREE.Vector3, number] | null = force ?? null, bestScore = -Infinity;
+    if (!force) for (const sgn of [1, -1]) for (const axis of [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)]) {
+      bones.forEach((b, i) => b.quaternion.setFromAxisAngle(axis, sgn * ang[i])); vrm.update(0); vrm.scene.updateMatrixWorld(true);
+      const tp = tip.getWorldPosition(new THREE.Vector3()).sub(hp); const sc = Math.abs(tp.dot(palm)) - Math.max(0, tp.dot(x)) * 0.5; if (sc > bestScore) { bestScore = sc; best = [axis.clone(), sgn]; } }
+    bones.forEach((b, i) => b.quaternion.setFromAxisAngle(best![0], best![1] * ang[i])); return best!; };
+  const mAx = curl("Middle", [1.45, 1.55, 0.95]); curl("Ring", [1.5, 1.55, 0.95], mAx); curl("Little", [1.55, 1.5, 0.9], mAx); curl("Index", [0.75, 1.05, 0.6], mAx);
+  // thumb: fold it towards the index knuckle, lying along the side of the frame
+  const tb = ["ThumbProximal", "ThumbIntermediate", "ThumbDistal"].map((k) => H.getNormalizedBoneNode(`${side}${k}` as HB)).filter(Boolean) as THREE.Object3D[];
+  const tipT = H.getRawBoneNode(`${side}ThumbDistal` as HB); const target = bonePos(vrm, `${side}IndexIntermediate` as HB);
+  if (tipT && tb.length) { let bestQ: THREE.Quaternion[] = tb.map((b) => b.quaternion.clone()), bestD = Infinity;
+    for (const sgn of [1, -1]) for (const axis of [new THREE.Vector3(1, 0, 0), new THREE.Vector3(0, 1, 0), new THREE.Vector3(0, 0, 1)]) for (const k of [0.4, 0.7]) {
+      tb.forEach((b, i) => b.quaternion.setFromAxisAngle(axis, sgn * k * [0.6, 0.8, 0.6][i])); vrm.update(0); vrm.scene.updateMatrixWorld(true); const d = tipT.getWorldPosition(new THREE.Vector3()).distanceTo(target); if (d < bestD) { bestD = d; bestQ = tb.map((b) => b.quaternion.clone()); } }
+    tb.forEach((b, i) => b.quaternion.copy(bestQ[i])); }
+  vrm.update(0);
+};
+// put the HD revolver in a hand: grip seated in the palm, barrel along the index finger line, top strap up the thumb side
+export const inHandHD = (vrm: VRM, side: "left" | "right", prop: THREE.Object3D) => {
+  vrm.scene.updateMatrixWorld(true);
+  const hand = bonePos(vrm, `${side}Hand` as HB), mid = bonePos(vrm, `${side}MiddleProximal` as HB), idx = bonePos(vrm, `${side}IndexProximal` as HB), th = bonePos(vrm, `${side}ThumbProximal` as HB);
+  const x = mid.clone().sub(hand).normalize(); const y = th.clone().sub(hand); y.addScaledVector(x, -y.dot(x)).normalize(); const z = new THREE.Vector3().crossVectors(x, y);
+  // barrel axis tilted up out of the fist (~20 deg), grip axis down through the palm
+  const bx = x.clone().applyAxisAngle(z, 0.35); const by = new THREE.Vector3().crossVectors(z, bx);
+  prop.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(bx, by, z));
+  // which side is the palm? the curled middle fingertip tells us (call gunGrip first)
+  const tipM = vrm.humanoid.getRawBoneNode(`${side}MiddleDistal` as HB)!.getWorldPosition(new THREE.Vector3()); const zs = Math.sign(tipM.clone().sub(hand).dot(z)) || 1;
+  // grip centre in gun coords is about (-0.032, -0.058): put it inside the closed fingers, in front of the palm
+  const gripC = hand.clone().addScaledVector(x, 0.058).addScaledVector(z, zs * 0.026).addScaledVector(y, -0.012);
+  prop.position.copy(gripC).addScaledVector(bx, 0.032 * prop.scale.x).addScaledVector(by, 0.058 * prop.scale.x);
+  attach(vrm, `${side}Hand` as HB, prop); void idx; return prop;
+};

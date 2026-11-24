@@ -3,10 +3,12 @@
 import * as THREE from "three";
 import { FBXLoader } from "three/examples/jsm/loaders/FBXLoader.js";
 import { inkMat, smoothNormals, toon, withInk } from "./kit";
+import { loopSubdivide } from "./subdivide";
+export let HORSE_SUBDIV = 1; export const setHorseSubdiv = (n: number) => { HORSE_SUBDIV = n; };
 
 export type HorseLook = { coat: string; mane: string; blaze?: boolean; saddle?: string; blanket?: string };
 export const HORSES: Record<string, HorseLook> = {
-  silas: { coat: "#24212a", mane: "#0f0e12", saddle: "#3a2418", blanket: "#6b1f24" },   // black stallion
+  silas: { coat: "#363244", mane: "#14121a", saddle: "#3a2418", blanket: "#6b1f24" },   // black stallion
   bram: { coat: "#6b3a1f", mane: "#1a120d", saddle: "#4a2e1c", blanket: "#c99a3c" },    // bay
   jory: { coat: "#d9d2c4", mane: "#3a3230", saddle: "#5a3a22", blanket: "#6b3a8a", blaze: true }, // pale grey
   abel: { coat: "#9a4c22", mane: "#e0c79a", saddle: "#4a2e1c", blanket: "#a8432c" },   // chestnut, flaxen mane
@@ -23,13 +25,13 @@ export const buildHorse = async (url: string, look: HorseLook): Promise<BuiltHor
   const src = await loadBase(url);
   const { clone } = await import("three/examples/jsm/utils/SkeletonUtils.js");
   const o = clone(src) as THREE.Group; o.animations = src.animations;
-  const coatM = toon(look.coat, { shade: 0.62, rim: 0.12 }), maneM = toon(look.mane, { shade: 0.6 });
+  const coatM = toon(look.coat, { shade: 0.6, rim: 0.35 }), maneM = toon(look.mane, { shade: 0.6 });
   const bones: string[] = [];
   o.traverse((m) => {
     m.frustumCulled = false; if ((m as THREE.Bone).isBone) bones.push(m.name);
     const mm = m as THREE.SkinnedMesh; if (!mm.isMesh) return;
     const mats = (Array.isArray(mm.material) ? mm.material : [mm.material]).map((x) => (x.name.includes("003") ? coatM : maneM));
-    mm.material = mats.length === 1 ? mats[0] : mats; mm.geometry = smoothNormals(mm.geometry);
+    mm.material = mats.length === 1 ? mats[0] : mats; mm.geometry = HORSE_SUBDIV > 0 && mm.isSkinnedMesh ? loopSubdivide(mm.geometry, HORSE_SUBDIV) : smoothNormals(mm.geometry);
     if (mm.isSkinnedMesh) { mm.geometry.computeBoundingBox(); const gs = mm.geometry.boundingBox!.getSize(new THREE.Vector3()).length(); const ink = new THREE.SkinnedMesh(mm.geometry, inkMat(gs * 0.0028, "#1b1416")); ink.bind(mm.skeleton, mm.bindMatrix); ink.frustumCulled = false; mm.parent!.add(ink); }
   });
   const b = new THREE.Box3().setFromObject(o); const s = 2.15 / (b.max.y - b.min.y); o.scale.setScalar(s); o.position.y = -b.min.y * s;
