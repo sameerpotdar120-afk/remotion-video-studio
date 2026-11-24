@@ -269,9 +269,9 @@ const Chips: React.FC<{ c: CamT; t: number }> = ({ c, t }) => {
   );
 };
 
-const CREDIT = 'Satellite: Sentinel-2 cloudless 2024 by EOX (s2maps.eu), CC BY 4.0 · Terrain: AWS Terrain Tiles · Borders: Natural Earth (India official) · AI illustrations';
+const CREDIT = 'Sentinel-2 cloudless 2024 by EOX (s2maps.eu), CC BY 4.0 · AWS Terrain Tiles · Natural Earth · AI illustrations';
 
-export const Brands: React.FC<{ captions?: boolean; audio?: string }> = ({ captions = true, audio = '' }) => {
+export const Brands: React.FC<{ captions?: boolean; audio?: string; thumb?: boolean }> = ({ captions = true, audio = '', thumb = false }) => {
   useFonts();
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -340,7 +340,7 @@ export const Brands: React.FC<{ captions?: boolean; audio?: string }> = ({ capti
       {/* brand cards (screen space) */}
       <AbsoluteFill style={{ transform: `translateY(${-430 * split}px)` }}>
         <Card t={t} t0={-1} t1={4.45} name="BATA" col={C.red} />
-        <Pill t={t} t0={-1} t1={2.15} hi="भारतीय?" col={C.saffron} strike={1.56} />
+        {!thumb && <Pill t={t} t0={-1} t1={2.15} hi="भारतीय?" col={C.saffron} strike={1.56} />}
         <Pill t={t} t0={2.5} t1={4.45} hi="चेक रिपब्लिक" en="CZECH REPUBLIC · 1894" col={C.red} />
         <Prop t={t} t0={-1} t1={4.45} k="br01_canvas_shoes" x={760} y={1250} w={440} col={C.saffron} rot={-4} />
 
@@ -405,6 +405,13 @@ export const Brands: React.FC<{ captions?: boolean; audio?: string }> = ({ capti
       <AbsoluteFill style={{ pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 72%, rgba(0,0,0,0.45) 100%)' }} />
 
       {captions && <Captions t={t} y={capY} />}
+      {thumb && (
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 1440, textAlign: 'center' }}>
+          <div style={{ fontFamily: UI, fontWeight: 800, fontSize: 168, lineHeight: 1.05, color: '#fff', WebkitTextStroke: '6px #000', paintOrder: 'stroke', textShadow: '0 0 40px rgba(232,32,42,0.9), 0 12px 30px rgba(0,0,0,0.9)' }}>
+            भारतीय <span style={{ color: '#FF3B3B' }}>नहीं!</span>
+          </div>
+        </div>
+      )}
       <div style={{ position: 'absolute', left: 20, right: 20, top: 1892, textAlign: 'center', fontFamily: LABEL, fontSize: 15, letterSpacing: 0.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>{CREDIT}</div>
     </AbsoluteFill>
   );
