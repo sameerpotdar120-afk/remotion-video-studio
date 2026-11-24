@@ -170,6 +170,9 @@ export const keyLight = (g: THREE.Group, dir: THREE.Vector3, color: string, inte
 // merged geometry helper: list of [geometry, matrix] -> one geometry
 export const merged = (parts: { geo: THREE.BufferGeometry; m: THREE.Matrix4 }[]) => mergeGeometries(parts.map(({ geo, m }) => { const g2 = geo.index ? geo.toNonIndexed() : geo.clone(); g2.applyMatrix4(m); return g2; }), false)!;
 export const M4 = (x: number, y: number, z: number, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) => new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), new THREE.Quaternion().setFromEuler(new THREE.Euler(rx, ry, rz)), new THREE.Vector3(sx, sy, sz));
+// half-ellipse arch in the XY plane (base on y = 0, centred on x = 0, rising to h), d thick: batwing door tops
+export const archGeo = (w: number, h: number, d: number) => { const s = new THREE.Shape(); s.moveTo(w / 2, 0); s.absellipse(0, 0, w / 2, h, 0, Math.PI, false); s.lineTo(w / 2, 0);
+  const geo = new THREE.ExtrudeGeometry(s, { depth: d, bevelEnabled: false, curveSegments: 20 }); geo.translate(0, 0, -d / 2); return geo; };
 // a cylinder between two points (ropes, rails, pipes)
 export const rod = (a: THREE.Vector3, b: THREE.Vector3, r: number, mat: THREE.Material, seg = 8) => { const d = b.clone().sub(a); const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, d.length(), seg), mat); m.position.copy(a).addScaledVector(d, 0.5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); return m; };
 // painted text sign board texture (hand-lettered, slightly uneven)
