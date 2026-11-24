@@ -164,8 +164,8 @@ const I0: ShotSpec = { id: "I0", dur: 0.92, set: "farm:night", grade: "night",
   cam: (t) => ({ pos: vt([[0, [0.1, 1.82, 28.6]], [0.92, [0.08, 1.82, 28.85], ease.io]], t), look: [0, 1.85, 30], fov: 30 }) };
 // I1: he runs far out west: the black horse at full gallop into the sunset
 const I1: ShotSpec = { id: "I1", dur: 2.58, set: "farm:sunset",
-  actors: [{ key: "silas", char: "silas", horse: "silas", at: (t) => ({ pos: [2 + Math.sin(t) * 0.3, 0, 20 - t * 9], yaw: Math.PI, pose: withAim(RIDE, {}, { spine: [0.2, 0, 0] }), horse: { speed: 9, dist: t * 9 } }) }],
-  cam: (t) => ({ pos: [3.4, 1.6, 26 - t * 4], look: [2, 2.0, 20 - t * 9], fov: 34 }) };
+  actors: [{ key: "silas", char: "silas", horse: "silas", at: (t) => ({ pos: [7.6 + Math.sin(t) * 0.2, 0, 26 - t * 9], yaw: Math.PI, pose: withAim(RIDE, {}, { spine: [0.2, 0, 0] }), horse: { speed: 9, dist: t * 9 } }) }],
+  cam: (t) => ({ pos: [9.0, 1.6, 32 - t * 4], look: [7.6, 2.0, 26 - t * 9], fov: 34 }) };
 
 export const ACT_B: { at: number; spec: ShotSpec }[] = [
   { at: 27.66, spec: D1 }, { at: 31.0, spec: D2 }, { at: 33.6, spec: D3a }, { at: 35.1, spec: D3b }, { at: 36.2, spec: D4 },
