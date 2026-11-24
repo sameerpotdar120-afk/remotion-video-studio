@@ -8,8 +8,8 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ep = process.argv[2] || "ep1";
-const voice = process.argv[3] || "am_michael";
-const speed = Number(process.argv[4] || 1.12);
+const voice0 = process.argv[3] || "am_michael"; let voice = voice0; // a shot may set its own "voice" / "speed" (character lines)
+const speed0 = Number(process.argv[4] || 1.12); let speed = speed0;
 const GAP = 0.06; // seconds between lines: these Shorts never pause
 const SR = 24000;
 
@@ -90,6 +90,7 @@ const parts = [];
 const timing = [];
 let t = 0;
 for (const s of shots) {
+  voice = s.voice ?? voice0; speed = s.speed ?? speed0;
   const a = await tts.generate((s.say ?? s.text).replace(/_/g, " "), { voice, speed });
   const x = trim(a.audio);
   const ws = (await words(s.text, (s.say ?? s.text), x)).map((o) => ({ ...o, start: +(o.start + t).toFixed(3), end: +(o.end + t).toFixed(3) }));
@@ -109,5 +110,5 @@ buf.writeUInt32LE(SR, 24); buf.writeUInt32LE(SR * 2, 28); buf.writeUInt16LE(2, 3
 for (let i = 0; i < all.length; i++) buf.writeInt16LE(Math.max(-32768, Math.min(32767, Math.round(all[i] * k * 32767))), 44 + i * 2);
 fs.mkdirSync(path.join("public", ep), { recursive: true });
 fs.writeFileSync(path.join("public", ep, "voice.wav"), buf);
-fs.writeFileSync(path.join("episodes", ep, "timing.json"), JSON.stringify({ voice, speed, total: +t.toFixed(3), shots: timing }, null, 1));
-console.log("total", t.toFixed(1), "s,", (timing.reduce((a, s) => a + s.words.length, 0) / t).toFixed(2), "words/s, voice", voice);
+fs.writeFileSync(path.join("episodes", ep, "timing.json"), JSON.stringify({ voice: voice0, speed: speed0, total: +t.toFixed(3), shots: timing }, null, 1));
+console.log("total", t.toFixed(1), "s,", (timing.reduce((a, s) => a + s.words.length, 0) / t).toFixed(2), "words/s, voice", voice0);

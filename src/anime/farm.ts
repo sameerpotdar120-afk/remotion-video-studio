@@ -253,3 +253,6 @@ export const buildFarm = (): Farm => {
   ground.castShadow = false; far.receiveShadow = false;
   return { group: Object.assign(g, { userData: { fog } }), update: (t) => { wheel.rotation.z = -t * 1.4; const p = dustGeo.getAttribute("position") as THREE.BufferAttribute; for (let i = 0; i < p.count; i++) { p.setY(i, (dust0[i * 3 + 1] + t * 0.12 + Math.sin(t + i) * 0.05) % 6); p.setX(i, dust0[i * 3] + Math.sin(t * 0.5 + i * 0.7) * 0.3); } p.needsUpdate = true; for (const q of grassBlades) q.rotation.z = Math.sin(t * 1.6 + q.position.x * 0.3 + q.position.z * 0.2) * 0.06; } };
 };
+
+// toolkit for the other sets (same painterly anime look)
+export { toonE, canvasTex, ink, box, dab, planks, shingles, stones, groundTex, grassCard, skyDome, glowTex, sunDisc, cloud, treeTex, house, windmill, barn, hay, fence, mesa, rnd as farmRnd };
