@@ -14,6 +14,7 @@ import { FarmView } from "./anime/FarmView";
 import { SetView } from "./anime/SetView";
 import { Film, FilmShot, FILM_FPS, FILM_END } from "./anime/pp/film";
 import { FilmFinal } from "./anime/pp/final";
+import { Frame0 } from "./anime2d/Frame0";
 import { Scene1, S1_DUR, S1_FPS } from "./anime/Scene1";
 
 export const Root: React.FC = () => (
@@ -28,6 +29,7 @@ export const Root: React.FC = () => (
     <Composition id="Ep3Shot" component={ShotStill3} width={720} height={1280} fps={30} durationInFrames={300} defaultProps={{ id: 1 }} />
     <Composition id="Scene1" component={Scene1} width={1080} height={1920} fps={S1_FPS} durationInFrames={Math.round(S1_DUR * S1_FPS)} />
     <Composition id="Film" component={Film} width={1080} height={1920} fps={FILM_FPS} durationInFrames={Math.round(FILM_END * FILM_FPS)} />
+    <Composition id="Frame0" component={Frame0} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="FilmFinal" component={FilmFinal} width={1080} height={1920} fps={FILM_FPS} durationInFrames={Math.round(FILM_END * FILM_FPS)} />
     <Composition id="FilmShot" component={FilmShot} width={1080} height={1920} fps={FILM_FPS} durationInFrames={300} defaultProps={{ id: "A1" }} />
     <Composition id="SetView" component={SetView} width={1080} height={1920} fps={30} durationInFrames={60} />
