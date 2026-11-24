@@ -4,7 +4,7 @@ set -e
 cd "$(dirname "$0")/.."
 LAST=${1:-3176}
 D=out/final/parts; mkdir -p $D; rm -f $D/*.mp4
-for b in claude/pp-h1 claude/pp-h2; do
+for b in claude/pp-h2 claude/pp-h1; do   # h1 last: its door-fix re-renders win
   git fetch -q origin $b 2>/dev/null || continue
   for f in $(git ls-tree --name-only FETCH_HEAD out/ppparts/ 2>/dev/null); do git show FETCH_HEAD:$f > $D/$(basename $f); done
 done
