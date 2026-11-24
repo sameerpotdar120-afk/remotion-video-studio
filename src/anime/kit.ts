@@ -107,9 +107,9 @@ export const cutAway = (vrm: VRM, matName: string, bones: HB[] | null, test?: (p
 };
 
 // ---------- toon material + ink outline for our own pieces ----------
-export const toon = (color: string, o: { shade?: number; map?: THREE.Texture; rim?: number; side?: THREE.Side; alphaTest?: number } = {}) => {
+export const toon = (color: string, o: { shade?: number; map?: THREE.Texture; rim?: number; side?: THREE.Side; alphaTest?: number; shadeTint?: string; tintAmt?: number } = {}) => {
   const m = new MToonMaterial();
-  m.color.set(color); m.shadeColorFactor.copy(new THREE.Color(color).multiplyScalar(o.shade ?? 0.6));
+  m.color.set(color); m.shadeColorFactor.copy(new THREE.Color(color).multiplyScalar(o.shade ?? 0.6)); if (o.shadeTint) m.shadeColorFactor.lerp(new THREE.Color(o.shadeTint), o.tintAmt ?? 0.4);
   m.shadingToonyFactor = 0.9; m.shadingShiftFactor = -0.25;
   if (o.map) { m.map = o.map; m.shadeMultiplyTexture = o.map; }
   m.parametricRimColorFactor.setScalar(o.rim ?? 0.08); m.parametricRimFresnelPowerFactor = 3; m.parametricRimLiftFactor = 0.05;
