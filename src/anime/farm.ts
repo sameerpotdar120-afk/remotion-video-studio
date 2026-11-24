@@ -237,13 +237,14 @@ export const buildFarm = (): Farm => {
   const bn = barn(); bn.position.set(17, 0, -9); bn.rotation.y = -0.35; g.add(bn);
   for (const [x, z] of [[11.5, -3], [12.8, -2.2], [12.1, -4.2]]) { const h2 = hay(); h2.position.set(x, 0.75, z); h2.rotation.y = rnd(); g.add(h2); }
   const trough = box(2.2, 0.55, 0.7, toonE("#6a5040", { map: planks("#6a5040", "#3a2a1e", 6) }), -7.5, 0.28, 7.5); g.add(trough); g.add(box(2.0, 0.04, 0.5, new THREE.MeshBasicMaterial({ color: "#7aa3b8" }), -7.5, 0.5, 7.5, 0));
-  g.add(fence([[-22, 40], [-22, -14], [26, -14], [26, 40], [-22, 40]], (x, z) => Math.abs(x) < 4 && z > 39));
+  const GZ = 58; // gate line: far enough back that the gang rides in inside the fence
+  g.add(fence([[-22, GZ], [-22, -14], [26, -14], [26, GZ], [-22, GZ]], (x, z) => Math.abs(x) < 4 && z > GZ - 1));
   // ranch gate over the track entrance: two tall posts, crossbar, hanging sign "HALE"
   const gw = toonE("#6a5240", { shade: 0.6 });
-  for (const sx of [-1, 1]) g.add(box(0.32, 4.6, 0.32, gw, sx * 4.1, 2.3, 40, 0.02));
-  g.add(box(9.2, 0.32, 0.36, gw, 0, 4.45, 40, 0.02));
-  const sign = box(2.6, 0.75, 0.08, toonE("#8a6a4a", { map: canvasTex(512, 160, (c) => { c.fillStyle = "#8a6a4a"; c.fillRect(0, 0, 512, 160); c.strokeStyle = "#4a3424"; c.lineWidth = 10; c.strokeRect(6, 6, 500, 148); c.fillStyle = "#2a1c14"; c.font = "bold 92px serif"; c.textAlign = "center"; c.fillText("HALE", 256, 115); }) }), 0, 3.55, 40, 0.012);
-  g.add(sign); for (const sx of [-1, 1]) g.add(box(0.03, 0.55, 0.03, toonE("#3a3a3a"), sx * 1.0, 4.05, 40, 0));
+  for (const sx of [-1, 1]) g.add(box(0.32, 4.6, 0.32, gw, sx * 4.1, 2.3, GZ, 0.02));
+  g.add(box(9.2, 0.32, 0.36, gw, 0, 4.45, GZ, 0.02));
+  const sign = box(2.6, 0.75, 0.08, toonE("#8a6a4a", { map: canvasTex(512, 160, (c) => { c.fillStyle = "#8a6a4a"; c.fillRect(0, 0, 512, 160); c.strokeStyle = "#4a3424"; c.lineWidth = 10; c.strokeRect(6, 6, 500, 148); c.fillStyle = "#2a1c14"; c.font = "bold 92px serif"; c.textAlign = "center"; c.fillText("HALE", 256, 115); }) }), 0, 3.55, GZ, 0.012);
+  g.add(sign); for (const sx of [-1, 1]) g.add(box(0.03, 0.55, 0.03, toonE("#3a3a3a"), sx * 1.0, 4.05, GZ, 0));
   // atmosphere
   const fog = new THREE.Fog("#f0b49a", 70, 330);
   const wheel = g.getObjectByName("windmillWheel")!;

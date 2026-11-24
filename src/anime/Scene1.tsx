@@ -16,7 +16,7 @@ import { applyPose, E, makeRig, mix, ntrack, Pose, POSE, Rig, track, withAim, di
 export const S1_FPS = 30, S1_DUR = 4.3;
 const T_CUT = 2.9;                       // cut to the victim
 const T_SHOT = 2.8;                      // muzzle flash (on "man")
-const THOMAS = new THREE.Vector3(0, 0, 7.6), ELI = new THREE.Vector3(0.05, 0.67, 4.3);
+const THOMAS = new THREE.Vector3(0, 0, 8.6), ELI = new THREE.Vector3(-0.12, 0.67, 4.3);
 
 // ---------- the gang: wedge 1-2-3, galloping from the gate (z 37) towards the house (-Z) ----------
 type RiderDef = { id: string; horse: string; dx: number; dz: number; ph: number };
@@ -29,8 +29,8 @@ const RIDERS: RiderDef[] = [
   { id: "lucien", horse: "lucien", dx: 3.8, dz: 4.8, ph: 0.46 },
 ];
 // leader speed (m/s): full gallop, easing to a slow walk as he takes aim
-const speed = (t: number) => ntrack([[0, 7.2], [1.35, 7.2], [2.45, 1.6], [3, 1.2]], t);
-const Z0 = 31; const ZT: number[] = []; { let z = Z0; for (let i = 0; i <= 600; i++) { ZT.push(z); z -= speed(i / 100) / 100; } }
+const speed = (t: number) => ntrack([[0, 8], [1.35, 8], [2.45, 1.6], [3, 1.2]], t);
+const Z0 = 44; const ZT: number[] = []; { let z = Z0; for (let i = 0; i <= 600; i++) { ZT.push(z); z -= speed(i / 100) / 100; } }
 const zAt = (t: number) => { const i = Math.max(0, Math.min(599, Math.floor(t * 100))); const k = t * 100 - i; return ZT[i] + (ZT[i + 1] - ZT[i]) * k; };
 const distAt = (t: number) => Z0 - zAt(t);
 const riderPos = (r: RiderDef, t: number) => new THREE.Vector3(r.dx + Math.sin(t * 1.3 + r.ph * 9) * 0.12, 0, zAt(t) + r.dz);
@@ -56,9 +56,9 @@ const T_JOLT = withAim(POSE.stand, { leftUpperArm: dirL(0.95, -0.1, -0.25), left
 const T_CHEST = withAim(POSE.stand, { leftUpperArm: dirL(0.38, -0.84, 0.38), leftLowerArm: dirL(-0.78, 0.42, 0.46), leftHand: dirL(-0.8, 0.5, 0.3), rightUpperArm: dirR(0.38, -0.84, 0.38), rightLowerArm: dirR(-0.78, 0.36, 0.5), rightHand: dirR(-0.8, 0.45, 0.35) }, { spine: [0.18, 0, 0], chest: [0.08, 0, 0], head: [0.25, 0, 0] });
 const T_SWAY = withAim(T_CHEST, {}, { spine: [0.1, 0.1, -0.12], chest: [0.05, 0, -0.06], head: [0.1, 0, 0.12] });
 const T_FALL = withAim(POSE.stand, { leftUpperArm: dirL(0.7, -0.5, 0.5), leftLowerArm: dirL(0.3, 0.2, 0.93), leftHand: dirL(0.2, 0.3, 0.93), rightUpperArm: dirR(0.7, -0.5, 0.5), rightLowerArm: dirR(0.3, 0.2, 0.93), rightHand: dirR(0.2, 0.3, 0.93) }, { head: [0.35, 0, 0] });
-const T_LAND = withAim(POSE.stand, { leftUpperArm: dirL(0.92, 0.35, 0.15), leftLowerArm: dirL(0.45, 0.3, 0.85), leftHand: dirL(0.3, 0.3, 0.9), rightUpperArm: dirR(0.92, 0.35, 0.15), rightLowerArm: dirR(0.45, 0.3, 0.85), rightHand: dirR(0.3, 0.3, 0.9),
+const T_LAND = withAim(POSE.stand, { leftUpperArm: dirL(0.95, 0.3, 0.02), leftLowerArm: dirL(0.8, 0.45, 0.4), leftHand: dirL(0.7, 0.5, 0.5), rightUpperArm: dirR(0.95, 0.3, 0.02), rightLowerArm: dirR(0.8, 0.45, 0.4), rightHand: dirR(0.7, 0.5, 0.5),
   leftUpperLeg: dirL(0.28, -0.95, 0.12), leftLowerLeg: dirL(0.25, -0.96, 0.05), rightUpperLeg: dirR(0.28, -0.95, 0.12), rightLowerLeg: dirR(0.25, -0.96, 0.05) }, { head: [0.25, 0.25, 0] });
-const T_BOUNCE = withAim(T_LAND, { leftUpperArm: dirL(0.85, 0.3, 0.45), leftLowerArm: dirL(0.3, 0.3, 0.9), rightUpperArm: dirR(0.85, 0.3, 0.45), rightLowerArm: dirR(0.3, 0.3, 0.9), leftUpperLeg: dirL(0.28, -0.85, 0.45), rightUpperLeg: dirR(0.28, -0.85, 0.45) }, { head: [0.45, 0.25, 0] });
+const T_BOUNCE = withAim(T_LAND, { leftUpperArm: dirL(0.9, 0.3, 0.3), leftLowerArm: dirL(0.6, 0.4, 0.7), rightUpperArm: dirR(0.9, 0.3, 0.3), rightLowerArm: dirR(0.6, 0.4, 0.7), leftUpperLeg: dirL(0.28, -0.85, 0.45), rightUpperLeg: dirR(0.28, -0.85, 0.45) }, { head: [0.45, 0.25, 0] });
 const T_FALL0 = 3.46, T_FALL1 = 3.7;
 const thomasTrack = (t: number): Pose => track([[0, T_UP], [T_CUT - 0.01, T_UP], [T_CUT + 0.05, T_JOLT, E.out], [T_CUT + 0.11, T_JOLT], [3.2, T_CHEST, E.inOut], [3.4, T_SWAY], [T_FALL0, T_SWAY], [T_FALL1, T_FALL, E.in], [T_FALL1 + 0.07, T_BOUNCE, E.out], [T_FALL1 + 0.22, T_LAND, E.inOut]], t);
 const thomasRig = (t: number) => ({
@@ -72,25 +72,26 @@ const camAt = (t: number, head: THREE.Vector3, hand: THREE.Vector3): Cam => {
   const z = zAt(t);
   if (t < 2.0) {
     const d = ntrack([[0, 2.9], [0.35, 3.4, E.lin], [1.25, 15, E.inOut], [1.98, 6.8, E.inOut]], t);
-    const h = ntrack([[0, 2.0], [1.25, 2.35], [1.98, 2.3]], t);
-    const lz = ntrack([[0, 0], [1.25, 3.2], [1.98, 1.2]], t), ly = ntrack([[0, 2.55], [1.25, 2.0], [1.98, 2.25]], t);
+    const h = ntrack([[0, 1.85], [1.25, 2.35], [1.98, 2.3]], t);
+    const lz = ntrack([[0, 0], [1.25, 3.0], [1.98, 1.2]], t), ly = ntrack([[0, 2.05], [1.25, 1.9], [1.98, 2.15]], t);
     return { pos: new THREE.Vector3(0.15, h, z - d), look: new THREE.Vector3(0, ly, z + lz), fov: 34 };
   }
   if (t < T_CUT) {
     const k = ntrack([[2.0, 0], [2.42, 1, E.inOut]], t);
     const c = head.clone().lerp(hand, k);
-    const phi = ntrack([[2.0, 0], [2.3, 1.55, E.in], [2.52, 2.6, E.out], [T_CUT, 2.72]], t);
-    const r = ntrack([[2.0, 6.8], [2.28, 1.35, E.inOut], [2.5, 0.62, E.inOut], [T_CUT, 0.55]], t);
-    const h = ntrack([[2.0, -0.2], [2.3, 0.05], [2.5, 0.12], [T_CUT, 0.13]], t);
+    const phi = ntrack([[2.0, 0], [2.3, 1.55, E.in], [2.55, 2.95, E.out], [T_CUT, 3.03]], t);
+    const r = ntrack([[2.0, 6.8], [2.28, 1.35, E.inOut], [2.55, 0.74, E.inOut], [T_CUT, 0.7]], t);
+    const h = ntrack([[2.0, -0.2], [2.3, 0.05], [2.55, 0.14], [T_CUT, 0.15]], t);
     const pos = c.clone().add(new THREE.Vector3(Math.sin(phi) * r, h, -Math.cos(phi) * r));
     const lk = ntrack([[2.0, 0], [2.3, 0.0], [2.5, 1, E.inOut]], t);
     const look = head.clone().lerp(new THREE.Vector3(THOMAS.x, 1.6, THOMAS.z), lk);
     return { pos, look, fov: ntrack([[2.0, 34], [2.5, 30]], t) };
   }
-  const pz = ntrack([[T_CUT, 15.2], [S1_DUR, 13.6, E.lin]], t);
-  const ly = ntrack([[T_CUT, 1.45], [T_FALL0, 1.4], [T_FALL1 + 0.1, 0.75, E.inOut]], t);
-  const lz = ntrack([[T_CUT, 7.0], [T_FALL1 + 0.1, 6.3, E.inOut]], t);
-  return { pos: new THREE.Vector3(0.25, 1.5, pz), look: new THREE.Vector3(0.1, ly, lz), fov: 30 };
+  const pz = ntrack([[T_CUT, 16.0], [S1_DUR, 14.6, E.lin]], t);
+  const py = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.1, 1.75, E.inOut]], t);
+  const ly = ntrack([[T_CUT, 1.3], [T_FALL0, 1.3], [T_FALL1 + 0.1, 0.55, E.inOut]], t);
+  const lz = ntrack([[T_CUT, 8.0], [T_FALL1 + 0.1, 7.6, E.inOut]], t);
+  return { pos: new THREE.Vector3(0.25, py, pz), look: new THREE.Vector3(0.1, ly, lz), fov: 30 };
 };
 
 // ---------- fx textures ----------
@@ -165,7 +166,7 @@ const Scene: React.FC<{ only?: string }> = () => {
     setMorphs(w.thomas.vrm, t < T_CUT ? { Fcl_BRW_Sorrow: 0.5, Fcl_MTH_O: 0.15, Fcl_EYE_Surprised: 0 } : { Fcl_BRW_Sorrow: 0.9, Fcl_EYE_Surprised: t < T_FALL1 ? 0.9 : 0.3, Fcl_MTH_O: 0.8 });
     // muzzle flash on the gun barrel
     const gun = w.riders[0].gun; const fl = t >= T_SHOT && t < T_SHOT + 0.067 && t < T_CUT;
-    w.flash.visible = !!gun && fl; if (gun && fl) { const m = gun.localToWorld(new THREE.Vector3(0.22, 0.012, 0)); w.flash.position.copy(m); w.flash.scale.setScalar(t < T_SHOT + 0.034 ? 1.1 : 0.75); w.flash.material.rotation = t * 37; }
+    w.flash.visible = !!gun && fl; if (gun && fl) { const m = gun.localToWorld(new THREE.Vector3(0.22, 0.012, 0)); w.flash.position.copy(m); w.flash.scale.setScalar(t < T_SHOT + 0.034 ? 0.42 : 0.3); w.flash.material.rotation = t * 37; }
     // bullet streak into Thomas just after the cut
     const sk = (t - T_CUT) / 0.07; w.streak.visible = sk >= 0 && sk <= 1;
     if (w.streak.visible) { const chest = new THREE.Vector3(THOMAS.x, 1.35, THOMAS.z + 0.15); const from = chest.clone().add(new THREE.Vector3(-2.2, 0.15, 2.5)); const p = from.clone().lerp(chest, Math.min(1, sk * 1.2)); w.streak.position.copy(p); w.streak.scale.set(1.6, 1, 1); w.streak.lookAt(p.clone().add(new THREE.Vector3(0, 0, 1))); w.streak.rotation.z = Math.atan2(chest.y - from.y, chest.x - from.x); }
@@ -175,13 +176,13 @@ const Scene: React.FC<{ only?: string }> = () => {
     // camera
     const c = camera as THREE.PerspectiveCamera; const cam = camAt(t, head, hand); c.position.copy(cam.pos); c.lookAt(cam.look); c.fov = cam.fov; c.near = 0.05; c.far = 1000; c.updateProjectionMatrix();
   }
-  const sun = SUN_DIR.clone().multiplyScalar(70);
-  return (<><hemisphereLight args={["#c4bde6", "#6e5a70", 0.85]} /><directionalLight position={[sun.x, sun.y, sun.z]} intensity={2.6} color="#ffc28a" castShadow shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-camera-left={-50} shadow-camera-right={50} shadow-camera-top={50} shadow-camera-bottom={-50} shadow-camera-near={1} shadow-camera-far={150} shadow-bias={-0.0004} /><directionalLight position={[10, 6, 40]} intensity={0.55} color="#ffd0b0" /></>);
+  const sun = SUN_DIR.clone().multiplyScalar(70); const yard = t >= T_CUT;
+  return (<><hemisphereLight args={[yard ? "#aab2ea" : "#c4bde6", yard ? "#4e4a70" : "#6e5a70", yard ? 0.75 : 0.85]} /><directionalLight position={[sun.x, sun.y, sun.z]} intensity={2.6} color="#ffc28a" castShadow shadow-mapSize-width={4096} shadow-mapSize-height={4096} shadow-camera-left={-62} shadow-camera-right={62} shadow-camera-top={62} shadow-camera-bottom={-62} shadow-camera-near={1} shadow-camera-far={170} shadow-bias={-0.0004} /><directionalLight position={[10, 6, 40]} intensity={yard ? 0.2 : 0.55} color={yard ? "#a8b8ff" : "#ffd0b0"} /></>);
 };
 
 export const Scene1: React.FC = () => {
   const f = useCurrentFrame(); const { fps } = useVideoConfig(); const t = f / fps;
-  const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.35 : 0;
+  const white = t >= T_SHOT && t < T_SHOT + 0.034 ? 0.18 : 0;
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
       <ThreeCanvas width={1080} height={1920} camera={{ fov: 34, position: [0, 2, 20], far: 1000 }} gl={{ antialias: true }} shadows><Scene /></ThreeCanvas>
