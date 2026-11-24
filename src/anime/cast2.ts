@@ -157,7 +157,17 @@ const mascot = (vrm: VRM): Built => {
   return { vrm, face: { Fcl_MTH_Joy: 0.95, Fcl_EYE_Joy: 0.3, Fcl_BRW_Joy: 0.6 } };
 };
 
+const withGun = (id: string) => (vrm: VRM): Built => { const b = CAST.find((c) => c.id === id)!.build(vrm); armed(vrm); return b; };
+const amosArmed = (vrm: VRM): Built => { const b = amos(vrm); armed(vrm); return b; };
+
 export const CAST2: CharDef[] = [
+  { id: "eli_armed", name: "Eli (8) holding the revolver", base: KID, build: withGun("eli") },
+  { id: "amos_armed", name: "Old Amos with the revolver", base: FUMI, build: amosArmed },
+  { id: "bram_armed", name: "Bram, gun drawn", base: FUMI, build: withGun("bram") },
+  { id: "jory_armed", name: "Jory, gun drawn", base: KID, build: withGun("jory") },
+  { id: "abel_armed", name: "Abel, gun drawn", base: FUMI, build: withGun("abel") },
+  { id: "cain_armed", name: "Cain, gun drawn", base: FUMI, build: withGun("cain") },
+  { id: "lucien_armed", name: "Lucien, gun drawn", base: KID, build: withGun("lucien") },
   { id: "amos", name: "Old Amos (the neighbor)", base: FUMI, build: amos },
   { id: "pete15", name: "Eli at 15", base: KID, build: pete15 },
   { id: "pete15_armed", name: "Eli at 15, gun drawn", base: KID, build: pete15Armed },

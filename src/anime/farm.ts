@@ -72,16 +72,18 @@ const grassCard = (variant = 0) => canvasTex(256, 256, (g) => {
 
 // ---------- anime sky ----------
 export const SUN_DIR = new THREE.Vector3(-0.12, 0.23, -1).normalize();
-const skyDome = () => {
-  const m = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { sun: { value: SUN_DIR } },
+export type FarmTime = "sunset" | "day" | "night";
+const SKY: Record<FarmTime, number[][]> = { sunset: [[0.17, 0.22, 0.52], [0.38, 0.42, 0.78], [0.96, 0.56, 0.62], [1.0, 0.84, 0.6], [1.0, 0.78, 0.5]], day: [[0.22, 0.42, 0.82], [0.42, 0.62, 0.94], [0.72, 0.84, 0.97], [0.93, 0.92, 0.86], [1.0, 0.97, 0.9]], night: [[0.02, 0.03, 0.09], [0.05, 0.07, 0.18], [0.1, 0.12, 0.27], [0.18, 0.18, 0.33], [0.55, 0.62, 0.8]] };
+const skyDome = (time: FarmTime = "sunset", sun = SUN_DIR) => { const P = SKY[time].map((c) => new THREE.Vector3(...c));
+  const m = new THREE.ShaderMaterial({ side: THREE.BackSide, depthWrite: false, uniforms: { sun: { value: sun }, cZen: { value: P[0] }, cUp: { value: P[1] }, cMid: { value: P[2] }, cHor: { value: P[3] }, cSun: { value: P[4] } },
     vertexShader: "varying vec3 vD; void main(){ vD = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
-    fragmentShader: `uniform vec3 sun; varying vec3 vD;
+    fragmentShader: `uniform vec3 sun; uniform vec3 cZen, cUp, cMid, cHor, cSun; varying vec3 vD;
       void main(){ float h = clamp(vD.y, -0.1, 1.0); float s = max(dot(vD, sun), 0.0);
-        vec3 zen = vec3(0.17,0.22,0.52), upper = vec3(0.38,0.42,0.78), mid = vec3(0.96,0.56,0.62), hor = vec3(1.0,0.84,0.6);
+        vec3 zen = cZen, upper = cUp, mid = cMid, hor = cHor;
         vec3 c = mix(hor, mid, smoothstep(0.0, 0.14, h)); c = mix(c, upper, smoothstep(0.12, 0.42, h)); c = mix(c, zen, smoothstep(0.42, 0.9, h));
-        c = mix(c, vec3(1.0,0.78,0.5), pow(s, 4.0) * 0.55);                 // warm wash around the sun
+        c = mix(c, cSun, pow(s, 4.0) * 0.55);                 // warm wash around the sun
         c += vec3(1.0,0.7,0.4) * pow(s, 24.0) * 0.5 + vec3(1.0,0.95,0.8) * pow(s, 400.0) * 0.8;
-        if (vD.y < 0.0) c = mix(c, vec3(0.78,0.55,0.52), smoothstep(0.0, -0.06, vD.y));
+        if (vD.y < 0.0) c = mix(c, cHor * 0.8, smoothstep(0.0, -0.06, vD.y));
         gl_FragColor = vec4(c, 1.0); }` });
   return new THREE.Mesh(new THREE.SphereGeometry(400, 64, 32), m);
 };
@@ -193,21 +195,25 @@ const mesa = (w: number, h: number, lit: string, shade: string, haze: number) =>
   const pos = geo.getAttribute("position"), nor = geo.getAttribute("normal"); const cols = new Float32Array(pos.count * 3); const L = new THREE.Color(lit), S = new THREE.Color(shade), Hz = new THREE.Color("#f2b9a0");
   for (let i = 0; i < pos.count; i++) { const y = pos.getY(i) / h; const up = Math.max(0, nor.getY(i)); const c = S.clone().lerp(L, Math.min(1, up * 0.8 + y * 0.35)); c.lerp(Hz, haze * (0.6 + 0.4 * (1 - y))); cols.set([c.r, c.g, c.b], i * 3); }
   geo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
-  const mat = new THREE.ShaderMaterial({ uniforms: { uH: { value: h }, uRim: { value: new THREE.Color("#ffd2a0") }, uHz: { value: haze } }, vertexColors: true, fog: false, toneMapped: false,
+  const mat = new THREE.ShaderMaterial({ uniforms: { uH: { value: h }, uRim: { value: new THREE.Color("#ffd2a0") }, uHz: { value: haze }, uDim: { value: new THREE.Vector3(1, 1, 1) } }, vertexColors: true, fog: false, toneMapped: false,
     vertexShader: `varying vec3 vC; varying vec3 vP; varying vec3 vN; void main(){ vC = color; vP = position; vN = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
-    fragmentShader: `uniform float uH; uniform vec3 uRim; uniform float uHz; varying vec3 vC; varying vec3 vP; varying vec3 vN; void main(){
+    fragmentShader: `uniform float uH; uniform vec3 uRim; uniform float uHz; uniform vec3 uDim; varying vec3 vC; varying vec3 vP; varying vec3 vN; void main(){
       float y = vP.y / uH; float wob = sin(vP.x * 0.21) * 0.06 + sin(vP.x * 0.07 + 1.3) * 0.08;
       float band = smoothstep(0.42, 0.5, fract(y * 6.0 + wob)) * (1.0 - smoothstep(0.82, 0.9, fract(y * 6.0 + wob)));
       vec3 c = vC * (1.0 - band * 0.09 * (1.0 - uHz));                       // horizontal strata
       c = mix(c, uRim, smoothstep(0.9, 1.0, y) * 0.45 * (1.0 - uHz * 0.6));    // sunlit rim along the top
       c = mix(c, c * vec3(0.86, 0.82, 1.0), smoothstep(0.35, 0.0, y) * 0.5);   // cool foot
-      gl_FragColor = vec4(c, 1.0); }` });
+      gl_FragColor = vec4(c * uDim, 1.0); }` });
   return new THREE.Mesh(geo, mat); };
 
 export type Farm = { group: THREE.Group; update: (t: number) => void };
-export const buildFarm = (): Farm => {
+export const FARM_SUN: Record<FarmTime, THREE.Vector3> = { sunset: SUN_DIR, day: new THREE.Vector3(0.45, 0.75, -0.5).normalize(), night: new THREE.Vector3(0.35, 0.42, -0.84).normalize() };
+export const buildFarm = (time: FarmTime = "sunset"): Farm => {
   seed = 7; const g = new THREE.Group();
-  g.add(skyDome()); g.add(sunDisc());
+  g.add(skyDome(time, FARM_SUN[time])); const sd = sunDisc(); g.add(sd);
+  if (time !== "sunset") { sd.position.copy(FARM_SUN[time]).multiplyScalar(360); sd.lookAt(0, 0, 0); const rays = sd.getObjectByName("sunRays"); if (rays) rays.visible = false;
+    sd.scale.setScalar(time === "night" ? 0.7 : 0.6); sd.traverse((o) => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial | undefined; if (m && !m.map) m.color.set(time === "night" ? "#e8eeff" : "#fffef6"); if (m && m.map) m.opacity = time === "night" ? 0.35 : 0.5; }); }
+  if (time === "night") { const sg = new THREE.BufferGeometry(); const sp: number[] = []; for (let i = 0; i < 900; i++) { const a = rnd() * Math.PI * 2, e = 0.08 + rnd() * 1.3; sp.push(Math.cos(e) * Math.sin(a) * 380, Math.sin(e) * 380, Math.cos(e) * Math.cos(a) * 380); } sg.setAttribute("position", new THREE.Float32BufferAttribute(sp, 3)); g.add(new THREE.Points(sg, new THREE.PointsMaterial({ color: "#eef2ff", size: 1.6, sizeAttenuation: false, fog: false, transparent: true, opacity: 0.85 }))); }
   // clouds in a ring, more of them on the sun side
   for (let i = 0; i < 22; i++) { const a = -Math.PI + (i / 21) * Math.PI * 2 + (rnd() - 0.5) * 0.15; const r = 280 + rnd() * 60; const dirTo = new THREE.Vector3(Math.sin(a), 0, Math.cos(a)); const nearSun = Math.max(0, dirTo.dot(new THREE.Vector3(SUN_DIR.x, 0, SUN_DIR.z).normalize()));
     const c = cloud(80 + rnd() * 110, nearSun); c.position.set(dirTo.x * r, 28 + rnd() * 70, dirTo.z * r); c.lookAt(0, c.position.y * 0.7, 0); g.add(c); }
@@ -246,7 +252,10 @@ export const buildFarm = (): Farm => {
   const sign = box(2.6, 0.75, 0.08, toonE("#8a6a4a", { map: canvasTex(512, 160, (c) => { c.fillStyle = "#8a6a4a"; c.fillRect(0, 0, 512, 160); c.strokeStyle = "#4a3424"; c.lineWidth = 10; c.strokeRect(6, 6, 500, 148); c.fillStyle = "#2a1c14"; c.font = "bold 92px serif"; c.textAlign = "center"; c.fillText("HALE", 256, 115); }) }), 0, 3.55, GZ, 0.012);
   g.add(sign); for (const sx of [-1, 1]) g.add(box(0.03, 0.55, 0.03, toonE("#3a3a3a"), sx * 1.0, 4.05, GZ, 0));
   // atmosphere
-  const fog = new THREE.Fog("#f0b49a", 70, 330);
+  const fog = new THREE.Fog(time === "day" ? "#d9e2ee" : time === "night" ? "#1c2240" : "#f0b49a", time === "night" ? 40 : 70, 330);
+  if (time !== "sunset") g.traverse((o) => { const m = (o as THREE.Mesh).material as THREE.MeshBasicMaterial & { uniforms?: Record<string, { value: unknown }> } | undefined; if (!m) return;
+    if (m.map && m.transparent && (o as THREE.Mesh).geometry?.type === "PlaneGeometry" && (o as THREE.Mesh).position.y > 20) m.color.set(time === "night" ? "#3c4876" : "#ffffff"); // clouds
+    if (m.uniforms?.uDim) (m.uniforms.uDim.value as THREE.Vector3).set(...(time === "night" ? [0.22, 0.25, 0.42] : [0.86, 0.9, 1.0]) as [number, number, number]); });
   const wheel = g.getObjectByName("windmillWheel")!;
   g.traverse((o) => { const m = o as THREE.Mesh; if (!m.isMesh) return; const mat = m.material as THREE.Material; if (mat.type === "ShaderMaterial" && (mat as THREE.ShaderMaterial).uniforms?.sun) return;
     const basic = mat.type === "MeshBasicMaterial"; m.receiveShadow = !basic || m === far; m.castShadow = !basic || !!(mat as THREE.MeshBasicMaterial).alphaTest; });
