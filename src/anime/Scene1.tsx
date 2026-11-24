@@ -175,7 +175,7 @@ const Scene: React.FC<{ dbg?: string }> = ({ dbg }) => {
         const tn = pose.turn ?? (pose.turn = {}); const sp = tn.spine ?? [0, 0, 0], hd = tn.head ?? [0, 0, 0];
         tn.spine = [sp[0] + bob * 0.06, sp[1], sp[2]]; tn.head = [hd[0] - bob * 0.05, hd[1], hd[2]];
         applyPose(r.rig, pose);
-        for (const ct of r.tails) ct.rotation.x = -(0.25 + 0.12 * Math.sin(stride * Math.PI * 4 + 1.2)) * runW - 0.05;
+        for (const ct of r.tails) { if (!ct.userData.q0) ct.userData.q0 = ct.quaternion.clone(); const ang = (0.22 + 0.1 * Math.sin(stride * Math.PI * 4 + 1.2)) * runW + 0.04; ct.quaternion.copy(ct.userData.q0 as THREE.Quaternion).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), ang)); }
         r.vrm.update(dt);
         if (r.gun) r.gun.visible = tt >= 0.45; if (r.grip) r.grip.visible = tt < 0.45;
         // once he aims, the revolver points straight at Thomas (top up), with the recoil kick on the shot
