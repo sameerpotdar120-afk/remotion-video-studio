@@ -9,9 +9,11 @@ import { Photo3D } from "./photo3d/Photo3D";
 import { Napoleon, NAP_FRAMES } from "./nap/Napoleon";
 import { NapThumb } from "./nap/Thumb";
 import { Caesar, CAESAR_FRAMES } from "./caesar/Caesar";
+import { CaesarThumb } from "./caesar/Thumb";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="CaesarThumb" component={CaesarThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="Caesar" component={Caesar} width={1080} height={1920} fps={30} durationInFrames={CAESAR_FRAMES} defaultProps={{ noAudio: false }} />
     <Composition id="NapThumb" component={NapThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="Napoleon" component={Napoleon} width={1080} height={1920} fps={30} durationInFrames={NAP_FRAMES} defaultProps={{ noAudio: false }} />
