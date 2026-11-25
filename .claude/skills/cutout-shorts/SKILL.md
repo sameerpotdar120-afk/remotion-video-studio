@@ -5,6 +5,13 @@ description: The creator's locked workflow for history/story Shorts in the refer
 
 # Cut-out Shorts (the Napoleon workflow)
 
+## LOCKED RULE (creator, 2026-11-25)
+Every video is made the NAPOLEON way: EMPTY background sets + character POSE cut-outs (cycles made by editing the
+previous frame) + separate props + FX, assembled in layers so characters move, appear, react and swap poses.
+NEVER switch to whole-scene pictures (one finished image per shot), even if a reference analysis suggests it.
+Quality upgrades (film look, matched lighting per set, no upscaling, effects cued to words) go INSIDE this layered method.
+Pack size scales with length: ~190 pieces for ~2 min (Caesar v4 = `episodes/caesar/PROMPTS.md`, the template for long videos).
+
 Reference build: `episodes/nap/` + `src/nap/` (Napoleon vs the Rabbits, 19.5 s, 4K, 24 shots).
 Copy it for every new video. Wait for the creator's instruction before each stage.
 
