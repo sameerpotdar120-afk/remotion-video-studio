@@ -7,9 +7,11 @@ import { Episode2, ShotStill2, totalFrames2 } from "./ep2/Episode";
 import { Episode3, ShotStill3, totalFrames3 } from "./ep3/Episode";
 import { Photo3D } from "./photo3d/Photo3D";
 import { Napoleon, NAP_FRAMES } from "./nap/Napoleon";
+import { NapThumb } from "./nap/Thumb";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="NapThumb" component={NapThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="Napoleon" component={Napoleon} width={1080} height={1920} fps={30} durationInFrames={NAP_FRAMES} defaultProps={{ noAudio: false }} />
     <Composition id="Short" component={Episode} width={1080} height={1920} fps={30} durationInFrames={totalFrames(30)} defaultProps={{ captions: true, music: true }} />
     <Composition id="Long" component={LongEpisode} width={1920} height={1080} fps={30} durationInFrames={longFrames(30)} />
