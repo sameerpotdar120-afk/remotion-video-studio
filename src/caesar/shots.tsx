@@ -355,7 +355,7 @@ const S39 = () => { const t = useT(); const brute = t > 0.9;
 const S40 = () => { const t = useT();
   return <Scene cam={{ zoom: lin(t, 0, 1.5, 1.05, 1.14) }} grade={G_NIGHT}>
     <Bg k="BG06" z={0.3} blur={6} />
-    <Actor k="PI09" x={640} y={1980} h={1700} z={0.9} eyes={{ mood: "shock", shake: 0.5, seed: 40 }} />
+    <Actor k="PI09" x={560} y={1980} h={1600} z={0.9} eyes={{ mood: "shock", shake: 0.5, seed: 40 }} />
     <Sprite k="FX14" x={930} y={lin(t % 0.7, 0, 0.7, 1050, 1300)} w={380} z={0.95} opacity={0.8} />
     <Actor k="HE29" x={150} y={2100} h={1700} z={1.1} />
     <Finish vignette={0.55} />
