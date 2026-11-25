@@ -211,7 +211,7 @@ const S23 = () => { const t = useT(); const rise = kf(t, [[0, 0], [0.5, 1]]);
   return <Scene cam={{ zoom: lin(t, 0, 1.9, 1.0, 1.08) }} grade={G_GOLD}>
     <Bg k="BG07" z={0.3} />
     <Sprite k="PR07" x={540} y={lin(rise, 0, 1, 2300, 1350)} w={1300} z={0.85} />
-    {t > 0.8 ? <Actor k="CA08" x={560} y={1950} h={1250} z={1} eyes={{ mood: "happy", seed: 24 }} mouth="grin" /> : null}
+    {t > 0.8 ? <Actor k="CA08" x={560} y={1950} h={1250} z={1} eyes={{ mood: "neutral", lid: 0.2, seed: 24 }} mouth="grin" /> : null}
     <Flash at={0.45} dur={0.2} max={0.3} color="#fff4d0" />
     <Finish warm={0.2} />
   </Scene>; };
@@ -308,7 +308,7 @@ const S34 = () => { const t = useT(); const freeze = t > 0.75;
   return <Scene cam={{ zoom: freeze ? 1.12 : 1.04 }} grade={G_NIGHT} shake={freeze ? 0 : 4}>
     <Bg k="BG06" z={0.3} />
     <Fire x={540} y={1300} w={460} />
-    <Actor k={freeze ? "PG07" : ["PG05", "PG06"]} fps={8} x={540} y={1880 - (freeze ? 0 : bob(t, 12, 30))} h={1000} z={1} shadow={0.4} eyes={{ mood: freeze ? "shock" : "happy", seed: 36 }} mouth={freeze ? "teeth" : "grin"} />
+    <Actor k={freeze ? "PG07" : ["PG05", "PG06"]} fps={8} x={540} y={1880 - (freeze ? 0 : bob(t, 12, 30))} h={1000} z={1} shadow={0.4} eyes={{ mood: freeze ? "shock" : "neutral", lid: freeze ? 0 : 0.2, seed: 36 }} mouth={freeze ? "teeth" : "grin"} />
     <Finish vignette={0.55} />
   </Scene>; };
 // 35 54.2 sleeps — hammock sways
@@ -364,7 +364,7 @@ const S40 = () => { const t = useT();
 const S41 = () => { const t = useT(); const second = t > 0.75;
   return <Scene cam={{ zoom: 1.05 }} grade={second ? G_GOLD : G_DAY}>
     <Bg k={second ? "BG02" : "BG01"} z={0.3} />
-    <Actor k={second ? "PI10" : "CA12"} x={760} y={1880} h={1350} z={0.9} shadow={0.4} eyes={{ mood: "happy", seed: 41 }} mouth="grin" />
+    <Actor k={second ? "PI10" : "CA12"} x={760} y={1880} h={1350} z={0.9} shadow={0.4} eyes={{ mood: "neutral", lid: 0.2, seed: 41 }} mouth="grin" />
     <Actor k="HE30" x={290} y={1980} h={1500} z={1} shadow={0.4} rot={S(t * 20) * 1.5} />
     <Finish />
   </Scene>; };
@@ -379,7 +379,7 @@ const S42 = () => { const t = useT();
 const S43 = () => { const t = useT();
   return <Scene cam={{ zoom: lin(t, 0, 1.6, 1.0, 1.1) }} grade={G_NIGHT}>
     <Bg k="BG06" z={0.3} />
-    <Actor k="PG10" x={540} y={1450} h={760} z={0.75} sy={1 + bob(t, 10, 0.015)} eyes={{ mood: "happy", seed: 43 }} mouth="grin" />
+    <Actor k="PG10" x={540} y={1450} h={760} z={0.75} sy={1 + bob(t, 10, 0.015)} eyes={{ mood: "neutral", lid: 0.2, seed: 43 }} mouth="grin" />
     <Actor k="HE32" x={540} y={2000} h={1500} z={1} eyes={GLOW} />
     <Finish vignette={0.55} />
   </Scene>; };
@@ -407,15 +407,15 @@ const S46 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.05 }} grade={G_NIGHT} shake={3}>
     <Bg k="BG06" z={0.3} />
     <Fire x={540} y={1260} w={380} />
-    <Actor k="PG10" x={480} y={1860 - bob(t, 12, 20)} h={980} z={0.9} eyes={{ mood: "happy", seed: 46 }} mouth="grin" />
-    {t > 0.8 ? <Actor k="PI12" x={850} y={1950} h={900} z={1} rot={lin(t, 0.8, 1.4, 0, -25)} eyes={{ mood: "happy", seed: 47 }} mouth="A" /> : null}
+    <Actor k="PG10" x={480} y={1860 - bob(t, 12, 20)} h={980} z={0.9} eyes={{ mood: "neutral", lid: 0.2, seed: 46 }} mouth="grin" />
+    {t > 0.8 ? <Actor k="PI12" x={850} y={1950} h={900} z={1} rot={lin(t, 0.8, 1.4, 0, -25)} eyes={{ mood: "neutral", lid: 0.2, seed: 47 }} mouth="A" /> : null}
     <Finish vignette={0.55} />
   </Scene>; };
 // 47 73.0 "love this kid" — arm drops round him
 const S47 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.08 }} grade={G_NIGHT}>
     <Bg k="BG06" z={0.3} />
-    <Actor k="CA11" x={330} y={1920} h={1550} z={0.95} shadow={0.4} eyes={{ mood: "happy", seed: 48 }} mouth="grin" />
+    <Actor k="CA11" x={330} y={1920} h={1550} z={0.95} shadow={0.4} eyes={{ mood: "neutral", lid: 0.2, seed: 48 }} mouth="grin" />
     <Actor k="HE22" x={760} y={1960} h={1450} z={1} shadow={0.4} rot={S(t * 6) * 2} />
     <Finish vignette={0.55} />
   </Scene>; };
@@ -423,8 +423,8 @@ const S47 = () => { const t = useT();
 const S48 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.05 }} grade={G_NIGHT}>
     <Bg k="BG06" z={0.3} />
-    <Actor k="PI10" x={230} y={lin(pop(t, 0), 0, 1, 2600, 1950)} h={1300} z={0.9} eyes={{ mood: "happy", seed: 49 }} mouth="grin" />
-    {t > 0.35 ? <Actor k="PI11" x={820} y={lin(pop(t, 0.35), 0, 1, 2600, 1950)} h={1300} z={0.95} eyes={{ mood: "happy", seed: 50 }} mouth="A" /> : null}
+    <Actor k="PI10" x={230} y={lin(pop(t, 0), 0, 1, 2600, 1950)} h={1300} z={0.9} eyes={{ mood: "neutral", lid: 0.2, seed: 49 }} mouth="grin" />
+    {t > 0.35 ? <Actor k="PI11" x={820} y={lin(pop(t, 0.35), 0, 1, 2600, 1950)} h={1300} z={0.95} eyes={{ mood: "neutral", lid: 0.2, seed: 50 }} mouth="A" /> : null}
     {t > 0.8 ? <Actor k="CA13" x={530} y={lin(pop(t, 0.8), 0, 1, 2700, 2050)} h={1500} z={1} eyes={{ mood: "smug", lid: 0.9, seed: 51 }} mouth="smirk" /> : null}
     <Finish vignette={0.55} />
   </Scene>; };
@@ -458,8 +458,8 @@ const S51 = () => { const t = useT();
 const S52 = () => { const t = useT(); const kiss = t > 1.0;
   return <Scene cam={{ zoom: 1.04 }} grade={G_DAY}>
     <Bg k="BG07" z={0.3} />
-    {kiss ? <Actor k="FR07" x={540} y={1900} h={1100} z={1} shadow={0.4} sy={1 + bob(t, 10, 0.02)} eyes={{ mood: "happy", seed: 52 }} />
-      : <Actor k={["FR05", "FR06"]} fps={8} x={540} y={lin(t, 0, 1, 1500, 2050)} h={lin(t, 0, 1, 700, 1600)} z={1} shadow={0.4} eyes={{ mood: "happy", seed: 53 }} mouth="grin" />}
+    {kiss ? <Actor k="FR07" x={540} y={1900} h={1100} z={1} shadow={0.4} sy={1 + bob(t, 10, 0.02)} eyes={{ mood: "neutral", lid: 0.2, seed: 52 }} />
+      : <Actor k={["FR05", "FR06"]} fps={8} x={540} y={lin(t, 0, 1, 1500, 2050)} h={lin(t, 0, 1, 700, 1600)} z={1} shadow={0.4} eyes={{ mood: "neutral", lid: 0.2, seed: 53 }} mouth="grin" />}
     <Finish />
   </Scene>; };
 // 53 81.0 "never look at the sea again" — servants shuffle off
@@ -486,7 +486,7 @@ const S55 = () => { const t = useT();
 const S56 = () => { const t = useT(); const cheer = t > 0.6;
   return <Scene cam={{ zoom: 1.06 }} grade={G_DAY} shake={t > 0.25 && t < 0.4 ? 8 : 0}>
     <Bg k="BG11" z={0.3} />
-    <Actor k={cheer ? "RM04" : "RM03"} x={600} y={1560} h={860} z={0.8} sy={cheer ? 1 + bob(t, 10, 0.02) : 1} eyes={{ mood: cheer ? "happy" : "smug", seed: 56 }} mouth={cheer ? "grin" : "smirk"} />
+    <Actor k={cheer ? "RM04" : "RM03"} x={600} y={1560} h={860} z={0.8} sy={cheer ? 1 + bob(t, 10, 0.02) : 1} eyes={{ mood: cheer ? "neutral" : "smug", lid: cheer ? 0.2 : undefined, seed: 56 }} mouth={cheer ? "grin" : "smirk"} />
     <Actor k="HE35" x={330} y={2000} h={1500} z={1} />
     <Finish />
   </Scene>; };
@@ -527,7 +527,7 @@ const S61 = () => { const t = useT(); const look = t > 0.8;
     <Bg k="BG13" z={0.3} />
     {look ? <Sprite k="PR04" x={lin(t, 0.8, 1.9, 1300, 900)} y={1000} w={420} z={0.4} /> : null}
     {look ? <Actor k="CA18" x={540} y={1960} h={1600} z={1} eyes={{ mood: "shock", lookY: -0.5, seed: 61 }} mouth="O" />
-      : <Actor k="PG11" x={540} y={1880} h={930} z={1} eyes={{ mood: "happy", lookY: 0.6, seed: 62 }} mouth="grin" />}
+      : <Actor k="PG11" x={540} y={1880} h={930} z={1} eyes={{ mood: "neutral", lid: 0.2, lookY: 0.6, seed: 62 }} mouth="grin" />}
     <Finish warm={0.15} />
   </Scene>; };
 // 62 93.3 "captures most of them" — charge vs flee
@@ -673,7 +673,7 @@ const S77 = () => { const t = useT();
   return <Scene cam={{ zoom: lin(t, 0, 1.6, 1.0, 1.06) }} grade="sepia(0.35) saturate(1.1) brightness(1.05)">
     <Bg k="BG06" z={0.3} blur={3} />
     <Fire x={540} y={1250} w={360} />
-    <Actor k="CA17" x={320} y={1920} h={1350} z={0.95} eyes={{ mood: "happy", seed: 81 }} mouth="smile" />
+    <Actor k="CA17" x={320} y={1920} h={1350} z={0.95} eyes={{ mood: "neutral", lid: 0.2, seed: 81 }} mouth="smile" />
     <Actor k="HE39" x={780} y={1960} h={1350} z={1} />
     <AbsoluteFill style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.7) 100%)" }} />
     <Finish />
@@ -692,7 +692,7 @@ const S79 = () => { const t = useT();
 const S80 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.05 }} grade="sepia(0.3) saturate(1.05)">
     <Bg k="BG01" z={0.3} />
-    <Actor k="PG10" x={540} y={1450} h={760} z={0.75} sy={1 + bob(t, 10, 0.015)} eyes={{ mood: "happy", seed: 82 }} mouth="grin" />
+    <Actor k="PG10" x={540} y={1450} h={760} z={0.75} sy={1 + bob(t, 10, 0.015)} eyes={{ mood: "neutral", lid: 0.2, seed: 82 }} mouth="grin" />
     <Actor k="HE03" x={540} y={2000} h={1300} z={1} eyes={GLOW} />
     <Finish vignette={0.6} />
   </Scene>; };
