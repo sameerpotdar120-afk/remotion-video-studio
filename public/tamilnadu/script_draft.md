@@ -15,7 +15,7 @@
 
 ## Our angle and our pictures
 
-The payoff picture goes to frame 0 (the five buildings already reading "தமிழ்நाडु"), then the story nobody tells:
+The payoff picture goes to frame 0 (the five buildings already reading "தமிழ்நாடு"), then the story nobody tells:
 MGR dreamt it in 1981 and never saw one letter built; it took about 35 years. Plus a Hindi hook of its own: one of the
 letters, ழ, is a sound Hindi does not have.
 
