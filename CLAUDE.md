@@ -41,6 +41,13 @@ Hooks (creator, Nov 17: "still messed up in the visual and narration hook"): eve
 payoff picture (not a title word), a change every 0.5–0.8 s to 0:03, say-show sync, and 3 hook packages with frame-0
 mocks for the creator to pick before the VO is recorded.
 
+## Sound: no music (creator, Nov 26)
+
+No background music in any video from now on. SFX only, and no generic stock packs: every sound is the literal thing the
+VO or the picture shows (paper, chisel on stone, construction, a flip clock), sourced from open-source/royalty-free
+libraries (Sonniss GDC, Freesound CC0, Kenney CC0) and credited. Every verbal hook gets a visual hook that lands word
+for word with it.
+
 ## HyperFrames (from the next video, creator's request, Nov 1)
 
 The creator wants the next video made with HyperFrames (HeyGen, Apache-2.0: HTML/CSS/GSAP rendered to MP4) used at full
