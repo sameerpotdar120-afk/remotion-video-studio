@@ -1,0 +1,30 @@
+{
+ "tn01_mgr": {
+  "w": 2400,
+  "h": 2378
+ },
+ "tn02_thanjavur_doll": {
+  "w": 1123,
+  "h": 2400
+ },
+ "tn03_blueprint_sheet": {
+  "w": 1642,
+  "h": 2400
+ },
+ "tn04_palm_leaf_manuscript": {
+  "w": 2400,
+  "h": 1284
+ },
+ "tn05_microscope": {
+  "w": 1868,
+  "h": 2400
+ },
+ "tn06_sapling": {
+  "w": 1621,
+  "h": 2400
+ },
+ "tn07_tower_crane": {
+  "w": 1560,
+  "h": 2400
+ }
+}

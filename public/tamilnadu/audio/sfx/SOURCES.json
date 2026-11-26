@@ -1,0 +1,132 @@
+[
+ {
+  "key": "stone_hit_a",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "PMSFX - Rocky Impacts/PM_RI_Source_53 Rocks Impact Hit Single Stone.wav"
+ },
+ {
+  "key": "stone_hit_b",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "PMSFX - Rocky Impacts/PM_RI_Source_92 Rocks Impact Hit Single Stone.wav"
+ },
+ {
+  "key": "brick_hit",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "PMSFX - Shattering Bricks/PM_SB_SOURCE_16 Impact brick rock dirt gravel single hit.wav"
+ },
+ {
+  "key": "pencil_circles",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "Wav Junction Sound Effects - Office/0001_Pencil_Draw_Circles.wav"
+ },
+ {
+  "key": "pencil_write",
+  "archive_item": "sonniss-gdc-2023-game-audio-bundle-normalized",
+  "file": "344 Audio - Ultimate Chess SFX/Writing With Pencil 04.wav"
+ },
+ {
+  "key": "pencil_tick",
+  "archive_item": "sonniss-gdc-2023-game-audio-bundle-normalized",
+  "file": "CB Sound Design - Essential Sounds Vol.02 Pencils/colorpencil_6.wav"
+ },
+ {
+  "key": "marker_strike",
+  "archive_item": "sonniss-gdc-2023-game-audio-bundle-normalized",
+  "file": "CB Sound Design - Essential Sounds Vol.02 Pencils/marker_2.wav"
+ },
+ {
+  "key": "paper_handle",
+  "archive_item": "sonniss-gdc-2016-game-audio-bundle-normalized",
+  "file": "Sounds Hunter - Paper Sound Effects/Paper Handling and Turning Sequence.wav"
+ },
+ {
+  "key": "paper_slide",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "SpillAudio - Paper/a4_sheet_page_sliding_001.wav"
+ },
+ {
+  "key": "paper_rustle",
+  "archive_item": "sonniss-gdc-2017-game-audio-bundle-normalized",
+  "file": "The Soundcatcher - Paperlife/Paper_Rustling_Movement_Handling_50.wav"
+ },
+ {
+  "key": "shutter",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "PMSFX - Point and Shoot FUJI Cam/PM_POS_FUJI_MKH8040_149 Camera, shutter sound, photo being taken.wav"
+ },
+ {
+  "key": "old_shutter",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "Soundholder - Old Cameras 192kHz/camera 6 shutter mechanism mono 192kHz.wav"
+ },
+ {
+  "key": "lens_dial",
+  "archive_item": "sonniss-gdc-2023-game-audio-bundle-normalized",
+  "file": "SHhh! Listen SFX Libraries - Optometrist Equipment/Phoropter,Auxiliary lens dial,Top dial,Turning,Adjusting,Clicks,Fast,Short,Burst - Turning and adjusting auxiliary lens dial in fast short bursts.wav"
+ },
+ {
+  "key": "counter",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "CB Sounddesign - Infographic SFX/Counter_9.wav"
+ },
+ {
+  "key": "brick_lay",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "The Sound Pack Tree - Construction & Tools/Lay Brick 15.wav"
+ },
+ {
+  "key": "crane_hoist",
+  "archive_item": "sonniss-gdc-2016-game-audio-bundle-normalized",
+  "file": "Hzandbits - Construction Ambiances/Amb,Construction,Ext,Crane,Hoisting,Various engine speeds.mp3"
+ },
+ {
+  "key": "bowl",
+  "archive_item": "sonniss-gdc-2019-game-audio-bundle-normalized",
+  "file": "Prismo Sound - Singing Bowls/SINGING_BOWL_Strike_Sustain_D_02.wav"
+ },
+ {
+  "key": "wine_glass",
+  "archive_item": "sonniss-gdc-2016-game-audio-bundle-normalized",
+  "file": "George Karagioules - The Source Collection SFX Pack/Wine Glass Hit Higher Pitch.wav"
+ },
+ {
+  "key": "leaf_swish",
+  "archive_item": "sonniss-gdc-2023-game-audio-bundle-normalized",
+  "file": "Rogue Waves - Druid Magic/SWSH_Dry Bamboo Leaf Swishes 1_RogueWaves_DruidMagic.wav"
+ },
+ {
+  "key": "plant_growth",
+  "archive_item": "sonniss-gdc-2015-game-audio-bundle-normalized",
+  "file": "Varazuvi - Natural Variety/PlantGrowth.wav"
+ },
+ {
+  "key": "wind_rush",
+  "archive_item": "sonniss-gdc-2026-game-audio-bundle-normalized",
+  "file": "344 Audio - Elemental Palette Designed Vol. 1/WINDDsgn_Wind, Rush, Whoosh, Long x5 01_344 Audio_Elemental Palette Designed Vol 1.wav"
+ },
+ {
+  "key": "deep_thud",
+  "archive_item": "sonniss-gdc-2019-game-audio-bundle-normalized",
+  "file": "Baxter Audio - IMPACT/10 Hit Deep Thud.wav"
+ },
+ {
+  "key": "ui_click",
+  "archive_item": "sonniss-gdc-2026-game-audio-bundle-normalized",
+  "file": "Epic Stock Media - Board Game - Sound Set Kit for Tabletop and Digital Games/UIClick_UI Button Analog Vintage Double Click Neutral Dry Press 11_ESM_BG.wav"
+ },
+ {
+  "key": "eraser",
+  "archive_item": "sonniss-gdc-2017-game-audio-bundle-normalized",
+  "file": "Eiravaein Sound - Parched/Parched,drawing,dense,paper,cotton,eraser,rubbing,short,smooth,alt2.wav"
+ },
+ {
+  "key": "wood_figure",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "Eiravaein Works - Eulerian/Eulerian,spinning,crescendo,glasssurface,turnedwoodenfigure,glazed,bright,slightlyrough,tight,1.wav"
+ },
+ {
+  "key": "flash_old",
+  "archive_item": "sonniss-gdc-2020-game-audio-bundle-normalized",
+  "file": "Soundholder - Old Cameras 192kHz/camera 11 film rewind lever and shutter slow mono 192kHz.wav"
+ }
+]
