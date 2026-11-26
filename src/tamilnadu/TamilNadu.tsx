@@ -446,6 +446,13 @@ export const TamilNadu: React.FC<{ captions?: boolean; audio?: string; thumb?: b
       <AbsoluteFill style={{ pointerEvents: 'none', background: 'radial-gradient(ellipse 75% 60% at 50% 48%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.6) 100%)' }} />
       <AbsoluteFill style={{ pointerEvents: 'none', background: 'linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 18%, rgba(0,0,0,0) 72%, rgba(0,0,0,0.45) 100%)' }} />
       {captions && !thumb && <Captions t={t} y={capY} />}
+      {thumb && (
+        <div style={{ position: 'absolute', left: 0, right: 0, top: 1530, textAlign: 'center' }}>
+          <div style={{ fontFamily: UI, fontWeight: 800, fontSize: 150, lineHeight: 1.05, color: '#fff', WebkitTextStroke: '6px #000', paintOrder: 'stroke', textShadow: '0 0 40px rgba(255,194,58,0.8), 0 12px 30px rgba(0,0,0,0.9)' }}>
+            ऊपर से <span style={{ color: GOLD }}>पढ़ो!</span>
+          </div>
+        </div>
+      )}
       <div style={{ position: 'absolute', left: 20, right: 20, top: 1892, textAlign: 'center', fontFamily: LABEL, fontSize: 15, letterSpacing: 0.5, color: 'rgba(255,255,255,0.45)', whiteSpace: 'nowrap' }}>{CREDIT}</div>
     </AbsoluteFill>
   );
