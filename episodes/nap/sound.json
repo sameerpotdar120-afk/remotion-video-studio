@@ -1,0 +1,316 @@
+{
+ "bpm": 112,
+ "key": "D",
+ "music": 0.16,
+ "beat": true,
+ "bedDb": 15,
+ "tail": 0.1,
+ "amb": {
+  "1": "field",
+  "2": "field",
+  "3": "field",
+  "4": "field",
+  "5": "field",
+  "6": "field",
+  "7": "field",
+  "8": "field",
+  "9": "field",
+  "10": "field",
+  "11": "field",
+  "12": "field",
+  "13": "field",
+  "14": "field",
+  "15": "field",
+  "16": "field",
+  "17": "field",
+  "18": "field",
+  "19": "field",
+  "20": "field",
+  "21": "field",
+  "22": "field",
+  "23": "field",
+  "24": "field"
+ },
+ "sfx": [
+  {
+   "shot": 1,
+   "at": 0.0,
+   "type": "boom"
+  },
+  {
+   "shot": 1,
+   "at": 0.3,
+   "type": "hoof"
+  },
+  {
+   "shot": 2,
+   "at": 0.05,
+   "type": "whoosh"
+  },
+  {
+   "shot": 2,
+   "at": 0.42,
+   "type": "pop"
+  },
+  {
+   "shot": 3,
+   "at": 0.0,
+   "type": "swell"
+  },
+  {
+   "shot": 4,
+   "at": 0.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 4,
+   "at": 0.05,
+   "type": "thump"
+  },
+  {
+   "shot": 4,
+   "at": 0.2,
+   "type": "thump"
+  },
+  {
+   "shot": 4,
+   "at": 0.33,
+   "type": "thump"
+  },
+  {
+   "shot": 5,
+   "at": 0.1,
+   "type": "thump"
+  },
+  {
+   "shot": 5,
+   "at": 0.27,
+   "type": "thump"
+  },
+  {
+   "shot": 5,
+   "at": 0.44,
+   "type": "thump"
+  },
+  {
+   "shot": 5,
+   "at": 0.61,
+   "type": "thump"
+  },
+  {
+   "shot": 5,
+   "at": 0.78,
+   "type": "thump"
+  },
+  {
+   "shot": 6,
+   "at": 0.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 6,
+   "at": 0.2,
+   "type": "crowd"
+  },
+  {
+   "shot": 7,
+   "at": 0.0,
+   "type": "riser"
+  },
+  {
+   "shot": 8,
+   "at": 0.0,
+   "type": "hit"
+  },
+  {
+   "shot": 8,
+   "at": 0.4,
+   "type": "pop"
+  },
+  {
+   "shot": 9,
+   "at": 0.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 9,
+   "at": 0.45,
+   "type": "pop2"
+  },
+  {
+   "shot": 10,
+   "at": 0.0,
+   "type": "crowd"
+  },
+  {
+   "shot": 10,
+   "at": 0.4,
+   "type": "ding"
+  },
+  {
+   "shot": 11,
+   "at": 0.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 12,
+   "at": 0.0,
+   "type": "crowd"
+  },
+  {
+   "shot": 12,
+   "at": 0.1,
+   "type": "knock"
+  },
+  {
+   "shot": 12,
+   "at": 0.5,
+   "type": "knock"
+  },
+  {
+   "shot": 13,
+   "at": 0.05,
+   "type": "crack"
+  },
+  {
+   "shot": 13,
+   "at": 0.25,
+   "type": "tick"
+  },
+  {
+   "shot": 14,
+   "at": 0.08,
+   "type": "crack"
+  },
+  {
+   "shot": 14,
+   "at": 0.15,
+   "type": "whoosh"
+  },
+  {
+   "shot": 15,
+   "at": 0.05,
+   "type": "shimmer"
+  },
+  {
+   "shot": 16,
+   "at": 0.05,
+   "type": "whoosh"
+  },
+  {
+   "shot": 16,
+   "at": 0.3,
+   "type": "pop"
+  },
+  {
+   "shot": 17,
+   "at": 0.05,
+   "type": "bonk"
+  },
+  {
+   "shot": 17,
+   "at": 0.8,
+   "type": "riser"
+  },
+  {
+   "shot": 18,
+   "at": 0.0,
+   "type": "thunder"
+  },
+  {
+   "shot": 18,
+   "at": 0.0,
+   "type": "hoof"
+  },
+  {
+   "shot": 18,
+   "at": 0.5,
+   "type": "hoof"
+  },
+  {
+   "shot": 18,
+   "at": 1.0,
+   "type": "crash"
+  },
+  {
+   "shot": 19,
+   "at": 0.0,
+   "type": "typing"
+  },
+  {
+   "shot": 19,
+   "at": 0.45,
+   "type": "typing"
+  },
+  {
+   "shot": 20,
+   "at": 0.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 20,
+   "at": 0.12,
+   "type": "bonk"
+  },
+  {
+   "shot": 20,
+   "at": 0.25,
+   "type": "whoosh"
+  },
+  {
+   "shot": 21,
+   "at": 0.0,
+   "type": "tape"
+  },
+  {
+   "shot": 21,
+   "at": 0.3,
+   "type": "swell"
+  },
+  {
+   "shot": 22,
+   "at": 0.0,
+   "type": "hoof"
+  },
+  {
+   "shot": 22,
+   "at": 0.4,
+   "type": "hoof"
+  },
+  {
+   "shot": 22,
+   "at": 0.2,
+   "type": "crowd"
+  },
+  {
+   "shot": 22,
+   "at": 0.8,
+   "type": "whoosh"
+  },
+  {
+   "shot": 23,
+   "at": 0.05,
+   "type": "whoosh"
+  },
+  {
+   "shot": 23,
+   "at": 0.55,
+   "type": "thud"
+  },
+  {
+   "shot": 23,
+   "at": 0.55,
+   "type": "crash"
+  },
+  {
+   "shot": 24,
+   "at": 0.1,
+   "type": "hoof"
+  },
+  {
+   "shot": 24,
+   "at": 0.6,
+   "type": "ding"
+  }
+ ]
+}

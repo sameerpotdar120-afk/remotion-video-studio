@@ -1,0 +1,211 @@
+{
+ "bpm": 104,
+ "key": "D",
+ "music": 0.15,
+ "amb": {
+  "1": "field",
+  "2": "field",
+  "3": "field",
+  "4": "field",
+  "5": "field",
+  "6": "field",
+  "7": "field",
+  "8": "field",
+  "9": "field",
+  "10": "field",
+  "11": "field",
+  "12": "town",
+  "13": "field",
+  "14": "field",
+  "15": "field",
+  "16": "field",
+  "17": "field",
+  "18": "field",
+  "19": "garage",
+  "20": "field",
+  "21": "field",
+  "22": "rain",
+  "23": "rain",
+  "24": "rain",
+  "25": "rain",
+  "26": "rain",
+  "27": "rain",
+  "28": "rain"
+ },
+ "sfx": [
+  {
+   "shot": 1,
+   "at": 0.95,
+   "type": "pop2"
+  },
+  {
+   "shot": 1,
+   "at": 0.98,
+   "type": "thud",
+   "gain": 0.7
+  },
+  {
+   "shot": 1,
+   "at": 1.0,
+   "type": "whoosh"
+  },
+  {
+   "shot": 3,
+   "at": 1.0,
+   "type": "crash"
+  },
+  {
+   "shot": 4,
+   "at": 0,
+   "type": "whoosh",
+   "gain": 0.6
+  },
+  {
+   "shot": 6,
+   "at": 0.2,
+   "type": "whoosh",
+   "gain": 0.5
+  },
+  {
+   "shot": 7,
+   "at": 1.44,
+   "type": "crash"
+  },
+  {
+   "shot": 7,
+   "at": 1.5,
+   "type": "tick",
+   "repeat": 3,
+   "every": 0.06
+  },
+  {
+   "shot": 8,
+   "at": 0.3,
+   "type": "knock",
+   "repeat": 3,
+   "every": 0.3
+  },
+  {
+   "shot": 8,
+   "at": 1.54,
+   "type": "shimmer",
+   "gain": 1.5
+  },
+  {
+   "shot": 9,
+   "at": 2.1,
+   "type": "crash"
+  },
+  {
+   "shot": 10,
+   "at": 0.0,
+   "type": "ding",
+   "gain": 0.8
+  },
+  {
+   "shot": 11,
+   "at": 0.7,
+   "type": "pop",
+   "repeat": 2,
+   "every": 0.12
+  },
+  {
+   "shot": 11,
+   "at": 2.9,
+   "type": "coin",
+   "repeat": 6,
+   "every": 0.12
+  },
+  {
+   "shot": 13,
+   "at": 0.94,
+   "type": "tick"
+  },
+  {
+   "shot": 15,
+   "at": 0.3,
+   "type": "bonk",
+   "gain": 1.4
+  },
+  {
+   "shot": 16,
+   "at": 1.44,
+   "type": "chainsaw"
+  },
+  {
+   "shot": 17,
+   "at": 0.0,
+   "type": "chainsaw",
+   "gain": 0.7
+  },
+  {
+   "shot": 17,
+   "at": 0.3,
+   "type": "crack"
+  },
+  {
+   "shot": 17,
+   "at": 1.13,
+   "type": "thud",
+   "gain": 1.5
+  },
+  {
+   "shot": 18,
+   "at": 2.0,
+   "type": "whoosh",
+   "gain": 0.7
+  },
+  {
+   "shot": 19,
+   "at": 0.1,
+   "type": "shimmer"
+  },
+  {
+   "shot": 19,
+   "at": 0.2,
+   "type": "ding"
+  },
+  {
+   "shot": 21,
+   "at": 1.35,
+   "type": "crash",
+   "gain": 1.2
+  },
+  {
+   "shot": 22,
+   "at": 0.6,
+   "type": "thunder"
+  },
+  {
+   "shot": 23,
+   "at": 0.88,
+   "type": "whoosh",
+   "gain": 0.6
+  },
+  {
+   "shot": 25,
+   "at": 0.34,
+   "type": "shimmer",
+   "gain": 1.2
+  },
+  {
+   "shot": 26,
+   "at": 0.96,
+   "type": "shimmer",
+   "gain": 1.0
+  },
+  {
+   "shot": 27,
+   "at": 2.28,
+   "type": "tick",
+   "repeat": 5,
+   "every": 0.35
+  },
+  {
+   "shot": 28,
+   "at": 1.08,
+   "type": "crash",
+   "gain": 1.3
+  }
+ ]
+}

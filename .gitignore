@@ -1,0 +1,15 @@
+node_modules/
+out/
+*.log
+__pycache__/
+public/ep2/*.wav
+public/ep3/*.wav
+public/photo3d/*
+public/ep4/*.wav
+public/anime/*.vrm
+public/anime/*.fbx
+episodes/pp/
+public/pp/
+public/nap/
+public/caesar/
+public/lighthouse/
