@@ -10,9 +10,11 @@ import { Napoleon, NAP_FRAMES } from "./nap/Napoleon";
 import { NapThumb } from "./nap/Thumb";
 import { Caesar, CAESAR_FRAMES } from "./caesar/Caesar";
 import { CaesarThumb } from "./caesar/Thumb";
+import { Lighthouse, LIGHTHOUSE_FRAMES } from "./lighthouse/Lighthouse";
 
 export const Root: React.FC = () => (
   <>
+    <Composition id="Lighthouse" component={Lighthouse} width={1080} height={1920} fps={30} durationInFrames={LIGHTHOUSE_FRAMES} defaultProps={{ noAudio: false }} />
     <Composition id="CaesarThumb" component={CaesarThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
     <Composition id="Caesar" component={Caesar} width={1080} height={1920} fps={30} durationInFrames={CAESAR_FRAMES} defaultProps={{ noAudio: false }} />
     <Composition id="NapThumb" component={NapThumb} width={1080} height={1920} fps={30} durationInFrames={1} />
