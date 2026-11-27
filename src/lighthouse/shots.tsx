@@ -569,7 +569,7 @@ const L67 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.04 }} grade={G_GOLD}>
     <Bg k="BG18" z={0.3} />
     <Sprite k="LT10" x={300} y={1150} w={500} z={0.5} filter="brightness(0.8)" />
-    <Sprite k="FX04" x={560} y={620} w={900} z={0.55} blend="screen" opacity={0.7} />
+    <Sprite k="FX04" x={300 + 420} y={915} w={840} z={0.55} blend="screen" opacity={0.75} />
     <Sprite k="SH11" x={lin(t, 0, 1.18, 1300, 700)} y={1300} w={700} z={0.7} />
     <Finish vignette={0.55} />
   </Scene>; };
@@ -584,7 +584,7 @@ const L69 = () => { const t = useT();
   return <Scene cam={{ zoom: 1.04 }} grade={G_GOLD}>
     <Bg k="BG18" z={0.3} />
     <Sprite k="LT10" x={760} y={1100} w={420} z={0.5} filter="brightness(0.85)" />
-    <Sprite k="FX04" x={500 + S(t * 2) * 200} y={600} w={900} z={0.55} blend="screen" opacity={0.7} />
+    <Sprite k="FX04" x={760 - 360} y={895} w={720} z={0.55} blend="screen" opacity={0.75} flip />
     <Sprite k="SH11" x={lin(t, 0, 2.38, -200, 500)} y={1350} w={620} z={0.7} />
     <Sprite k="SH01" x={lin(t, 0, 2.38, 1250, 900)} y={1220} w={420} z={0.6} filter="brightness(0.6)" />
     <Finish vignette={0.55} />
